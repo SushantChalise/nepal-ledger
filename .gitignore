@@ -1,0 +1,71 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# ─── dependencies ─────────────────────────────────────────────────
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ─── testing ──────────────────────────────────────────────────────
+/coverage
+playwright-report/
+test-results/
+
+# ─── next.js ──────────────────────────────────────────────────────
+/.next/
+/out/
+
+# ─── production builds ────────────────────────────────────────────
+/build
+/dist
+/.open-next/
+
+# ─── cloudflare wrangler ──────────────────────────────────────────
+/.wrangler/
+
+# ─── vercel ───────────────────────────────────────────────────────
+.vercel
+
+# ─── typescript ───────────────────────────────────────────────────
+*.tsbuildinfo
+# next-env.d.ts is committed so CI typecheck works without a prior build.
+
+# ─── secrets — NEVER COMMIT ───────────────────────────────────────
+# Catch-all for anything starting with `.env`, then re-allow only the safe template.
+# .env.rotation-todo.md stays gitignored — it discloses which secrets were exposed.
+.env*
+!.env.example
+*.key
+*.pem
+secrets/
+.cloudflare/
+
+# ─── source documents archive ─────────────────────────────────────
+# Large PDFs / raw downloads. Mirrored to Supabase Storage (Year 1; ADR-0004).
+source-data/
+# Legacy pre-bootstrap folders holding the same raw sources. These move into
+# source-data/<source-id>/ during the Source Registry milestone (Day 11–28).
+/NRB Current/
+/Stastical Information/
+/Framework/
+
+# ─── claude code local config ─────────────────────────────────────
+# Per-machine session state, hooks, settings. Never commit.
+.claude/
+
+# ─── logs ─────────────────────────────────────────────────────────
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+
+# ─── editor / OS ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
