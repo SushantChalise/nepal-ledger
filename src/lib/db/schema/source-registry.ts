@@ -10,6 +10,7 @@ import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import {
   confidenceGradeEnum,
   fileFormatEnum,
+  ingestionModeEnum,
   licenseStatusEnum,
   publicationFrequencyEnum,
   reportingPeriodTypeEnum,
@@ -46,6 +47,10 @@ export const sourceRegistry = pgTable('source_registry', {
 
   confidenceDefault: confidenceGradeEnum('confidence_default').notNull().default('A'),
   status: sourceStatusEnum('status').notNull().default('active'),
+  // How the source is fetched and parsed. Added in migration 0002 per
+  // SOURCE_REGISTRY audit decision: distinguishes automated cron-fed
+  // scrapers from manual-upload PDFs from reference-only assets.
+  ingestionMode: ingestionModeEnum('ingestion_mode').notNull().default('automated_cron'),
   notes: text('notes'),
 
   registeredAt: timestamp('registered_at', { withTimezone: true }).notNull().defaultNow(),
