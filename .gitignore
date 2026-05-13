@@ -57,6 +57,10 @@ source-data/
 # Voter DB scrape with credentials). Source documents archived to Supabase
 # Storage during ingestion; raw corpus never committed.
 /Financial Data/
+# Staged parse outputs awaiting DB ingest. Produced by the various
+# dry-run / extract-to-json paths in scripts/*. Re-generatable from
+# Financial Data/; never committed.
+/staging-data/
 
 # ─── claude code local config ─────────────────────────────────────
 # Per-machine session state, hooks, settings. Never commit.

@@ -119,45 +119,120 @@ A scraper merged without a source registry entry is reverted on sight.
 
 ---
 
-## Year 1 Source Commit List
+## Year 1 Source Commit List (revised per docs/SOURCE_REGISTRY_AUDIT_PROPOSAL.md, accepted 2026-05-14)
 
-These sources get registered in priority order. The Day 1–14 milestone ingests source #1 only.
+The previous Tier 1–4 list was 12 entries. The audit revealed ~30 missing feeds (LMBIS/SuTRA, Census 2078, Yellow Book PE financials, Local Ledger, climate exposure, etc.). The list below is the v2 commit list, reorganized into 5 tiers + a separate "reference-only" category.
 
-### Tier 1 — Monthly macro (Day 1–14)
+### `ingestion_mode`
 
-| ID | Agency | Dataset | Confidence | Notes |
-|----|--------|---------|------------|-------|
-| `nrb-cmefs-monthly` | NRB | Current Macroeconomic and Financial Situation | A | The starter — existing PDFs already in repo |
-| `nrb-ncpi-table` | NRB | NCPI Table 2(B) | A | Existing CSV already in repo |
+Every entry now declares one of three ingestion modes (column added to `source_registry` in migration 0002):
+- **`automated_cron`** — GitHub Actions cron pulls fresh data; parser runs without human input
+- **`manual_upload`** — Human drops a fresh file into `Financial Data/<source-id>/` and runs the parser; Surya OCR usually involved
+- **`reference_only`** — Cited in stories and Knowledge Base; NOT parsed into `approved_indicator_values`
 
-### Tier 2 — Quarterly + monthly trade/debt (Day 30–60)
+### Tier 0 — Already on disk (immediate, no OCR needed)
 
-| ID | Agency | Dataset | Confidence | Notes |
-|----|--------|---------|------------|-------|
-| `customs-monthly-trade` | Department of Customs | Monthly trade statistics | A | Format: HTML+xlsx |
-| `pdmo-debt-bulletin` | PDMO | Quarterly debt bulletin | A | PDF tables |
-| `fcgo-daily` | FCGO | Daily revenue + expenditure | B (preliminary) | Visible "preliminary" label mandatory |
-| `nrb-banking-stats` | NRB | Banking and Financial Statistics | A | Quarterly |
+| ID | Agency | Dataset | Mode | Confidence | Notes |
+|----|--------|---------|------|------------|-------|
+| `nrb-ncpi-table` | NRB | NCPI Table 2(B) | manual_upload | A | Worker C parser shipped v0.1.0 (CSV) |
+| `nrb-cmefs-monthly` | NRB | Current Macroeconomic and Financial Situation | manual_upload | A | Status: Active (PDF parser pending — Phase B per ADR-0008) |
+| `nrb-bfi-monthly` | NRB | Banking & Financial Statistics (monthly XLSX, 50 files Aug-2021→Sept-2025) | manual_upload | A | Worker ζ ships v0.1.0 (XLSX, no OCR). See `scrapers/nrb_bfi/`. |
+| `mof-intergovernmental-fiscal-transfer` | MoF / NNRFC | Intergovernmental fiscal transfers (annual) | manual_upload | A | FY 2082/83 ingestable from pre-Cleaned XLSX; prior FYs require Surya OCR. |
+| `cbs-nphc-2021` | CBS | National Population & Housing Census 2021 (89 CSVs + 8 Excel) | manual_upload | A | Worker η ships v0.1.0 (CSV, no OCR). |
+| `admin-hierarchy-voters` | EC (derived) | Administrative hierarchy from voter DB (10,263 rows) | manual_upload | A | Pre-extracted CSV; municipality types need fix on join. |
 
-### Tier 3 — Sector data (Day 60–90)
+### Tier 1 — Days 1–28 (the macro spine + first flagship inputs)
 
-| ID | Agency | Dataset | Confidence | Notes |
-|----|--------|---------|------------|-------|
-| `nso-gdp` | NSO | Quarterly GDP estimates | A | Lagged 1–2 quarters |
-| `moald-crop-production` | MoALD | Seasonal crop production | B | PDF-heavy, variable format |
-| `ntb-tourism-monthly` | Nepal Tourism Board | Monthly arrivals + receipts | A | HTML page |
-| `nepse-eod` | NEPSE | End-of-day quotes + market cap | A | Daily, JSON-ish API |
+| ID | Agency | Dataset | Mode | Priority |
+|----|--------|---------|------|----------|
+| `nrb-reserves-daily` | NRB | Daily foreign reserves disclosure | automated_cron | High |
+| `customs-monthly-trade` | Department of Customs | Monthly trade statistics | automated_cron | High |
+| `noc-petroleum-monthly` | Nepal Oil Corporation | Monthly petroleum imports + price revision notices | automated_cron | High |
+| `fcgo-daily` | FCGO | Daily revenue + expenditure | automated_cron | High (preliminary; B-tier confidence) |
+| `nepse-eod` | NEPSE | EOD quotes + market cap | automated_cron | High |
+| `kalimati-daily-prices` | Kalimati Market | Daily wholesale fruit + veg prices | automated_cron | High (Story #2 dependency) |
 
-### Tier 4 — Phase 2 candidates (post-Day 90)
+### Tier 2 — Days 28–60 (quarterly macro + first deep-dives)
 
-- DoFE labour migration data
-- OAG audit reports (manual, not scraped)
-- MoF DFIMIS development finance data
-- World Bank International Debt Statistics
-- ADB project disclosures
-- Hansen Global Forest Change (geospatial)
-- ESA WorldCover (geospatial)
-- Land Survey Department cadastral exports (manual)
+| ID | Agency | Dataset | Mode | Priority |
+|----|--------|---------|------|----------|
+| `pdmo-debt-bulletin` | PDMO | Quarterly debt bulletin | manual_upload | High |
+| `nrb-banking-stats` | NRB | Banking & Financial Statistics (quarterly aggregates) | automated_cron | High |
+| `nrb-loans-by-sector` | NRB | Quarterly Economic Bulletin — loans & advances by sector | automated_cron | High |
+| `dofe-labour-migration` | DoFE | Monthly labour permits + airport records | automated_cron | High |
+| `nrb-fdi-bulletin` | NRB | Status of FDI in Nepal (annual) | manual_upload | Medium |
+| `nso-gdp` | NSO | Quarterly GDP estimates | automated_cron | Medium |
+| `ntb-tourism-monthly` | Nepal Tourism Board | Monthly arrivals + receipts | automated_cron | Medium |
+
+### Tier 3 — Days 60–120 (verticals + utilities deepen)
+
+| ID | Agency | Dataset | Mode | Priority |
+|----|--------|---------|------|----------|
+| `coops-regulatory-status` | Department of Cooperatives / Sahakari Bibhag | Regulatory status of cooperatives | manual_upload | High |
+| `oag-audit-reports` | OAG | Audit reports | manual_upload | High |
+| `dpm-public-enterprises-annual` | DPM Office | Public Enterprises Annual Status Reviews (Yellow Books) | manual_upload | High |
+| `moald-crop-production` | MoALD | Seasonal crop production | manual_upload | Medium |
+| `mof-lmbis` | MoF | Line Ministry Budget Information System (federal capex execution) | automated_cron | Medium |
+| `mof-sutra` | MoF | Sub-national Treasury Regulatory Application | automated_cron | Medium |
+| `nnrfc-allocations` | NNRFC | Fiscal transfer allocations | manual_upload | Medium |
+| `ird-revenue-monthly` | IRD | Revenue dashboard | automated_cron | Medium |
+| `nea-generation-monthly` | NEA | Generation + sales monthly bulletins | manual_upload | Medium |
+| `doed-project-pipeline` | DoED | Hydropower licence + project registry | manual_upload | Medium |
+| `npc-project-bank` | NPC | Project Bank / monitoring | manual_upload | Medium |
+
+### Tier 4 — Days 120–365 (the long-tail of Year 1)
+
+| ID | Agency | Dataset | Mode | Priority |
+|----|--------|---------|------|----------|
+| `census-2078-district` | CBS | NPHC 2078 district-level disaggregated data | manual_upload | High (District MRI) |
+| `moe-noc-student-outflow` | Ministry of Education | No Objection Letters for student outflow | manual_upload | Medium |
+| `ird-top-taxpayers` | IRD | Top taxpayers annual disclosure + LTO data | manual_upload | Medium |
+| `oag-lbl-local-audits` | OAG | Local Body audit reports | manual_upload | Medium |
+| `dohs-hmis` | DoHS | Health Management Information System | automated_cron | Medium |
+| `dohs-emis` | CEHRD / DoEd | Education Management Info System | automated_cron | Medium |
+| `mof-budget-redbook` | MoF | Budget Red Book (annual line items) | manual_upload | Medium |
+| `fepb-manpower-companies` | FEPB | Manpower company licences + recruitment ceilings | manual_upload | Medium |
+| `dhm-hydro-met` | DHM | Hydro + meteorology (flood/discharge/precipitation) | automated_cron | Medium |
+| `ndrrma-damage-tally` | NDRRMA | Disaster damage tally | manual_upload | Medium |
+| `customs-exemptions` | Department of Customs | Duty exemption list | manual_upload | Low |
+| `dolm-malpot-stats` | Department of Land Management | Malpot (land transaction) statistics | manual_upload | Low |
+| `un-comtrade` | UN | Comtrade trade-partner data | automated_cron | Low |
+| `nrn-investment-tracker` | NRN-MoF + IBN | NRN investment disclosures | manual_upload | Low |
+| `mof-dfimis` | MoF | Aid Management Platform / DFIMIS | manual_upload | Low |
+
+### Phase 2 (post-Day 365) — `status: paused` registry entries
+
+Per the audit decision, these stay in the registry with `status='paused'` so the doctrine surface tracks them. No parsers planned for Year 1.
+
+| ID | Agency | Why HARD |
+|----|--------|----------|
+| `ocr-company-register` | Office of Company Registrar | Cross-ownership mapping; mostly PDF, no structured API; manual phase needed |
+| `mto-exchange-rates` | IME / Prabhu / Western Union | FX corridor mechanics; fragmented per-MTO scraping |
+| `cib-sectoral-credit` | Credit Information Bureau Nepal | Aggregated sectoral credit; partial public release only |
+| `dols-cadastral` | Department of Land Survey | Cadastral aggregates; Phase-2 |
+| `hansen-gfc` | UMD | Hansen Global Forest Change (geospatial) |
+| `esa-worldcover` | ESA | WorldCover (geospatial) |
+| `icimod-glacier-inventory` | ICIMOD | Glacier inventory (climate exposure reference) |
+| `ecn-results` | Election Commission Nepal | Election results federal/provincial/local |
+| `regional-wholesale-prices` | Pokhara / Birgunj / Itahari | Price-chain breadth |
+
+### Reference-only assets (separate `docs/reference-assets/` track — NOT in `source_registry` table)
+
+These are cited in stories and the Knowledge Base but NOT parsed into `approved_indicator_values`. They live as Markdown profile files at `docs/reference-assets/<asset-id>.md` and get cited via Fact Ledger claims when relevant. Per the audit, light registry shape is NOT used for these; the asset profiles + Fact Ledger citations are enough.
+
+| Asset | Use |
+|-------|-----|
+| MoF Economic Survey (annual) | Macro narrative reference |
+| MoF Budget Speech + Red Book (annual) | Budget Watch reference |
+| NPC 16th Plan (5-yr) | Reference + project pipeline |
+| NLSS (decadal) | Household Ledger reference |
+| NDHS (quinquennial) | Health reference |
+| Agriculture Census (decennial) | Soil Economy reference |
+| DFRS Forest Inventory | Soil Economy reference |
+| IMF Article IV | International benchmark |
+| ADB ADO Nepal section | International benchmark |
+| World Bank WDI | International benchmark |
+| Census 2078 (full survey) | Reference + District MRI source |
 
 ---
 
