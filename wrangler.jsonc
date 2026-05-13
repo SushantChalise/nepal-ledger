@@ -1,0 +1,22 @@
+/**
+ * Wrangler config for Nepal Ledger.
+ * Schema: https://developers.cloudflare.com/workers/wrangler/configuration/
+ * OpenNext adapter docs: https://opennext.js.org/cloudflare
+ *
+ * `account_id` is not a secret. Keys + tokens live in CI / .env.local only.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nepal-ledger",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-05-13",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "account_id": "dd4ba6fa3338515d59fd40112d0f409c",
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+  },
+  "observability": {
+    "enabled": true,
+  },
+}

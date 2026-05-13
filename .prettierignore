@@ -1,0 +1,22 @@
+node_modules/
+.next/
+.open-next/
+.wrangler/
+out/
+build/
+coverage/
+playwright-report/
+test-results/
+pnpm-lock.yaml
+next-env.d.ts
+source-data/
+
+# Hand-curated documentation. Tables, deliberate line breaks, and citation
+# formatting matter — don't let prettier rewrap them.
+docs/
+CLAUDE.md
+README.md
+AGENTS.md
+.github/PULL_REQUEST_TEMPLATE.md
+.github/ISSUE_TEMPLATE/
+.env.example
