@@ -8,6 +8,54 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-05-14 (fifth pass) — Overnight backend burst: schema foundation + Day 11–28 staging
+
+**What changed:** Mother Opus operated autonomously through the night per a user-issued rescope ("complete the backend; wireframes for the front end come in the morning"). 10 squash-merged PRs landed via branch protection, advancing two milestones from `BACKEND_PLAN.md` substantially in one session.
+
+### Milestones advanced
+
+- **Day 4–6 — Schema foundation. Complete.**
+  - `src/lib/errors.ts` (AppError union + `Result<T>`), `src/lib/env.ts` (Zod-validated server + client env), `src/lib/db/safe-query.ts` (SQLSTATE → typed AppError), `src/lib/db/client.ts` (server-only Drizzle + postgres-js singleton), `drizzle.config.ts`.
+  - 13 Drizzle tables under `src/lib/db/schema/`: source_registry, source_documents, parser_runs, parser_errors, indicators, indicator_source_map, indicator_units, staging_indicator_values, approved_indicator_values, data_quality_flags, fact_ledger_claims, fact_ledger_challenges, leads.
+  - First migration generated at `src/lib/db/migrations/0000_0001_initial_schema.sql` — **NOT applied** to the live Supabase (deferred to the user per the no-shared-infra-mutation autonomy rule).
+  - 20 Vitest cases on errors, env, safeQuery.
+
+- **Day 11–28 — Data provenance core. Staged.**
+  - `src/lib/dates/` (Worker A) — BS↔AD wrapper, fiscal-year + period math, `parseReportingPeriod` covering every NRB CMEFs label form, `formatFactLedgerEntry` exact-match for the CALENDAR_AND_PERIODS.md canonical example. 31 tests.
+  - `src/lib/storage/` (Worker B) — content-addressed Supabase Storage wrapper with R2 migration seam. Idempotent on (key, same-hash); Conflict on different-hash. Structural `StorageClientLike` for mocking without `as` casts. 16 tests.
+  - `scrapers/` (Worker C) — Python 3.12 toolchain (uv-compatible), `_common/` shared types/hashing/periods/parser-contract, `nrb_ncpi/parser.py` v0.1.0 emitting 78 rows (26 indicators × 3 geographies) of YoY % change from the existing CMEFs CSV. ruff + mypy --strict clean. 12 pytest cases.
+  - `src/lib/db/repositories/` (Worker D) — typed accessors for source_registry, source_documents, indicators. Every call composes `safeQuery`; every return is `Result<T>`. 23 tests with mocked `db()`.
+  - `src/lib/fact-ledger/` (Worker E) — Zod `ClaimDraftSchema`, derived `ClaimDraft` type, pure `buildClaimDraftFromIndicatorValue` builder. Deterministic; same inputs yield the same citation prose. Provisional-suffix rule per agency string. 6 tests.
+  - `scripts/seed-source-registry.ts` + `docs/sources/*.md` (Worker F) — Tier-1 starter sources (`nrb-cmefs-monthly`, `nrb-ncpi-table`) seed script with `--dry-run` (no DATABASE_URL needed) + full Markdown profiles per SOURCE_REGISTRY.md template.
+
+### Doctrine
+
+- **ADR-0006** — Next.js 16, not 15. Reconciles doctrine with scaffold reality (create-next-app delivered Next 16.2.6; Next 16 supports every feature ADR-0002 enumerates; downgrade would be churn).
+- **ADR-0007** — Diff-cap rule applies to non-test source lines. Codifies the interpretation Workers A/B/C all triggered: 300 lines is a soft target on non-test source; tests, header doc-comments, structural-type interfaces, and Prettier reformatting don't count. Hard ceiling at 500 non-test source lines.
+
+### Verification
+
+- 96 Vitest cases across 9 TS test files, 12 pytest cases on the Python side. CI green on `main` after every merge.
+- `pnpm typecheck` / `lint` / `test --run` / `build` / `drizzle-kit check` / gitleaks — all clean.
+
+### What deliberately did NOT happen
+
+- No migration applied to Supabase.
+- No data loaded into Supabase Storage.
+- No Cloudflare Workers deploy attempted (deploy workflow blocked on user-set secrets — unchanged from Day 1).
+- No Sentry wizard run (interactive; user-only).
+- No frontend code (wireframes pending).
+
+**Why this pass:** The user gave Mother an overnight window with explicit autonomy authorization ("Recscope if needed"). The scope-fence + Result<T> + safeQuery + branch-protection-and-PR-loop discipline from Day 0 held under autonomous execution. The repo is in a state where the next session can spawn the first live ingestion worker the moment the user applies the migration and seeds.
+
+**Plan section affected:** No strategy scope changes. Day 4–6 milestone marked complete. Day 11–28 milestone substantially staged (validation job + first live ingestion are the next concrete deliverables).
+
+**Related:** ADR-0006 (added), ADR-0007 (added). Workers A–F outputs reviewed and merged via PRs #5, #7, #9, #10, #11, #12.
+
+**Backward compatibility:** N/A — every change is additive on a Day-1 project.
+
+---
+
 ## 2026-05-13 (fourth pass) — Pre-bootstrap doctrine reconciliation
 
 **What changed:** Mother Opus's pre-scaffold read of the doctrine surfaced stale references that contradicted the constraint-driven decisions from the third pass. Fixed in a single non-feature commit BEFORE the scaffold lands so the historical record is clean from the first commit forward.
