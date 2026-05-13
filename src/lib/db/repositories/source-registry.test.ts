@@ -42,6 +42,7 @@ const sampleRow: SourceRegistryRow = {
   knownBreakageModes: [],
   confidenceDefault: 'A',
   status: 'active',
+  ingestionMode: 'automated_cron',
   notes: null,
   registeredAt: new Date('2026-01-01T00:00:00.000Z'),
   lastVerifiedAt: null,

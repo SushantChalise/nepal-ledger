@@ -52,6 +52,11 @@ source-data/
 /NRB Current/
 /Stastical Information/
 /Framework/
+# Pre-staged dataset corpus (NRB BFI monthly XLSX + MoF Red/White/Yellow/
+# Agreement/Intergovernmental + Cleaned working dir + Voter DB SQL dumps +
+# Voter DB scrape with credentials). Source documents archived to Supabase
+# Storage during ingestion; raw corpus never committed.
+/Financial Data/
 
 # ─── claude code local config ─────────────────────────────────────
 # Per-machine session state, hooks, settings. Never commit.

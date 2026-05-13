@@ -8,6 +8,13 @@
       "when": 1778693690845,
       "tag": "0000_0001_initial_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778703773099,
+      "tag": "0001_0002_entities_admin_facts",
+      "breakpoints": true
     }
   ]
 }

@@ -11,3 +11,10 @@ export * from './indicators';
 export * from './indicator-values';
 export * from './fact-ledger';
 export * from './leads';
+// Added in migration 0002
+export * from './entities';
+export * from './administrative-units';
+export * from './fiscal-transfers';
+export * from './census-facts';
+export * from './banking-sector-facts';
+export * from './ocr-tracking';
