@@ -59,7 +59,16 @@ jobs:
         if: hashFiles('drizzle.config.ts', 'drizzle.config.js', 'drizzle.config.mjs') != ''
         run: pnpm exec drizzle-kit check
 
+      - name: Install gitleaks
+        # Pinned version. The official gitleaks-action errors on initial pushes
+        # because it tries to compute a diff against the parent of the first
+        # commit (which doesn't exist). Direct invocation against the working
+        # tree is more reliable for our trunk-based model.
+        run: |
+          set -euo pipefail
+          curl -fsSL https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz \
+            | sudo tar -xz -C /usr/local/bin gitleaks
+          gitleaks version
+
       - name: gitleaks (secret scan)
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gitleaks detect --source . --no-banner --redact --exit-code 1 --verbose
