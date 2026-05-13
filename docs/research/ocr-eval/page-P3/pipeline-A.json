@@ -1,0 +1,8188 @@
+{
+  "pipeline": "A",
+  "engine": "surya-ocr",
+  "engine_version": "0.17.1",
+  "dpi": 192,
+  "tile": "flat",
+  "preprocess": "deskew+bilateral+adaptive_threshold",
+  "preprocess_meta": {
+    "skew_deg": 0.0
+  },
+  "elapsed_sec": 350.2,
+  "records": [
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 0,
+      "bbox_page": [
+        1074.0,
+        25.0,
+        1113.0,
+        50.0
+      ],
+      "text": "98",
+      "confidence": 0.8914,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 1,
+      "bbox_page": [
+        1411.0,
+        121.0,
+        1506.0,
+        146.0
+      ],
+      "text": "विशेष अनुदान",
+      "confidence": 0.9986,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 2,
+      "bbox_page": [
+        680.0,
+        122.0,
+        892.0,
+        146.0
+      ],
+      "text": "समानीकरण अनुदान (२६३३१)",
+      "confidence": 0.9992,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 3,
+      "bbox_page": [
+        1111.0,
+        121.0,
+        1207.0,
+        147.0
+      ],
+      "text": "सशर्त अनुदान",
+      "confidence": 0.9814,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 4,
+      "bbox_page": [
+        1883.0,
+        127.0,
+        1923.0,
+        143.0
+      ],
+      "text": "जम्मा",
+      "confidence": 0.9849,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 5,
+      "bbox_page": [
+        1622.0,
+        131.0,
+        1731.0,
+        149.0
+      ],
+      "text": "समपुरक अनुदान",
+      "confidence": 0.9991,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 6,
+      "bbox_page": [
+        332.0,
+        150.0,
+        379.0,
+        170.0
+      ],
+      "text": "शीर्षक",
+      "confidence": 0.9908,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 7,
+      "bbox_page": [
+        1624.0,
+        152.0,
+        1731.0,
+        176.0
+      ],
+      "text": "(पुँजीगत प्रकृति)",
+      "confidence": 0.9958,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 8,
+      "bbox_page": [
+        669.0,
+        159.0,
+        768.0,
+        177.0
+      ],
+      "text": "सवमा आधारित",
+      "confidence": 0.9974,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 9,
+      "bbox_page": [
+        792.0,
+        160.0,
+        890.0,
+        178.0
+      ],
+      "text": "कार्यसम्पादनमा",
+      "confidence": 0.9825,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 10,
+      "bbox_page": [
+        1111.0,
+        158.0,
+        1208.0,
+        180.0
+      ],
+      "text": "पुँजीगत प्रकृति",
+      "confidence": 0.9957,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 11,
+      "bbox_page": [
+        1414.0,
+        158.0,
+        1514.0,
+        182.0
+      ],
+      "text": "पुँजीगत प्रकृति",
+      "confidence": 0.9923,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 12,
+      "bbox_page": [
+        1877.0,
+        158.0,
+        1929.0,
+        182.0
+      ],
+      "text": "पुँजीगत",
+      "confidence": 0.9568,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 13,
+      "bbox_page": [
+        593.0,
+        161.0,
+        646.0,
+        183.0
+      ],
+      "text": "न्युनतम",
+      "confidence": 0.9871,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 14,
+      "bbox_page": [
+        1032.0,
+        161.0,
+        1071.0,
+        181.0
+      ],
+      "text": "चालु",
+      "confidence": 0.6167,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 15,
+      "bbox_page": [
+        1346.0,
+        161.0,
+        1383.0,
+        183.0
+      ],
+      "text": "चालु",
+      "confidence": 0.993,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 16,
+      "bbox_page": [
+        934.0,
+        173.0,
+        974.0,
+        188.0
+      ],
+      "text": "जम्मा",
+      "confidence": 0.991,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 17,
+      "bbox_page": [
+        1250.0,
+        173.0,
+        1292.0,
+        187.0
+      ],
+      "text": "जम्मा",
+      "confidence": 0.9732,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 18,
+      "bbox_page": [
+        1538.0,
+        173.0,
+        1580.0,
+        189.0
+      ],
+      "text": "जम्मा",
+      "confidence": 0.9865,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 19,
+      "bbox_page": [
+        1960.0,
+        169.0,
+        2040.0,
+        193.0
+      ],
+      "text": "कुल जम्मा",
+      "confidence": 0.9871,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 20,
+      "bbox_page": [
+        1792.0,
+        174.0,
+        1828.0,
+        192.0
+      ],
+      "text": "चालु",
+      "confidence": 0.9736,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 21,
+      "bbox_page": [
+        1635.0,
+        179.0,
+        1717.0,
+        196.0
+      ],
+      "text": "(46338)",
+      "confidence": 0.6887,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 22,
+      "bbox_page": [
+        1881.0,
+        183.0,
+        1929.0,
+        203.0
+      ],
+      "text": "प्रकृति",
+      "confidence": 0.9916,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 23,
+      "bbox_page": [
+        783.0,
+        181.0,
+        900.0,
+        206.0
+      ],
+      "text": "आधारित अनुदान",
+      "confidence": 0.9977,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 24,
+      "bbox_page": [
+        1325.0,
+        183.0,
+        1404.0,
+        205.0
+      ],
+      "text": "(56333)",
+      "confidence": 0.475,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 25,
+      "bbox_page": [
+        1012.0,
+        186.0,
+        1089.0,
+        203.0
+      ],
+      "text": "(२६३३२)",
+      "confidence": 0.8723,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 26,
+      "bbox_page": [
+        1118.0,
+        186.0,
+        1200.0,
+        204.0
+      ],
+      "text": "(२६३३६)",
+      "confidence": 0.9322,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 27,
+      "bbox_page": [
+        1421.0,
+        186.0,
+        1505.0,
+        204.0
+      ],
+      "text": "(२६३३७)",
+      "confidence": 0.9432,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 28,
+      "bbox_page": [
+        596.0,
+        187.0,
+        646.0,
+        204.0
+      ],
+      "text": "अनुदान",
+      "confidence": 0.9915,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 29,
+      "bbox_page": [
+        693.0,
+        187.0,
+        744.0,
+        205.0
+      ],
+      "text": "अनुदान",
+      "confidence": 0.9963,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 30,
+      "bbox_page": [
+        144.0,
+        217.0,
+        195.0,
+        234.0
+      ],
+      "text": "म्याग्दी",
+      "confidence": 0.9935,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 31,
+      "bbox_page": [
+        1974.0,
+        217.0,
+        2051.0,
+        237.0
+      ],
+      "text": "7,93,80",
+      "confidence": 0.8629,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 32,
+      "bbox_page": [
+        604.0,
+        219.0,
+        660.0,
+        237.0
+      ],
+      "text": "<b>२४,५०</b>",
+      "confidence": 0.6927,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 33,
+      "bbox_page": [
+        713.0,
+        219.0,
+        770.0,
+        237.0
+      ],
+      "text": "२८,२४",
+      "confidence": 0.9382,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 34,
+      "bbox_page": [
+        865.0,
+        219.0,
+        910.0,
+        237.0
+      ],
+      "text": "3,30",
+      "confidence": 0.9004,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 35,
+      "bbox_page": [
+        938.0,
+        219.0,
+        996.0,
+        236.0
+      ],
+      "text": "५६,०५",
+      "confidence": 0.8015,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 36,
+      "bbox_page": [
+        1025.0,
+        219.0,
+        1100.0,
+        237.0
+      ],
+      "text": "9,80,28",
+      "confidence": 0.8791,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 37,
+      "bbox_page": [
+        1246.0,
+        219.0,
+        1317.0,
+        237.0
+      ],
+      "text": "<b>٩,४٩,</b>ፍ३",
+      "confidence": 0.6628,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 38,
+      "bbox_page": [
+        1472.0,
+        219.0,
+        1518.0,
+        237.0
+      ],
+      "text": "८,४३",
+      "confidence": 0.4316,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 39,
+      "bbox_page": [
+        1547.0,
+        219.0,
+        1595.0,
+        237.0
+      ],
+      "text": "<b>८,५३</b>",
+      "confidence": 0.6336,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 40,
+      "bbox_page": [
+        1783.0,
+        219.0,
+        1856.0,
+        237.0
+      ],
+      "text": "१,९६,२९",
+      "confidence": 0.932,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 41,
+      "bbox_page": [
+        1888.0,
+        219.0,
+        1943.0,
+        236.0
+      ],
+      "text": "99,99",
+      "confidence": 0.4315,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 42,
+      "bbox_page": [
+        1169.0,
+        220.0,
+        1219.0,
+        237.0
+      ],
+      "text": "9,48",
+      "confidence": 0.4248,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 43,
+      "bbox_page": [
+        1387.0,
+        220.0,
+        1408.0,
+        234.0
+      ],
+      "text": "0",
+      "confidence": 0.6397,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 44,
+      "bbox_page": [
+        1711.0,
+        220.0,
+        1755.0,
+        237.0
+      ],
+      "text": "६,९९",
+      "confidence": 0.8259,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 45,
+      "bbox_page": [
+        144.0,
+        249.0,
+        224.0,
+        269.0
+      ],
+      "text": "नगरपालिका",
+      "confidence": 0.994,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 46,
+      "bbox_page": [
+        616.0,
+        253.0,
+        662.0,
+        270.0
+      ],
+      "text": "३,५०",
+      "confidence": 0.8814,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 47,
+      "bbox_page": [
+        722.0,
+        253.0,
+        770.0,
+        270.0
+      ],
+      "text": "७,४४",
+      "confidence": 0.9211,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 48,
+      "bbox_page": [
+        938.0,
+        253.0,
+        994.0,
+        271.0
+      ],
+      "text": "99,६३",
+      "confidence": 0.8665,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 49,
+      "bbox_page": [
+        1042.0,
+        253.0,
+        1102.0,
+        271.0
+      ],
+      "text": "36,36",
+      "confidence": 0.4676,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 50,
+      "bbox_page": [
+        1565.0,
+        253.0,
+        1595.0,
+        270.0
+      ],
+      "text": "६९",
+      "confidence": 0.8353,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 51,
+      "bbox_page": [
+        1726.0,
+        253.0,
+        1755.0,
+        270.0
+      ],
+      "text": "ξX",
+      "confidence": 0.8039,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 52,
+      "bbox_page": [
+        1801.0,
+        253.0,
+        1856.0,
+        270.0
+      ],
+      "text": "80,99",
+      "confidence": 0.6445,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 53,
+      "bbox_page": [
+        1901.0,
+        253.0,
+        1945.0,
+        270.0
+      ],
+      "text": "7,80",
+      "confidence": 0.8744,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 54,
+      "bbox_page": [
+        1991.0,
+        253.0,
+        2049.0,
+        271.0
+      ],
+      "text": "५०,३९",
+      "confidence": 0.9199,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 55,
+      "bbox_page": [
+        879.0,
+        254.0,
+        912.0,
+        270.0
+      ],
+      "text": "Ę۲",
+      "confidence": 0.5101,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 56,
+      "bbox_page": [
+        1169.0,
+        254.0,
+        1215.0,
+        270.0
+      ],
+      "text": "9,0६",
+      "confidence": 0.6753,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 57,
+      "bbox_page": [
+        1262.0,
+        254.0,
+        1319.0,
+        270.0
+      ],
+      "text": "30,83",
+      "confidence": 0.4765,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 58,
+      "bbox_page": [
+        1387.0,
+        254.0,
+        1408.0,
+        268.0
+      ],
+      "text": "0",
+      "confidence": 0.6397,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 59,
+      "bbox_page": [
+        1487.0,
+        254.0,
+        1520.0,
+        270.0
+      ],
+      "text": "६९",
+      "confidence": 0.8909,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 60,
+      "bbox_page": [
+        156.0,
+        283.0,
+        368.0,
+        303.0
+      ],
+      "text": "८०१०४१२६ बेनी नगरपालिका",
+      "confidence": 0.9631,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 61,
+      "bbox_page": [
+        939.0,
+        286.0,
+        994.0,
+        304.0
+      ],
+      "text": "99,६३",
+      "confidence": 0.8654,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 62,
+      "bbox_page": [
+        1043.0,
+        287.0,
+        1102.0,
+        305.0
+      ],
+      "text": "३६,३६",
+      "confidence": 0.7663,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 63,
+      "bbox_page": [
+        1171.0,
+        287.0,
+        1215.0,
+        304.0
+      ],
+      "text": "9,0६",
+      "confidence": 0.645,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 64,
+      "bbox_page": [
+        1264.0,
+        287.0,
+        1317.0,
+        304.0
+      ],
+      "text": "30,87",
+      "confidence": 0.6882,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 65,
+      "bbox_page": [
+        1565.0,
+        287.0,
+        1595.0,
+        304.0
+      ],
+      "text": "٤٩",
+      "confidence": 0.4086,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 66,
+      "bbox_page": [
+        1726.0,
+        287.0,
+        1755.0,
+        304.0
+      ],
+      "text": "ξX",
+      "confidence": 0.6488,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 67,
+      "bbox_page": [
+        1801.0,
+        287.0,
+        1856.0,
+        304.0
+      ],
+      "text": "४७,९९",
+      "confidence": 0.9179,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 68,
+      "bbox_page": [
+        1903.0,
+        287.0,
+        1947.0,
+        304.0
+      ],
+      "text": "7,80",
+      "confidence": 0.4516,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 69,
+      "bbox_page": [
+        1991.0,
+        287.0,
+        2047.0,
+        305.0
+      ],
+      "text": "५०,३९",
+      "confidence": 0.9483,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 70,
+      "bbox_page": [
+        618.0,
+        288.0,
+        662.0,
+        304.0
+      ],
+      "text": "₹,५०",
+      "confidence": 0.7799,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 71,
+      "bbox_page": [
+        722.0,
+        288.0,
+        770.0,
+        304.0
+      ],
+      "text": "७,४४",
+      "confidence": 0.894,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 72,
+      "bbox_page": [
+        879.0,
+        288.0,
+        912.0,
+        304.0
+      ],
+      "text": "६८",
+      "confidence": 0.7533,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 73,
+      "bbox_page": [
+        1487.0,
+        288.0,
+        1518.0,
+        303.0
+      ],
+      "text": "६९",
+      "confidence": 0.8927,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 74,
+      "bbox_page": [
+        1388.0,
+        289.0,
+        1410.0,
+        301.0
+      ],
+      "text": "0",
+      "confidence": 0.5979,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 75,
+      "bbox_page": [
+        142.0,
+        316.0,
+        222.0,
+        336.0
+      ],
+      "text": "गाउँपालिका",
+      "confidence": 0.99,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 76,
+      "bbox_page": [
+        865.0,
+        320.0,
+        910.0,
+        337.0
+      ],
+      "text": "२,६२",
+      "confidence": 0.335,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 77,
+      "bbox_page": [
+        939.0,
+        320.0,
+        996.0,
+        337.0
+      ],
+      "text": "88,83",
+      "confidence": 0.5752,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 78,
+      "bbox_page": [
+        1027.0,
+        320.0,
+        1102.0,
+        337.0
+      ],
+      "text": "9,0३,८८",
+      "confidence": 0.8411,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 79,
+      "bbox_page": [
+        1786.0,
+        320.0,
+        1857.0,
+        338.0
+      ],
+      "text": "१,४८,३०",
+      "confidence": 0.9589,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 80,
+      "bbox_page": [
+        1976.0,
+        320.0,
+        2047.0,
+        338.0
+      ],
+      "text": "9,६३,०9",
+      "confidence": 0.6945,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 81,
+      "bbox_page": [
+        605.0,
+        321.0,
+        660.0,
+        337.0
+      ],
+      "text": "२१,००",
+      "confidence": 0.907,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 82,
+      "bbox_page": [
+        713.0,
+        321.0,
+        768.0,
+        336.0
+      ],
+      "text": "२०,८०",
+      "confidence": 0.8611,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 83,
+      "bbox_page": [
+        1186.0,
+        321.0,
+        1215.0,
+        337.0
+      ],
+      "text": "Ęχ",
+      "confidence": 0.5313,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 84,
+      "bbox_page": [
+        1246.0,
+        321.0,
+        1317.0,
+        338.0
+      ],
+      "text": "9,08,89",
+      "confidence": 0.8983,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 85,
+      "bbox_page": [
+        1388.0,
+        321.0,
+        1408.0,
+        334.0
+      ],
+      "text": "0",
+      "confidence": 0.6451,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 86,
+      "bbox_page": [
+        1472.0,
+        321.0,
+        1520.0,
+        337.0
+      ],
+      "text": "७,८४",
+      "confidence": 0.8616,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 87,
+      "bbox_page": [
+        1549.0,
+        321.0,
+        1596.0,
+        337.0
+      ],
+      "text": "७,८४",
+      "confidence": 0.8811,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 88,
+      "bbox_page": [
+        1711.0,
+        321.0,
+        1755.0,
+        337.0
+      ],
+      "text": "€,38",
+      "confidence": 0.4298,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 89,
+      "bbox_page": [
+        1888.0,
+        321.0,
+        1945.0,
+        337.0
+      ],
+      "text": "የ የ ነ",
+      "confidence": 0.4899,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 90,
+      "bbox_page": [
+        156.0,
+        350.0,
+        386.0,
+        372.0
+      ],
+      "text": "८०१०४३४९ अन्नपूर्ण गाउँपालिका",
+      "confidence": 0.9691,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 91,
+      "bbox_page": [
+        724.0,
+        354.0,
+        768.0,
+        371.0
+      ],
+      "text": "3,59",
+      "confidence": 0.7871,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 92,
+      "bbox_page": [
+        879.0,
+        354.0,
+        907.0,
+        372.0
+      ],
+      "text": "ሂዓ",
+      "confidence": 0.4148,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 93,
+      "bbox_page": [
+        952.0,
+        354.0,
+        996.0,
+        372.0
+      ],
+      "text": "९,३२",
+      "confidence": 0.6967,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 94,
+      "bbox_page": [
+        1043.0,
+        354.0,
+        1104.0,
+        371.0
+      ],
+      "text": "२१,७४",
+      "confidence": 0.9552,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 95,
+      "bbox_page": [
+        1264.0,
+        354.0,
+        1319.0,
+        371.0
+      ],
+      "text": "29,52",
+      "confidence": 0.8416,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 96,
+      "bbox_page": [
+        1551.0,
+        354.0,
+        1595.0,
+        372.0
+      ],
+      "text": "8,83",
+      "confidence": 0.5584,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 97,
+      "bbox_page": [
+        1722.0,
+        354.0,
+        1753.0,
+        371.0
+      ],
+      "text": "९०",
+      "confidence": 0.8326,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 98,
+      "bbox_page": [
+        1801.0,
+        354.0,
+        1857.0,
+        372.0
+      ],
+      "text": "३१,०६",
+      "confidence": 0.7909,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 99,
+      "bbox_page": [
+        1901.0,
+        354.0,
+        1945.0,
+        372.0
+      ],
+      "text": "ሂ,ሄባ",
+      "confidence": 0.6403,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 100,
+      "bbox_page": [
+        1992.0,
+        354.0,
+        2051.0,
+        372.0
+      ],
+      "text": "३६,४७",
+      "confidence": 0.9304,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 101,
+      "bbox_page": [
+        616.0,
+        355.0,
+        664.0,
+        371.0
+      ],
+      "text": "ሂ,00",
+      "confidence": 0.7682,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 102,
+      "bbox_page": [
+        1197.0,
+        355.0,
+        1219.0,
+        369.0
+      ],
+      "text": "ζ",
+      "confidence": 0.7546,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 103,
+      "bbox_page": [
+        1472.0,
+        355.0,
+        1518.0,
+        371.0
+      ],
+      "text": "8,83",
+      "confidence": 0.8166,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 104,
+      "bbox_page": [
+        1388.0,
+        356.0,
+        1410.0,
+        369.0
+      ],
+      "text": "0",
+      "confidence": 0.6517,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 105,
+      "bbox_page": [
+        156.0,
+        385.0,
+        405.0,
+        405.0
+      ],
+      "text": "८०१०४३५० धवलागिरी गाउँपालिका",
+      "confidence": 0.9738,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 106,
+      "bbox_page": [
+        1565.0,
+        388.0,
+        1595.0,
+        406.0
+      ],
+      "text": "Ę٩",
+      "confidence": 0.4506,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 107,
+      "bbox_page": [
+        1994.0,
+        388.0,
+        2053.0,
+        405.0
+      ],
+      "text": "30,58",
+      "confidence": 0.3983,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 108,
+      "bbox_page": [
+        618.0,
+        389.0,
+        662.0,
+        405.0
+      ],
+      "text": "४,००",
+      "confidence": 0.7574,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 109,
+      "bbox_page": [
+        726.0,
+        389.0,
+        770.0,
+        405.0
+      ],
+      "text": "प्रथ,६",
+      "confidence": 0.8088,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 110,
+      "bbox_page": [
+        879.0,
+        389.0,
+        908.0,
+        406.0
+      ],
+      "text": "3⊀",
+      "confidence": 0.3778,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 111,
+      "bbox_page": [
+        952.0,
+        389.0,
+        996.0,
+        405.0
+      ],
+      "text": "९,१०",
+      "confidence": 0.966,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 112,
+      "bbox_page": [
+        1042.0,
+        389.0,
+        1104.0,
+        406.0
+      ],
+      "text": "१९,३२",
+      "confidence": 0.9273,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 113,
+      "bbox_page": [
+        1188.0,
+        389.0,
+        1215.0,
+        405.0
+      ],
+      "text": "33",
+      "confidence": 0.6025,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 114,
+      "bbox_page": [
+        1262.0,
+        389.0,
+        1319.0,
+        406.0
+      ],
+      "text": "१९,६५",
+      "confidence": 0.972,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 115,
+      "bbox_page": [
+        1388.0,
+        389.0,
+        1408.0,
+        402.0
+      ],
+      "text": "0",
+      "confidence": 0.6243,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 116,
+      "bbox_page": [
+        1487.0,
+        389.0,
+        1518.0,
+        405.0
+      ],
+      "text": "६९",
+      "confidence": 0.9149,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 117,
+      "bbox_page": [
+        1708.0,
+        389.0,
+        1755.0,
+        405.0
+      ],
+      "text": "9,80",
+      "confidence": 0.5019,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 118,
+      "bbox_page": [
+        1801.0,
+        389.0,
+        1857.0,
+        405.0
+      ],
+      "text": "२८,४२",
+      "confidence": 0.771,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 119,
+      "bbox_page": [
+        1903.0,
+        389.0,
+        1949.0,
+        406.0
+      ],
+      "text": "7,87",
+      "confidence": 0.3249,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 120,
+      "bbox_page": [
+        156.0,
+        416.0,
+        380.0,
+        440.0
+      ],
+      "text": "८०१०४३४१ मंगला गाउँपालिका",
+      "confidence": 0.9675,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 121,
+      "bbox_page": [
+        618.0,
+        421.0,
+        664.0,
+        437.0
+      ],
+      "text": "3,00",
+      "confidence": 0.7615,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 122,
+      "bbox_page": [
+        1266.0,
+        421.0,
+        1323.0,
+        438.0
+      ],
+      "text": "२०,३७",
+      "confidence": 0.9597,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 123,
+      "bbox_page": [
+        1565.0,
+        421.0,
+        1595.0,
+        438.0
+      ],
+      "text": "٤٩",
+      "confidence": 0.4086,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 124,
+      "bbox_page": [
+        1711.0,
+        421.0,
+        1755.0,
+        438.0
+      ],
+      "text": "2,28",
+      "confidence": 0.4547,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 125,
+      "bbox_page": [
+        1801.0,
+        421.0,
+        1857.0,
+        438.0
+      ],
+      "text": "२८,२६",
+      "confidence": 0.9469,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 126,
+      "bbox_page": [
+        1903.0,
+        421.0,
+        1947.0,
+        439.0
+      ],
+      "text": "२,९३",
+      "confidence": 0.9272,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 127,
+      "bbox_page": [
+        1992.0,
+        421.0,
+        2049.0,
+        439.0
+      ],
+      "text": "३१,१९",
+      "confidence": 0.7618,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 128,
+      "bbox_page": [
+        726.0,
+        422.0,
+        770.0,
+        437.0
+      ],
+      "text": "8,30",
+      "confidence": 0.6475,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 129,
+      "bbox_page": [
+        879.0,
+        422.0,
+        908.0,
+        438.0
+      ],
+      "text": "46",
+      "confidence": 0.4236,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 130,
+      "bbox_page": [
+        954.0,
+        422.0,
+        996.0,
+        438.0
+      ],
+      "text": "७,८९",
+      "confidence": 0.9223,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 131,
+      "bbox_page": [
+        1045.0,
+        422.0,
+        1104.0,
+        438.0
+      ],
+      "text": "२०,३७",
+      "confidence": 0.9469,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 132,
+      "bbox_page": [
+        1197.0,
+        422.0,
+        1217.0,
+        436.0
+      ],
+      "text": "0",
+      "confidence": 0.6447,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 133,
+      "bbox_page": [
+        1388.0,
+        422.0,
+        1410.0,
+        435.0
+      ],
+      "text": "0",
+      "confidence": 0.6579,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 134,
+      "bbox_page": [
+        1487.0,
+        422.0,
+        1520.0,
+        437.0
+      ],
+      "text": "६९",
+      "confidence": 0.8908,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 135,
+      "bbox_page": [
+        156.0,
+        449.0,
+        390.0,
+        473.0
+      ],
+      "text": "८०१०४३५२ मालिका गाउँपालिका",
+      "confidence": 0.9849,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 136,
+      "bbox_page": [
+        954.0,
+        455.0,
+        996.0,
+        471.0
+      ],
+      "text": "こ,こう",
+      "confidence": 0.2518,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 137,
+      "bbox_page": [
+        1264.0,
+        455.0,
+        1319.0,
+        472.0
+      ],
+      "text": "२०,६९",
+      "confidence": 0.9398,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 138,
+      "bbox_page": [
+        1708.0,
+        455.0,
+        1755.0,
+        472.0
+      ],
+      "text": "9,90",
+      "confidence": 0.9658,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 139,
+      "bbox_page": [
+        1801.0,
+        455.0,
+        1857.0,
+        473.0
+      ],
+      "text": "२९,४६",
+      "confidence": 0.9308,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 140,
+      "bbox_page": [
+        1901.0,
+        455.0,
+        1947.0,
+        473.0
+      ],
+      "text": "१,९६",
+      "confidence": 0.9167,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 141,
+      "bbox_page": [
+        1992.0,
+        455.0,
+        2051.0,
+        473.0
+      ],
+      "text": "39,82",
+      "confidence": 0.4147,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 142,
+      "bbox_page": [
+        618.0,
+        456.0,
+        664.0,
+        472.0
+      ],
+      "text": "₹,५०",
+      "confidence": 0.7224,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 143,
+      "bbox_page": [
+        726.0,
+        456.0,
+        770.0,
+        472.0
+      ],
+      "text": "४,७४",
+      "confidence": 0.9068,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 144,
+      "bbox_page": [
+        879.0,
+        456.0,
+        908.0,
+        472.0
+      ],
+      "text": "<b>4</b> C",
+      "confidence": 0.4173,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 145,
+      "bbox_page": [
+        1043.0,
+        456.0,
+        1098.0,
+        473.0
+      ],
+      "text": "२०,६३",
+      "confidence": 0.9548,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 146,
+      "bbox_page": [
+        1197.0,
+        456.0,
+        1217.0,
+        472.0
+      ],
+      "text": "Ę",
+      "confidence": 0.6839,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 147,
+      "bbox_page": [
+        1487.0,
+        456.0,
+        1518.0,
+        470.0
+      ],
+      "text": "೯೦",
+      "confidence": 0.3167,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 148,
+      "bbox_page": [
+        1565.0,
+        456.0,
+        1595.0,
+        470.0
+      ],
+      "text": "50",
+      "confidence": 0.3691,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 149,
+      "bbox_page": [
+        1387.0,
+        457.0,
+        1410.0,
+        470.0
+      ],
+      "text": "0",
+      "confidence": 0.6563,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 150,
+      "bbox_page": [
+        156.0,
+        483.0,
+        387.0,
+        508.0
+      ],
+      "text": "८०१०४३५३ रघुगंगा गाउँपालिका",
+      "confidence": 0.9701,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 151,
+      "bbox_page": [
+        879.0,
+        488.0,
+        908.0,
+        505.0
+      ],
+      "text": "५९",
+      "confidence": 0.4813,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 152,
+      "bbox_page": [
+        1801.0,
+        488.0,
+        1857.0,
+        506.0
+      ],
+      "text": "39,90",
+      "confidence": 0.879,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 153,
+      "bbox_page": [
+        1994.0,
+        488.0,
+        2047.0,
+        506.0
+      ],
+      "text": "<b>३३,०९</b>",
+      "confidence": 0.7151,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 154,
+      "bbox_page": [
+        618.0,
+        489.0,
+        662.0,
+        505.0
+      ],
+      "text": "<b>४,५०</b>",
+      "confidence": 0.6305,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 155,
+      "bbox_page": [
+        724.0,
+        489.0,
+        770.0,
+        505.0
+      ],
+      "text": "४,१९",
+      "confidence": 0.9546,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 156,
+      "bbox_page": [
+        952.0,
+        489.0,
+        1000.0,
+        505.0
+      ],
+      "text": "९,२८",
+      "confidence": 0.9373,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 157,
+      "bbox_page": [
+        1043.0,
+        489.0,
+        1102.0,
+        506.0
+      ],
+      "text": "२१,८२",
+      "confidence": 0.9452,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 158,
+      "bbox_page": [
+        1199.0,
+        489.0,
+        1213.0,
+        503.0
+      ],
+      "text": "Ę",
+      "confidence": 0.5567,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 159,
+      "bbox_page": [
+        1264.0,
+        489.0,
+        1321.0,
+        505.0
+      ],
+      "text": "२१,८८",
+      "confidence": 0.3703,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 160,
+      "bbox_page": [
+        1387.0,
+        489.0,
+        1408.0,
+        503.0
+      ],
+      "text": "0",
+      "confidence": 0.5923,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 161,
+      "bbox_page": [
+        1472.0,
+        489.0,
+        1520.0,
+        505.0
+      ],
+      "text": "१,२३",
+      "confidence": 0.8566,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 162,
+      "bbox_page": [
+        1547.0,
+        489.0,
+        1595.0,
+        506.0
+      ],
+      "text": "9,२३",
+      "confidence": 0.7257,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 163,
+      "bbox_page": [
+        1726.0,
+        489.0,
+        1755.0,
+        503.0
+      ],
+      "text": "ଓଠ",
+      "confidence": 0.6059,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 164,
+      "bbox_page": [
+        1899.0,
+        489.0,
+        1949.0,
+        506.0
+      ],
+      "text": "१,९९",
+      "confidence": 0.9525,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 165,
+      "bbox_page": [
+        604.0,
+        522.0,
+        660.0,
+        540.0
+      ],
+      "text": "<b>३७,२</b>४",
+      "confidence": 0.7287,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 166,
+      "bbox_page": [
+        713.0,
+        522.0,
+        768.0,
+        540.0
+      ],
+      "text": "<b>ሂ</b>ፍ,ሄ६",
+      "confidence": 0.7602,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 167,
+      "bbox_page": [
+        863.0,
+        522.0,
+        917.0,
+        540.0
+      ],
+      "text": "ሂ.ዓ ३",
+      "confidence": 0.6004,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 168,
+      "bbox_page": [
+        916.0,
+        522.0,
+        996.0,
+        539.0
+      ],
+      "text": "ባ,୦୦,ፍሄ",
+      "confidence": 0.7824,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 169,
+      "bbox_page": [
+        1027.0,
+        522.0,
+        1098.0,
+        540.0
+      ],
+      "text": "₹,९७,४३",
+      "confidence": 0.5282,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 170,
+      "bbox_page": [
+        1158.0,
+        522.0,
+        1215.0,
+        540.0
+      ],
+      "text": "२८,७१",
+      "confidence": 0.9081,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 171,
+      "bbox_page": [
+        1246.0,
+        522.0,
+        1323.0,
+        540.0
+      ],
+      "text": "₹,२६,9४",
+      "confidence": 0.8092,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 172,
+      "bbox_page": [
+        1348.0,
+        522.0,
+        1403.0,
+        539.0
+      ],
+      "text": "ባ0,ፍፃ",
+      "confidence": 0.6705,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 173,
+      "bbox_page": [
+        1536.0,
+        522.0,
+        1593.0,
+        539.0
+      ],
+      "text": "92,59",
+      "confidence": 0.8067,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 174,
+      "bbox_page": [
+        1697.0,
+        522.0,
+        1753.0,
+        539.0
+      ],
+      "text": "9ሂ,ሂ७",
+      "confidence": 0.5479,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 175,
+      "bbox_page": [
+        1786.0,
+        522.0,
+        1859.0,
+        540.0
+      ],
+      "text": "<b>४,०९</b>,०८",
+      "confidence": 0.8057,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 176,
+      "bbox_page": [
+        1888.0,
+        522.0,
+        1950.0,
+        540.0
+      ],
+      "text": "४६,२८",
+      "confidence": 0.9782,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 177,
+      "bbox_page": [
+        1976.0,
+        522.0,
+        2049.0,
+        540.0
+      ],
+      "text": "8,88,36",
+      "confidence": 0.8767,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 178,
+      "bbox_page": [
+        146.0,
+        522.0,
+        198.0,
+        544.0
+      ],
+      "text": "बागुलङ",
+      "confidence": 0.9838,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 179,
+      "bbox_page": [
+        1472.0,
+        523.0,
+        1520.0,
+        539.0
+      ],
+      "text": "२,००",
+      "confidence": 0.5541,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 180,
+      "bbox_page": [
+        144.0,
+        552.0,
+        224.0,
+        572.0
+      ],
+      "text": "नगरपालिका",
+      "confidence": 0.994,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 181,
+      "bbox_page": [
+        866.0,
+        556.0,
+        910.0,
+        574.0
+      ],
+      "text": "२,२५",
+      "confidence": 0.905,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 182,
+      "bbox_page": [
+        1246.0,
+        556.0,
+        1317.0,
+        574.0
+      ],
+      "text": "9,52,88",
+      "confidence": 0.6355,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 183,
+      "bbox_page": [
+        1786.0,
+        556.0,
+        1857.0,
+        574.0
+      ],
+      "text": "२,११,९०",
+      "confidence": 0.9607,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 184,
+      "bbox_page": [
+        1888.0,
+        556.0,
+        1949.0,
+        574.0
+      ],
+      "text": "39,95",
+      "confidence": 0.896,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 185,
+      "bbox_page": [
+        1976.0,
+        556.0,
+        2051.0,
+        574.0
+      ],
+      "text": "₹,83,05",
+      "confidence": 0.4525,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 186,
+      "bbox_page": [
+        604.0,
+        557.0,
+        660.0,
+        574.0
+      ],
+      "text": "१६,२४",
+      "confidence": 0.9335,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 187,
+      "bbox_page": [
+        713.0,
+        557.0,
+        770.0,
+        574.0
+      ],
+      "text": "३०,१५",
+      "confidence": 0.917,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 188,
+      "bbox_page": [
+        939.0,
+        557.0,
+        996.0,
+        573.0
+      ],
+      "text": "४८,६५",
+      "confidence": 0.8538,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 189,
+      "bbox_page": [
+        1027.0,
+        557.0,
+        1102.0,
+        574.0
+      ],
+      "text": "ባ,ሂሩ,२९",
+      "confidence": 0.6899,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 190,
+      "bbox_page": [
+        1158.0,
+        557.0,
+        1215.0,
+        574.0
+      ],
+      "text": "२४,७०",
+      "confidence": 0.9368,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 191,
+      "bbox_page": [
+        1363.0,
+        557.0,
+        1408.0,
+        573.0
+      ],
+      "text": "४,९६",
+      "confidence": 0.693,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 192,
+      "bbox_page": [
+        1487.0,
+        557.0,
+        1518.0,
+        572.0
+      ],
+      "text": "९०",
+      "confidence": 0.7108,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 193,
+      "bbox_page": [
+        1545.0,
+        557.0,
+        1595.0,
+        573.0
+      ],
+      "text": "५,८६",
+      "confidence": 0.7994,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 194,
+      "bbox_page": [
+        1710.0,
+        557.0,
+        1755.0,
+        573.0
+      ],
+      "text": "<b>ኢ</b>,ኢ =",
+      "confidence": 0.6263,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 195,
+      "bbox_page": [
+        158.0,
+        588.0,
+        392.0,
+        605.0
+      ],
+      "text": "८०१०४१२२ गल्कोट नगरपालिका",
+      "confidence": 0.9537,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 196,
+      "bbox_page": [
+        724.0,
+        589.0,
+        770.0,
+        606.0
+      ],
+      "text": "६,९६",
+      "confidence": 0.5755,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 197,
+      "bbox_page": [
+        939.0,
+        589.0,
+        994.0,
+        606.0
+      ],
+      "text": "99,49",
+      "confidence": 0.9679,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 198,
+      "bbox_page": [
+        1043.0,
+        589.0,
+        1100.0,
+        607.0
+      ],
+      "text": "<b>३६,</b>५३",
+      "confidence": 0.7747,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 199,
+      "bbox_page": [
+        1262.0,
+        589.0,
+        1317.0,
+        606.0
+      ],
+      "text": "३९,०५",
+      "confidence": 0.9085,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 200,
+      "bbox_page": [
+        1363.0,
+        589.0,
+        1408.0,
+        606.0
+      ],
+      "text": "٩,३६",
+      "confidence": 0.7347,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 201,
+      "bbox_page": [
+        1547.0,
+        589.0,
+        1595.0,
+        606.0
+      ],
+      "text": "9,३६",
+      "confidence": 0.7905,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 202,
+      "bbox_page": [
+        1801.0,
+        589.0,
+        1856.0,
+        606.0
+      ],
+      "text": "88,80",
+      "confidence": 0.499,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 203,
+      "bbox_page": [
+        1901.0,
+        589.0,
+        1949.0,
+        606.0
+      ],
+      "text": "४,०२",
+      "confidence": 0.9056,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 204,
+      "bbox_page": [
+        1991.0,
+        589.0,
+        2051.0,
+        607.0
+      ],
+      "text": "५३,४२",
+      "confidence": 0.862,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 205,
+      "bbox_page": [
+        616.0,
+        590.0,
+        664.0,
+        605.0
+      ],
+      "text": "8,00",
+      "confidence": 0.7273,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 206,
+      "bbox_page": [
+        879.0,
+        590.0,
+        908.0,
+        606.0
+      ],
+      "text": "ሂሂ",
+      "confidence": 0.5229,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 207,
+      "bbox_page": [
+        1173.0,
+        590.0,
+        1217.0,
+        607.0
+      ],
+      "text": "२,५२",
+      "confidence": 0.9548,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 208,
+      "bbox_page": [
+        1708.0,
+        590.0,
+        1755.0,
+        606.0
+      ],
+      "text": "१,५०",
+      "confidence": 0.9156,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 209,
+      "bbox_page": [
+        1500.0,
+        591.0,
+        1520.0,
+        604.0
+      ],
+      "text": "0",
+      "confidence": 0.6249,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 210,
+      "bbox_page": [
+        156.0,
+        619.0,
+        383.0,
+        639.0
+      ],
+      "text": "८०१०४१२३ जैमिनी नगरपालिका",
+      "confidence": 0.9209,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 211,
+      "bbox_page": [
+        939.0,
+        623.0,
+        994.0,
+        640.0
+      ],
+      "text": "99,90",
+      "confidence": 0.9336,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 212,
+      "bbox_page": [
+        1549.0,
+        623.0,
+        1595.0,
+        641.0
+      ],
+      "text": "9,३0",
+      "confidence": 0.5247,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 213,
+      "bbox_page": [
+        1992.0,
+        623.0,
+        2051.0,
+        641.0
+      ],
+      "text": "४६,७८",
+      "confidence": 0.8732,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 214,
+      "bbox_page": [
+        618.0,
+        624.0,
+        662.0,
+        639.0
+      ],
+      "text": "3.⊍પ્",
+      "confidence": 0.6575,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 215,
+      "bbox_page": [
+        726.0,
+        624.0,
+        771.0,
+        639.0
+      ],
+      "text": ", ଓଓ",
+      "confidence": 0.364,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 216,
+      "bbox_page": [
+        879.0,
+        624.0,
+        910.0,
+        640.0
+      ],
+      "text": "<b>4</b> 5",
+      "confidence": 0.3858,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 217,
+      "bbox_page": [
+        1173.0,
+        624.0,
+        1219.0,
+        640.0
+      ],
+      "text": "₹,₹",
+      "confidence": 0.7046,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 218,
+      "bbox_page": [
+        1264.0,
+        624.0,
+        1315.0,
+        641.0
+      ],
+      "text": "<b>૪</b>₹,૪૧",
+      "confidence": 0.7354,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 219,
+      "bbox_page": [
+        1363.0,
+        624.0,
+        1410.0,
+        640.0
+      ],
+      "text": "৭,३০",
+      "confidence": 0.6674,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 220,
+      "bbox_page": [
+        1726.0,
+        624.0,
+        1755.0,
+        639.0
+      ],
+      "text": "९७",
+      "confidence": 0.8603,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 221,
+      "bbox_page": [
+        1801.0,
+        624.0,
+        1857.0,
+        641.0
+      ],
+      "text": "४२,४७",
+      "confidence": 0.8404,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 222,
+      "bbox_page": [
+        1903.0,
+        624.0,
+        1945.0,
+        641.0
+      ],
+      "text": "8,39",
+      "confidence": 0.439,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 223,
+      "bbox_page": [
+        1043.0,
+        625.0,
+        1102.0,
+        639.0
+      ],
+      "text": "80,0G",
+      "confidence": 0.2837,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 224,
+      "bbox_page": [
+        1500.0,
+        625.0,
+        1520.0,
+        638.0
+      ],
+      "text": "0",
+      "confidence": 0.6249,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 225,
+      "bbox_page": [
+        158.0,
+        655.0,
+        401.0,
+        673.0
+      ],
+      "text": "८०१०४१२४ ढोरपाटन नगरपालिका",
+      "confidence": 0.9596,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 226,
+      "bbox_page": [
+        724.0,
+        657.0,
+        768.0,
+        674.0
+      ],
+      "text": "५,६१",
+      "confidence": 0.7002,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 227,
+      "bbox_page": [
+        939.0,
+        657.0,
+        996.0,
+        673.0
+      ],
+      "text": "90,86",
+      "confidence": 0.7921,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 228,
+      "bbox_page": [
+        1171.0,
+        657.0,
+        1217.0,
+        674.0
+      ],
+      "text": "9,30",
+      "confidence": 0.7489,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 229,
+      "bbox_page": [
+        1547.0,
+        657.0,
+        1595.0,
+        674.0
+      ],
+      "text": "१,९०",
+      "confidence": 0.8691,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 230,
+      "bbox_page": [
+        1801.0,
+        657.0,
+        1856.0,
+        674.0
+      ],
+      "text": "३८,५६",
+      "confidence": 0.9347,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 231,
+      "bbox_page": [
+        1903.0,
+        657.0,
+        1949.0,
+        674.0
+      ],
+      "text": "२,९७",
+      "confidence": 0.9462,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 232,
+      "bbox_page": [
+        1992.0,
+        657.0,
+        2049.0,
+        675.0
+      ],
+      "text": "४१,५३",
+      "confidence": 0.8687,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 233,
+      "bbox_page": [
+        618.0,
+        658.0,
+        662.0,
+        674.0
+      ],
+      "text": "<b>४,५०</b>",
+      "confidence": 0.6305,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 234,
+      "bbox_page": [
+        879.0,
+        658.0,
+        908.0,
+        674.0
+      ],
+      "text": "ሂ६",
+      "confidence": 0.4565,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 235,
+      "bbox_page": [
+        1043.0,
+        658.0,
+        1100.0,
+        674.0
+      ],
+      "text": "२६,८९",
+      "confidence": 0.9808,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 236,
+      "bbox_page": [
+        1264.0,
+        658.0,
+        1317.0,
+        674.0
+      ],
+      "text": "२८,०९",
+      "confidence": 0.9666,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 237,
+      "bbox_page": [
+        1363.0,
+        658.0,
+        1410.0,
+        673.0
+      ],
+      "text": "9,00",
+      "confidence": 0.7224,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 238,
+      "bbox_page": [
+        1487.0,
+        658.0,
+        1518.0,
+        673.0
+      ],
+      "text": "९०",
+      "confidence": 0.8186,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 239,
+      "bbox_page": [
+        1726.0,
+        658.0,
+        1755.0,
+        672.0
+      ],
+      "text": "೯७",
+      "confidence": 0.3642,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 240,
+      "bbox_page": [
+        156.0,
+        688.0,
+        388.0,
+        708.0
+      ],
+      "text": "६०१०४१२४ बाग्लुङ नगरपालिका",
+      "confidence": 0.9548,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 241,
+      "bbox_page": [
+        879.0,
+        690.0,
+        908.0,
+        707.0
+      ],
+      "text": "ሂ६",
+      "confidence": 0.7143,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 242,
+      "bbox_page": [
+        939.0,
+        690.0,
+        996.0,
+        708.0
+      ],
+      "text": "१४,३७",
+      "confidence": 0.8333,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 243,
+      "bbox_page": [
+        1158.0,
+        690.0,
+        1217.0,
+        707.0
+      ],
+      "text": "१७,६४",
+      "confidence": 0.9042,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 244,
+      "bbox_page": [
+        1262.0,
+        690.0,
+        1319.0,
+        707.0
+      ],
+      "text": "७२,४४",
+      "confidence": 0.9726,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 245,
+      "bbox_page": [
+        1363.0,
+        690.0,
+        1410.0,
+        707.0
+      ],
+      "text": "٩,३٥",
+      "confidence": 0.4322,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 246,
+      "bbox_page": [
+        1549.0,
+        690.0,
+        1595.0,
+        707.0
+      ],
+      "text": "9,30",
+      "confidence": 0.489,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 247,
+      "bbox_page": [
+        1711.0,
+        690.0,
+        1755.0,
+        707.0
+      ],
+      "text": "2,28",
+      "confidence": 0.4547,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 248,
+      "bbox_page": [
+        1801.0,
+        690.0,
+        1857.0,
+        707.0
+      ],
+      "text": "७१,४७",
+      "confidence": 0.6493,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 249,
+      "bbox_page": [
+        1888.0,
+        690.0,
+        1945.0,
+        707.0
+      ],
+      "text": "१९,८८",
+      "confidence": 0.9524,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 250,
+      "bbox_page": [
+        1991.0,
+        690.0,
+        2047.0,
+        707.0
+      ],
+      "text": "९१,३४",
+      "confidence": 0.9276,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 251,
+      "bbox_page": [
+        618.0,
+        691.0,
+        662.0,
+        706.0
+      ],
+      "text": "8,00",
+      "confidence": 0.7618,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 252,
+      "bbox_page": [
+        713.0,
+        691.0,
+        768.0,
+        707.0
+      ],
+      "text": "१०,८१",
+      "confidence": 0.9195,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 253,
+      "bbox_page": [
+        1042.0,
+        691.0,
+        1100.0,
+        707.0
+      ],
+      "text": "५४,८०",
+      "confidence": 0.9391,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 254,
+      "bbox_page": [
+        1500.0,
+        692.0,
+        1520.0,
+        705.0
+      ],
+      "text": "0",
+      "confidence": 0.6249,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 255,
+      "bbox_page": [
+        146.0,
+        721.0,
+        222.0,
+        739.0
+      ],
+      "text": "गाउँपालिका",
+      "confidence": 0.995,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 256,
+      "bbox_page": [
+        1027.0,
+        724.0,
+        1100.0,
+        742.0
+      ],
+      "text": "ባ,३९,१४",
+      "confidence": 0.7569,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 257,
+      "bbox_page": [
+        1978.0,
+        724.0,
+        2053.0,
+        742.0
+      ],
+      "text": "२,१२,२८",
+      "confidence": 0.8621,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 258,
+      "bbox_page": [
+        604.0,
+        725.0,
+        660.0,
+        741.0
+      ],
+      "text": "२१,००",
+      "confidence": 0.883,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 259,
+      "bbox_page": [
+        713.0,
+        725.0,
+        768.0,
+        741.0
+      ],
+      "text": "२८,३१",
+      "confidence": 0.9438,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 260,
+      "bbox_page": [
+        865.0,
+        725.0,
+        912.0,
+        741.0
+      ],
+      "text": "7,55",
+      "confidence": 0.2961,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 261,
+      "bbox_page": [
+        939.0,
+        725.0,
+        996.0,
+        742.0
+      ],
+      "text": "५२,१९",
+      "confidence": 0.8979,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 262,
+      "bbox_page": [
+        1171.0,
+        725.0,
+        1215.0,
+        741.0
+      ],
+      "text": "<b>୪,</b>୦૧",
+      "confidence": 0.5213,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 263,
+      "bbox_page": [
+        1246.0,
+        725.0,
+        1317.0,
+        742.0
+      ],
+      "text": "<b>ዓ,</b>४३,9ҳ",
+      "confidence": 0.6803,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 264,
+      "bbox_page": [
+        1363.0,
+        725.0,
+        1407.0,
+        741.0
+      ],
+      "text": "ሂ,ፍሂ",
+      "confidence": 0.6488,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 265,
+      "bbox_page": [
+        1472.0,
+        725.0,
+        1520.0,
+        741.0
+      ],
+      "text": "9,90",
+      "confidence": 0.9125,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 266,
+      "bbox_page": [
+        1551.0,
+        725.0,
+        1595.0,
+        742.0
+      ],
+      "text": "६,९५",
+      "confidence": 0.9182,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 267,
+      "bbox_page": [
+        1710.0,
+        725.0,
+        1755.0,
+        741.0
+      ],
+      "text": "9,99",
+      "confidence": 0.4985,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 268,
+      "bbox_page": [
+        1784.0,
+        725.0,
+        1857.0,
+        742.0
+      ],
+      "text": "<b>ባ,</b>९७,૧<b>୮</b>",
+      "confidence": 0.6922,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 269,
+      "bbox_page": [
+        1888.0,
+        725.0,
+        1945.0,
+        741.0
+      ],
+      "text": "ባሂ,ባ0",
+      "confidence": 0.6777,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 270,
+      "bbox_page": [
+        156.0,
+        754.0,
+        403.0,
+        774.0
+      ],
+      "text": "८०१०४३४३ काठेखोला गाउँपालिका",
+      "confidence": 0.9808,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 271,
+      "bbox_page": [
+        618.0,
+        757.0,
+        662.0,
+        774.0
+      ],
+      "text": "<b>3,2</b>4",
+      "confidence": 0.4938,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 272,
+      "bbox_page": [
+        722.0,
+        757.0,
+        770.0,
+        774.0
+      ],
+      "text": "५,९६",
+      "confidence": 0.8594,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 273,
+      "bbox_page": [
+        879.0,
+        757.0,
+        908.0,
+        774.0
+      ],
+      "text": "ሂዓ",
+      "confidence": 0.5512,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 274,
+      "bbox_page": [
+        1042.0,
+        757.0,
+        1104.0,
+        774.0
+      ],
+      "text": "₹9,9₹",
+      "confidence": 0.8279,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 275,
+      "bbox_page": [
+        1261.0,
+        757.0,
+        1321.0,
+        774.0
+      ],
+      "text": "<b>३२,</b>५२",
+      "confidence": 0.771,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 276,
+      "bbox_page": [
+        1547.0,
+        757.0,
+        1595.0,
+        774.0
+      ],
+      "text": "9,90",
+      "confidence": 0.9141,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 277,
+      "bbox_page": [
+        1708.0,
+        757.0,
+        1755.0,
+        774.0
+      ],
+      "text": "9,39",
+      "confidence": 0.8463,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 278,
+      "bbox_page": [
+        1801.0,
+        757.0,
+        1857.0,
+        774.0
+      ],
+      "text": "४०,८४",
+      "confidence": 0.7124,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 279,
+      "bbox_page": [
+        1901.0,
+        757.0,
+        1945.0,
+        775.0
+      ],
+      "text": "३,७१",
+      "confidence": 0.9197,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 280,
+      "bbox_page": [
+        1992.0,
+        757.0,
+        2049.0,
+        775.0
+      ],
+      "text": "४४,५५",
+      "confidence": 0.9235,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 281,
+      "bbox_page": [
+        952.0,
+        758.0,
+        996.0,
+        774.0
+      ],
+      "text": "९,७२",
+      "confidence": 0.9194,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 282,
+      "bbox_page": [
+        1171.0,
+        758.0,
+        1215.0,
+        774.0
+      ],
+      "text": "9,80",
+      "confidence": 0.5489,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 283,
+      "bbox_page": [
+        1385.0,
+        758.0,
+        1408.0,
+        772.0
+      ],
+      "text": "0",
+      "confidence": 0.6067,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 284,
+      "bbox_page": [
+        1472.0,
+        758.0,
+        1520.0,
+        774.0
+      ],
+      "text": "9,90",
+      "confidence": 0.7842,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 285,
+      "bbox_page": [
+        158.0,
+        789.0,
+        410.0,
+        807.0
+      ],
+      "text": "८०१०४३४४ तमानखोला गाउँपालिका",
+      "confidence": 0.9793,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 286,
+      "bbox_page": [
+        1992.0,
+        791.0,
+        2053.0,
+        809.0
+      ],
+      "text": "₹0,३४",
+      "confidence": 0.7764,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 287,
+      "bbox_page": [
+        618.0,
+        792.0,
+        664.0,
+        809.0
+      ],
+      "text": "₹,२५",
+      "confidence": 0.7365,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 288,
+      "bbox_page": [
+        726.0,
+        792.0,
+        770.0,
+        808.0
+      ],
+      "text": "3,24",
+      "confidence": 0.8067,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 289,
+      "bbox_page": [
+        879.0,
+        792.0,
+        912.0,
+        808.0
+      ],
+      "text": "ΧX",
+      "confidence": 0.441,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 290,
+      "bbox_page": [
+        954.0,
+        792.0,
+        998.0,
+        807.0
+      ],
+      "text": "<b>9.0</b>8",
+      "confidence": 0.5109,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 291,
+      "bbox_page": [
+        1042.0,
+        792.0,
+        1102.0,
+        809.0
+      ],
+      "text": "99,४५",
+      "confidence": 0.3952,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 292,
+      "bbox_page": [
+        1186.0,
+        792.0,
+        1215.0,
+        808.0
+      ],
+      "text": "30",
+      "confidence": 0.4864,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 293,
+      "bbox_page": [
+        1261.0,
+        792.0,
+        1319.0,
+        809.0
+      ],
+      "text": "৭৭,७४",
+      "confidence": 0.8606,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 294,
+      "bbox_page": [
+        1377.0,
+        792.0,
+        1407.0,
+        807.0
+      ],
+      "text": "پووا",
+      "confidence": 0.2878,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 295,
+      "bbox_page": [
+        1565.0,
+        792.0,
+        1595.0,
+        808.0
+      ],
+      "text": "ĲΥ",
+      "confidence": 0.2255,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 296,
+      "bbox_page": [
+        1722.0,
+        792.0,
+        1753.0,
+        806.0
+      ],
+      "text": "೯೦",
+      "confidence": 0.3533,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 297,
+      "bbox_page": [
+        1801.0,
+        792.0,
+        1857.0,
+        809.0
+      ],
+      "text": "१९,२४",
+      "confidence": 0.9658,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 298,
+      "bbox_page": [
+        1901.0,
+        792.0,
+        1949.0,
+        809.0
+      ],
+      "text": "9,90",
+      "confidence": 0.7545,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 299,
+      "bbox_page": [
+        1500.0,
+        793.0,
+        1520.0,
+        806.0
+      ],
+      "text": "0",
+      "confidence": 0.6249,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 300,
+      "bbox_page": [
+        156.0,
+        819.0,
+        401.0,
+        843.0
+      ],
+      "text": "८०१०४३४५ ताराखोला गाउँपालिका",
+      "confidence": 0.9803,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 301,
+      "bbox_page": [
+        618.0,
+        825.0,
+        664.0,
+        842.0
+      ],
+      "text": "3,40",
+      "confidence": 0.7943,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 302,
+      "bbox_page": [
+        726.0,
+        825.0,
+        768.0,
+        842.0
+      ],
+      "text": "3,89",
+      "confidence": 0.4317,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 303,
+      "bbox_page": [
+        954.0,
+        825.0,
+        996.0,
+        842.0
+      ],
+      "text": "6,33",
+      "confidence": 0.2386,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 304,
+      "bbox_page": [
+        1549.0,
+        825.0,
+        1595.0,
+        842.0
+      ],
+      "text": "१,०५",
+      "confidence": 0.8421,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 305,
+      "bbox_page": [
+        1706.0,
+        825.0,
+        1755.0,
+        842.0
+      ],
+      "text": "१,५०",
+      "confidence": 0.8805,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 306,
+      "bbox_page": [
+        1801.0,
+        825.0,
+        1857.0,
+        842.0
+      ],
+      "text": "<b>२३,९</b>४",
+      "confidence": 0.7845,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 307,
+      "bbox_page": [
+        1903.0,
+        825.0,
+        1949.0,
+        843.0
+      ],
+      "text": "२,५०",
+      "confidence": 0.9373,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 308,
+      "bbox_page": [
+        1994.0,
+        825.0,
+        2049.0,
+        843.0
+      ],
+      "text": "२६,४५",
+      "confidence": 0.9488,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 309,
+      "bbox_page": [
+        881.0,
+        826.0,
+        910.0,
+        842.0
+      ],
+      "text": "85",
+      "confidence": 0.6473,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 310,
+      "bbox_page": [
+        1042.0,
+        826.0,
+        1102.0,
+        843.0
+      ],
+      "text": "१४,४७",
+      "confidence": 0.8661,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 311,
+      "bbox_page": [
+        1171.0,
+        826.0,
+        1217.0,
+        842.0
+      ],
+      "text": "9,00",
+      "confidence": 0.6264,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 312,
+      "bbox_page": [
+        1261.0,
+        826.0,
+        1321.0,
+        843.0
+      ],
+      "text": "१६,५७",
+      "confidence": 0.9562,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 313,
+      "bbox_page": [
+        1363.0,
+        826.0,
+        1407.0,
+        842.0
+      ],
+      "text": "१,०५",
+      "confidence": 0.8719,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 314,
+      "bbox_page": [
+        1500.0,
+        826.0,
+        1520.0,
+        840.0
+      ],
+      "text": "0",
+      "confidence": 0.6616,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 315,
+      "bbox_page": [
+        158.0,
+        856.0,
+        403.0,
+        874.0
+      ],
+      "text": "८०१०४३४६ निसीखोला गाउँपालिका",
+      "confidence": 0.983,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 316,
+      "bbox_page": [
+        1547.0,
+        857.0,
+        1595.0,
+        875.0
+      ],
+      "text": "9,92",
+      "confidence": 0.8637,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 317,
+      "bbox_page": [
+        618.0,
+        858.0,
+        662.0,
+        875.0
+      ],
+      "text": "8,28",
+      "confidence": 0.8249,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 318,
+      "bbox_page": [
+        726.0,
+        858.0,
+        770.0,
+        875.0
+      ],
+      "text": "५,१६",
+      "confidence": 0.6851,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 319,
+      "bbox_page": [
+        881.0,
+        858.0,
+        907.0,
+        875.0
+      ],
+      "text": "ሄዓ",
+      "confidence": 0.3471,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 320,
+      "bbox_page": [
+        1045.0,
+        858.0,
+        1098.0,
+        876.0
+      ],
+      "text": "२३,९१",
+      "confidence": 0.9435,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 321,
+      "bbox_page": [
+        1264.0,
+        858.0,
+        1321.0,
+        875.0
+      ],
+      "text": "₹४,३७",
+      "confidence": 0.6968,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 322,
+      "bbox_page": [
+        1363.0,
+        858.0,
+        1410.0,
+        875.0
+      ],
+      "text": "9,93",
+      "confidence": 0.7367,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 323,
+      "bbox_page": [
+        1706.0,
+        858.0,
+        1755.0,
+        875.0
+      ],
+      "text": "9,43",
+      "confidence": 0.8318,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 324,
+      "bbox_page": [
+        1901.0,
+        858.0,
+        1949.0,
+        876.0
+      ],
+      "text": "१,९८",
+      "confidence": 0.9125,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 325,
+      "bbox_page": [
+        1994.0,
+        858.0,
+        2049.0,
+        876.0
+      ],
+      "text": "३६,८३",
+      "confidence": 0.932,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 326,
+      "bbox_page": [
+        952.0,
+        859.0,
+        996.0,
+        875.0
+      ],
+      "text": "९,द२",
+      "confidence": 0.9649,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 327,
+      "bbox_page": [
+        1188.0,
+        859.0,
+        1217.0,
+        874.0
+      ],
+      "text": "Χ£",
+      "confidence": 0.2864,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 328,
+      "bbox_page": [
+        1500.0,
+        859.0,
+        1520.0,
+        873.0
+      ],
+      "text": "0",
+      "confidence": 0.6616,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 329,
+      "bbox_page": [
+        1801.0,
+        859.0,
+        1857.0,
+        876.0
+      ],
+      "text": "३४,८४",
+      "confidence": 0.9194,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 330,
+      "bbox_page": [
+        158.0,
+        890.0,
+        390.0,
+        908.0
+      ],
+      "text": "८०१०४३४७ बढिगाड गाउँपालिका",
+      "confidence": 0.9581,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 331,
+      "bbox_page": [
+        1547.0,
+        890.0,
+        1595.0,
+        910.0
+      ],
+      "text": "9,६३",
+      "confidence": 0.8249,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 332,
+      "bbox_page": [
+        724.0,
+        892.0,
+        768.0,
+        909.0
+      ],
+      "text": "6,69",
+      "confidence": 0.3595,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 333,
+      "bbox_page": [
+        1363.0,
+        892.0,
+        1407.0,
+        909.0
+      ],
+      "text": "9,६३",
+      "confidence": 0.8224,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 334,
+      "bbox_page": [
+        1903.0,
+        892.0,
+        1947.0,
+        910.0
+      ],
+      "text": "<b>୪</b>,६  ",
+      "confidence": 0.7407,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 335,
+      "bbox_page": [
+        618.0,
+        893.0,
+        662.0,
+        909.0
+      ],
+      "text": "₹,७४",
+      "confidence": 0.789,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 336,
+      "bbox_page": [
+        879.0,
+        893.0,
+        908.0,
+        909.0
+      ],
+      "text": "<b>५</b>9",
+      "confidence": 0.4386,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 337,
+      "bbox_page": [
+        939.0,
+        893.0,
+        996.0,
+        909.0
+      ],
+      "text": "१०,८७",
+      "confidence": 0.9303,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 338,
+      "bbox_page": [
+        1043.0,
+        893.0,
+        1100.0,
+        910.0
+      ],
+      "text": "35,33",
+      "confidence": 0.6654,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 339,
+      "bbox_page": [
+        1188.0,
+        893.0,
+        1217.0,
+        909.0
+      ],
+      "text": "ξO",
+      "confidence": 0.4196,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 340,
+      "bbox_page": [
+        1264.0,
+        893.0,
+        1317.0,
+        910.0
+      ],
+      "text": "35,83",
+      "confidence": 0.7376,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 341,
+      "bbox_page": [
+        1500.0,
+        893.0,
+        1520.0,
+        907.0
+      ],
+      "text": "0",
+      "confidence": 0.6616,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 342,
+      "bbox_page": [
+        1710.0,
+        893.0,
+        1755.0,
+        909.0
+      ],
+      "text": "४,०५",
+      "confidence": 0.9177,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 343,
+      "bbox_page": [
+        1801.0,
+        893.0,
+        1856.0,
+        909.0
+      ],
+      "text": "५०,८३",
+      "confidence": 0.675,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 344,
+      "bbox_page": [
+        1992.0,
+        893.0,
+        2053.0,
+        910.0
+      ],
+      "text": "४४,४८",
+      "confidence": 0.6532,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 345,
+      "bbox_page": [
+        156.0,
+        922.0,
+        372.0,
+        942.0
+      ],
+      "text": "८०१०४३४८ बरेङ गाउँपालिका",
+      "confidence": 0.98,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 346,
+      "bbox_page": [
+        1994.0,
+        924.0,
+        2051.0,
+        942.0
+      ],
+      "text": "२८,६३",
+      "confidence": 0.9408,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 347,
+      "bbox_page": [
+        618.0,
+        925.0,
+        664.0,
+        941.0
+      ],
+      "text": "3,00",
+      "confidence": 0.7615,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 348,
+      "bbox_page": [
+        724.0,
+        925.0,
+        770.0,
+        942.0
+      ],
+      "text": "3,93",
+      "confidence": 0.7112,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 349,
+      "bbox_page": [
+        952.0,
+        925.0,
+        994.0,
+        942.0
+      ],
+      "text": "७,४१",
+      "confidence": 0.9225,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 350,
+      "bbox_page": [
+        1188.0,
+        925.0,
+        1215.0,
+        942.0
+      ],
+      "text": "२५",
+      "confidence": 0.6907,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 351,
+      "bbox_page": [
+        1363.0,
+        925.0,
+        1408.0,
+        942.0
+      ],
+      "text": "٩,३٥",
+      "confidence": 0.4174,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 352,
+      "bbox_page": [
+        1547.0,
+        925.0,
+        1595.0,
+        942.0
+      ],
+      "text": "9,३0",
+      "confidence": 0.7969,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 353,
+      "bbox_page": [
+        1724.0,
+        925.0,
+        1753.0,
+        942.0
+      ],
+      "text": "९१",
+      "confidence": 0.8635,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 354,
+      "bbox_page": [
+        1801.0,
+        925.0,
+        1857.0,
+        942.0
+      ],
+      "text": "२७,४७",
+      "confidence": 0.9387,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 355,
+      "bbox_page": [
+        1901.0,
+        925.0,
+        1947.0,
+        942.0
+      ],
+      "text": "9,98",
+      "confidence": 0.8237,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 356,
+      "bbox_page": [
+        881.0,
+        926.0,
+        908.0,
+        942.0
+      ],
+      "text": "४९",
+      "confidence": 0.9383,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 357,
+      "bbox_page": [
+        1042.0,
+        926.0,
+        1102.0,
+        943.0
+      ],
+      "text": "१८,७६",
+      "confidence": 0.8136,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 358,
+      "bbox_page": [
+        1262.0,
+        926.0,
+        1317.0,
+        942.0
+      ],
+      "text": "१९,०१",
+      "confidence": 0.9664,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 359,
+      "bbox_page": [
+        1500.0,
+        926.0,
+        1520.0,
+        940.0
+      ],
+      "text": "0",
+      "confidence": 0.6616,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 360,
+      "bbox_page": [
+        143.0,
+        952.0,
+        352.0,
+        980.0
+      ],
+      "text": "नवलपरासी (बर्दघाट सुस्ता पूर्व)",
+      "confidence": 0.9986,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 361,
+      "bbox_page": [
+        713.0,
+        959.0,
+        770.0,
+        977.0
+      ],
+      "text": "€₹,३४",
+      "confidence": 0.3392,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 362,
+      "bbox_page": [
+        865.0,
+        959.0,
+        994.0,
+        976.0
+      ],
+      "text": "<b>୪,</b>୪<b>୮                                    </b>",
+      "confidence": 0.6839,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 363,
+      "bbox_page": [
+        1027.0,
+        959.0,
+        1102.0,
+        977.0
+      ],
+      "text": "२,३१,८२",
+      "confidence": 0.9628,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 364,
+      "bbox_page": [
+        1158.0,
+        959.0,
+        1215.0,
+        977.0
+      ],
+      "text": "२२,१९",
+      "confidence": 0.82,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 365,
+      "bbox_page": [
+        1246.0,
+        959.0,
+        1315.0,
+        976.0
+      ],
+      "text": "<b>२,५४,०</b>૧",
+      "confidence": 0.6756,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 366,
+      "bbox_page": [
+        1533.0,
+        959.0,
+        1593.0,
+        977.0
+      ],
+      "text": "98,38",
+      "confidence": 0.8643,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 367,
+      "bbox_page": [
+        1697.0,
+        959.0,
+        1753.0,
+        976.0
+      ],
+      "text": "99,82",
+      "confidence": 0.7123,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 368,
+      "bbox_page": [
+        1786.0,
+        959.0,
+        1856.0,
+        977.0
+      ],
+      "text": "3,89,23",
+      "confidence": 0.9106,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 369,
+      "bbox_page": [
+        1888.0,
+        959.0,
+        1945.0,
+        977.0
+      ],
+      "text": "<b>ሄ</b>ሂ,¶६",
+      "confidence": 0.5979,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 370,
+      "bbox_page": [
+        1976.0,
+        959.0,
+        2047.0,
+        977.0
+      ],
+      "text": "3,56,38",
+      "confidence": 0.8574,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 371,
+      "bbox_page": [
+        605.0,
+        960.0,
+        660.0,
+        976.0
+      ],
+      "text": "₹<b>9</b>,8",
+      "confidence": 0.4427,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 372,
+      "bbox_page": [
+        1363.0,
+        960.0,
+        1407.0,
+        976.0
+      ],
+      "text": "७,८४",
+      "confidence": 0.5866,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 373,
+      "bbox_page": [
+        1458.0,
+        960.0,
+        1520.0,
+        976.0
+      ],
+      "text": "ባባ,ሂሂ",
+      "confidence": 0.7631,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 374,
+      "bbox_page": [
+        144.0,
+        989.0,
+        224.0,
+        1009.0
+      ],
+      "text": "नगरपालिका",
+      "confidence": 0.994,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 375,
+      "bbox_page": [
+        713.0,
+        993.0,
+        768.0,
+        1010.0
+      ],
+      "text": "४०,६२",
+      "confidence": 0.9576,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 376,
+      "bbox_page": [
+        939.0,
+        993.0,
+        994.0,
+        1011.0
+      ],
+      "text": "£7,93",
+      "confidence": 0.4348,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 377,
+      "bbox_page": [
+        1027.0,
+        993.0,
+        1100.0,
+        1011.0
+      ],
+      "text": "ባ,४०,५५",
+      "confidence": 0.816,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 378,
+      "bbox_page": [
+        1158.0,
+        993.0,
+        1215.0,
+        1010.0
+      ],
+      "text": "१७,५३",
+      "confidence": 0.847,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 379,
+      "bbox_page": [
+        1533.0,
+        993.0,
+        1593.0,
+        1011.0
+      ],
+      "text": "99,06",
+      "confidence": 0.8016,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 380,
+      "bbox_page": [
+        1711.0,
+        993.0,
+        1753.0,
+        1010.0
+      ],
+      "text": "3,66",
+      "confidence": 0.8577,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 381,
+      "bbox_page": [
+        1786.0,
+        993.0,
+        1857.0,
+        1011.0
+      ],
+      "text": "२,०४,८९",
+      "confidence": 0.9363,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 382,
+      "bbox_page": [
+        1888.0,
+        993.0,
+        1947.0,
+        1010.0
+      ],
+      "text": "30,58",
+      "confidence": 0.5206,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 383,
+      "bbox_page": [
+        1976.0,
+        993.0,
+        2049.0,
+        1011.0
+      ],
+      "text": "२,३५,७३",
+      "confidence": 0.9253,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 384,
+      "bbox_page": [
+        605.0,
+        994.0,
+        660.0,
+        1010.0
+      ],
+      "text": "20,00",
+      "confidence": 0.3841,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 385,
+      "bbox_page": [
+        866.0,
+        994.0,
+        908.0,
+        1011.0
+      ],
+      "text": "२,३१",
+      "confidence": 0.9041,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 386,
+      "bbox_page": [
+        1246.0,
+        994.0,
+        1321.0,
+        1010.0
+      ],
+      "text": "१,५८,०८",
+      "confidence": 0.911,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 387,
+      "bbox_page": [
+        1361.0,
+        994.0,
+        1405.0,
+        1011.0
+      ],
+      "text": "9,89",
+      "confidence": 0.3192,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 388,
+      "bbox_page": [
+        1472.0,
+        994.0,
+        1522.0,
+        1010.0
+      ],
+      "text": "९,६५",
+      "confidence": 0.9422,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 389,
+      "bbox_page": [
+        156.0,
+        1022.0,
+        403.0,
+        1042.0
+      ],
+      "text": "८०१०४१०१ कावासोती नगरपालिका",
+      "confidence": 0.9613,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 390,
+      "bbox_page": [
+        616.0,
+        1026.0,
+        662.0,
+        1044.0
+      ],
+      "text": "५,२५",
+      "confidence": 0.7866,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 391,
+      "bbox_page": [
+        713.0,
+        1026.0,
+        770.0,
+        1043.0
+      ],
+      "text": "99,28",
+      "confidence": 0.8499,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 392,
+      "bbox_page": [
+        1262.0,
+        1026.0,
+        1319.0,
+        1044.0
+      ],
+      "text": "४३,६६",
+      "confidence": 0.9426,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 393,
+      "bbox_page": [
+        1547.0,
+        1026.0,
+        1596.0,
+        1044.0
+      ],
+      "text": "४,१ ८",
+      "confidence": 0.9142,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 394,
+      "bbox_page": [
+        1726.0,
+        1026.0,
+        1755.0,
+        1043.0
+      ],
+      "text": "ξO",
+      "confidence": 0.5022,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 395,
+      "bbox_page": [
+        1801.0,
+        1026.0,
+        1857.0,
+        1044.0
+      ],
+      "text": "४५,८८",
+      "confidence": 0.6727,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 396,
+      "bbox_page": [
+        1901.0,
+        1026.0,
+        1949.0,
+        1044.0
+      ],
+      "text": "९,५८",
+      "confidence": 0.9262,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 397,
+      "bbox_page": [
+        1991.0,
+        1026.0,
+        2049.0,
+        1044.0
+      ],
+      "text": "६५,४६",
+      "confidence": 0.9379,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 398,
+      "bbox_page": [
+        879.0,
+        1027.0,
+        907.0,
+        1043.0
+      ],
+      "text": "¥₹",
+      "confidence": 0.3093,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 399,
+      "bbox_page": [
+        939.0,
+        1027.0,
+        996.0,
+        1043.0
+      ],
+      "text": "१७,०२",
+      "confidence": 0.9327,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 400,
+      "bbox_page": [
+        1043.0,
+        1027.0,
+        1100.0,
+        1043.0
+      ],
+      "text": "३८,८६",
+      "confidence": 0.9185,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 401,
+      "bbox_page": [
+        1171.0,
+        1027.0,
+        1215.0,
+        1043.0
+      ],
+      "text": "8,50",
+      "confidence": 0.7808,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 402,
+      "bbox_page": [
+        1385.0,
+        1027.0,
+        1410.0,
+        1041.0
+      ],
+      "text": "0",
+      "confidence": 0.5878,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 403,
+      "bbox_page": [
+        1472.0,
+        1027.0,
+        1520.0,
+        1043.0
+      ],
+      "text": "४,१ ८",
+      "confidence": 0.7513,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 404,
+      "bbox_page": [
+        156.0,
+        1056.0,
+        396.0,
+        1078.0
+      ],
+      "text": "८०१०४१०२ गैंडाकोट नगरपालिका",
+      "confidence": 0.9668,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 405,
+      "bbox_page": [
+        1487.0,
+        1060.0,
+        1520.0,
+        1076.0
+      ],
+      "text": "ĘU",
+      "confidence": 0.4531,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 406,
+      "bbox_page": [
+        1991.0,
+        1060.0,
+        2051.0,
+        1078.0
+      ],
+      "text": "४५,६२",
+      "confidence": 0.6931,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 407,
+      "bbox_page": [
+        618.0,
+        1061.0,
+        662.0,
+        1076.0
+      ],
+      "text": "¥,00",
+      "confidence": 0.3756,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 408,
+      "bbox_page": [
+        713.0,
+        1061.0,
+        770.0,
+        1077.0
+      ],
+      "text": "१०,९६",
+      "confidence": 0.9323,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 409,
+      "bbox_page": [
+        881.0,
+        1061.0,
+        908.0,
+        1077.0
+      ],
+      "text": "ξo",
+      "confidence": 0.6308,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 410,
+      "bbox_page": [
+        939.0,
+        1061.0,
+        996.0,
+        1078.0
+      ],
+      "text": "१६,५६",
+      "confidence": 0.8673,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 411,
+      "bbox_page": [
+        1043.0,
+        1061.0,
+        1104.0,
+        1078.0
+      ],
+      "text": "₹४,३२",
+      "confidence": 0.4259,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 412,
+      "bbox_page": [
+        1173.0,
+        1061.0,
+        1217.0,
+        1078.0
+      ],
+      "text": "२,१९",
+      "confidence": 0.9622,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 413,
+      "bbox_page": [
+        1264.0,
+        1061.0,
+        1317.0,
+        1078.0
+      ],
+      "text": "३७,५१",
+      "confidence": 0.9048,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 414,
+      "bbox_page": [
+        1387.0,
+        1061.0,
+        1408.0,
+        1075.0
+      ],
+      "text": "0",
+      "confidence": 0.5923,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 415,
+      "bbox_page": [
+        1565.0,
+        1061.0,
+        1596.0,
+        1077.0
+      ],
+      "text": "દ્દાઉ",
+      "confidence": 0.2726,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 416,
+      "bbox_page": [
+        1726.0,
+        1061.0,
+        1753.0,
+        1075.0
+      ],
+      "text": "ζς",
+      "confidence": 0.2927,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 417,
+      "bbox_page": [
+        1801.0,
+        1061.0,
+        1859.0,
+        1078.0
+      ],
+      "text": "४१,८८",
+      "confidence": 0.6525,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 418,
+      "bbox_page": [
+        1903.0,
+        1061.0,
+        1950.0,
+        1077.0
+      ],
+      "text": "४७,६",
+      "confidence": 0.6003,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 419,
+      "bbox_page": [
+        156.0,
+        1091.0,
+        392.0,
+        1113.0
+      ],
+      "text": "८०१०४१०३ देवचुली नगरपालिका",
+      "confidence": 0.9695,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 420,
+      "bbox_page": [
+        618.0,
+        1094.0,
+        662.0,
+        1111.0
+      ],
+      "text": "8,40",
+      "confidence": 0.3615,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 421,
+      "bbox_page": [
+        939.0,
+        1094.0,
+        996.0,
+        1112.0
+      ],
+      "text": "१३,६७",
+      "confidence": 0.939,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 422,
+      "bbox_page": [
+        1173.0,
+        1094.0,
+        1215.0,
+        1112.0
+      ],
+      "text": "₹.७३",
+      "confidence": 0.6418,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 423,
+      "bbox_page": [
+        1262.0,
+        1094.0,
+        1319.0,
+        1112.0
+      ],
+      "text": "₹४,५६",
+      "confidence": 0.5777,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 424,
+      "bbox_page": [
+        1724.0,
+        1094.0,
+        1753.0,
+        1111.0
+      ],
+      "text": "९१",
+      "confidence": 0.8635,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 425,
+      "bbox_page": [
+        1901.0,
+        1094.0,
+        1947.0,
+        1111.0
+      ],
+      "text": "४,८९",
+      "confidence": 0.7476,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 426,
+      "bbox_page": [
+        1991.0,
+        1094.0,
+        2049.0,
+        1112.0
+      ],
+      "text": "५१,३९",
+      "confidence": 0.8741,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 427,
+      "bbox_page": [
+        726.0,
+        1095.0,
+        770.0,
+        1111.0
+      ],
+      "text": "८,५७",
+      "confidence": 0.7448,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 428,
+      "bbox_page": [
+        1043.0,
+        1095.0,
+        1100.0,
+        1111.0
+      ],
+      "text": "३१,८३",
+      "confidence": 0.8976,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 429,
+      "bbox_page": [
+        1472.0,
+        1095.0,
+        1520.0,
+        1111.0
+      ],
+      "text": "२,२५",
+      "confidence": 0.9326,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 430,
+      "bbox_page": [
+        1549.0,
+        1095.0,
+        1596.0,
+        1112.0
+      ],
+      "text": "२,२५",
+      "confidence": 0.9549,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 431,
+      "bbox_page": [
+        1801.0,
+        1095.0,
+        1857.0,
+        1111.0
+      ],
+      "text": "४५,५०",
+      "confidence": 0.8668,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 432,
+      "bbox_page": [
+        879.0,
+        1096.0,
+        908.0,
+        1110.0
+      ],
+      "text": "६०",
+      "confidence": 0.8375,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 433,
+      "bbox_page": [
+        1385.0,
+        1096.0,
+        1410.0,
+        1109.0
+      ],
+      "text": "0",
+      "confidence": 0.6355,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 434,
+      "bbox_page": [
+        158.0,
+        1124.0,
+        403.0,
+        1146.0
+      ],
+      "text": "८०१०४१०४ मध्यविन्दु नगरपालिका",
+      "confidence": 0.9784,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 435,
+      "bbox_page": [
+        1264.0,
+        1127.0,
+        1319.0,
+        1145.0
+      ],
+      "text": "<b>४२,३</b>४",
+      "confidence": 0.6677,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 436,
+      "bbox_page": [
+        1708.0,
+        1127.0,
+        1753.0,
+        1144.0
+      ],
+      "text": "१,२७",
+      "confidence": 0.9097,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 437,
+      "bbox_page": [
+        1801.0,
+        1127.0,
+        1856.0,
+        1145.0
+      ],
+      "text": "५१,६३",
+      "confidence": 0.841,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 438,
+      "bbox_page": [
+        1888.0,
+        1127.0,
+        1945.0,
+        1144.0
+      ],
+      "text": "99,63",
+      "confidence": 0.8733,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 439,
+      "bbox_page": [
+        1992.0,
+        1127.0,
+        2049.0,
+        1145.0
+      ],
+      "text": "६३,२६",
+      "confidence": 0.9283,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 440,
+      "bbox_page": [
+        618.0,
+        1128.0,
+        662.0,
+        1145.0
+      ],
+      "text": "५,२५",
+      "confidence": 0.7158,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 441,
+      "bbox_page": [
+        726.0,
+        1128.0,
+        770.0,
+        1144.0
+      ],
+      "text": "९,८५",
+      "confidence": 0.9691,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 442,
+      "bbox_page": [
+        879.0,
+        1128.0,
+        908.0,
+        1143.0
+      ],
+      "text": "<b>4</b> <math>\\subseteq</math>",
+      "confidence": 0.2982,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 443,
+      "bbox_page": [
+        939.0,
+        1128.0,
+        996.0,
+        1144.0
+      ],
+      "text": "१४,६८",
+      "confidence": 0.9214,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 444,
+      "bbox_page": [
+        1043.0,
+        1128.0,
+        1102.0,
+        1145.0
+      ],
+      "text": "₹४,४४",
+      "confidence": 0.6633,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 445,
+      "bbox_page": [
+        1173.0,
+        1128.0,
+        1215.0,
+        1144.0
+      ],
+      "text": "७,८१",
+      "confidence": 0.915,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 446,
+      "bbox_page": [
+        1363.0,
+        1128.0,
+        1405.0,
+        1145.0
+      ],
+      "text": "<b>૧,</b>૪૧",
+      "confidence": 0.5272,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 447,
+      "bbox_page": [
+        1549.0,
+        1128.0,
+        1595.0,
+        1145.0
+      ],
+      "text": "३,९६",
+      "confidence": 0.9023,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 448,
+      "bbox_page": [
+        1472.0,
+        1129.0,
+        1518.0,
+        1144.0
+      ],
+      "text": "२,५५",
+      "confidence": 0.9206,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 449,
+      "bbox_page": [
+        146.0,
+        1158.0,
+        222.0,
+        1176.0
+      ],
+      "text": "गाउँपालिका",
+      "confidence": 0.995,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 450,
+      "bbox_page": [
+        713.0,
+        1161.0,
+        768.0,
+        1178.0
+      ],
+      "text": "२१,७२",
+      "confidence": 0.9605,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 451,
+      "bbox_page": [
+        866.0,
+        1161.0,
+        914.0,
+        1178.0
+      ],
+      "text": "२,१७",
+      "confidence": 0.9214,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 452,
+      "bbox_page": [
+        1171.0,
+        1161.0,
+        1215.0,
+        1178.0
+      ],
+      "text": "8,44",
+      "confidence": 0.6822,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 453,
+      "bbox_page": [
+        1262.0,
+        1161.0,
+        1317.0,
+        1179.0
+      ],
+      "text": "84.83",
+      "confidence": 0.365,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 454,
+      "bbox_page": [
+        1363.0,
+        1161.0,
+        1407.0,
+        1178.0
+      ],
+      "text": "€, ₹3",
+      "confidence": 0.847,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 455,
+      "bbox_page": [
+        1547.0,
+        1161.0,
+        1595.0,
+        1178.0
+      ],
+      "text": "5,33",
+      "confidence": 0.3982,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 456,
+      "bbox_page": [
+        1783.0,
+        1161.0,
+        1857.0,
+        1179.0
+      ],
+      "text": "9,34,38",
+      "confidence": 0.9167,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 457,
+      "bbox_page": [
+        1888.0,
+        1161.0,
+        1949.0,
+        1178.0
+      ],
+      "text": "98,32",
+      "confidence": 0.6403,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 458,
+      "bbox_page": [
+        604.0,
+        1162.0,
+        660.0,
+        1178.0
+      ],
+      "text": "98.98",
+      "confidence": 0.5209,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 459,
+      "bbox_page": [
+        939.0,
+        1162.0,
+        996.0,
+        1178.0
+      ],
+      "text": "35,68",
+      "confidence": 0.628,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 460,
+      "bbox_page": [
+        1042.0,
+        1162.0,
+        1102.0,
+        1178.0
+      ],
+      "text": "९१,२७",
+      "confidence": 0.9365,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 461,
+      "bbox_page": [
+        1472.0,
+        1162.0,
+        1520.0,
+        1178.0
+      ],
+      "text": "9,९0",
+      "confidence": 0.7329,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 462,
+      "bbox_page": [
+        1711.0,
+        1162.0,
+        1753.0,
+        1177.0
+      ],
+      "text": "૭.७६",
+      "confidence": 0.4673,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 463,
+      "bbox_page": [
+        1976.0,
+        1162.0,
+        2047.0,
+        1178.0
+      ],
+      "text": "<b>ባ</b>,ሂወ,६६",
+      "confidence": 0.4134,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 464,
+      "bbox_page": [
+        158.0,
+        1187.0,
+        403.0,
+        1212.0
+      ],
+      "text": "८०१०४३०१ बौदीकाली गाउँपालिका",
+      "confidence": 0.9633,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 465,
+      "bbox_page": [
+        1901.0,
+        1193.0,
+        1945.0,
+        1213.0
+      ],
+      "text": "3,83",
+      "confidence": 0.5777,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 466,
+      "bbox_page": [
+        1801.0,
+        1195.0,
+        1856.0,
+        1213.0
+      ],
+      "text": "२६,४४",
+      "confidence": 0.9706,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 467,
+      "bbox_page": [
+        728.0,
+        1196.0,
+        768.0,
+        1213.0
+      ],
+      "text": "४,११",
+      "confidence": 0.923,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 468,
+      "bbox_page": [
+        954.0,
+        1196.0,
+        994.0,
+        1213.0
+      ],
+      "text": "७,६५",
+      "confidence": 0.9415,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 469,
+      "bbox_page": [
+        620.0,
+        1198.0,
+        664.0,
+        1212.0
+      ],
+      "text": "<b>$,00</b>",
+      "confidence": 0.4907,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 470,
+      "bbox_page": [
+        881.0,
+        1198.0,
+        912.0,
+        1212.0
+      ],
+      "text": "ΧX",
+      "confidence": 0.3488,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 471,
+      "bbox_page": [
+        1043.0,
+        1198.0,
+        1098.0,
+        1213.0
+      ],
+      "text": "५८,०५",
+      "confidence": 0.7641,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 472,
+      "bbox_page": [
+        1173.0,
+        1198.0,
+        1215.0,
+        1212.0
+      ],
+      "text": "প, ওং",
+      "confidence": 0.3887,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 473,
+      "bbox_page": [
+        1262.0,
+        1198.0,
+        1319.0,
+        1213.0
+      ],
+      "text": "५९,८०",
+      "confidence": 0.9327,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 474,
+      "bbox_page": [
+        1377.0,
+        1198.0,
+        1407.0,
+        1211.0
+      ],
+      "text": "હ્ય",
+      "confidence": 0.4147,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 475,
+      "bbox_page": [
+        1567.0,
+        1198.0,
+        1595.0,
+        1212.0
+      ],
+      "text": "9X",
+      "confidence": 0.2212,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 476,
+      "bbox_page": [
+        1710.0,
+        1198.0,
+        1753.0,
+        1213.0
+      ],
+      "text": "५,६८",
+      "confidence": 0.729,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 477,
+      "bbox_page": [
+        1996.0,
+        1198.0,
+        2051.0,
+        1213.0
+      ],
+      "text": "२९,८८",
+      "confidence": 0.9493,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 478,
+      "bbox_page": [
+        156.0,
+        1223.0,
+        403.0,
+        1248.0
+      ],
+      "text": "८०१०४३०२ बुलिङटार गाउँपालिका",
+      "confidence": 0.9764,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 479,
+      "bbox_page": [
+        1262.0,
+        1226.0,
+        1321.0,
+        1248.0
+      ],
+      "text": "२५,०३",
+      "confidence": 0.9184,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 480,
+      "bbox_page": [
+        1361.0,
+        1226.0,
+        1410.0,
+        1248.0
+      ],
+      "text": "9,23",
+      "confidence": 0.3602,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 481,
+      "bbox_page": [
+        1799.0,
+        1226.0,
+        1857.0,
+        1246.0
+      ],
+      "text": "₹₹,७८",
+      "confidence": 0.4413,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 482,
+      "bbox_page": [
+        1994.0,
+        1226.0,
+        2051.0,
+        1248.0
+      ],
+      "text": "३५,८३",
+      "confidence": 0.9433,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 483,
+      "bbox_page": [
+        618.0,
+        1228.0,
+        664.0,
+        1246.0
+      ],
+      "text": "३,५०",
+      "confidence": 0.8997,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 484,
+      "bbox_page": [
+        726.0,
+        1228.0,
+        770.0,
+        1246.0
+      ],
+      "text": "४,६२",
+      "confidence": 0.9311,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 485,
+      "bbox_page": [
+        879.0,
+        1228.0,
+        908.0,
+        1246.0
+      ],
+      "text": "χo",
+      "confidence": 0.4039,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 486,
+      "bbox_page": [
+        952.0,
+        1227.0,
+        998.0,
+        1247.0
+      ],
+      "text": "८,६२",
+      "confidence": 0.429,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 487,
+      "bbox_page": [
+        1043.0,
+        1227.0,
+        1100.0,
+        1247.0
+      ],
+      "text": "२२,९३",
+      "confidence": 0.8501,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 488,
+      "bbox_page": [
+        1173.0,
+        1228.0,
+        1219.0,
+        1246.0
+      ],
+      "text": "२,१०",
+      "confidence": 0.9664,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 489,
+      "bbox_page": [
+        1547.0,
+        1227.0,
+        1595.0,
+        1247.0
+      ],
+      "text": "9,२३",
+      "confidence": 0.6799,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 490,
+      "bbox_page": [
+        1722.0,
+        1228.0,
+        1753.0,
+        1246.0
+      ],
+      "text": "९५",
+      "confidence": 0.8403,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 491,
+      "bbox_page": [
+        1901.0,
+        1227.0,
+        1949.0,
+        1247.0
+      ],
+      "text": "₹,0५",
+      "confidence": 0.7749,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 492,
+      "bbox_page": [
+        1500.0,
+        1229.0,
+        1520.0,
+        1244.0
+      ],
+      "text": "0",
+      "confidence": 0.7012,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 493,
+      "bbox_page": [
+        156.0,
+        1257.0,
+        430.0,
+        1279.0
+      ],
+      "text": "८०१०४३०३ बिनयी त्रिवेणी गाउँपालिका",
+      "confidence": 0.9883,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 494,
+      "bbox_page": [
+        616.0,
+        1260.0,
+        664.0,
+        1280.0
+      ],
+      "text": "8,40",
+      "confidence": 0.2986,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 495,
+      "bbox_page": [
+        720.0,
+        1260.0,
+        771.0,
+        1280.0
+      ],
+      "text": "७,२७",
+      "confidence": 0.966,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 496,
+      "bbox_page": [
+        877.0,
+        1260.0,
+        912.0,
+        1280.0
+      ],
+      "text": "६२",
+      "confidence": 0.8524,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 497,
+      "bbox_page": [
+        936.0,
+        1260.0,
+        998.0,
+        1280.0
+      ],
+      "text": "१२,३९",
+      "confidence": 0.9117,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 498,
+      "bbox_page": [
+        1043.0,
+        1260.0,
+        1104.0,
+        1280.0
+      ],
+      "text": "२८,२७",
+      "confidence": 0.967,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 499,
+      "bbox_page": [
+        1186.0,
+        1260.0,
+        1220.0,
+        1280.0
+      ],
+      "text": "ξX",
+      "confidence": 0.5407,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 500,
+      "bbox_page": [
+        1262.0,
+        1260.0,
+        1321.0,
+        1280.0
+      ],
+      "text": "२८,९२",
+      "confidence": 0.8179,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 501,
+      "bbox_page": [
+        1361.0,
+        1260.0,
+        1410.0,
+        1280.0
+      ],
+      "text": "२,८०",
+      "confidence": 0.9608,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 502,
+      "bbox_page": [
+        1549.0,
+        1260.0,
+        1595.0,
+        1280.0
+      ],
+      "text": "२,८०",
+      "confidence": 0.9678,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 503,
+      "bbox_page": [
+        1706.0,
+        1260.0,
+        1755.0,
+        1280.0
+      ],
+      "text": "3,69",
+      "confidence": 0.7745,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 504,
+      "bbox_page": [
+        1799.0,
+        1260.0,
+        1857.0,
+        1280.0
+      ],
+      "text": "<b>83,8</b>8",
+      "confidence": 0.3516,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 505,
+      "bbox_page": [
+        1901.0,
+        1260.0,
+        1949.0,
+        1280.0
+      ],
+      "text": "४,२६",
+      "confidence": 0.9451,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 506,
+      "bbox_page": [
+        1992.0,
+        1260.0,
+        2051.0,
+        1282.0
+      ],
+      "text": "४७,७२",
+      "confidence": 0.9896,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 507,
+      "bbox_page": [
+        1500.0,
+        1262.0,
+        1520.0,
+        1277.0
+      ],
+      "text": "0",
+      "confidence": 0.691,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 508,
+      "bbox_page": [
+        156.0,
+        1289.0,
+        397.0,
+        1314.0
+      ],
+      "text": "८०१०४३०४ हुप्सेकोट गाउँपालिका",
+      "confidence": 0.9852,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 509,
+      "bbox_page": [
+        720.0,
+        1293.0,
+        770.0,
+        1313.0
+      ],
+      "text": "५,७२",
+      "confidence": 0.6786,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 510,
+      "bbox_page": [
+        879.0,
+        1294.0,
+        908.0,
+        1313.0
+      ],
+      "text": "ሂዓ",
+      "confidence": 0.3975,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 511,
+      "bbox_page": [
+        949.0,
+        1293.0,
+        1000.0,
+        1313.0
+      ],
+      "text": "९,९८",
+      "confidence": 0.9223,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 512,
+      "bbox_page": [
+        1042.0,
+        1293.0,
+        1104.0,
+        1315.0
+      ],
+      "text": "२२,०२",
+      "confidence": 0.8556,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 513,
+      "bbox_page": [
+        1186.0,
+        1294.0,
+        1220.0,
+        1312.0
+      ],
+      "text": "96",
+      "confidence": 0.7687,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 514,
+      "bbox_page": [
+        1261.0,
+        1293.0,
+        1323.0,
+        1313.0
+      ],
+      "text": "२२,१८",
+      "confidence": 0.8125,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 515,
+      "bbox_page": [
+        1361.0,
+        1293.0,
+        1410.0,
+        1313.0
+      ],
+      "text": "٩,६५",
+      "confidence": 0.4234,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 516,
+      "bbox_page": [
+        1706.0,
+        1293.0,
+        1755.0,
+        1313.0
+      ],
+      "text": "9,43",
+      "confidence": 0.7838,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 517,
+      "bbox_page": [
+        1799.0,
+        1293.0,
+        1857.0,
+        1313.0
+      ],
+      "text": "33,6%",
+      "confidence": 0.8061,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 518,
+      "bbox_page": [
+        1991.0,
+        1293.0,
+        2051.0,
+        1315.0
+      ],
+      "text": "३७,२३",
+      "confidence": 0.8298,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 519,
+      "bbox_page": [
+        618.0,
+        1295.0,
+        664.0,
+        1312.0
+      ],
+      "text": "₹,७४",
+      "confidence": 0.6548,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 520,
+      "bbox_page": [
+        1470.0,
+        1295.0,
+        1520.0,
+        1313.0
+      ],
+      "text": "१,९०",
+      "confidence": 0.9451,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 521,
+      "bbox_page": [
+        1547.0,
+        1294.0,
+        1596.0,
+        1314.0
+      ],
+      "text": "३,५५",
+      "confidence": 0.9264,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 522,
+      "bbox_page": [
+        1901.0,
+        1295.0,
+        1950.0,
+        1313.0
+      ],
+      "text": "₹,६८",
+      "confidence": 0.7217,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 523,
+      "bbox_page": [
+        144.0,
+        1324.0,
+        368.0,
+        1348.0
+      ],
+      "text": "नवलपरासी (बर्दघाट सुस्ता पश्चिम)",
+      "confidence": 0.9993,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 524,
+      "bbox_page": [
+        1025.0,
+        1327.0,
+        1102.0,
+        1347.0
+      ],
+      "text": "40,<b>£</b>3,0%",
+      "confidence": 0.5452,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 525,
+      "bbox_page": [
+        1783.0,
+        1327.0,
+        1856.0,
+        1349.0
+      ],
+      "text": "२,६५,५१",
+      "confidence": 0.8805,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 526,
+      "bbox_page": [
+        1974.0,
+        1327.0,
+        2049.0,
+        1347.0
+      ],
+      "text": "3,92,98",
+      "confidence": 0.6552,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 527,
+      "bbox_page": [
+        604.0,
+        1329.0,
+        662.0,
+        1346.0
+      ],
+      "text": "30,00",
+      "confidence": 0.7483,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 528,
+      "bbox_page": [
+        713.0,
+        1329.0,
+        770.0,
+        1346.0
+      ],
+      "text": "€3,50",
+      "confidence": 0.7462,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 529,
+      "bbox_page": [
+        863.0,
+        1328.0,
+        910.0,
+        1348.0
+      ],
+      "text": "3,50",
+      "confidence": 0.3125,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 530,
+      "bbox_page": [
+        939.0,
+        1329.0,
+        996.0,
+        1347.0
+      ],
+      "text": "९७,३०",
+      "confidence": 0.9169,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 531,
+      "bbox_page": [
+        1158.0,
+        1329.0,
+        1219.0,
+        1346.0
+      ],
+      "text": "X0, PF",
+      "confidence": 0.6863,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 532,
+      "bbox_page": [
+        1244.0,
+        1329.0,
+        1319.0,
+        1347.0
+      ],
+      "text": "9,88,90",
+      "confidence": 0.8758,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 533,
+      "bbox_page": [
+        1361.0,
+        1329.0,
+        1410.0,
+        1347.0
+      ],
+      "text": "५,१६",
+      "confidence": 0.7482,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 534,
+      "bbox_page": [
+        1472.0,
+        1329.0,
+        1520.0,
+        1347.0
+      ],
+      "text": "३,७९",
+      "confidence": 0.853,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 535,
+      "bbox_page": [
+        1547.0,
+        1329.0,
+        1595.0,
+        1347.0
+      ],
+      "text": "८,९५",
+      "confidence": 0.6305,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 536,
+      "bbox_page": [
+        1697.0,
+        1329.0,
+        1755.0,
+        1347.0
+      ],
+      "text": "የዓ,ፍሄ",
+      "confidence": 0.7245,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 537,
+      "bbox_page": [
+        1888.0,
+        1329.0,
+        1950.0,
+        1347.0
+      ],
+      "text": "४६,६८",
+      "confidence": 0.965,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 538,
+      "bbox_page": [
+        144.0,
+        1359.0,
+        226.0,
+        1379.0
+      ],
+      "text": "नगरपालिका",
+      "confidence": 0.9928,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 539,
+      "bbox_page": [
+        711.0,
+        1361.0,
+        770.0,
+        1381.0
+      ],
+      "text": "<b>३२,८३</b>",
+      "confidence": 0.6726,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 540,
+      "bbox_page": [
+        861.0,
+        1361.0,
+        914.0,
+        1381.0
+      ],
+      "text": "9,६२",
+      "confidence": 0.5716,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 541,
+      "bbox_page": [
+        1042.0,
+        1361.0,
+        1104.0,
+        1381.0
+      ],
+      "text": "58,65",
+      "confidence": 0.3518,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 542,
+      "bbox_page": [
+        1157.0,
+        1361.0,
+        1219.0,
+        1381.0
+      ],
+      "text": "२६,१४",
+      "confidence": 0.9716,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 543,
+      "bbox_page": [
+        1242.0,
+        1361.0,
+        1319.0,
+        1381.0
+      ],
+      "text": "१,१०,८३",
+      "confidence": 0.9342,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 544,
+      "bbox_page": [
+        1361.0,
+        1361.0,
+        1410.0,
+        1381.0
+      ],
+      "text": "२,३९",
+      "confidence": 0.8887,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 545,
+      "bbox_page": [
+        1545.0,
+        1361.0,
+        1595.0,
+        1381.0
+      ],
+      "text": "3,89",
+      "confidence": 0.4805,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 546,
+      "bbox_page": [
+        1706.0,
+        1361.0,
+        1757.0,
+        1381.0
+      ],
+      "text": "<b>ኣ</b>,४२",
+      "confidence": 0.6846,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 547,
+      "bbox_page": [
+        1781.0,
+        1361.0,
+        1859.0,
+        1383.0
+      ],
+      "text": "१,३६,२७",
+      "confidence": 0.9446,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 548,
+      "bbox_page": [
+        1887.0,
+        1361.0,
+        1949.0,
+        1381.0
+      ],
+      "text": "३२,६७",
+      "confidence": 0.9536,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 549,
+      "bbox_page": [
+        1974.0,
+        1361.0,
+        2053.0,
+        1383.0
+      ],
+      "text": "<b>٩,६८,९४</b>",
+      "confidence": 0.6267,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 550,
+      "bbox_page": [
+        604.0,
+        1363.0,
+        662.0,
+        1381.0
+      ],
+      "text": "ባ ሄ,७ጷ",
+      "confidence": 0.5051,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 551,
+      "bbox_page": [
+        939.0,
+        1363.0,
+        996.0,
+        1381.0
+      ],
+      "text": "४९,२०",
+      "confidence": 0.9606,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 552,
+      "bbox_page": [
+        1470.0,
+        1363.0,
+        1520.0,
+        1380.0
+      ],
+      "text": "9,90",
+      "confidence": 0.9015,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 553,
+      "bbox_page": [
+        156.0,
+        1392.0,
+        390.0,
+        1412.0
+      ],
+      "text": "८०१०५१०१ बर्दघाट नगरपालिका",
+      "confidence": 0.9583,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 554,
+      "bbox_page": [
+        1166.0,
+        1394.0,
+        1217.0,
+        1414.0
+      ],
+      "text": "9,60",
+      "confidence": 0.7606,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 555,
+      "bbox_page": [
+        1261.0,
+        1394.0,
+        1321.0,
+        1416.0
+      ],
+      "text": "<b>३२,२</b>४",
+      "confidence": 0.7918,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 556,
+      "bbox_page": [
+        1363.0,
+        1395.0,
+        1410.0,
+        1413.0
+      ],
+      "text": "9,58",
+      "confidence": 0.893,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 557,
+      "bbox_page": [
+        1545.0,
+        1394.0,
+        1598.0,
+        1414.0
+      ],
+      "text": "9,58",
+      "confidence": 0.8174,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 558,
+      "bbox_page": [
+        1799.0,
+        1394.0,
+        1859.0,
+        1414.0
+      ],
+      "text": "४९,०७",
+      "confidence": 0.9843,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 559,
+      "bbox_page": [
+        1898.0,
+        1394.0,
+        1949.0,
+        1414.0
+      ],
+      "text": "४,६३",
+      "confidence": 0.9193,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 560,
+      "bbox_page": [
+        1989.0,
+        1394.0,
+        2053.0,
+        1416.0
+      ],
+      "text": "०७,६ प्र",
+      "confidence": 0.4593,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 561,
+      "bbox_page": [
+        616.0,
+        1396.0,
+        664.0,
+        1413.0
+      ],
+      "text": "ሂ,00",
+      "confidence": 0.7897,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 562,
+      "bbox_page": [
+        713.0,
+        1396.0,
+        771.0,
+        1413.0
+      ],
+      "text": "99,28",
+      "confidence": 0.906,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 563,
+      "bbox_page": [
+        938.0,
+        1396.0,
+        998.0,
+        1413.0
+      ],
+      "text": "१६,७८",
+      "confidence": 0.9349,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 564,
+      "bbox_page": [
+        1043.0,
+        1396.0,
+        1102.0,
+        1414.0
+      ],
+      "text": "३०,६५",
+      "confidence": 0.9354,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 565,
+      "bbox_page": [
+        1710.0,
+        1396.0,
+        1755.0,
+        1413.0
+      ],
+      "text": "₹0,₽",
+      "confidence": 0.5427,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 566,
+      "bbox_page": [
+        879.0,
+        1397.0,
+        914.0,
+        1414.0
+      ],
+      "text": "<b>ሂ</b>ሄ",
+      "confidence": 0.5057,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 567,
+      "bbox_page": [
+        1500.0,
+        1397.0,
+        1520.0,
+        1412.0
+      ],
+      "text": "0",
+      "confidence": 0.7012,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 568,
+      "bbox_page": [
+        158.0,
+        1428.0,
+        396.0,
+        1446.0
+      ],
+      "text": "८०१०५१०२ रामग्राम नगरपालिका",
+      "confidence": 0.9768,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 569,
+      "bbox_page": [
+        1158.0,
+        1429.0,
+        1217.0,
+        1447.0
+      ],
+      "text": "28,89",
+      "confidence": 0.8518,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 570,
+      "bbox_page": [
+        1259.0,
+        1428.0,
+        1323.0,
+        1448.0
+      ],
+      "text": "४१,४२",
+      "confidence": 0.876,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 571,
+      "bbox_page": [
+        1562.0,
+        1428.0,
+        1596.0,
+        1448.0
+      ],
+      "text": "৩४",
+      "confidence": 0.3345,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 572,
+      "bbox_page": [
+        1799.0,
+        1428.0,
+        1859.0,
+        1448.0
+      ],
+      "text": "83,83",
+      "confidence": 0.825,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 573,
+      "bbox_page": [
+        1888.0,
+        1429.0,
+        1950.0,
+        1447.0
+      ],
+      "text": "२६,४८",
+      "confidence": 0.9437,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 574,
+      "bbox_page": [
+        1991.0,
+        1428.0,
+        2051.0,
+        1448.0
+      ],
+      "text": "७०,४१",
+      "confidence": 0.9749,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 575,
+      "bbox_page": [
+        616.0,
+        1430.0,
+        664.0,
+        1447.0
+      ],
+      "text": "४,७५",
+      "confidence": 0.9112,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 576,
+      "bbox_page": [
+        711.0,
+        1430.0,
+        770.0,
+        1447.0
+      ],
+      "text": "१०,८९",
+      "confidence": 0.8864,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 577,
+      "bbox_page": [
+        879.0,
+        1430.0,
+        910.0,
+        1447.0
+      ],
+      "text": "ሂዓ",
+      "confidence": 0.4265,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 578,
+      "bbox_page": [
+        936.0,
+        1430.0,
+        998.0,
+        1448.0
+      ],
+      "text": "१६,१५",
+      "confidence": 0.9364,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 579,
+      "bbox_page": [
+        1043.0,
+        1430.0,
+        1102.0,
+        1448.0
+      ],
+      "text": "२७,०३",
+      "confidence": 0.9419,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 580,
+      "bbox_page": [
+        1376.0,
+        1430.0,
+        1408.0,
+        1447.0
+      ],
+      "text": "હ્ય",
+      "confidence": 0.3886,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 581,
+      "bbox_page": [
+        1500.0,
+        1430.0,
+        1520.0,
+        1445.0
+      ],
+      "text": "0",
+      "confidence": 0.691,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P3_intergov_p026",
+      "pipeline": "A",
+      "cell_index": 582,
+      "bbox_page": [
+        1708.0,
+        1430.0,
+        1757.0,
+        1447.0
+      ],
+      "text": "9,९९",
+      "confidence": 0.8881,
+      "language_detected": "devanagari"
+    }
+  ],
+  "summary": {
+    "cell_count": 583,
+    "empty_text_count": 0,
+    "mean_confidence": 0.7577,
+    "devanagari_lines": 344,
+    "latin_lines": 28,
+    "mixed_lines": 24,
+    "empty_lines": 0,
+    "lines_with_devanagari_digits": 334,
+    "lines_with_arabic_digits": 187,
+    "lines_with_both_digit_scripts": 23
+  }
+}

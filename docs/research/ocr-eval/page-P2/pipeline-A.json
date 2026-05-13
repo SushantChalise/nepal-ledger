@@ -1,0 +1,4450 @@
+{
+  "pipeline": "A",
+  "engine": "surya-ocr",
+  "engine_version": "0.17.1",
+  "dpi": 192,
+  "tile": "flat",
+  "preprocess": "deskew+bilateral+adaptive_threshold",
+  "preprocess_meta": {
+    "skew_deg": 0.0
+  },
+  "elapsed_sec": 204.84,
+  "records": [
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 0,
+      "bbox_page": [
+        1074.0,
+        65.0,
+        1113.0,
+        90.0
+      ],
+      "text": "92",
+      "confidence": 0.969,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 1,
+      "bbox_page": [
+        1458.0,
+        126.0,
+        1547.0,
+        144.0
+      ],
+      "text": "२०७९/८०",
+      "confidence": 0.9192,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 2,
+      "bbox_page": [
+        1899.0,
+        143.0,
+        1989.0,
+        168.0
+      ],
+      "text": "दिगो विकास",
+      "confidence": 0.9984,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 3,
+      "bbox_page": [
+        1806.0,
+        145.0,
+        1877.0,
+        165.0
+      ],
+      "text": "प्राथमिकता",
+      "confidence": 0.9943,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 4,
+      "bbox_page": [
+        917.0,
+        147.0,
+        1031.0,
+        165.0
+      ],
+      "text": "२०७७/७८ को",
+      "confidence": 0.9827,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 5,
+      "bbox_page": [
+        1076.0,
+        147.0,
+        1188.0,
+        165.0
+      ],
+      "text": "२०७८/७९ को",
+      "confidence": 0.981,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 6,
+      "bbox_page": [
+        1996.0,
+        153.0,
+        2089.0,
+        178.0
+      ],
+      "text": "लैंगिक संकेत",
+      "confidence": 0.9575,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 7,
+      "bbox_page": [
+        1673.0,
+        155.0,
+        1731.0,
+        179.0
+      ],
+      "text": "वैदेशिक",
+      "confidence": 0.8041,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 8,
+      "bbox_page": [
+        299.0,
+        157.0,
+        346.0,
+        177.0
+      ],
+      "text": "शीर्षक",
+      "confidence": 0.9966,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 9,
+      "bbox_page": [
+        625.0,
+        159.0,
+        660.0,
+        177.0
+      ],
+      "text": "स्रोत",
+      "confidence": 0.9792,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 10,
+      "bbox_page": [
+        768.0,
+        158.0,
+        861.0,
+        176.0
+      ],
+      "text": "निकासा विधि",
+      "confidence": 0.9991,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 11,
+      "bbox_page": [
+        1919.0,
+        166.0,
+        1967.0,
+        190.0
+      ],
+      "text": "संकेत",
+      "confidence": 0.9974,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 12,
+      "bbox_page": [
+        932.0,
+        169.0,
+        1011.0,
+        189.0
+      ],
+      "text": "यथार्थ खर्च",
+      "confidence": 0.7535,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 13,
+      "bbox_page": [
+        1073.0,
+        168.0,
+        1188.0,
+        192.0
+      ],
+      "text": "संशोधित अनुमान",
+      "confidence": 0.999,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 14,
+      "bbox_page": [
+        1821.0,
+        170.0,
+        1865.0,
+        188.0
+      ],
+      "text": "संकेत",
+      "confidence": 0.9983,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 15,
+      "bbox_page": [
+        1270.0,
+        177.0,
+        1352.0,
+        194.0
+      ],
+      "text": "जम्मा बजेट",
+      "confidence": 0.9893,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 16,
+      "bbox_page": [
+        1463.0,
+        178.0,
+        1558.0,
+        195.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.9943,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 17,
+      "bbox_page": [
+        1739.0,
+        196.0,
+        1779.0,
+        213.0
+      ],
+      "text": "ऋग",
+      "confidence": 0.8153,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 18,
+      "bbox_page": [
+        1638.0,
+        196.0,
+        1691.0,
+        216.0
+      ],
+      "text": "अनुदान",
+      "confidence": 0.9967,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 19,
+      "bbox_page": [
+        120.0,
+        227.0,
+        344.0,
+        249.0
+      ],
+      "text": "२४२११ आन्तरिक ऋणको व्याज",
+      "confidence": 0.9312,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 20,
+      "bbox_page": [
+        552.0,
+        229.0,
+        650.0,
+        249.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.9985,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 21,
+      "bbox_page": [
+        1346.0,
+        229.0,
+        1410.0,
+        249.0
+      ],
+      "text": "93,00",
+      "confidence": 0.9054,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 22,
+      "bbox_page": [
+        990.0,
+        231.0,
+        1053.0,
+        248.0
+      ],
+      "text": "80.09",
+      "confidence": 0.4521,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 23,
+      "bbox_page": [
+        1149.0,
+        231.0,
+        1206.0,
+        249.0
+      ],
+      "text": "98,59",
+      "confidence": 0.9046,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 24,
+      "bbox_page": [
+        1549.0,
+        231.0,
+        1609.0,
+        249.0
+      ],
+      "text": "93,00",
+      "confidence": 0.9692,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 25,
+      "bbox_page": [
+        1699.0,
+        231.0,
+        1722.0,
+        247.0
+      ],
+      "text": "0",
+      "confidence": 0.6432,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 26,
+      "bbox_page": [
+        1773.0,
+        231.0,
+        1797.0,
+        246.0
+      ],
+      "text": "0",
+      "confidence": 0.635,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 27,
+      "bbox_page": [
+        735.0,
+        232.0,
+        775.0,
+        247.0
+      ],
+      "text": "नगद",
+      "confidence": 0.9719,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 28,
+      "bbox_page": [
+        105.0,
+        259.0,
+        469.0,
+        285.0
+      ],
+      "text": "५०३ अर्थ मन्त्रालय- वैदेशिक ऋण भुक्तानी (बहुपक्षीय)",
+      "confidence": 0.9949,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 29,
+      "bbox_page": [
+        976.0,
+        265.0,
+        1047.0,
+        283.0
+      ],
+      "text": "<b>4,63,63</b>",
+      "confidence": 0.6623,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 30,
+      "bbox_page": [
+        1135.0,
+        265.0,
+        1206.0,
+        283.0
+      ],
+      "text": "<b>4,34,09</b>",
+      "confidence": 0.2715,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 31,
+      "bbox_page": [
+        1334.0,
+        265.0,
+        1408.0,
+        283.0
+      ],
+      "text": "७,६१,१३",
+      "confidence": 0.9316,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 32,
+      "bbox_page": [
+        1534.0,
+        265.0,
+        1607.0,
+        283.0
+      ],
+      "text": "७,६१,१३",
+      "confidence": 0.8321,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 33,
+      "bbox_page": [
+        1773.0,
+        266.0,
+        1795.0,
+        280.0
+      ],
+      "text": "0",
+      "confidence": 0.6389,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 34,
+      "bbox_page": [
+        1699.0,
+        267.0,
+        1720.0,
+        281.0
+      ],
+      "text": "0",
+      "confidence": 0.6431,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 35,
+      "bbox_page": [
+        105.0,
+        293.0,
+        549.0,
+        319.0
+      ],
+      "text": "५०३०९ अर्थ मन्त्रालय- वैदेशिक ऋणको ब्याज भुक्तानी (बहुपक्षीय)",
+      "confidence": 0.9927,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 36,
+      "bbox_page": [
+        976.0,
+        299.0,
+        1047.0,
+        317.0
+      ],
+      "text": "<b>४,७३,६३</b>",
+      "confidence": 0.7125,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 37,
+      "bbox_page": [
+        1133.0,
+        298.0,
+        1206.0,
+        318.0
+      ],
+      "text": "१७,४६,४",
+      "confidence": 0.4743,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 38,
+      "bbox_page": [
+        1334.0,
+        299.0,
+        1407.0,
+        317.0
+      ],
+      "text": "७,६१,१३",
+      "confidence": 0.9314,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 39,
+      "bbox_page": [
+        1533.0,
+        298.0,
+        1607.0,
+        318.0
+      ],
+      "text": "७,६१,१३",
+      "confidence": 0.8634,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 40,
+      "bbox_page": [
+        1775.0,
+        300.0,
+        1797.0,
+        314.0
+      ],
+      "text": "0",
+      "confidence": 0.6378,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 41,
+      "bbox_page": [
+        1699.0,
+        301.0,
+        1719.0,
+        315.0
+      ],
+      "text": "0",
+      "confidence": 0.7008,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 42,
+      "bbox_page": [
+        109.0,
+        327.0,
+        359.0,
+        351.0
+      ],
+      "text": "५०३०१००१ एशियाली विकास बैंक",
+      "confidence": 0.9895,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 43,
+      "bbox_page": [
+        976.0,
+        334.0,
+        1053.0,
+        352.0
+      ],
+      "text": "3,34,98",
+      "confidence": 0.8048,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 44,
+      "bbox_page": [
+        1133.0,
+        334.0,
+        1208.0,
+        352.0
+      ],
+      "text": "२,३६,२६",
+      "confidence": 0.8608,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 45,
+      "bbox_page": [
+        1334.0,
+        334.0,
+        1410.0,
+        352.0
+      ],
+      "text": "3,28,85",
+      "confidence": 0.6346,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 46,
+      "bbox_page": [
+        1534.0,
+        334.0,
+        1609.0,
+        352.0
+      ],
+      "text": "₹,२४,४८",
+      "confidence": 0.884,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 47,
+      "bbox_page": [
+        1773.0,
+        334.0,
+        1799.0,
+        350.0
+      ],
+      "text": "0",
+      "confidence": 0.6532,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 48,
+      "bbox_page": [
+        1828.0,
+        334.0,
+        1859.0,
+        352.0
+      ],
+      "text": "P٩",
+      "confidence": 0.7314,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 49,
+      "bbox_page": [
+        1932.0,
+        334.0,
+        1956.0,
+        350.0
+      ],
+      "text": "0",
+      "confidence": 0.6059,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 50,
+      "bbox_page": [
+        2033.0,
+        334.0,
+        2058.0,
+        352.0
+      ],
+      "text": "3",
+      "confidence": 0.8068,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 51,
+      "bbox_page": [
+        1697.0,
+        335.0,
+        1722.0,
+        350.0
+      ],
+      "text": "0",
+      "confidence": 0.6503,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 52,
+      "bbox_page": [
+        113.0,
+        366.0,
+        264.0,
+        386.0
+      ],
+      "text": "५०३०१००१३ चाल",
+      "confidence": 0.962,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 53,
+      "bbox_page": [
+        976.0,
+        369.0,
+        1051.0,
+        387.0
+      ],
+      "text": "₹,₹₹,₹",
+      "confidence": 0.7888,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 54,
+      "bbox_page": [
+        1135.0,
+        369.0,
+        1208.0,
+        387.0
+      ],
+      "text": "₹,३६,२६",
+      "confidence": 0.7297,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 55,
+      "bbox_page": [
+        1334.0,
+        369.0,
+        1410.0,
+        387.0
+      ],
+      "text": "3,28,85",
+      "confidence": 0.6346,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 56,
+      "bbox_page": [
+        1534.0,
+        369.0,
+        1609.0,
+        387.0
+      ],
+      "text": "₹,२४,४८",
+      "confidence": 0.884,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 57,
+      "bbox_page": [
+        1697.0,
+        370.0,
+        1722.0,
+        385.0
+      ],
+      "text": "0",
+      "confidence": 0.6503,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 58,
+      "bbox_page": [
+        1773.0,
+        370.0,
+        1799.0,
+        385.0
+      ],
+      "text": "0",
+      "confidence": 0.6961,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 59,
+      "bbox_page": [
+        120.0,
+        397.0,
+        337.0,
+        422.0
+      ],
+      "text": "२४१११ वैदेशिक ऋणको व्याज",
+      "confidence": 0.9713,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 60,
+      "bbox_page": [
+        551.0,
+        401.0,
+        650.0,
+        423.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.9988,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 61,
+      "bbox_page": [
+        976.0,
+        404.0,
+        1051.0,
+        422.0
+      ],
+      "text": "₹,₹₹,₹४",
+      "confidence": 0.4904,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 62,
+      "bbox_page": [
+        1136.0,
+        404.0,
+        1208.0,
+        422.0
+      ],
+      "text": "२,३६,२६",
+      "confidence": 0.887,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 63,
+      "bbox_page": [
+        1773.0,
+        404.0,
+        1799.0,
+        419.0
+      ],
+      "text": "0",
+      "confidence": 0.6434,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 64,
+      "bbox_page": [
+        735.0,
+        405.0,
+        775.0,
+        420.0
+      ],
+      "text": "नगद",
+      "confidence": 0.9719,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 65,
+      "bbox_page": [
+        1335.0,
+        405.0,
+        1410.0,
+        422.0
+      ],
+      "text": "₹,₹४,४८",
+      "confidence": 0.7475,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 66,
+      "bbox_page": [
+        1536.0,
+        405.0,
+        1609.0,
+        422.0
+      ],
+      "text": "3,28,85",
+      "confidence": 0.8758,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 67,
+      "bbox_page": [
+        1699.0,
+        405.0,
+        1722.0,
+        419.0
+      ],
+      "text": "0",
+      "confidence": 0.6256,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 68,
+      "bbox_page": [
+        111.0,
+        433.0,
+        374.0,
+        459.0
+      ],
+      "text": "५०३०१००२ अन्तर्राष्ट्रिय विकास संस्था",
+      "confidence": 0.9953,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 69,
+      "bbox_page": [
+        1828.0,
+        438.0,
+        1857.0,
+        456.0
+      ],
+      "text": "P٩",
+      "confidence": 0.6753,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 70,
+      "bbox_page": [
+        1133.0,
+        438.0,
+        1208.0,
+        458.0
+      ],
+      "text": "2,43,46",
+      "confidence": 0.7773,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 71,
+      "bbox_page": [
+        1334.0,
+        439.0,
+        1410.0,
+        457.0
+      ],
+      "text": "3,85,30",
+      "confidence": 0.8777,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 72,
+      "bbox_page": [
+        1534.0,
+        439.0,
+        1609.0,
+        457.0
+      ],
+      "text": "3,85,30",
+      "confidence": 0.9163,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 73,
+      "bbox_page": [
+        1932.0,
+        439.0,
+        1956.0,
+        455.0
+      ],
+      "text": "0",
+      "confidence": 0.6191,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 74,
+      "bbox_page": [
+        2033.0,
+        439.0,
+        2054.0,
+        456.0
+      ],
+      "text": "₹",
+      "confidence": 0.7808,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 75,
+      "bbox_page": [
+        976.0,
+        440.0,
+        1047.0,
+        457.0
+      ],
+      "text": "₹,०४,५१",
+      "confidence": 0.8436,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 76,
+      "bbox_page": [
+        1699.0,
+        440.0,
+        1720.0,
+        455.0
+      ],
+      "text": "0",
+      "confidence": 0.6339,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 77,
+      "bbox_page": [
+        1775.0,
+        440.0,
+        1799.0,
+        455.0
+      ],
+      "text": "0",
+      "confidence": 0.6586,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 78,
+      "bbox_page": [
+        114.0,
+        474.0,
+        264.0,
+        494.0
+      ],
+      "text": "५०३०१००२३ चालु",
+      "confidence": 0.9693,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 79,
+      "bbox_page": [
+        1133.0,
+        474.0,
+        1208.0,
+        494.0
+      ],
+      "text": "2,43,46",
+      "confidence": 0.7643,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 80,
+      "bbox_page": [
+        1534.0,
+        475.0,
+        1609.0,
+        493.0
+      ],
+      "text": "3,85,30",
+      "confidence": 0.9163,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 81,
+      "bbox_page": [
+        1697.0,
+        475.0,
+        1722.0,
+        491.0
+      ],
+      "text": "0",
+      "confidence": 0.6517,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 82,
+      "bbox_page": [
+        1773.0,
+        475.0,
+        1797.0,
+        490.0
+      ],
+      "text": "0",
+      "confidence": 0.651,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 83,
+      "bbox_page": [
+        976.0,
+        476.0,
+        1047.0,
+        493.0
+      ],
+      "text": "₹,०४,५१",
+      "confidence": 0.8436,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 84,
+      "bbox_page": [
+        1334.0,
+        476.0,
+        1410.0,
+        493.0
+      ],
+      "text": "3,85,30",
+      "confidence": 0.8474,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 85,
+      "bbox_page": [
+        120.0,
+        504.0,
+        337.0,
+        528.0
+      ],
+      "text": "२४१११ वैदेशिक ऋणको व्याज",
+      "confidence": 0.9613,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 86,
+      "bbox_page": [
+        550.0,
+        506.0,
+        650.0,
+        528.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.9988,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 87,
+      "bbox_page": [
+        1133.0,
+        508.0,
+        1208.0,
+        528.0
+      ],
+      "text": "2,43,66",
+      "confidence": 0.8329,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 88,
+      "bbox_page": [
+        976.0,
+        510.0,
+        1047.0,
+        528.0
+      ],
+      "text": "₹,०४,५१",
+      "confidence": 0.7885,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 89,
+      "bbox_page": [
+        1334.0,
+        510.0,
+        1410.0,
+        528.0
+      ],
+      "text": "३,४८,३७",
+      "confidence": 0.9396,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 90,
+      "bbox_page": [
+        1536.0,
+        510.0,
+        1609.0,
+        527.0
+      ],
+      "text": "3.85,30",
+      "confidence": 0.8214,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 91,
+      "bbox_page": [
+        1699.0,
+        510.0,
+        1722.0,
+        526.0
+      ],
+      "text": "0",
+      "confidence": 0.6432,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 92,
+      "bbox_page": [
+        1772.0,
+        510.0,
+        1799.0,
+        526.0
+      ],
+      "text": "O",
+      "confidence": 0.3876,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 93,
+      "bbox_page": [
+        735.0,
+        511.0,
+        775.0,
+        527.0
+      ],
+      "text": "नगद",
+      "confidence": 0.9695,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 94,
+      "bbox_page": [
+        111.0,
+        539.0,
+        295.0,
+        563.0
+      ],
+      "text": "५०३०१००३ ओपेक ऋण",
+      "confidence": 0.9735,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 95,
+      "bbox_page": [
+        1348.0,
+        543.0,
+        1410.0,
+        563.0
+      ],
+      "text": "२०,६७",
+      "confidence": 0.9474,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 96,
+      "bbox_page": [
+        990.0,
+        545.0,
+        1049.0,
+        563.0
+      ],
+      "text": "95,98",
+      "confidence": 0.6613,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 97,
+      "bbox_page": [
+        1149.0,
+        545.0,
+        1211.0,
+        563.0
+      ],
+      "text": "80,58",
+      "confidence": 0.3403,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 98,
+      "bbox_page": [
+        1551.0,
+        545.0,
+        1609.0,
+        562.0
+      ],
+      "text": "२०,६७",
+      "confidence": 0.9098,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 99,
+      "bbox_page": [
+        1828.0,
+        545.0,
+        1857.0,
+        563.0
+      ],
+      "text": "P٩",
+      "confidence": 0.72,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 100,
+      "bbox_page": [
+        1932.0,
+        545.0,
+        1958.0,
+        561.0
+      ],
+      "text": "0",
+      "confidence": 0.6562,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 101,
+      "bbox_page": [
+        2034.0,
+        545.0,
+        2054.0,
+        562.0
+      ],
+      "text": "3",
+      "confidence": 0.8642,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 102,
+      "bbox_page": [
+        1697.0,
+        546.0,
+        1722.0,
+        561.0
+      ],
+      "text": "0",
+      "confidence": 0.6503,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 103,
+      "bbox_page": [
+        1775.0,
+        546.0,
+        1799.0,
+        561.0
+      ],
+      "text": "0",
+      "confidence": 0.6586,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 104,
+      "bbox_page": [
+        1348.0,
+        578.0,
+        1410.0,
+        598.0
+      ],
+      "text": "२०,६७",
+      "confidence": 0.9516,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 105,
+      "bbox_page": [
+        113.0,
+        579.0,
+        264.0,
+        599.0
+      ],
+      "text": "५०३०१००३३ चालु",
+      "confidence": 0.9615,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 106,
+      "bbox_page": [
+        1149.0,
+        580.0,
+        1211.0,
+        598.0
+      ],
+      "text": "80,58",
+      "confidence": 0.3403,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 107,
+      "bbox_page": [
+        1775.0,
+        580.0,
+        1797.0,
+        596.0
+      ],
+      "text": "0",
+      "confidence": 0.6532,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 108,
+      "bbox_page": [
+        990.0,
+        581.0,
+        1051.0,
+        598.0
+      ],
+      "text": "95,98",
+      "confidence": 0.7449,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 109,
+      "bbox_page": [
+        1553.0,
+        581.0,
+        1609.0,
+        598.0
+      ],
+      "text": "२०,६७",
+      "confidence": 0.9652,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 110,
+      "bbox_page": [
+        1699.0,
+        581.0,
+        1720.0,
+        596.0
+      ],
+      "text": "0",
+      "confidence": 0.6339,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 111,
+      "bbox_page": [
+        120.0,
+        610.0,
+        337.0,
+        635.0
+      ],
+      "text": "२४१११ वैदेशिक ऋणको व्याज",
+      "confidence": 0.9744,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 112,
+      "bbox_page": [
+        554.0,
+        614.0,
+        647.0,
+        632.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.9981,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 113,
+      "bbox_page": [
+        1350.0,
+        614.0,
+        1410.0,
+        634.0
+      ],
+      "text": "२०,६७",
+      "confidence": 0.9571,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 114,
+      "bbox_page": [
+        989.0,
+        615.0,
+        1049.0,
+        635.0
+      ],
+      "text": "१८,१९",
+      "confidence": 0.8714,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 115,
+      "bbox_page": [
+        1149.0,
+        616.0,
+        1211.0,
+        634.0
+      ],
+      "text": "93,08",
+      "confidence": 0.7935,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 116,
+      "bbox_page": [
+        1553.0,
+        616.0,
+        1609.0,
+        634.0
+      ],
+      "text": "२०,६७",
+      "confidence": 0.9495,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 117,
+      "bbox_page": [
+        1773.0,
+        616.0,
+        1797.0,
+        631.0
+      ],
+      "text": "0",
+      "confidence": 0.635,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 118,
+      "bbox_page": [
+        735.0,
+        617.0,
+        775.0,
+        632.0
+      ],
+      "text": "नगद",
+      "confidence": 0.9708,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 119,
+      "bbox_page": [
+        1699.0,
+        617.0,
+        1722.0,
+        632.0
+      ],
+      "text": "0",
+      "confidence": 0.6314,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 120,
+      "bbox_page": [
+        111.0,
+        646.0,
+        368.0,
+        671.0
+      ],
+      "text": "५०३०१००४ युरोपीय अर्थिक समुदाय",
+      "confidence": 0.9758,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 121,
+      "bbox_page": [
+        1020.0,
+        651.0,
+        1053.0,
+        668.0
+      ],
+      "text": "ঀ७",
+      "confidence": 0.3328,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 122,
+      "bbox_page": [
+        1162.0,
+        651.0,
+        1213.0,
+        669.0
+      ],
+      "text": "9,00",
+      "confidence": 0.6365,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 123,
+      "bbox_page": [
+        1363.0,
+        651.0,
+        1412.0,
+        669.0
+      ],
+      "text": "9,80",
+      "confidence": 0.7182,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 124,
+      "bbox_page": [
+        1699.0,
+        651.0,
+        1720.0,
+        667.0
+      ],
+      "text": "0",
+      "confidence": 0.6615,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 125,
+      "bbox_page": [
+        1773.0,
+        651.0,
+        1799.0,
+        667.0
+      ],
+      "text": "0",
+      "confidence": 0.6532,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 126,
+      "bbox_page": [
+        1828.0,
+        651.0,
+        1857.0,
+        668.0
+      ],
+      "text": "P٩",
+      "confidence": 0.6833,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 127,
+      "bbox_page": [
+        1932.0,
+        651.0,
+        1956.0,
+        667.0
+      ],
+      "text": "0",
+      "confidence": 0.6059,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 128,
+      "bbox_page": [
+        1562.0,
+        652.0,
+        1609.0,
+        669.0
+      ],
+      "text": "9,819",
+      "confidence": 0.6612,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 129,
+      "bbox_page": [
+        2034.0,
+        652.0,
+        2054.0,
+        669.0
+      ],
+      "text": "3",
+      "confidence": 0.6951,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 130,
+      "bbox_page": [
+        113.0,
+        684.0,
+        264.0,
+        706.0
+      ],
+      "text": "५०३०१००४३ चालु",
+      "confidence": 0.9822,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 131,
+      "bbox_page": [
+        1160.0,
+        686.0,
+        1211.0,
+        704.0
+      ],
+      "text": "9,00",
+      "confidence": 0.7206,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 132,
+      "bbox_page": [
+        1697.0,
+        686.0,
+        1722.0,
+        702.0
+      ],
+      "text": "0",
+      "confidence": 0.6517,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 133,
+      "bbox_page": [
+        1773.0,
+        686.0,
+        1797.0,
+        702.0
+      ],
+      "text": "0",
+      "confidence": 0.6431,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 134,
+      "bbox_page": [
+        1020.0,
+        687.0,
+        1053.0,
+        703.0
+      ],
+      "text": "ঀ७",
+      "confidence": 0.3253,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 135,
+      "bbox_page": [
+        1363.0,
+        687.0,
+        1410.0,
+        704.0
+      ],
+      "text": "9,89",
+      "confidence": 0.7449,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 136,
+      "bbox_page": [
+        1562.0,
+        687.0,
+        1609.0,
+        704.0
+      ],
+      "text": "9,819",
+      "confidence": 0.6612,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 137,
+      "bbox_page": [
+        120.0,
+        715.0,
+        337.0,
+        739.0
+      ],
+      "text": "२४९९९ वैदेशिक ऋणको व्याज",
+      "confidence": 0.9662,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 138,
+      "bbox_page": [
+        551.0,
+        718.0,
+        651.0,
+        738.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.9988,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 139,
+      "bbox_page": [
+        1020.0,
+        721.0,
+        1053.0,
+        738.0
+      ],
+      "text": "واو",
+      "confidence": 0.4992,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 140,
+      "bbox_page": [
+        1160.0,
+        721.0,
+        1213.0,
+        738.0
+      ],
+      "text": "9.00",
+      "confidence": 0.5302,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 141,
+      "bbox_page": [
+        1363.0,
+        721.0,
+        1412.0,
+        738.0
+      ],
+      "text": "9.80",
+      "confidence": 0.4583,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 142,
+      "bbox_page": [
+        1562.0,
+        721.0,
+        1609.0,
+        738.0
+      ],
+      "text": "१,४७",
+      "confidence": 0.8012,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 143,
+      "bbox_page": [
+        1773.0,
+        721.0,
+        1799.0,
+        736.0
+      ],
+      "text": "0",
+      "confidence": 0.6434,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 144,
+      "bbox_page": [
+        735.0,
+        722.0,
+        775.0,
+        738.0
+      ],
+      "text": "नगद",
+      "confidence": 0.9727,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 145,
+      "bbox_page": [
+        1699.0,
+        722.0,
+        1722.0,
+        737.0
+      ],
+      "text": "0",
+      "confidence": 0.6314,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 146,
+      "bbox_page": [
+        111.0,
+        750.0,
+        403.0,
+        777.0
+      ],
+      "text": "५०३०१००५ अन्तर्राष्ट्रिय कृषि विकास कोष",
+      "confidence": 0.9946,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 147,
+      "bbox_page": [
+        1005.0,
+        756.0,
+        1047.0,
+        774.0
+      ],
+      "text": "5,69",
+      "confidence": 0.6747,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 148,
+      "bbox_page": [
+        1149.0,
+        756.0,
+        1208.0,
+        774.0
+      ],
+      "text": "90,06",
+      "confidence": 0.9102,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 149,
+      "bbox_page": [
+        1350.0,
+        756.0,
+        1408.0,
+        774.0
+      ],
+      "text": "३१,८६",
+      "confidence": 0.8931,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 150,
+      "bbox_page": [
+        1551.0,
+        756.0,
+        1607.0,
+        774.0
+      ],
+      "text": "३१,८६",
+      "confidence": 0.7944,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 151,
+      "bbox_page": [
+        1828.0,
+        756.0,
+        1857.0,
+        774.0
+      ],
+      "text": "P٩",
+      "confidence": 0.72,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 152,
+      "bbox_page": [
+        1932.0,
+        756.0,
+        1958.0,
+        771.0
+      ],
+      "text": "0",
+      "confidence": 0.6398,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 153,
+      "bbox_page": [
+        1697.0,
+        757.0,
+        1722.0,
+        772.0
+      ],
+      "text": "0",
+      "confidence": 0.6503,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 154,
+      "bbox_page": [
+        1775.0,
+        757.0,
+        1799.0,
+        771.0
+      ],
+      "text": "0",
+      "confidence": 0.6507,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 155,
+      "bbox_page": [
+        2033.0,
+        757.0,
+        2054.0,
+        773.0
+      ],
+      "text": "3",
+      "confidence": 0.5526,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 156,
+      "bbox_page": [
+        113.0,
+        790.0,
+        264.0,
+        812.0
+      ],
+      "text": "५०३०१००५३ चालु",
+      "confidence": 0.983,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 157,
+      "bbox_page": [
+        1348.0,
+        790.0,
+        1408.0,
+        810.0
+      ],
+      "text": "39,56",
+      "confidence": 0.8392,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 158,
+      "bbox_page": [
+        1003.0,
+        791.0,
+        1047.0,
+        811.0
+      ],
+      "text": "5,69",
+      "confidence": 0.6277,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 159,
+      "bbox_page": [
+        1149.0,
+        792.0,
+        1208.0,
+        810.0
+      ],
+      "text": "90,06",
+      "confidence": 0.9102,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 160,
+      "bbox_page": [
+        1551.0,
+        792.0,
+        1607.0,
+        810.0
+      ],
+      "text": "३१,८६",
+      "confidence": 0.7944,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 161,
+      "bbox_page": [
+        1699.0,
+        793.0,
+        1720.0,
+        808.0
+      ],
+      "text": "0",
+      "confidence": 0.6339,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 162,
+      "bbox_page": [
+        1773.0,
+        793.0,
+        1797.0,
+        807.0
+      ],
+      "text": "0",
+      "confidence": 0.6803,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 163,
+      "bbox_page": [
+        120.0,
+        821.0,
+        337.0,
+        845.0
+      ],
+      "text": "२४१११ वैदेशिक ऋणको व्याज",
+      "confidence": 0.9613,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 164,
+      "bbox_page": [
+        552.0,
+        825.0,
+        649.0,
+        843.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.995,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 165,
+      "bbox_page": [
+        1005.0,
+        827.0,
+        1047.0,
+        845.0
+      ],
+      "text": "۵,६٩",
+      "confidence": 0.3128,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 166,
+      "bbox_page": [
+        1151.0,
+        827.0,
+        1208.0,
+        845.0
+      ],
+      "text": "90,08",
+      "confidence": 0.8777,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 167,
+      "bbox_page": [
+        1350.0,
+        827.0,
+        1410.0,
+        845.0
+      ],
+      "text": "३१,८६",
+      "confidence": 0.8527,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 168,
+      "bbox_page": [
+        1553.0,
+        827.0,
+        1609.0,
+        845.0
+      ],
+      "text": "३१,८६",
+      "confidence": 0.9045,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 169,
+      "bbox_page": [
+        1699.0,
+        827.0,
+        1722.0,
+        843.0
+      ],
+      "text": "0",
+      "confidence": 0.6432,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 170,
+      "bbox_page": [
+        1773.0,
+        827.0,
+        1799.0,
+        842.0
+      ],
+      "text": "0",
+      "confidence": 0.6434,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 171,
+      "bbox_page": [
+        735.0,
+        828.0,
+        773.0,
+        844.0
+      ],
+      "text": "नगद",
+      "confidence": 0.9722,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 172,
+      "bbox_page": [
+        111.0,
+        858.0,
+        343.0,
+        880.0
+      ],
+      "text": "५०३०१००६ नर्डिक विकास कोष",
+      "confidence": 0.9888,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 173,
+      "bbox_page": [
+        1361.0,
+        860.0,
+        1410.0,
+        880.0
+      ],
+      "text": "3,22",
+      "confidence": 0.8312,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 174,
+      "bbox_page": [
+        1003.0,
+        862.0,
+        1053.0,
+        880.0
+      ],
+      "text": "9,६७",
+      "confidence": 0.8159,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 175,
+      "bbox_page": [
+        1164.0,
+        862.0,
+        1213.0,
+        880.0
+      ],
+      "text": "₹,5",
+      "confidence": 0.5607,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 176,
+      "bbox_page": [
+        1564.0,
+        862.0,
+        1611.0,
+        880.0
+      ],
+      "text": "3,77",
+      "confidence": 0.8021,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 177,
+      "bbox_page": [
+        1697.0,
+        862.0,
+        1722.0,
+        878.0
+      ],
+      "text": "0",
+      "confidence": 0.6517,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 178,
+      "bbox_page": [
+        1773.0,
+        862.0,
+        1799.0,
+        878.0
+      ],
+      "text": "0",
+      "confidence": 0.6532,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 179,
+      "bbox_page": [
+        1828.0,
+        862.0,
+        1859.0,
+        880.0
+      ],
+      "text": "P٩",
+      "confidence": 0.7314,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 180,
+      "bbox_page": [
+        1932.0,
+        862.0,
+        1956.0,
+        878.0
+      ],
+      "text": "0",
+      "confidence": 0.6059,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 181,
+      "bbox_page": [
+        2033.0,
+        863.0,
+        2056.0,
+        879.0
+      ],
+      "text": "3",
+      "confidence": 0.6076,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 182,
+      "bbox_page": [
+        113.0,
+        895.0,
+        264.0,
+        915.0
+      ],
+      "text": "५०३०१००६३ चालु",
+      "confidence": 0.9691,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 183,
+      "bbox_page": [
+        1361.0,
+        895.0,
+        1410.0,
+        915.0
+      ],
+      "text": "3,22",
+      "confidence": 0.8312,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 184,
+      "bbox_page": [
+        1003.0,
+        897.0,
+        1053.0,
+        915.0
+      ],
+      "text": "9,६७",
+      "confidence": 0.8159,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 185,
+      "bbox_page": [
+        1162.0,
+        897.0,
+        1213.0,
+        915.0
+      ],
+      "text": "₹,38",
+      "confidence": 0.6499,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 186,
+      "bbox_page": [
+        1564.0,
+        897.0,
+        1611.0,
+        915.0
+      ],
+      "text": "3,77",
+      "confidence": 0.857,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 187,
+      "bbox_page": [
+        1773.0,
+        897.0,
+        1799.0,
+        913.0
+      ],
+      "text": "0",
+      "confidence": 0.6532,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 188,
+      "bbox_page": [
+        1697.0,
+        898.0,
+        1722.0,
+        913.0
+      ],
+      "text": "0",
+      "confidence": 0.6503,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 189,
+      "bbox_page": [
+        120.0,
+        927.0,
+        337.0,
+        951.0
+      ],
+      "text": "२४९९९ वैदेशिक ऋणको व्याज",
+      "confidence": 0.9596,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 190,
+      "bbox_page": [
+        552.0,
+        932.0,
+        647.0,
+        949.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.9983,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 191,
+      "bbox_page": [
+        1361.0,
+        931.0,
+        1410.0,
+        951.0
+      ],
+      "text": "3,22",
+      "confidence": 0.9654,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 192,
+      "bbox_page": [
+        1003.0,
+        933.0,
+        1053.0,
+        951.0
+      ],
+      "text": "१,६७",
+      "confidence": 0.8467,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 193,
+      "bbox_page": [
+        1164.0,
+        933.0,
+        1213.0,
+        951.0
+      ],
+      "text": "2,38",
+      "confidence": 0.7764,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 194,
+      "bbox_page": [
+        1564.0,
+        933.0,
+        1611.0,
+        951.0
+      ],
+      "text": "3,77",
+      "confidence": 0.5564,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 195,
+      "bbox_page": [
+        1775.0,
+        933.0,
+        1797.0,
+        948.0
+      ],
+      "text": "0",
+      "confidence": 0.6033,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 196,
+      "bbox_page": [
+        735.0,
+        934.0,
+        775.0,
+        949.0
+      ],
+      "text": "नगद",
+      "confidence": 0.9791,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 197,
+      "bbox_page": [
+        1699.0,
+        934.0,
+        1722.0,
+        949.0
+      ],
+      "text": "0",
+      "confidence": 0.6314,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 198,
+      "bbox_page": [
+        110.0,
+        959.0,
+        380.0,
+        988.0
+      ],
+      "text": "x0३०१००७ युरोपियन इन्भेष्टमेण्ट बैंक",
+      "confidence": 0.8642,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 199,
+      "bbox_page": [
+        1147.0,
+        966.0,
+        1208.0,
+        986.0
+      ],
+      "text": "98,36",
+      "confidence": 0.87,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 200,
+      "bbox_page": [
+        1348.0,
+        966.0,
+        1407.0,
+        986.0
+      ],
+      "text": "74,49",
+      "confidence": 0.4863,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 201,
+      "bbox_page": [
+        1549.0,
+        966.0,
+        1607.0,
+        986.0
+      ],
+      "text": "२६,५९",
+      "confidence": 0.9228,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 202,
+      "bbox_page": [
+        1005.0,
+        968.0,
+        1053.0,
+        986.0
+      ],
+      "text": "8,48",
+      "confidence": 0.4864,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 203,
+      "bbox_page": [
+        1828.0,
+        968.0,
+        1859.0,
+        986.0
+      ],
+      "text": "P٩",
+      "confidence": 0.7314,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 204,
+      "bbox_page": [
+        1932.0,
+        968.0,
+        1958.0,
+        983.0
+      ],
+      "text": "0",
+      "confidence": 0.6276,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 205,
+      "bbox_page": [
+        2033.0,
+        968.0,
+        2054.0,
+        985.0
+      ],
+      "text": "₹",
+      "confidence": 0.7808,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 206,
+      "bbox_page": [
+        1699.0,
+        969.0,
+        1720.0,
+        984.0
+      ],
+      "text": "0",
+      "confidence": 0.6339,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 207,
+      "bbox_page": [
+        1775.0,
+        969.0,
+        1799.0,
+        984.0
+      ],
+      "text": "0",
+      "confidence": 0.6586,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 208,
+      "bbox_page": [
+        114.0,
+        1000.0,
+        266.0,
+        1024.0
+      ],
+      "text": "५०३०१००७३ चालु",
+      "confidence": 0.9812,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 209,
+      "bbox_page": [
+        1149.0,
+        1002.0,
+        1208.0,
+        1022.0
+      ],
+      "text": "98,36",
+      "confidence": 0.7879,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 210,
+      "bbox_page": [
+        1348.0,
+        1002.0,
+        1408.0,
+        1022.0
+      ],
+      "text": "२६,५९",
+      "confidence": 0.9554,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 211,
+      "bbox_page": [
+        1551.0,
+        1002.0,
+        1609.0,
+        1022.0
+      ],
+      "text": "२६,५९",
+      "confidence": 0.9379,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 212,
+      "bbox_page": [
+        1699.0,
+        1003.0,
+        1722.0,
+        1019.0
+      ],
+      "text": "0",
+      "confidence": 0.6724,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 213,
+      "bbox_page": [
+        1773.0,
+        1003.0,
+        1797.0,
+        1018.0
+      ],
+      "text": "0",
+      "confidence": 0.651,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 214,
+      "bbox_page": [
+        1005.0,
+        1004.0,
+        1053.0,
+        1021.0
+      ],
+      "text": "<b>8,48</b>",
+      "confidence": 0.4605,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 215,
+      "bbox_page": [
+        120.0,
+        1032.0,
+        337.0,
+        1056.0
+      ],
+      "text": "२४९९९ वैदेशिक ऋणको व्याज",
+      "confidence": 0.9596,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 216,
+      "bbox_page": [
+        552.0,
+        1037.0,
+        649.0,
+        1055.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.9987,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 217,
+      "bbox_page": [
+        735.0,
+        1038.0,
+        775.0,
+        1054.0
+      ],
+      "text": "नगद",
+      "confidence": 0.9761,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 218,
+      "bbox_page": [
+        1149.0,
+        1037.0,
+        1209.0,
+        1057.0
+      ],
+      "text": "१९,३६",
+      "confidence": 0.9455,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 219,
+      "bbox_page": [
+        1352.0,
+        1038.0,
+        1408.0,
+        1056.0
+      ],
+      "text": "२६,५९",
+      "confidence": 0.9202,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 220,
+      "bbox_page": [
+        1553.0,
+        1038.0,
+        1609.0,
+        1056.0
+      ],
+      "text": "२६,५९",
+      "confidence": 0.934,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 221,
+      "bbox_page": [
+        1699.0,
+        1038.0,
+        1722.0,
+        1054.0
+      ],
+      "text": "0",
+      "confidence": 0.6432,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 222,
+      "bbox_page": [
+        1772.0,
+        1038.0,
+        1797.0,
+        1054.0
+      ],
+      "text": "0",
+      "confidence": 0.6232,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 223,
+      "bbox_page": [
+        1005.0,
+        1039.0,
+        1053.0,
+        1056.0
+      ],
+      "text": "8,48",
+      "confidence": 0.7142,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 224,
+      "bbox_page": [
+        111.0,
+        1067.0,
+        313.0,
+        1091.0
+      ],
+      "text": "५०३०१००९ ए.आइ.आइ.वि.",
+      "confidence": 0.9172,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 225,
+      "bbox_page": [
+        1027.0,
+        1073.0,
+        1053.0,
+        1088.0
+      ],
+      "text": "0",
+      "confidence": 0.6483,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 226,
+      "bbox_page": [
+        1188.0,
+        1073.0,
+        1215.0,
+        1088.0
+      ],
+      "text": "0",
+      "confidence": 0.6293,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 227,
+      "bbox_page": [
+        1363.0,
+        1073.0,
+        1410.0,
+        1090.0
+      ],
+      "text": "8,80",
+      "confidence": 0.5858,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 228,
+      "bbox_page": [
+        1564.0,
+        1073.0,
+        1609.0,
+        1090.0
+      ],
+      "text": "8,80",
+      "confidence": 0.886,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 229,
+      "bbox_page": [
+        1773.0,
+        1073.0,
+        1803.0,
+        1089.0
+      ],
+      "text": "0",
+      "confidence": 0.6618,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 230,
+      "bbox_page": [
+        1828.0,
+        1073.0,
+        1859.0,
+        1091.0
+      ],
+      "text": "P٩",
+      "confidence": 0.7314,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 231,
+      "bbox_page": [
+        1932.0,
+        1073.0,
+        1958.0,
+        1089.0
+      ],
+      "text": "0",
+      "confidence": 0.6625,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 232,
+      "bbox_page": [
+        2033.0,
+        1073.0,
+        2056.0,
+        1091.0
+      ],
+      "text": "3",
+      "confidence": 0.7656,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 233,
+      "bbox_page": [
+        1697.0,
+        1074.0,
+        1722.0,
+        1089.0
+      ],
+      "text": "0",
+      "confidence": 0.6503,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 234,
+      "bbox_page": [
+        113.0,
+        1108.0,
+        264.0,
+        1128.0
+      ],
+      "text": "५०३०१००९३ चालु",
+      "confidence": 0.9833,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 235,
+      "bbox_page": [
+        1029.0,
+        1109.0,
+        1053.0,
+        1124.0
+      ],
+      "text": "0",
+      "confidence": 0.6367,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 236,
+      "bbox_page": [
+        1188.0,
+        1109.0,
+        1213.0,
+        1124.0
+      ],
+      "text": "0",
+      "confidence": 0.6311,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 237,
+      "bbox_page": [
+        1363.0,
+        1109.0,
+        1410.0,
+        1127.0
+      ],
+      "text": "<b>Y, Y</b>'9",
+      "confidence": 0.3885,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 238,
+      "bbox_page": [
+        1773.0,
+        1109.0,
+        1797.0,
+        1125.0
+      ],
+      "text": "0",
+      "confidence": 0.6431,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 239,
+      "bbox_page": [
+        1564.0,
+        1110.0,
+        1609.0,
+        1126.0
+      ],
+      "text": "8,89",
+      "confidence": 0.8805,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 240,
+      "bbox_page": [
+        1699.0,
+        1110.0,
+        1722.0,
+        1125.0
+      ],
+      "text": "0",
+      "confidence": 0.6244,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 241,
+      "bbox_page": [
+        120.0,
+        1137.0,
+        337.0,
+        1161.0
+      ],
+      "text": "२४९९९ वैदेशिक ऋणको व्याज",
+      "confidence": 0.9596,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 242,
+      "bbox_page": [
+        552.0,
+        1142.0,
+        650.0,
+        1161.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.9986,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 243,
+      "bbox_page": [
+        1032.0,
+        1144.0,
+        1053.0,
+        1159.0
+      ],
+      "text": "0",
+      "confidence": 0.6309,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 244,
+      "bbox_page": [
+        1363.0,
+        1144.0,
+        1410.0,
+        1162.0
+      ],
+      "text": "४,४७",
+      "confidence": 0.9203,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 245,
+      "bbox_page": [
+        735.0,
+        1145.0,
+        773.0,
+        1161.0
+      ],
+      "text": "नगद",
+      "confidence": 0.9816,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 246,
+      "bbox_page": [
+        1191.0,
+        1145.0,
+        1213.0,
+        1158.0
+      ],
+      "text": "0",
+      "confidence": 0.6082,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 247,
+      "bbox_page": [
+        1565.0,
+        1145.0,
+        1609.0,
+        1162.0
+      ],
+      "text": "४,४७",
+      "confidence": 0.8984,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 248,
+      "bbox_page": [
+        1699.0,
+        1145.0,
+        1722.0,
+        1159.0
+      ],
+      "text": "0",
+      "confidence": 0.6256,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 249,
+      "bbox_page": [
+        1773.0,
+        1145.0,
+        1797.0,
+        1158.0
+      ],
+      "text": "0",
+      "confidence": 0.5906,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 250,
+      "bbox_page": [
+        105.0,
+        1172.0,
+        459.0,
+        1196.0
+      ],
+      "text": "५०४ अर्थ मन्त्रालय- वैदेशिक ऋण भुक्तानी (द्विपक्षीय)",
+      "confidence": 0.9952,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 251,
+      "bbox_page": [
+        990.0,
+        1177.0,
+        1047.0,
+        1194.0
+      ],
+      "text": "<b>48.89</b>",
+      "confidence": 0.5739,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 252,
+      "bbox_page": [
+        1334.0,
+        1177.0,
+        1410.0,
+        1195.0
+      ],
+      "text": "२,८०,३७",
+      "confidence": 0.9336,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 253,
+      "bbox_page": [
+        1536.0,
+        1177.0,
+        1609.0,
+        1194.0
+      ],
+      "text": "२,८०,३७",
+      "confidence": 0.8279,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 254,
+      "bbox_page": [
+        1133.0,
+        1178.0,
+        1209.0,
+        1195.0
+      ],
+      "text": "9,९७,०८",
+      "confidence": 0.8302,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 255,
+      "bbox_page": [
+        1699.0,
+        1178.0,
+        1719.0,
+        1192.0
+      ],
+      "text": "0",
+      "confidence": 0.6803,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 256,
+      "bbox_page": [
+        1775.0,
+        1178.0,
+        1795.0,
+        1191.0
+      ],
+      "text": "0",
+      "confidence": 0.6317,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 257,
+      "bbox_page": [
+        105.0,
+        1203.0,
+        542.0,
+        1230.0
+      ],
+      "text": "५०४०९ अर्थ मन्त्रालय- वैदेशिक ऋणको ब्याज भुक्तानी (द्विपक्षीय)",
+      "confidence": 0.9903,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 258,
+      "bbox_page": [
+        1332.0,
+        1210.0,
+        1410.0,
+        1230.0
+      ],
+      "text": "२,८०,३७",
+      "confidence": 0.9424,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 259,
+      "bbox_page": [
+        989.0,
+        1211.0,
+        1049.0,
+        1231.0
+      ],
+      "text": "ሂ ሄ, ሄፃ",
+      "confidence": 0.5448,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 260,
+      "bbox_page": [
+        1135.0,
+        1212.0,
+        1211.0,
+        1230.0
+      ],
+      "text": "१,९७,०८",
+      "confidence": 0.9458,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 261,
+      "bbox_page": [
+        1536.0,
+        1212.0,
+        1609.0,
+        1230.0
+      ],
+      "text": "२,८०,३७",
+      "confidence": 0.9447,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 262,
+      "bbox_page": [
+        1773.0,
+        1212.0,
+        1797.0,
+        1228.0
+      ],
+      "text": "0",
+      "confidence": 0.6442,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 263,
+      "bbox_page": [
+        1699.0,
+        1213.0,
+        1720.0,
+        1228.0
+      ],
+      "text": "0",
+      "confidence": 0.6578,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 264,
+      "bbox_page": [
+        109.0,
+        1240.0,
+        412.0,
+        1264.0
+      ],
+      "text": "५०४०१००२ जापानी ऋण -१९८८ देखिको",
+      "confidence": 0.9844,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 265,
+      "bbox_page": [
+        1823.0,
+        1244.0,
+        1861.0,
+        1264.0
+      ],
+      "text": "P٩",
+      "confidence": 0.5492,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 266,
+      "bbox_page": [
+        1029.0,
+        1246.0,
+        1054.0,
+        1263.0
+      ],
+      "text": "0",
+      "confidence": 0.6325,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 267,
+      "bbox_page": [
+        1147.0,
+        1245.0,
+        1209.0,
+        1265.0
+      ],
+      "text": "99,38",
+      "confidence": 0.8426,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 268,
+      "bbox_page": [
+        1346.0,
+        1245.0,
+        1412.0,
+        1267.0
+      ],
+      "text": "<b>੧</b>ਖ਼,६४",
+      "confidence": 0.5959,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 269,
+      "bbox_page": [
+        1549.0,
+        1245.0,
+        1611.0,
+        1265.0
+      ],
+      "text": "ባኣ,६४",
+      "confidence": 0.511,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 270,
+      "bbox_page": [
+        1697.0,
+        1246.0,
+        1722.0,
+        1263.0
+      ],
+      "text": "0",
+      "confidence": 0.618,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 271,
+      "bbox_page": [
+        1773.0,
+        1246.0,
+        1808.0,
+        1263.0
+      ],
+      "text": "0",
+      "confidence": 0.6746,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 272,
+      "bbox_page": [
+        1932.0,
+        1246.0,
+        1958.0,
+        1262.0
+      ],
+      "text": "0",
+      "confidence": 0.6625,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 273,
+      "bbox_page": [
+        2033.0,
+        1247.0,
+        2058.0,
+        1264.0
+      ],
+      "text": "₹",
+      "confidence": 0.7356,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 274,
+      "bbox_page": [
+        113.0,
+        1280.0,
+        266.0,
+        1300.0
+      ],
+      "text": "५०४०१००२३ चालु",
+      "confidence": 0.9742,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 275,
+      "bbox_page": [
+        1147.0,
+        1280.0,
+        1209.0,
+        1302.0
+      ],
+      "text": "99,38",
+      "confidence": 0.8411,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 276,
+      "bbox_page": [
+        1346.0,
+        1280.0,
+        1412.0,
+        1302.0
+      ],
+      "text": "<b>੧</b>ਖ਼,६४",
+      "confidence": 0.7708,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 277,
+      "bbox_page": [
+        1772.0,
+        1281.0,
+        1799.0,
+        1299.0
+      ],
+      "text": "0",
+      "confidence": 0.6453,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 278,
+      "bbox_page": [
+        1029.0,
+        1282.0,
+        1053.0,
+        1298.0
+      ],
+      "text": "O",
+      "confidence": 0.4215,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 279,
+      "bbox_page": [
+        1549.0,
+        1281.0,
+        1611.0,
+        1301.0
+      ],
+      "text": "ባኣ,६४",
+      "confidence": 0.7305,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 280,
+      "bbox_page": [
+        1697.0,
+        1282.0,
+        1722.0,
+        1299.0
+      ],
+      "text": "0",
+      "confidence": 0.618,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 281,
+      "bbox_page": [
+        120.0,
+        1311.0,
+        339.0,
+        1336.0
+      ],
+      "text": "२४१११ वैदेशिक ऋणको व्याज",
+      "confidence": 0.9731,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 282,
+      "bbox_page": [
+        550.0,
+        1312.0,
+        652.0,
+        1336.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.9989,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 283,
+      "bbox_page": [
+        735.0,
+        1317.0,
+        777.0,
+        1335.0
+      ],
+      "text": "नगद",
+      "confidence": 0.9884,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 284,
+      "bbox_page": [
+        1031.0,
+        1317.0,
+        1053.0,
+        1333.0
+      ],
+      "text": "0",
+      "confidence": 0.6286,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 285,
+      "bbox_page": [
+        1147.0,
+        1316.0,
+        1211.0,
+        1338.0
+      ],
+      "text": "११,३९",
+      "confidence": 0.9484,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 286,
+      "bbox_page": [
+        1348.0,
+        1316.0,
+        1412.0,
+        1336.0
+      ],
+      "text": "१५,६४",
+      "confidence": 0.8518,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 287,
+      "bbox_page": [
+        1773.0,
+        1317.0,
+        1799.0,
+        1333.0
+      ],
+      "text": "0",
+      "confidence": 0.6223,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 288,
+      "bbox_page": [
+        1551.0,
+        1318.0,
+        1611.0,
+        1336.0
+      ],
+      "text": "१५,६४",
+      "confidence": 0.8738,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 289,
+      "bbox_page": [
+        1699.0,
+        1318.0,
+        1724.0,
+        1333.0
+      ],
+      "text": "0",
+      "confidence": 0.639,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 290,
+      "bbox_page": [
+        111.0,
+        1346.0,
+        295.0,
+        1372.0
+      ],
+      "text": "५०४०१००३ कुवेती ऋण",
+      "confidence": 0.976,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 291,
+      "bbox_page": [
+        1825.0,
+        1350.0,
+        1859.0,
+        1372.0
+      ],
+      "text": "P٩",
+      "confidence": 0.6549,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 292,
+      "bbox_page": [
+        1003.0,
+        1351.0,
+        1053.0,
+        1373.0
+      ],
+      "text": "२,२२",
+      "confidence": 0.6301,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 293,
+      "bbox_page": [
+        1160.0,
+        1351.0,
+        1213.0,
+        1373.0
+      ],
+      "text": "ሂ,९ሂ",
+      "confidence": 0.8367,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 294,
+      "bbox_page": [
+        1361.0,
+        1351.0,
+        1412.0,
+        1371.0
+      ],
+      "text": "<b>ፍ,</b> 9 ६",
+      "confidence": 0.4686,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 295,
+      "bbox_page": [
+        1562.0,
+        1351.0,
+        1611.0,
+        1371.0
+      ],
+      "text": "<b>ፍ</b>,9 ६",
+      "confidence": 0.5591,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 296,
+      "bbox_page": [
+        2033.0,
+        1352.0,
+        2056.0,
+        1370.0
+      ],
+      "text": "3",
+      "confidence": 0.7656,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 297,
+      "bbox_page": [
+        1697.0,
+        1353.0,
+        1722.0,
+        1369.0
+      ],
+      "text": "0",
+      "confidence": 0.6507,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 298,
+      "bbox_page": [
+        1775.0,
+        1353.0,
+        1806.0,
+        1369.0
+      ],
+      "text": "0",
+      "confidence": 0.6693,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 299,
+      "bbox_page": [
+        1932.0,
+        1353.0,
+        1958.0,
+        1368.0
+      ],
+      "text": "0",
+      "confidence": 0.6607,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 300,
+      "bbox_page": [
+        114.0,
+        1385.0,
+        266.0,
+        1407.0
+      ],
+      "text": "५०४०१००३३ चालु",
+      "confidence": 0.9712,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 301,
+      "bbox_page": [
+        1773.0,
+        1386.0,
+        1799.0,
+        1404.0
+      ],
+      "text": "0",
+      "confidence": 0.6357,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 302,
+      "bbox_page": [
+        1003.0,
+        1386.0,
+        1054.0,
+        1408.0
+      ],
+      "text": "२,२२",
+      "confidence": 0.6518,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 303,
+      "bbox_page": [
+        1361.0,
+        1386.0,
+        1414.0,
+        1408.0
+      ],
+      "text": "<b>፫,</b>9 ξ",
+      "confidence": 0.5423,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 304,
+      "bbox_page": [
+        1699.0,
+        1387.0,
+        1722.0,
+        1405.0
+      ],
+      "text": "0",
+      "confidence": 0.6834,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 305,
+      "bbox_page": [
+        1162.0,
+        1387.0,
+        1213.0,
+        1407.0
+      ],
+      "text": "<b>አ</b>,የአ",
+      "confidence": 0.6113,
+      "language_detected": "latin"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 306,
+      "bbox_page": [
+        1564.0,
+        1387.0,
+        1613.0,
+        1407.0
+      ],
+      "text": "۲,9६",
+      "confidence": 0.6744,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 307,
+      "bbox_page": [
+        120.0,
+        1416.0,
+        337.0,
+        1440.0
+      ],
+      "text": "२४९९९ वैदेशिक ऋणको व्याज",
+      "confidence": 0.9694,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 308,
+      "bbox_page": [
+        551.0,
+        1420.0,
+        651.0,
+        1440.0
+      ],
+      "text": "नेपाल सरकार",
+      "confidence": 0.9985,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 309,
+      "bbox_page": [
+        1699.0,
+        1421.0,
+        1724.0,
+        1439.0
+      ],
+      "text": "0",
+      "confidence": 0.6238,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 310,
+      "bbox_page": [
+        735.0,
+        1422.0,
+        777.0,
+        1440.0
+      ],
+      "text": "नगद",
+      "confidence": 0.9701,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 311,
+      "bbox_page": [
+        1003.0,
+        1421.0,
+        1054.0,
+        1443.0
+      ],
+      "text": "२,२२",
+      "confidence": 0.6374,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 312,
+      "bbox_page": [
+        1361.0,
+        1421.0,
+        1412.0,
+        1441.0
+      ],
+      "text": "८,१६",
+      "confidence": 0.4303,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 313,
+      "bbox_page": [
+        1564.0,
+        1421.0,
+        1613.0,
+        1441.0
+      ],
+      "text": "८,१६",
+      "confidence": 0.7757,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 314,
+      "bbox_page": [
+        1773.0,
+        1422.0,
+        1799.0,
+        1440.0
+      ],
+      "text": "0",
+      "confidence": 0.6053,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P2_redbook_p025",
+      "pipeline": "A",
+      "cell_index": 315,
+      "bbox_page": [
+        1162.0,
+        1422.0,
+        1213.0,
+        1442.0
+      ],
+      "text": "५,९५",
+      "confidence": 0.8268,
+      "language_detected": "devanagari"
+    }
+  ],
+  "summary": {
+    "cell_count": 316,
+    "empty_text_count": 0,
+    "mean_confidence": 0.7704,
+    "devanagari_lines": 136,
+    "latin_lines": 19,
+    "mixed_lines": 6,
+    "empty_lines": 0,
+    "lines_with_devanagari_digits": 105,
+    "lines_with_arabic_digits": 162,
+    "lines_with_both_digit_scripts": 7
+  }
+}

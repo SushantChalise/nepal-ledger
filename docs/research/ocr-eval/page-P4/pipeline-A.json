@@ -1,0 +1,670 @@
+{
+  "pipeline": "A",
+  "engine": "surya-ocr",
+  "engine_version": "0.17.1",
+  "dpi": 192,
+  "tile": "flat",
+  "preprocess": "deskew+bilateral+adaptive_threshold",
+  "preprocess_meta": {
+    "skew_deg": 0.0
+  },
+  "elapsed_sec": 97.62,
+  "records": [
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 0,
+      "bbox_page": [
+        416.0,
+        223.0,
+        1442.0,
+        259.0
+      ],
+      "text": "“वित्तीय कारोवार” भन्नाले बैंक / वित्तीय संस्थाले गर्ने बैंक तथा वित्तीय संस्था",
+      "confidence": 0.9739,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 1,
+      "bbox_page": [
+        353.0,
+        231.0,
+        407.0,
+        257.0
+      ],
+      "text": "(ड)",
+      "confidence": 0.9004,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 2,
+      "bbox_page": [
+        426.0,
+        269.0,
+        1442.0,
+        303.0
+      ],
+      "text": "सम्बन्धी ऐन, २०६३ को दफा ४७ मा उल्लेख भए बमोजिमको कारोवार सम्भन्",
+      "confidence": 0.9938,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 3,
+      "bbox_page": [
+        424.0,
+        314.0,
+        496.0,
+        344.0
+      ],
+      "text": "पर्छ ।",
+      "confidence": 0.9872,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 4,
+      "bbox_page": [
+        419.0,
+        365.0,
+        1442.0,
+        401.0
+      ],
+      "text": "“कार्यालय” भन्नाले बैंक / वित्तीय संस्थाको केन्द्रीय कार्यालय सम्भन् पर्छ र सो",
+      "confidence": 0.9787,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 5,
+      "bbox_page": [
+        353.0,
+        370.0,
+        404.0,
+        396.0
+      ],
+      "text": "(ढ)",
+      "confidence": 0.8643,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 6,
+      "bbox_page": [
+        426.0,
+        408.0,
+        1441.0,
+        444.0
+      ],
+      "text": "शब्दले बैंक/वित्तीय संस्थाको क्षेत्रीय, शाखा, उप-शाखा, प्रशाखा, इलाका, प्रतिनिधि,",
+      "confidence": 0.9909,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 7,
+      "bbox_page": [
+        426.0,
+        450.0,
+        1320.0,
+        488.0
+      ],
+      "text": "सम्पर्क कार्यालय लगायतका अन्य जुनसुकै कार्यालय समेतलाई जनाउँछ।",
+      "confidence": 0.9981,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 8,
+      "bbox_page": [
+        354.0,
+        501.0,
+        1441.0,
+        541.0
+      ],
+      "text": "(ण) \"पदाधिकारी\" भन्नाले बैंक / वित्तीय संस्थाको सञ्चालक, कार्यकारी प्रमुख, प्रवन्धक,",
+      "confidence": 0.9768,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 9,
+      "bbox_page": [
+        426.0,
+        545.0,
+        1442.0,
+        582.0
+      ],
+      "text": "कम्पनी सिचव, र कर्मचारी सम्भन् पर्छ, र सो शब्दले बैंक वा वित्तीय संस्थाको",
+      "confidence": 0.9768,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 10,
+      "bbox_page": [
+        425.0,
+        586.0,
+        1442.0,
+        630.0
+      ],
+      "text": "लिक्विडेटर, सल्लाहाकार, लेखापरीक्षक र व्यवसायिक विज्ञको रुपमा काम गर्ने",
+      "confidence": 0.999,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 11,
+      "bbox_page": [
+        426.0,
+        633.0,
+        758.0,
+        663.0
+      ],
+      "text": "व्यक्ति समेतलाई जनाउँछ।",
+      "confidence": 0.9985,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 12,
+      "bbox_page": [
+        353.0,
+        684.0,
+        1442.0,
+        723.0
+      ],
+      "text": "(त) \"कार्यकारी प्रमुख\" भन्नाले बैंक वा वित्तीय संस्थाको दैनिक काम कारवाही सुचारु",
+      "confidence": 0.9915,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 13,
+      "bbox_page": [
+        425.0,
+        727.0,
+        1442.0,
+        768.0
+      ],
+      "text": "रुपले संचालन गर्न सिमितिले कार्यकारी प्रमुखको रुपमा कामकाज गर्न नियुक्त",
+      "confidence": 0.9936,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 14,
+      "bbox_page": [
+        426.0,
+        772.0,
+        1442.0,
+        809.0
+      ],
+      "text": "गरेको प्रमुख कार्यकारी अधिकृत सम्भानु पर्छ र सो शब्दले कार्यकारी अध्यक्ष,",
+      "confidence": 0.9853,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 15,
+      "bbox_page": [
+        426.0,
+        817.0,
+        1441.0,
+        853.0
+      ],
+      "text": "कार्यकारी निर्देशक, कार्यकारी संचालक, प्रबन्ध निर्देशक, प्रबन्ध सञ्चालक, वा",
+      "confidence": 0.9996,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 16,
+      "bbox_page": [
+        425.0,
+        856.0,
+        1442.0,
+        897.0
+      ],
+      "text": "महाप्रबन्धक वा सो पदमा रही कामकाज गर्ने अन्य पदाधिकारी मध्ये क्नै एक",
+      "confidence": 0.9989,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 17,
+      "bbox_page": [
+        426.0,
+        904.0,
+        739.0,
+        937.0
+      ],
+      "text": "पदाधिकारीलाई जनाउँछ।",
+      "confidence": 0.9991,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 18,
+      "bbox_page": [
+        353.0,
+        957.0,
+        1242.0,
+        992.0
+      ],
+      "text": "(थ) \"सभा\" भन्नाले बैंक / वित्तीय संस्थाको साधारण सभा सम्भनु पर्छ ।",
+      "confidence": 0.9788,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 19,
+      "bbox_page": [
+        281.0,
+        1060.0,
+        1441.0,
+        1095.0
+      ],
+      "text": "<b>बैंकको उद्देश्य</b> : बैंक/वित्तीय संस्थाको उद्देश्य प्रवन्धपत्रको दफा ४ मा उल्लेख भए बमोजिम",
+      "confidence": 0.9822,
+      "language_detected": "mixed"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 20,
+      "bbox_page": [
+        185.0,
+        1064.0,
+        224.0,
+        1089.0
+      ],
+      "text": "8.",
+      "confidence": 0.5316,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 21,
+      "bbox_page": [
+        283.0,
+        1106.0,
+        366.0,
+        1139.0
+      ],
+      "text": "हुनेछ ।",
+      "confidence": 0.9948,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 22,
+      "bbox_page": [
+        729.0,
+        1157.0,
+        893.0,
+        1186.0
+      ],
+      "text": "परिच्छेद - २",
+      "confidence": 0.9942,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 23,
+      "bbox_page": [
+        681.0,
+        1207.0,
+        944.0,
+        1242.0
+      ],
+      "text": "शेयर पूँजी तथा ऋण",
+      "confidence": 0.9945,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 24,
+      "bbox_page": [
+        280.0,
+        1255.0,
+        1363.0,
+        1294.0
+      ],
+      "text": "शेयरको अंकित मूल्य: यस बैंक / वित्तीय संस्थाको शेयरको अंकित मूल्य रु. १०० ह्नेछ ।",
+      "confidence": 0.9867,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 25,
+      "bbox_page": [
+        183.0,
+        1261.0,
+        224.0,
+        1293.0
+      ],
+      "text": "ሂ.",
+      "confidence": 0.6091,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 26,
+      "bbox_page": [
+        281.0,
+        1308.0,
+        1442.0,
+        1344.0
+      ],
+      "text": "शेयरमा लियन रहने क्रा : शेयरधनीहरुले बैंक/वित्तीय संस्थालाई तिर्न बाँकी रहेको शेयर",
+      "confidence": 0.9825,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 27,
+      "bbox_page": [
+        183.0,
+        1311.0,
+        218.0,
+        1342.0
+      ],
+      "text": "₹.",
+      "confidence": 0.5741,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 28,
+      "bbox_page": [
+        283.0,
+        1349.0,
+        1442.0,
+        1390.0
+      ],
+      "text": "वापतको रकम वा बैंक वित्तीय संस्थालाई कानून बमोजिम बुकाउनु पर्ने बाँकी रकम वापत",
+      "confidence": 0.9857,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 29,
+      "bbox_page": [
+        281.0,
+        1394.0,
+        1443.0,
+        1430.0
+      ],
+      "text": "निजहरुका नाममा दर्ता भएको शेयर र सो वापत बाँडिने लाभांशमा बैंक/वित्तीय संस्थाको",
+      "confidence": 0.998,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 30,
+      "bbox_page": [
+        280.0,
+        1438.0,
+        579.0,
+        1470.0
+      ],
+      "text": "लियन वा दाबी रहनेछ।",
+      "confidence": 0.9987,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 31,
+      "bbox_page": [
+        279.0,
+        1491.0,
+        1441.0,
+        1527.0
+      ],
+      "text": "विभिन्न वर्गका शेयरहरु जारी गर्ने भए त्यस्ता शेयरको वर्ग, त्यसमा निहित शेयरधनीको हक,",
+      "confidence": 0.9989,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 32,
+      "bbox_page": [
+        183.0,
+        1494.0,
+        223.0,
+        1523.0
+      ],
+      "text": "9.",
+      "confidence": 0.4889,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 33,
+      "bbox_page": [
+        283.0,
+        1530.0,
+        1442.0,
+        1574.0
+      ],
+      "text": "अधिकार तथा बन्देजहरु: साधारण शेयर बाहेक अन्य वर्गका शेयरको सम्बन्धमा हाललाई क्नै",
+      "confidence": 0.989,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 34,
+      "bbox_page": [
+        281.0,
+        1578.0,
+        1442.0,
+        1615.0
+      ],
+      "text": "व्यवस्था गरिएको छैन । साधारण शेयरको समूहगत संरचना प्रबन्धपत्रको दफा ६ मा उल्लेख",
+      "confidence": 0.999,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 35,
+      "bbox_page": [
+        281.0,
+        1622.0,
+        563.0,
+        1657.0
+      ],
+      "text": "गरिए बमोजिम ह्नेछ।",
+      "confidence": 0.9834,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 36,
+      "bbox_page": [
+        279.0,
+        1674.0,
+        1445.0,
+        1710.0
+      ],
+      "text": "नियम ७ बमोजिम जारी भएको शेयर खरिद गर्ने शेयरधनीको अधिकारमा हेरफेर गर्दा",
+      "confidence": 0.999,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 37,
+      "bbox_page": [
+        183.0,
+        1681.0,
+        226.0,
+        1706.0
+      ],
+      "text": "写.",
+      "confidence": 0.4715,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 38,
+      "bbox_page": [
+        283.0,
+        1717.0,
+        1442.0,
+        1752.0
+      ],
+      "text": "सम्बन्धित वर्गका शेयरधनीहरुको स्वीकृति चाहिने वा नचाहिने :- हाल विभिन्न बर्गका शेयरहरु",
+      "confidence": 0.9951,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 39,
+      "bbox_page": [
+        283.0,
+        1760.0,
+        1442.0,
+        1797.0
+      ],
+      "text": "जारी गरिएको छैन । सो सम्बन्धी व्यवस्था गर्नु परेको खण्डमा प्रचलित कानूनको अधीनमा",
+      "confidence": 0.9936,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 40,
+      "bbox_page": [
+        281.0,
+        1804.0,
+        1442.0,
+        1841.0
+      ],
+      "text": "रही राष्ट्र बैंकको स्वीकृति लिई विभिन्न बर्गका शेयर खरिद गर्ने शेयरधनीका अधिकारमा हेरफेर",
+      "confidence": 0.9983,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 41,
+      "bbox_page": [
+        281.0,
+        1848.0,
+        1397.0,
+        1885.0
+      ],
+      "text": "गर्दा त्यस्ता वर्गका शेयरधनीहरुको स्वीकृतिको सम्बन्धमा आवश्यक व्यवस्था गर्न सिकनेछ ।",
+      "confidence": 0.9991,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 42,
+      "bbox_page": [
+        281.0,
+        1899.0,
+        1442.0,
+        1935.0
+      ],
+      "text": "अग्राधिकार शेयर : बैंक/वित्तीय संस्थाको सम्पूर्ण शेयरहरु साधारण शेयरले बनेको हुँदा हाल",
+      "confidence": 0.9877,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 43,
+      "bbox_page": [
+        183.0,
+        1904.0,
+        223.0,
+        1934.0
+      ],
+      "text": "9.",
+      "confidence": 0.8529,
+      "language_detected": "numeric_or_punct"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 44,
+      "bbox_page": [
+        283.0,
+        1942.0,
+        1445.0,
+        1979.0
+      ],
+      "text": "अग्राधिकार शेयर सम्बन्धी व्यवस्था गरिएको छैन । सो शेयर सम्बन्धी व्यवस्था गर्न परेको",
+      "confidence": 0.999,
+      "language_detected": "devanagari"
+    },
+    {
+      "page": "P4_nrb_bfi_p001",
+      "pipeline": "A",
+      "cell_index": 45,
+      "bbox_page": [
+        778.0,
+        2076.0,
+        803.0,
+        2103.0
+      ],
+      "text": "२",
+      "confidence": 0.7529,
+      "language_detected": "devanagari"
+    }
+  ],
+  "summary": {
+    "cell_count": 46,
+    "empty_text_count": 0,
+    "mean_confidence": 0.9288,
+    "devanagari_lines": 39,
+    "latin_lines": 0,
+    "mixed_lines": 1,
+    "empty_lines": 0,
+    "lines_with_devanagari_digits": 7,
+    "lines_with_arabic_digits": 3,
+    "lines_with_both_digit_scripts": 0
+  }
+}
