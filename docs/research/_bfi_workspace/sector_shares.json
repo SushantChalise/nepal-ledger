@@ -1,0 +1,182 @@
+[
+  {
+    "slug": "agricultural-and-forest-related",
+    "share_first_pct": 6.603292874769538,
+    "share_last_pct": 6.373313446611439,
+    "delta_pp": -0.22997942815809935,
+    "value_first_npr_million": 278633.3696572075,
+    "value_last_npr_million": 356370.4733027943,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "construction",
+    "share_first_pct": 9.879217777697226,
+    "share_last_pct": 4.137799433975296,
+    "delta_pp": -5.74141834372193,
+    "value_first_npr_million": 416864.7054100624,
+    "value_last_npr_million": 231369.3740422919,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "wholesaler-retailer",
+    "share_first_pct": 19.924066497461087,
+    "share_last_pct": 18.477005269819323,
+    "delta_pp": -1.4470612276417647,
+    "value_first_npr_million": 840718.3947078241,
+    "value_last_npr_million": 1033161.0344262396,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "consumption-loans",
+    "share_first_pct": 5.57020839450875,
+    "share_last_pct": 20.59710693816035,
+    "delta_pp": 15.026898543651601,
+    "value_first_npr_million": 235041.2080895329,
+    "value_last_npr_million": 1151708.7319976562,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "electricity-gas-and-water",
+    "share_first_pct": 4.988304566711018,
+    "share_last_pct": 7.969389256452169,
+    "delta_pp": 2.9810846897411514,
+    "value_first_npr_million": 210487.12160107493,
+    "value_last_npr_million": 445616.71806147596,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "finance-insurance-and-real-estate",
+    "share_first_pct": 7.90867313530339,
+    "share_last_pct": 7.882137739156963,
+    "delta_pp": -0.02653539614642675,
+    "value_first_npr_million": 333715.3579279829,
+    "value_last_npr_million": 440737.9584060237,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "transport-communication-and-public-utilities",
+    "share_first_pct": 2.303486518746315,
+    "share_last_pct": 1.49005625018507,
+    "delta_pp": -0.8134302685612451,
+    "value_first_npr_million": 97198.20441867597,
+    "value_last_npr_million": 83318.05042611995,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "mining-related",
+    "share_first_pct": 0.21395471297502439,
+    "share_last_pct": 0.21022687908333917,
+    "delta_pp": -0.0037278338916852116,
+    "value_first_npr_million": 9028.059751530001,
+    "value_last_npr_million": 11755.055361309996,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "others",
+    "share_first_pct": 15.699838948237868,
+    "share_last_pct": 6.054717445267328,
+    "delta_pp": -9.64512150297054,
+    "value_first_npr_million": 662472.3622266506,
+    "value_last_npr_million": 338555.8453635793,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "other-services",
+    "share_first_pct": 4.186536107455583,
+    "share_last_pct": 3.9755702106139696,
+    "delta_pp": -0.2109658968416137,
+    "value_first_npr_million": 176655.59970375092,
+    "value_last_npr_million": 222298.1576966469,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "metal-products-machinary-electronic-equipment-assemblage",
+    "share_first_pct": 1.5553655182317838,
+    "share_last_pct": 1.3068383810256574,
+    "delta_pp": -0.2485271372061264,
+    "value_first_npr_million": 65630.397380894,
+    "value_last_npr_million": 73073.23204446881,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "productwise--real-estate-loan",
+    "share_first_pct": 4.513873832704532,
+    "share_last_pct": 4.935289997251508,
+    "delta_pp": 0.42141616454697584,
+    "value_first_npr_million": 190467.983181475,
+    "value_last_npr_million": 275961.89124233014,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "productwise--margin-nature-loan",
+    "share_first_pct": 2.57160047678958,
+    "share_last_pct": 2.5163102473418517,
+    "delta_pp": -0.05529022944772821,
+    "value_first_npr_million": 108511.57442944251,
+    "value_last_npr_million": 140702.1137958725,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "productwise--hire-purchase-loan",
+    "share_first_pct": 3.876742756855179,
+    "share_last_pct": 2.301324793032757,
+    "delta_pp": -1.5754179638224222,
+    "value_first_npr_million": 163583.52084670038,
+    "value_last_npr_million": 128680.97773420857,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "productwise--deprived-sector-loan",
+    "share_first_pct": 7.002632325592854,
+    "share_last_pct": 5.2982955633472075,
+    "delta_pp": -1.7043367622456467,
+    "value_first_npr_million": 295483.94692678575,
+    "value_last_npr_million": 296259.72634564736,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "productwise--term-loan",
+    "share_first_pct": 22.524113708251637,
+    "share_last_pct": 36.97526309401506,
+    "delta_pp": 14.451149385763426,
+    "value_first_npr_million": 950430.3110728359,
+    "value_last_npr_million": 2067510.4276120886,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "productwise--overdraft",
+    "share_first_pct": 15.250896613094772,
+    "share_last_pct": 1.9902269156829924,
+    "delta_pp": -13.26066969741178,
+    "value_first_npr_million": 643528.7354642132,
+    "value_last_npr_million": 111285.61522405688,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  },
+  {
+    "slug": "productwise--trust-receipt-loan-import-loan",
+    "share_first_pct": 4.852569769683939,
+    "share_last_pct": 2.238838906546853,
+    "delta_pp": -2.6137308631370857,
+    "value_first_npr_million": 204759.63917788886,
+    "value_last_npr_million": 125187.01417376801,
+    "first_period": "Shrawan 2078",
+    "last_period": "Ashadh 2082"
+  }
+]

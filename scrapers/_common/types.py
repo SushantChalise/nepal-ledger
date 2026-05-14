@@ -57,6 +57,48 @@ class StagingRowDraft:
     parser_notes: str | None = None
 
 
+BankClass = Literal[
+    "commercial",
+    "development",
+    "finance",
+    "microfinance",
+    "infrastructure",
+    "system_total",
+]
+
+
+@dataclass(frozen=True)
+class StagingBfiRowDraft:
+    """Mirror of src/lib/db/schema/banking-sector-facts.ts > bankingSectorFacts
+    (parser-emitted fields only; FKs, IDs, promoted_at filled in by the
+    orchestration layer).
+
+    Differs from ``StagingRowDraft`` by including ``bank_class``,
+    ``bank_entity_slug`` (NULL until the entity-resolver maps it), and
+    ``source_sheet`` (which C-sheet the value came from).
+
+    ``indicator_slug`` here is the kebab-case slug; the orchestrator does NOT
+    re-key by `_raw` suffix because BFI slugs are themselves the canonical
+    identifier (the C-sheet -> slug map lives in scrapers/nrb_bfi/parser.py).
+    """
+
+    source_sheet: str
+    indicator_slug: str
+    bank_class: BankClass
+    bank_entity_slug: str | None
+    value: float
+    unit: str
+    reporting_period_type: ReportingPeriodType
+    reporting_period_bs: str
+    reporting_period_ad_start: datetime
+    reporting_period_ad_end: datetime
+    publication_date_ad: datetime
+    publication_date_bs: str
+    fiscal_year_bs: str
+    confidence_grade_proposed: ConfidenceGrade
+    parser_notes: str | None = None
+
+
 @dataclass(frozen=True)
 class ParserError:
     error_class: ParserErrorClass
