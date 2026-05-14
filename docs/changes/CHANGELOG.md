@@ -8,6 +8,60 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-05-14 (sixth pass) — Surya OCR doctrine + Financial Data corpus integration
+
+**What changed:** A second overnight session expanded scope substantially. The user provided a pre-staged `Financial Data/` corpus (50 NRB BFI monthly XLSX, 64 MoF PDFs across Red/White/Yellow/Agreement/Intergovernmental, plus the FY 2082/83 pre-cleaned fiscal transfer XLSX, plus 17.8M voter records aggregated into a 10,263-row administrative hierarchy CSV, plus the CBS NPHC 2021 census with 89 CSV + 8 Excel files, plus constituency mapping and a voter DB backup). Two architectural decisions absorbed:
+
+### New ADRs
+
+- **ADR-0008** — Surya OCR routing + tile-based pipeline. Pinned to v0.17.1. Default invocation: 384 DPI 2×2 tiled with 80px overlap, layout-aware tile boundaries (never cut through detected cells), pre-Surya OpenCV deskew + denoise + binarize for Devanagari pages, `TABLE_REC_MAX_BOXES=500`, mandatory `--detect_boxes` (the prior chat's #1 failure mode per the findings doc). PaddleOCR fallback gated on confidence + seam-disagreement thresholds set by Worker δ's empirical evaluation. 12 tile/stitch failure modes catalogued with concrete mitigations. Devanagari numerals preserved losslessly in both representations.
+- **ADR-0009** — Entities dimension + per-domain fact tables. Replaces string-prefix slug overloading with a proper `entities` polymorphic dimension covering 13 entity kinds (bank, public_enterprise, local_level, district, province, cooperative, business_group, ministry, department, donor, constituency, ward, polling_station). 1:1 `administrative_units` specialization for the federal politico-geographic data. Per-domain fact tables for fiscal transfers, census, banking sector facts. Future migrations add Yellow Book PE financials, foreign-aid projects, loan agreements.
+
+### Schema
+
+- **Migration 0002** (PR #17, merged): 8 new tables — `entities`, `administrative_units`, `local_government_fiscal_transfers`, `census_facts`, `banking_sector_facts`, `ocr_tile_manifests`, `ocr_cell_extractions`, `ocr_stitch_disagreements`. 7 new enums (`ingestion_mode`, `entity_kind`, `grant_type`, `local_level_type`, `bank_class`, `census_indicator_family`, `stitch_resolution`). Added `ingestion_mode` column to `source_registry`. Tests 96/96 still pass.
+
+### Doctrine
+
+- **`docs/SOURCE_REGISTRY.md` rewritten** — from 12 entries across 4 tiers to ~40 entries across Tier 0 + Tier 1–4 + Phase-2 paused + reference-only assets. New `ingestion_mode` enum distinguishes `automated_cron` / `manual_upload` / `reference_only`. Captures the Financial Data corpus + every missing source the audit identified.
+- **`docs/FINANCIAL_DATA_STRATEGY.md`** — inventory of the pre-staged corpus, three-phase extraction plan, intelligence map per Nepal Ledger vertical, schema impact analysis.
+- **`docs/SOURCE_REGISTRY_AUDIT_PROPOSAL.md`** — the audit that drove the registry rewrite (all 13 questions answered yes-as-proposed).
+- **`docs/research/surya-ocr-findings.md`** — 690-line comprehensive read of 100% of Surya OCR documentation (per user mandate). Critical findings: `--detect_boxes` is mandatory; `TABLE_REC_MAX_BOXES` default is 150 (truncating); DPI hard-cap at 192 with segfaults above; Devanagari regression open at v0.17.1.
+- **`docs/research/ocr-eval/EVALUATION_REPORT.md`** (Worker δ output, pending) — empirical evaluation across 5 Devanagari-complex pages × 4 pipelines (Surya flat / Surya 2×2 tiled / Surya 3×3 tiled / PaddleOCR), with Opus-as-judge.
+
+### Pipeline scripts (no live DB writes; staged-output pattern)
+
+- `scripts/apply-migrations.ts` — applies migrations 0001 + 0002 to live Supabase via `.env.local`
+- `scripts/ingest-fiscal-transfer-canonical.ts` — parses Cleaned/FY 2082/83 XLSX → 753 local levels + 77 districts + 7 provinces + ~6,000 fiscal-transfer rows. `--dry-run` writes staging JSON.
+- `scripts/ingest-admin-hierarchy.ts` — parses administrative_hierarchy_FINAL.csv → 6,285 ward rollups + 10,263 polling stations + 17.8M voters aggregated. Writes staging JSON.
+- `scripts/apply-all.ts` — single-command wrapper sequencing migration apply + all ingests in order, with idempotent re-runs and `--from`/`--only` flags.
+
+### Worker ports
+
+- **Worker ε** (`feat/scrapers-common-utils`): `scrapers/_common/devanagari_normalization.py` (31-entry OCR substitution dict ported byte-for-byte from `manual_match_reasoning.py`) + `scrapers/_common/municipality_resolver.py` (rapidfuzz-based 753-row canonical resolver). 79 pytest cases (12 existing + 67 new) green.
+
+### Active workers (overnight, not yet returned at time of this CHANGELOG entry)
+
+- **Worker δ** (Opus model) — OCR eval harness + Opus judging across 5 test pages × 4 pipelines. Writes `docs/research/ocr-eval/` + `EVALUATION_REPORT.md`.
+- **Worker ζ** — NRB BFI XLSX parser v0.1.0 covering C4 / C5 / C6 / C7 sheets across 50 monthly files. Writes `scrapers/nrb_bfi/` + `staging-data/nrb-bfi/`.
+- **Worker η** (queued — pending ζ completion): Census 2021 parser for 89 CSVs + 8 Excel.
+- **Worker θ** (queued — pending ζ completion): constituency table + admin-hierarchy constituency fix.
+
+### gitignore + safety
+
+- `/Financial Data/` added to .gitignore (raw corpus contains a 546MB voter DB SQL dump with PII + a .env with credentials; never committed).
+- `/staging-data/` added (parse outputs re-generatable from Financial Data/; not in git).
+
+**Why this pass:** The user provided the pre-staged Financial Data corpus mid-session and mandated (a) reading 100% of Surya OCR docs before integration, (b) a tile/stitch architecture with programmatic tracking and 12-item proactive failure-mode foresight, (c) live ingestion of XLSX data into DB for Claude analytical work to derive trends/anomalies. The schema + doctrine + parser infrastructure to support those mandates landed in this pass; the live DB application + parser worker outputs land overnight as the workers complete.
+
+**Plan section affected:** No strategy scope changes. Day 4–6 milestone complete since prior pass. Day 11–28 milestone (data provenance core) substantially in flight with this pass.
+
+**Related:** ADR-0008 (added), ADR-0009 (added). Migration 0002 (PR #17). Doctrine docs SOURCE_REGISTRY / FINANCIAL_DATA_STRATEGY / surya-ocr-findings shipped. Worker ε output on `feat/scrapers-common-utils`. Workers δ, ζ, η, θ tracked separately.
+
+**Backward compatibility:** Schema additions in 0002 are purely additive (new tables, new enums, optional column on `source_registry`). Migration 0001 unchanged.
+
+---
+
 ## 2026-05-14 (fifth pass) — Overnight backend burst: schema foundation + Day 11–28 staging
 
 **What changed:** Mother Opus operated autonomously through the night per a user-issued rescope ("complete the backend; wireframes for the front end come in the morning"). 10 squash-merged PRs landed via branch protection, advancing two milestones from `BACKEND_PLAN.md` substantially in one session.
