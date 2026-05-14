@@ -260,3 +260,30 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
         staging_rows=staging_rows,
         errors=errors,
     )
+
+
+def _main() -> None:
+    """CLI entrypoint used by the Node ingestion orchestrator.
+
+    Argv: ``parser.py <source_document_path> <source_document_id>``.
+    Writes ``ParserResult.to_json_dict()`` as JSON to stdout. Exit codes
+    follow the subprocess contract in ``src/lib/ingestion/run-parser.ts``:
+      - 0: parser ran (status may still be 'failure'; consumer reads stdout)
+      - 2: usage error
+      - 1: catastrophic crash
+    """
+    import json
+    import sys
+
+    if len(sys.argv) != 3:
+        sys.stderr.write(
+            "usage: parser.py <source_document_path> <source_document_id>\n"
+        )
+        sys.exit(2)
+
+    result = parse(sys.argv[1], sys.argv[2])
+    json.dump(result.to_json_dict(), sys.stdout)
+
+
+if __name__ == "__main__":
+    _main()
