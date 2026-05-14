@@ -15,6 +15,13 @@
       "when": 1778703773099,
       "tag": "0001_0002_entities_admin_facts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778759523967,
+      "tag": "0002_0003_source_registry_tier",
+      "breakpoints": true
     }
   ]
 }

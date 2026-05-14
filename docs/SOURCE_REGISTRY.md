@@ -2,10 +2,14 @@
 
 The platform's core asset is **auditable economic truth**, not "data". Every external data feed gets a registry entry before a scraper is written, before a row hits production. Without this discipline, the Fact Ledger silently mixes A-tier and C-tier inputs and the credibility moat dies.
 
+Under [ADR-0009](decisions/0009-source-registry-single-source-of-truth.md), the `source_registry` table is the **single source of truth** for what we track. The seed script (`scripts/seed-source-registry.ts`) is the canonical declarative form. The generated index at [`docs/sources/_index.md`](sources/_index.md) is the human-readable enumeration; this document only carries the schema, workflow, and per-source Markdown template.
+
 This document defines:
 1. The schema of the source registry
 2. The workflow for adding a new source
-3. The list of sources committed to ingest in Year 1
+3. The Markdown profile template
+
+> **For the current registered set:** see [`docs/sources/_index.md`](sources/_index.md) (generated; do not hand-edit) or query the live `source_registry` table.
 
 ---
 
@@ -119,45 +123,16 @@ A scraper merged without a source registry entry is reverted on sight.
 
 ---
 
-## Year 1 Source Commit List
+## Adding a source (recap)
 
-These sources get registered in priority order. The Day 1–14 milestone ingests source #1 only.
+Per ADR-0009, adding a source is a regular PR (no ADR):
 
-### Tier 1 — Monthly macro (Day 1–14)
+1. Add a row to `scripts/seed-source-registry.ts`. Pick the `tier` (0–4 or null), `ingestion_mode` (`automated_cron` / `manual_upload` / `reference_only`), and `status`.
+2. Run `pnpm gen:source-index` and commit the updated `docs/sources/_index.md`.
+3. Create `docs/sources/<source-id>.md` (use the template above; stub is fine, breakage modes / revision policy can be filled in on the parser PR).
+4. Run `pnpm check:source-registry` to confirm the contract holds.
 
-| ID | Agency | Dataset | Confidence | Notes |
-|----|--------|---------|------------|-------|
-| `nrb-cmefs-monthly` | NRB | Current Macroeconomic and Financial Situation | A | The starter — existing PDFs already in repo |
-| `nrb-ncpi-table` | NRB | NCPI Table 2(B) | A | Existing CSV already in repo |
-
-### Tier 2 — Quarterly + monthly trade/debt (Day 30–60)
-
-| ID | Agency | Dataset | Confidence | Notes |
-|----|--------|---------|------------|-------|
-| `customs-monthly-trade` | Department of Customs | Monthly trade statistics | A | Format: HTML+xlsx |
-| `pdmo-debt-bulletin` | PDMO | Quarterly debt bulletin | A | PDF tables |
-| `fcgo-daily` | FCGO | Daily revenue + expenditure | B (preliminary) | Visible "preliminary" label mandatory |
-| `nrb-banking-stats` | NRB | Banking and Financial Statistics | A | Quarterly |
-
-### Tier 3 — Sector data (Day 60–90)
-
-| ID | Agency | Dataset | Confidence | Notes |
-|----|--------|---------|------------|-------|
-| `nso-gdp` | NSO | Quarterly GDP estimates | A | Lagged 1–2 quarters |
-| `moald-crop-production` | MoALD | Seasonal crop production | B | PDF-heavy, variable format |
-| `ntb-tourism-monthly` | Nepal Tourism Board | Monthly arrivals + receipts | A | HTML page |
-| `nepse-eod` | NEPSE | End-of-day quotes + market cap | A | Daily, JSON-ish API |
-
-### Tier 4 — Phase 2 candidates (post-Day 90)
-
-- DoFE labour migration data
-- OAG audit reports (manual, not scraped)
-- MoF DFIMIS development finance data
-- World Bank International Debt Statistics
-- ADB project disclosures
-- Hansen Global Forest Change (geospatial)
-- ESA WorldCover (geospatial)
-- Land Survey Department cadastral exports (manual)
+Schema/enum/tier-definition changes — that's an ADR.
 
 ---
 

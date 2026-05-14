@@ -1,6 +1,6 @@
 # Nepal Ledger — Data Requirements (Year 1)
 
-> Single source of truth for what data flows into the Fact Ledger, in what order, with what acceptance criteria. Consolidates [STRATEGY](STRATEGY.md), [BACKEND_PLAN](BACKEND_PLAN.md), [SOURCE_REGISTRY](SOURCE_REGISTRY.md), [SOURCE_REGISTRY_AUDIT_PROPOSAL](SOURCE_REGISTRY_AUDIT_PROPOSAL.md), [FINANCIAL_DATA_STRATEGY](FINANCIAL_DATA_STRATEGY.md), and the recent CBS and Surya research audits.
+> Single source of truth for what data flows into the Fact Ledger, in what order, with what acceptance criteria. Consolidates [STRATEGY](STRATEGY.md), [BACKEND_PLAN](BACKEND_PLAN.md), [SOURCE_REGISTRY](SOURCE_REGISTRY.md) (+ generated [`sources/_index.md`](sources/_index.md) per [ADR-0009](decisions/0009-source-registry-single-source-of-truth.md)), [FINANCIAL_DATA_STRATEGY](FINANCIAL_DATA_STRATEGY.md), and the recent CBS and Surya research audits.
 >
 > **Update protocol:** when a source moves between status columns, when an ADR adds or removes a source, or when a milestone slips — update this file in the same PR and append a row to §7 Changelog. Do not edit upstream docs from here; this file consolidates, it does not amend.
 
@@ -95,7 +95,7 @@ Three tier tables. Status reflects commit `f5d3290` (HEAD as of 2026-05-14). "Ow
 | `mof-redbook-budget` | MoF | Federal Budget Red Books (latest 3 FYs of 20) | annual | PDF (heavy, mostly Nepali) | A | Not started (data in repo at `Financial Data/mof_documents/redbook/`) | Pending (FINANCIAL_DATA_STRATEGY §"Phase B3") | Heaviest single OCR target; needs budget-code controlled vocabulary preload |
 | `mof-whitebook-foreign-aid` | MoF | Foreign Aid Source Books (14 PDFs, FY 2062/63 → FY 2078/79) | annual | PDF (scanned) | A | Not started (data in repo at `Financial Data/mof_documents/whitebook/`) | Pending (FINANCIAL_DATA_STRATEGY §"Phase B4") | Needs `foreign_aid_projects` domain table; lower priority since CMEFs has aggregates |
 
-Reference-only assets (Economic Survey, NPC 16th Plan, NLSS, NDHS, Agriculture Census, World Bank WDI, IMF Article IV, ADB ADO Nepal) are tracked separately per [SOURCE_REGISTRY_AUDIT_PROPOSAL §"Reference-only assets"](SOURCE_REGISTRY_AUDIT_PROPOSAL.md). They are cited from stories and Knowledge Base entries but do not enter `approved_indicator_values`.
+Reference-only assets (Economic Survey, NPC 16th Plan, NLSS, NDHS, World Bank WDI, IMF Article IV, ADB ADO Nepal) are registered in `source_registry` with `ingestion_mode = 'reference_only'` per [ADR-0009](decisions/0009-source-registry-single-source-of-truth.md); see [`docs/sources/_index.md`](sources/_index.md) for the current list. They are cited from stories and Knowledge Base entries but do not enter `approved_indicator_values`.
 
 ---
 
@@ -157,15 +157,15 @@ This phasing is **proposed** in FINANCIAL_DATA_STRATEGY (still marked "Draft for
 |---|---|---|
 | Cloudflare R2 source-document storage | Payment method not on file; use Supabase Storage Year 1 with S3-compatible seam | [ADR-0004](decisions/0004-supabase-storage-instead-of-r2.md) |
 | Production LLM API parsing | Cost + provenance fragility; Claude CLI is dev assistant only, production parsers are deterministic Python | [ADR-0003](decisions/0003-ai-assisted-parsing-policy.md), [PARSING_WORKFLOW.md](PARSING_WORKFLOW.md) |
-| `ocr-company-register` (OCR — Office of Company Registrar) | Mostly PDF, no structured API; manual phase needed | SOURCE_REGISTRY_AUDIT_PROPOSAL §"Phase 2" |
-| `mto-exchange-rates` (per-MTO scraping for FX corridor) | Fragmented per provider; high per-source build cost | SOURCE_REGISTRY_AUDIT_PROPOSAL §"Phase 2" |
-| `cib-sectoral-credit` (Credit Information Bureau Nepal) | Partial public release only | SOURCE_REGISTRY_AUDIT_PROPOSAL §"Phase 2" |
-| `dols-cadastral` (Department of Land Survey) | Manual / cadastral data not bulk-released | SOURCE_REGISTRY_AUDIT_PROPOSAL §"Phase 2" |
+| `ocr-company-register` (OCR — Office of Company Registrar) | Mostly PDF, no structured API; manual phase needed | ADR-0009 (Phase 2 — deferred per audit-proposal categorization, now absorbed into seed as paused rows or omitted) |
+| `mto-exchange-rates` (per-MTO scraping for FX corridor) | Fragmented per provider; high per-source build cost | ADR-0009 (Phase 2 — deferred per audit-proposal categorization, now absorbed into seed as paused rows or omitted) |
+| `cib-sectoral-credit` (Credit Information Bureau Nepal) | Partial public release only | ADR-0009 (Phase 2 — deferred per audit-proposal categorization, now absorbed into seed as paused rows or omitted) |
+| `dols-cadastral` (Department of Land Survey) | Manual / cadastral data not bulk-released | ADR-0009 (Phase 2 — deferred per audit-proposal categorization, now absorbed into seed as paused rows or omitted) |
 | `hansen-gfc`, `esa-worldcover`, `icimod-glacier-inventory` (geospatial) | Phase 2 — needs raster/tile pipeline not in current stack | SOURCE_REGISTRY §"Tier 4 — Phase 2 candidates" |
 | Real-time scraping cadence | GitHub Actions cron is the Year 1 scheduler; sub-hourly cadence not pursued | BACKEND_PLAN §"Scheduled jobs" |
 | Migration to Cloudflare Pages (vs. Workers) | Decided in favour of Workers + OpenNext | [ADR-0002](decisions/0002-cloudflare-workers-opennext.md) |
-| `regional-wholesale-prices` (Pokhara/Birgunj/Itahari) | Each market publishes differently; Kalimati is the priority for V7 v1 | SOURCE_REGISTRY_AUDIT_PROPOSAL §"Phase 2" |
-| `ecn-results` (Election Commission Nepal) | Governance overlay, post-Day 365 | SOURCE_REGISTRY_AUDIT_PROPOSAL §"Phase 2" |
+| `regional-wholesale-prices` (Pokhara/Birgunj/Itahari) | Each market publishes differently; Kalimati is the priority for V7 v1 | ADR-0009 (Phase 2 — deferred per audit-proposal categorization, now absorbed into seed as paused rows or omitted) |
+| `ecn-results` (Election Commission Nepal) | Governance overlay, post-Day 365 | ADR-0009 (Phase 2 — deferred per audit-proposal categorization, now absorbed into seed as paused rows or omitted) |
 | Ward-level CBS NPHC cross-tabs (beyond DEGURBA) | CBS has not published these | [research/cbs-nphc-2021-audit.md §5](research/cbs-nphc-2021-audit.md) |
 | Composite "Wealth Conversion Score" (0–100) | Killed by first-principles review; replaced by Monthly Verdict prose | [STRATEGY §"The Monthly Verdict"](STRATEGY.md) |
 
@@ -181,11 +181,11 @@ These are ambiguities the upstream docs do not resolve. The §6 in the upstream 
 
 - **OQ-3.** ~~FINANCIAL_DATA_STRATEGY status.~~ **RESOLVED 2026-05-14 (ADR-0008):** locked after retrofitting 6 drifts. See [`docs/decisions/0008-financial-data-strategy.md`](decisions/0008-financial-data-strategy.md).
 
-- **OQ-4.** SOURCE_REGISTRY_AUDIT_PROPOSAL status. Same shape: "Draft for user review. Not yet codified into `SOURCE_REGISTRY.md`." It proposes a re-tier from 4 tiers → Tier 0 + 1–4 + Phase 2, ~40 new entries, an `ingestion_mode` enum, and a Reference-only category. This file uses the proposal's Tier-1/2/3 buckets as the closest-to-current view, but the canonical SOURCE_REGISTRY.md still shows the original 12-entry / 4-tier layout. **Which is the source of truth?** *(Upstream loci: SOURCE_REGISTRY_AUDIT_PROPOSAL header + §"Summary of changes".)*
+- **OQ-4.** ~~SOURCE_REGISTRY_AUDIT_PROPOSAL status.~~ **RESOLVED 2026-05-14 (ADR-0009):** `source_registry` table is the single source of truth; `scripts/seed-source-registry.ts` is its declarative form; `docs/sources/_index.md` is generated; the audit proposal has been absorbed into the seed and deleted. See [`docs/decisions/0009-source-registry-single-source-of-truth.md`](decisions/0009-source-registry-single-source-of-truth.md).
 
-- **OQ-5.** District MRI Year 1 districts. **DEFERRED 2026-05-14:** pick after first three Tier-1 feeds reach `approved` — let the available district-disaggregated dimensions in those feeds inform the choice. *(Upstream loci: CLAUDE.md glossary entry "District MRI"; SOURCE_REGISTRY_AUDIT_PROPOSAL §"District MRI".)*
+- **OQ-5.** District MRI Year 1 districts. **DEFERRED 2026-05-14:** pick after first three Tier-1 feeds reach `approved` — let the available district-disaggregated dimensions in those feeds inform the choice. *(Upstream loci: CLAUDE.md glossary entry "District MRI"; ADR-0009 absorbed sources.)*
 
-- **OQ-6.** Sahakari Tracker shape (vertical vs. utility). STRATEGY V5 frames it as a vertical with a "Check your cooperative" search. SOURCE_REGISTRY_AUDIT_PROPOSAL OQ-2 flags whether it's a 4th signature utility instead. **No upstream decision recorded.**
+- **OQ-6.** Sahakari Tracker shape (vertical vs. utility). STRATEGY V5 frames it as a vertical with a "Check your cooperative" search. the (now-deleted) audit proposal OQ-2 flags whether it's a 4th signature utility instead. **No upstream decision recorded.**
 
 ---
 
@@ -195,3 +195,4 @@ These are ambiguities the upstream docs do not resolve. The §6 in the upstream 
 |---|---|---|
 | 2026-05-14 | Initial consolidation (Worker R) | (this PR) |
 | 2026-05-14 | ADR-0008 locked; OQ-3 + OQ-5 resolved | PR-6 |
+| 2026-05-14 | ADR-0009 locks source-registry single-source-of-truth; OQ-4 resolved; SOURCE_REGISTRY_AUDIT_PROPOSAL absorbed into seed and deleted; `tier` column added | PR-7 |

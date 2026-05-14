@@ -42,6 +42,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Source registry contract (ADR-0009)
+        run: pnpm check:source-registry
+
       - name: Test
         run: pnpm test --run --passWithNoTests
 
