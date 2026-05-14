@@ -1,0 +1,68 @@
+[
+  {
+    "metric": "deposits",
+    "period": "Shrawan 2078",
+    "shares_pct": {
+      "commercial": 88.41235401104638,
+      "development": 9.65166490697374,
+      "finance": 1.9359810819798917
+    },
+    "hhi_class": 7913.64700000088,
+    "total_npr_million": 4666314.340388234
+  },
+  {
+    "metric": "deposits",
+    "period": "Ashadh 2082",
+    "shares_pct": {
+      "commercial": 89.5683173318803,
+      "development": 8.631947040716081,
+      "finance": 1.7997356274036154
+    },
+    "hhi_class": 8100.23302770668,
+    "total_npr_million": 7303531.185462225
+  },
+  {
+    "metric": "loans",
+    "period": "Shrawan 2078",
+    "shares_pct": {
+      "commercial": 89.09449005109555,
+      "development": 9.222103377422183,
+      "finance": 1.6834065714822557
+    },
+    "hhi_class": 8025.7092058535345,
+    "total_npr_million": 4219612.4712540805
+  },
+  {
+    "metric": "loans",
+    "period": "Ashadh 2082",
+    "shares_pct": {
+      "commercial": 88.76067709280707,
+      "development": 9.374756327598096,
+      "finance": 1.864566579594829
+    },
+    "hhi_class": 7969.820462705148,
+    "total_npr_million": 5591604.371698825
+  },
+  {
+    "metric": "capital_fund",
+    "period": "Shrawan 2078",
+    "shares_pct": {
+      "commercial": 89.446345044409,
+      "development": 7.76632683433052,
+      "finance": 2.7873281212604786
+    },
+    "hhi_class": 8068.733672356682,
+    "total_npr_million": 634705.0161901944
+  },
+  {
+    "metric": "capital_fund",
+    "period": "Ashadh 2082",
+    "shares_pct": {
+      "commercial": 89.99005092272968,
+      "development": 7.7568457416689345,
+      "finance": 2.2531033356013905
+    },
+    "hhi_class": 8163.454395576427,
+    "total_npr_million": 775394.5404855759
+  }
+]

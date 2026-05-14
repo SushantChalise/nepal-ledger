@@ -1,0 +1,282 @@
+[
+  {
+    "period": "Shrawan 2078",
+    "re_cluster_pct": 12.422546968007921,
+    "productive_pct": 15.664404191433679,
+    "consumption_pct": 5.57020839450875,
+    "wholesale_retail_pct": 19.924066497461087,
+    "total_npr_million": 4219612.4712540805
+  },
+  {
+    "period": "Bhadra 2078",
+    "re_cluster_pct": 12.439556536150176,
+    "productive_pct": 15.592402572030666,
+    "consumption_pct": 5.393209702982642,
+    "wholesale_retail_pct": 20.16695378094137,
+    "total_npr_million": 4344800.648612956
+  },
+  {
+    "period": "Ashwin 2078",
+    "re_cluster_pct": 12.573636658502013,
+    "productive_pct": 15.608372801446293,
+    "consumption_pct": 14.166085773661141,
+    "wholesale_retail_pct": 20.019881023467416,
+    "total_npr_million": 4492524.331585603
+  },
+  {
+    "period": "Kartik 2078",
+    "re_cluster_pct": 12.441827704396882,
+    "productive_pct": 15.635423599804913,
+    "consumption_pct": 16.075240331693315,
+    "wholesale_retail_pct": 20.163961462008007,
+    "total_npr_million": 4545302.265544099
+  },
+  {
+    "period": "Mangsir 2078",
+    "re_cluster_pct": 12.374767589624236,
+    "productive_pct": 15.6605785110204,
+    "consumption_pct": 17.24274583085301,
+    "wholesale_retail_pct": 20.157320510863304,
+    "total_npr_million": 4603891.951725823
+  },
+  {
+    "period": "Ashadh 2078",
+    "re_cluster_pct": 12.478778151045985,
+    "productive_pct": 15.588044985579177,
+    "consumption_pct": 5.60224284402244,
+    "wholesale_retail_pct": 20.07267767468713,
+    "total_npr_million": 4172746.8881104086
+  },
+  {
+    "period": "Shrawan 2079",
+    "re_cluster_pct": 13.198060333073627,
+    "productive_pct": 16.400120382594153,
+    "consumption_pct": 18.54445041344257,
+    "wholesale_retail_pct": 20.11812245690552,
+    "total_npr_million": 4707598.086963405
+  },
+  {
+    "period": "Bhadra 2079",
+    "re_cluster_pct": 13.830191329377639,
+    "productive_pct": 16.294800026029716,
+    "consumption_pct": 18.784759412673843,
+    "wholesale_retail_pct": 20.322725622160835,
+    "total_npr_million": 4730245.630824037
+  },
+  {
+    "period": "Ashwin 2079",
+    "re_cluster_pct": 12.81522555332634,
+    "productive_pct": 16.419026205777225,
+    "consumption_pct": 18.798764310543874,
+    "wholesale_retail_pct": 20.32633539058869,
+    "total_npr_million": 4763299.504220715
+  },
+  {
+    "period": "Kartik 2079",
+    "re_cluster_pct": 12.384450841565865,
+    "productive_pct": 16.527287826782345,
+    "consumption_pct": 18.70607798585604,
+    "wholesale_retail_pct": 20.29938275764037,
+    "total_npr_million": 4767935.451412157
+  },
+  {
+    "period": "Mangsir 2079",
+    "re_cluster_pct": 12.326395083595422,
+    "productive_pct": 16.670109172646374,
+    "consumption_pct": 18.569253120473856,
+    "wholesale_retail_pct": 20.357853960981767,
+    "total_npr_million": 4771086.159999209
+  },
+  {
+    "period": "Baisakh 2079",
+    "re_cluster_pct": 12.451306532504654,
+    "productive_pct": 16.02981125628394,
+    "consumption_pct": 18.913589741225064,
+    "wholesale_retail_pct": 20.472168435985033,
+    "total_npr_million": 4724883.899218855
+  },
+  {
+    "period": "Jestha 2079",
+    "re_cluster_pct": 12.688410156090441,
+    "productive_pct": 16.15529219348741,
+    "consumption_pct": 18.79541786324526,
+    "wholesale_retail_pct": 20.29224881576365,
+    "total_npr_million": 4724954.6798853865
+  },
+  {
+    "period": "Ashadh 2079",
+    "re_cluster_pct": 12.815739526818156,
+    "productive_pct": 16.2495166204745,
+    "consumption_pct": 18.42166258236065,
+    "wholesale_retail_pct": 20.1234091574948,
+    "total_npr_million": 4709039.2624173
+  },
+  {
+    "period": "Shrawan 2080",
+    "re_cluster_pct": 12.164254291097802,
+    "productive_pct": 22.11539398710725,
+    "consumption_pct": 19.21976937296884,
+    "wholesale_retail_pct": 19.995144943115804,
+    "total_npr_million": 4861392.488358541
+  },
+  {
+    "period": "Bhadra 2080",
+    "re_cluster_pct": 12.167958991300534,
+    "productive_pct": 21.856199015013626,
+    "consumption_pct": 19.15715409177415,
+    "wholesale_retail_pct": 20.130702027201416,
+    "total_npr_million": 4910462.539556503
+  },
+  {
+    "period": "Ashwin 2080",
+    "re_cluster_pct": 12.215933830553528,
+    "productive_pct": 21.804139893929854,
+    "consumption_pct": 19.060647333353245,
+    "wholesale_retail_pct": 20.159106438911785,
+    "total_npr_million": 5002731.44073005
+  },
+  {
+    "period": "Kartik 2080",
+    "re_cluster_pct": 12.204031198784742,
+    "productive_pct": 21.777203342817575,
+    "consumption_pct": 19.06146667301426,
+    "wholesale_retail_pct": 19.980590459663578,
+    "total_npr_million": 4981738.170226006
+  },
+  {
+    "period": "Mangsir 2080",
+    "re_cluster_pct": 12.268245987398199,
+    "productive_pct": 21.705752405200418,
+    "consumption_pct": 18.954556101975545,
+    "wholesale_retail_pct": 20.007201541185026,
+    "total_npr_million": 4995880.099407086
+  },
+  {
+    "period": "Baisakh 2080",
+    "re_cluster_pct": 12.250525404152253,
+    "productive_pct": 17.44886516770593,
+    "consumption_pct": 18.806273059427607,
+    "wholesale_retail_pct": 20.24794554825617,
+    "total_npr_million": 4850608.327814662
+  },
+  {
+    "period": "Jestha 2080",
+    "re_cluster_pct": 12.43499514437176,
+    "productive_pct": 17.406066959294016,
+    "consumption_pct": 19.059555034439764,
+    "wholesale_retail_pct": 20.284382440248297,
+    "total_npr_million": 4858082.066157256
+  },
+  {
+    "period": "Ashadh 2080",
+    "re_cluster_pct": 12.605862386982428,
+    "productive_pct": 17.568180545151254,
+    "consumption_pct": 18.97882345429915,
+    "wholesale_retail_pct": 20.154303283027467,
+    "total_npr_million": 4879850.641614081
+  },
+  {
+    "period": "Shrawan 2081",
+    "re_cluster_pct": 12.570220486324462,
+    "productive_pct": 22.348933318525596,
+    "consumption_pct": 19.629333655988383,
+    "wholesale_retail_pct": 19.30412334195276,
+    "total_npr_million": 5169295.642200859
+  },
+  {
+    "period": "Bhadra 2081",
+    "re_cluster_pct": 12.650281633392138,
+    "productive_pct": 22.27217263125551,
+    "consumption_pct": 19.611445582901798,
+    "wholesale_retail_pct": 19.354866248087397,
+    "total_npr_million": 5226821.814832271
+  },
+  {
+    "period": "Ashwin 2081",
+    "re_cluster_pct": 12.935569655932508,
+    "productive_pct": 22.22096955602947,
+    "consumption_pct": 19.56791198845236,
+    "wholesale_retail_pct": 19.314296866277004,
+    "total_npr_million": 5292412.464663955
+  },
+  {
+    "period": "Kartik 2081",
+    "re_cluster_pct": 12.733579525260302,
+    "productive_pct": 22.193561984348406,
+    "consumption_pct": 19.6605454866831,
+    "wholesale_retail_pct": 19.30169146544929,
+    "total_npr_million": 5285059.521670856
+  },
+  {
+    "period": "Mangsir 2081",
+    "re_cluster_pct": 12.802531088677686,
+    "productive_pct": 21.773498867147126,
+    "consumption_pct": 19.702150020390587,
+    "wholesale_retail_pct": 19.467824131269477,
+    "total_npr_million": 5330225.779844965
+  },
+  {
+    "period": "Baisakh 2081",
+    "re_cluster_pct": 12.316697760238153,
+    "productive_pct": 21.886624894489117,
+    "consumption_pct": 19.133566046123452,
+    "wholesale_retail_pct": 19.85415027082789,
+    "total_npr_million": 5112588.50735154
+  },
+  {
+    "period": "Jestha 2081",
+    "re_cluster_pct": 12.561429304086685,
+    "productive_pct": 21.94676053307943,
+    "consumption_pct": 19.212942292466643,
+    "wholesale_retail_pct": 19.715923403581762,
+    "total_npr_million": 5134400.605240783
+  },
+  {
+    "period": "Ashadh 2081",
+    "re_cluster_pct": 12.86027693308467,
+    "productive_pct": 22.104880414048957,
+    "consumption_pct": 19.616244089998933,
+    "wholesale_retail_pct": 19.342057047258027,
+    "total_npr_million": 5167173.0491673
+  },
+  {
+    "period": "Shrawan 2082",
+    "re_cluster_pct": 20.063906487507168,
+    "productive_pct": 22.031193610601036,
+    "consumption_pct": 20.65237909684057,
+    "wholesale_retail_pct": 18.460098397075818,
+    "total_npr_million": 5574136.782539908
+  },
+  {
+    "period": "Bhadra 2082",
+    "re_cluster_pct": 19.92741994777255,
+    "productive_pct": 21.905630488271342,
+    "consumption_pct": 20.683236875779794,
+    "wholesale_retail_pct": 18.535222872050092,
+    "total_npr_million": 5627054.272827306
+  },
+  {
+    "period": "Baisakh 2082",
+    "re_cluster_pct": 12.799572168390332,
+    "productive_pct": 21.935026762712333,
+    "consumption_pct": 19.949864547772332,
+    "wholesale_retail_pct": 18.972257975418465,
+    "total_npr_million": 5526228.379001652
+  },
+  {
+    "period": "Jestha 2082",
+    "re_cluster_pct": 12.68836869914316,
+    "productive_pct": 22.0226969391616,
+    "consumption_pct": 20.20345833156818,
+    "wholesale_retail_pct": 18.889255288510398,
+    "total_npr_million": 5564241.692273276
+  },
+  {
+    "period": "Ashadh 2082",
+    "re_cluster_pct": 12.817427736408474,
+    "productive_pct": 21.946383258237827,
+    "consumption_pct": 20.59710693816035,
+    "wholesale_retail_pct": 18.477005269819323,
+    "total_npr_million": 5591604.371698825
+  }
+]
