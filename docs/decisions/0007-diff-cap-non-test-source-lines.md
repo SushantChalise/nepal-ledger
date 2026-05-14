@@ -71,6 +71,18 @@ Workers continue to surface diff-stat in their return; Mother continues to call 
 | Worker D (repositories) | 776 | 259 | **Under soft target.** |
 | Worker E (fact-ledger) | 320 | 202 | **Under soft target.** |
 | Worker F (seed) | 268 | ~120 | **Under soft target.** |
+| Worker G (validation) | 619 code / 810 raw | 492 code | **Under hard ceiling by code-only metric.** Split into two PRs (#26 repositories + #27 validation core) to demonstrate the soft-target intent. |
+| Worker H (ingestion) | 475 code / 692 raw | 475 code | **Under hard ceiling by code-only metric.** Mother-blessed scope expansion to add repository helper. |
+
+## Amendment — 2026-05-14: "non-test source lines" definition
+
+Three workers in a row (G, H, plus C earlier) hit the same surfacing pattern: code-only line counts well under 500, but raw line counts (including docstring blocks and blank lines) over 500. The original ADR text did not define the unit.
+
+**Clarification: "non-test source lines" means logical code lines** — lines that change program behavior. Blank lines, comment-only lines, and standalone docstrings are NOT counted. JSDoc comments above functions are not counted. Type-annotation-only lines and import statements ARE counted.
+
+Rationale: the cap exists to bound *review burden*. A 50-line JSDoc block is reviewed quickly; a 50-line function is not. Counting docstrings against the cap discourages documentation, which is the opposite of what we want.
+
+Operationally: workers report **both numbers** in their diff stat (code-only + raw). Mother gates on code-only against the 500 cap; raw is for context only. If a worker uses an automated counter, prefer `cloc` or equivalent that distinguishes code from comments.
 
 ## References
 
