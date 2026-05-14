@@ -84,6 +84,19 @@ Rationale: the cap exists to bound *review burden*. A 50-line JSDoc block is rev
 
 Operationally: workers report **both numbers** in their diff stat (code-only + raw). Mother gates on code-only against the 500 cap; raw is for context only. If a worker uses an automated counter, prefer `cloc` or equivalent that distinguishes code from comments.
 
+## Amendment — 2026-05-14 (b): pure data literals are exempt
+
+A second pattern surfaced with the ADR-0009 registry-mechanism PR (Worker output: seed expanded from 2 → 49 rows, ~800 lines of `{ source_id, agency, dataset, … }` object literals). Counting these against the 500-line cap is wrong for the same reason JSDoc was: review burden does not scale with line count. Skimming `agency`/`url`/`cadence` per row is mechanical, not semantic. Splitting forces multiple PR cycles for what is genuinely one contract installation.
+
+**Clarification: pure data literals (declarative arrays / object literals with no embedded branching logic) are NOT counted toward the cap.** A data literal is "pure" if removing it leaves the surrounding scaffolding compilable as-is (i.e. the literal's only role is to be data, not to drive control flow). Test fixtures and registry seeds are the canonical examples.
+
+**This exemption does NOT cover:**
+- Long branching switch statements (those are logic)
+- Inline configuration objects passed to library calls that change runtime behavior (those are interface)
+- Function definitions, even short ones
+
+When a worker invokes this exemption, the diff stat must report **three** numbers: code-only logic lines, code-only data lines, and raw. Mother gates on logic lines.
+
 ## References
 
 - [`docs/CONTEXT_RULES.md`](../CONTEXT_RULES.md) Rule 5

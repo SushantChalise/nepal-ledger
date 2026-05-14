@@ -5,7 +5,7 @@
  */
 
 import { sql } from 'drizzle-orm';
-import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, smallint, text, timestamp } from 'drizzle-orm/pg-core';
 
 import {
   confidenceGradeEnum,
@@ -51,6 +51,10 @@ export const sourceRegistry = pgTable('source_registry', {
   // SOURCE_REGISTRY audit decision: distinguishes automated cron-fed
   // scrapers from manual-upload PDFs from reference-only assets.
   ingestionMode: ingestionModeEnum('ingestion_mode').notNull().default('automated_cron'),
+  // Phased-rollout tier per ADR-0009. Nullable: 0 = pre-ADR baseline,
+  // 1–4 = phased rollout per BACKEND_PLAN, NULL = reference-only assets
+  // and entries that predate the column.
+  tier: smallint('tier'),
   notes: text('notes'),
 
   registeredAt: timestamp('registered_at', { withTimezone: true }).notNull().defaultNow(),

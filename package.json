@@ -20,7 +20,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:e2e": "playwright test",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "gen:source-index": "tsx scripts/gen-source-index.ts",
+    "check:source-registry": "tsx scripts/check-source-registry.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
@@ -49,6 +51,7 @@
     "prettier": "^3.6.2",
     "simple-git-hooks": "^2.13.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^3.2.4",
     "wrangler": "^4.90.0"
