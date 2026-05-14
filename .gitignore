@@ -47,6 +47,8 @@ secrets/
 # ─── source documents archive ─────────────────────────────────────
 # Large PDFs / raw downloads. Mirrored to Supabase Storage (Year 1; ADR-0004).
 source-data/
+# Staging-data (parser output JSON) — regeneratable; do not commit.
+/staging-data/
 # Legacy pre-bootstrap folders holding the same raw sources. These move into
 # source-data/<source-id>/ during the Source Registry milestone (Day 11–28).
 /NRB Current/

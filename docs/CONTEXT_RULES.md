@@ -16,7 +16,7 @@ The rules below prevent all three.
 
 ---
 
-## The Six Rules (Every Worker Reads These)
+## The Seven Rules (Every Worker Reads These)
 
 ### Rule 1: Read Before Write
 
@@ -83,6 +83,20 @@ Workers MUST NOT:
 - Use `// eslint-disable-next-line` without an accompanying comment explaining the WHY (and Mother sign-off in the brief)
 
 See [docs/CONVENTIONS.md](CONVENTIONS.md) §"Error Handling" for the full doctrine.
+
+### Rule 7: Pre-Ingest Data Audit (added 2026-05-14)
+
+Before writing a parser, ingest script, or staging row for any external dataset, the dataset folder MUST be audited per [PRE_INGEST_AUDIT.md](PRE_INGEST_AUDIT.md). The audit:
+
+- Inventories ALL files in the source folder (not just the obviously-canonical one)
+- Diffs variants (e.g. `X.csv` vs `X_COMPLETE.csv` vs `X_FINAL.csv`)
+- Identifies which file is authoritative for each downstream-needed field
+- Lands as `docs/research/<dataset-id>-audit.md` BEFORE the ingest brief is written
+- Requires user sign-off on the "discarded files" verdict
+
+Adding because the admin-hierarchy folder shipped 3 variants (953 / 10,263 / 10,263 rows) where the largest variant had **broken municipality_type and only 10% constituency coverage**, and the actual canonical source was in a different folder entirely. Ingest wrote against the wrong file. One full ingest cycle wasted.
+
+A worker that spawns a parser without first writing or citing an audit is reflected back. Same severity as scope-fence violation.
 
 ### Cast Escape Hatches (Sanctioned Only)
 
@@ -216,6 +230,6 @@ If any check fails → diff is rejected → new task brief.
 
 ## TL;DR for Workers
 
-> Read first. Match the pattern. Stay in the fence. Type-drive everything. Cap your diff. Surface uncertainty. Don't invent. Don't drift. Don't fragment.
+> Read first. Match the pattern. Stay in the fence. Type-drive everything. Cap your diff. Surface uncertainty. **Audit before ingesting external data.** Don't invent. Don't drift. Don't fragment.
 
 Stick to this and your work merges. Don't, and it bounces.

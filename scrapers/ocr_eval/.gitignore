@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+thumbs/
+page_picks.json
+paddleocr_cache/

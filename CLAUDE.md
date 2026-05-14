@@ -14,6 +14,7 @@
 4. [docs/CONTEXT_RULES.md](docs/CONTEXT_RULES.md) — anti-hallucination + anti-scope-drift (**mandatory**)
 5. [docs/CONVENTIONS.md](docs/CONVENTIONS.md) — code conventions; sanctioned cast escape hatches; `safeQuery`
 6. [docs/SOURCE_REGISTRY.md](docs/SOURCE_REGISTRY.md) — every external data feed must be registered before scraping
+6a. [docs/PRE_INGEST_AUDIT.md](docs/PRE_INGEST_AUDIT.md) — **mandatory**: audit every new dataset folder BEFORE writing a parser. Established 2026-05-14 after the admin-hierarchy folder failure.
 7. [docs/DATA_PIPELINE.md](docs/DATA_PIPELINE.md) — staging → validation → approved quarantine
 8. [docs/PARSING_WORKFLOW.md](docs/PARSING_WORKFLOW.md) — Claude CLI as dev assistant; production parsers stay deterministic Python
 9. [docs/CALENDAR_AND_PERIODS.md](docs/CALENDAR_AND_PERIODS.md) — BS/AD + fiscal year handling at schema level
