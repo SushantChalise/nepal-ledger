@@ -1,6 +1,6 @@
 # Source: Centre for Education and Human Resource Development — Education Management Information System (EMIS)
 
-**source_id:** `dohs-emis`  
+**source_id:** `cehrd-emis`  
 **Status:** paused  
 **Tier:** Tier 4  
 **Registered at:** 2026-05-14  
@@ -24,7 +24,7 @@
 
 ## Notes
 
-Where Money Becomes Wealth (education outcomes). Audit proposal labels source-id `dohs-emis` which is a typo for CEHRD/DoEd — preserved as the audit-proposal slug for traceability.
+Where Money Becomes Wealth (education outcomes).
 
 ## Known breakage modes
 
