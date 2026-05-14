@@ -13,6 +13,7 @@ import { db } from '@/lib/db/client';
 import { safeQuery } from '@/lib/db/safe-query';
 import {
   stagingIndicatorValues,
+  type NewStagingIndicatorValueRow,
   type StagingIndicatorValueRow,
 } from '@/lib/db/schema/indicator-values';
 import { err, ok, type Result } from '@/lib/errors';
@@ -38,6 +39,20 @@ export async function listStagingRowsForParserRun(
       where: eq(stagingIndicatorValues.parserRunId, parserRunId),
     }),
   );
+}
+
+/**
+ * Bulk-insert staging rows from a single parser run. No-op (returns ok([]))
+ * when given an empty list — the ingestion orchestrator may legitimately call
+ * this with zero rows when a parser returns status='failure' but we still want
+ * the parser_runs row written.
+ */
+export async function bulkInsertStagingRows(
+  rows: readonly NewStagingIndicatorValueRow[],
+): Promise<Result<StagingIndicatorValueRow[]>> {
+  if (rows.length === 0) return ok([]);
+  const values: NewStagingIndicatorValueRow[] = [...rows];
+  return safeQuery(() => db().insert(stagingIndicatorValues).values(values).returning());
 }
 
 export async function deleteStagingRowById(id: string): Promise<Result<{ id: string }>> {
