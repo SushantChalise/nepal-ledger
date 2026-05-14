@@ -66,9 +66,9 @@ Three tier tables. Status reflects commit `f5d3290` (HEAD as of 2026-05-14). "Ow
 |---|---|---|---|---|---|---|---|---|
 | `nrb-cmefs-monthly` | NRB | Current Macroeconomic and Financial Situation | monthly + nine-month cumulative | PDF (tables) | A | Registered | Future (NRB CMEFs PDF parser) | Surya OCR stack proving on a labelled NRB page (Surya findings §"Devanagari regression at v0.17.1") |
 | `nrb-ncpi-table` | NRB | NCPI Table 2(B) | nine-months cumulative | CSV | A | Parser complete | Worker C ([tasks/worker-C-python-scrapers.md](tasks/worker-C-python-scrapers.md)) | Validation job to promote — Worker G in flight at time of writing (brief at [tasks/worker-G-validation-job.md](tasks/worker-G-validation-job.md); implementation will ship in a separate PR after the repositories land) |
-| `local-fiscal-transfers-cleaned` | MoF (Cleaned/) | Federal fiscal transfers to 753 local levels FY 2082/83 | annual (one FY) | XLSX (pre-cleaned) | A | Not started (data in repo at `Financial Data/mof_documents/Cleaned/Fiscal Transfer_2082_82.xlsx`) | Pending (FINANCIAL_DATA_STRATEGY §"Phase A1") | Needs `local_government_fiscal_transfers` ingest script; schema already shipped in migration 0001 (`src/lib/db/schema/fiscal-transfers.ts`) |
+| `local-fiscal-transfers-cleaned` | MoF (Cleaned/) | Federal fiscal transfers to 753 local levels FY 2082/83 | annual (one FY) | XLSX (pre-cleaned) | A | Not started (data in repo at `Financial Data/mof_documents/Cleaned/Fiscal Transfer_2082_82.xlsx`) | Pending (FINANCIAL_DATA_STRATEGY §"Phase A1") | Needs `local_government_fiscal_transfers` ingest script; schema already shipped in migration 0002 (`src/lib/db/schema/fiscal-transfers.ts`) |
 | `nrb-bfi-monthly-xlsx` | NRB | Banking & Financial Statistics monthly XLSX (50 files, Shrawan 2078 → Bhadau 2082) | monthly | XLSX | A | Not started (corpus on disk at `Financial Data/nrb_monthly_statistics/`) | Pending (FINANCIAL_DATA_STRATEGY §"Phase A2") | Schema layout drift across 49 months — needs schema-discovery probe before parser write |
-| `cbs-nphc-2021` | CBS | National Population & Housing Census 2021 (89 CSVs + 7 Listing XLSX + 1 DEGURBA XLSX) | decadal (one-time) | CSV + XLSX | A | Not started (data in repo at `Financial Data/Census/census_2021_data/`) | Pending (cbs-nphc-2021 ingest brief, see [research/cbs-nphc-2021-audit.md](research/cbs-nphc-2021-audit.md) §6) | Two-mode CSV reader + 27-name municipality-resolver override list need wiring; `census_facts` table already shipped (migration 0001) |
+| `cbs-nphc-2021` | CBS | National Population & Housing Census 2021 (89 CSVs + 7 Listing XLSX + 1 DEGURBA XLSX) | decadal (one-time) | CSV + XLSX | A | Not started (data in repo at `Financial Data/Census/census_2021_data/`) | Pending (cbs-nphc-2021 ingest brief, see [research/cbs-nphc-2021-audit.md](research/cbs-nphc-2021-audit.md) §6) | Two-mode CSV reader + 27-name municipality-resolver override list need wiring; `census_facts` table already shipped (migration 0002) |
 
 ### Tier 2 — Quarterly macro + monthly trade/debt (Days 29–60)
 
@@ -107,7 +107,7 @@ Mapped to [BACKEND_PLAN §"The 90-Day Bootstrap Sequence"](BACKEND_PLAN.md). Eac
 
 - **Deliverable (paraphrased):** register `nrb-cmefs-monthly` + `nrb-ncpi-table`; archive existing CSV + PDF to Storage with hash; first parser writes to staging; validation promotes to approved; Fact Ledger schema + clickable `<Claim>` component (BACKEND_PLAN Day 11–28).
 - **Feeds consumed:** `nrb-ncpi-table` (primary), `nrb-cmefs-monthly` (registered but parser deferred).
-- **Upstream preconditions:** schema foundation landed (commit `bfce676`); Drizzle migration 0001 + safeQuery shipped; date utilities pass FY-boundary tests; source-registry seeded (commit `351a514`); typed claim contract shipped (commit `e611bec`); validation job shipped (Worker G brief, commit `e4e560d`).
+- **Upstream preconditions:** schema foundation landed (commit `bfce676`); Drizzle migration 0002 + safeQuery shipped; date utilities pass FY-boundary tests; source-registry seeded (commit `351a514`); typed claim contract shipped (commit `e611bec`); validation job shipped (Worker G brief, commit `e4e560d`).
 - **Acceptance gate:** 23 NCPI subcategories × 3 geographies × 3 periods in `approved_indicator_values` (BACKEND_PLAN row); at least one Fact Ledger claim renders with source PDF + confidence badge + last-verified.
 
 ### Days 29–45 — Pulse + Monthly Verdict v1 (BACKEND_PLAN row "29–45")
@@ -128,7 +128,7 @@ Mapped to [BACKEND_PLAN §"The 90-Day Bootstrap Sequence"](BACKEND_PLAN.md). Eac
 
 - **Deliverable:** Kalimati price-chain investigation OR "How Nepal's Economy Actually Works"; Kalimati Market entity profile; second source ingestion (BACKEND_PLAN Day 61–75).
 - **Feeds consumed:** `kalimati-daily-prices` (if Story #2), `customs-monthly-trade` (border arbitrage angle), `nrb-cmefs-monthly`.
-- **Upstream preconditions:** `entities` table populated with Kalimati Market row (schema exists, migration 0001).
+- **Upstream preconditions:** `entities` table populated with Kalimati Market row (schema exists, migration 0002).
 - **Acceptance gate:** flagship article + chart + Fact Ledger claims + Nepali version 1 week later.
 
 ### Days 76–90 — Public beta + one signature utility (BACKEND_PLAN row "76–90")
@@ -179,11 +179,11 @@ These are ambiguities the upstream docs do not resolve. The §6 in the upstream 
 
 - **OQ-2.** Signature utility choice for Days 76–90. BACKEND_PLAN says "Household Ledger Calculator OR Loan→Project→Asset Tracker v0" — one, not both. STRATEGY §"3 Signature Public Utilities" lists both as Year 1 candidates plus a third ("Cost of Leaving Nepal Calculator"). **Which one ships first?** This determines which Tier-3 OCR phase (B4 White Books for Loan→Project; none for Household Ledger) gets prioritized. *(Upstream loci: BACKEND_PLAN row "76–90", STRATEGY §"Three Signature Public Utilities".)*
 
-- **OQ-3.** FINANCIAL_DATA_STRATEGY status. The doc is explicitly marked "Draft for user review. Not yet codified into ADRs or Source Registry." Its Phase A/B sequencing and the proposed schema additions (`entities`, `local_government_fiscal_transfers`, `pe_annual_financials`, `foreign_aid_projects`) were **partially implemented** in migration 0001 (commit `06efa64`) but no ADR-0008 was filed. **Is FINANCIAL_DATA_STRATEGY locked, or still draft?** This file currently treats Phase A/B as the de facto plan. *(Upstream loci: FINANCIAL_DATA_STRATEGY header + §"Proposed schema additions".)*
+- **OQ-3.** ~~FINANCIAL_DATA_STRATEGY status.~~ **RESOLVED 2026-05-14 (ADR-0008):** locked after retrofitting 6 drifts. See [`docs/decisions/0008-financial-data-strategy.md`](decisions/0008-financial-data-strategy.md).
 
 - **OQ-4.** SOURCE_REGISTRY_AUDIT_PROPOSAL status. Same shape: "Draft for user review. Not yet codified into `SOURCE_REGISTRY.md`." It proposes a re-tier from 4 tiers → Tier 0 + 1–4 + Phase 2, ~40 new entries, an `ingestion_mode` enum, and a Reference-only category. This file uses the proposal's Tier-1/2/3 buckets as the closest-to-current view, but the canonical SOURCE_REGISTRY.md still shows the original 12-entry / 4-tier layout. **Which is the source of truth?** *(Upstream loci: SOURCE_REGISTRY_AUDIT_PROPOSAL header + §"Summary of changes".)*
 
-- **OQ-5.** District MRI Year 1 districts. SOURCE_REGISTRY_AUDIT_PROPOSAL §"District MRI" lists Kathmandu, Chitwan, Kaski, Jhapa, Morang as STRATEGY's named five. STRATEGY itself mentions "5 districts Year 1" in the glossary but does not enumerate. **Are these five locked?** They drive which district-level slices need disaggregated data Year 1. *(Upstream loci: CLAUDE.md glossary entry "District MRI"; SOURCE_REGISTRY_AUDIT_PROPOSAL §"District MRI".)*
+- **OQ-5.** District MRI Year 1 districts. **DEFERRED 2026-05-14:** pick after first three Tier-1 feeds reach `approved` — let the available district-disaggregated dimensions in those feeds inform the choice. *(Upstream loci: CLAUDE.md glossary entry "District MRI"; SOURCE_REGISTRY_AUDIT_PROPOSAL §"District MRI".)*
 
 - **OQ-6.** Sahakari Tracker shape (vertical vs. utility). STRATEGY V5 frames it as a vertical with a "Check your cooperative" search. SOURCE_REGISTRY_AUDIT_PROPOSAL OQ-2 flags whether it's a 4th signature utility instead. **No upstream decision recorded.**
 
@@ -194,3 +194,4 @@ These are ambiguities the upstream docs do not resolve. The §6 in the upstream 
 | Date | Change | Source PR |
 |---|---|---|
 | 2026-05-14 | Initial consolidation (Worker R) | (this PR) |
+| 2026-05-14 | ADR-0008 locked; OQ-3 + OQ-5 resolved | PR-6 |
