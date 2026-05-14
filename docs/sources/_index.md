@@ -37,10 +37,10 @@ Total registered sources: 49
 | Tier 3 | [nnrfc-allocations](nnrfc-allocations.md) | NNRFC | Fiscal transfer allocations to provincial + local levels | annual | manual_upload | paused |
 | Tier 3 | [npc-project-bank](npc-project-bank.md) | NPC | Project Bank + line-ministry monitoring | ad_hoc | manual_upload | paused |
 | Tier 3 | [oag-audit-reports](oag-audit-reports.md) | OAG | Annual audit reports (federal + sectoral) | annual | manual_upload | paused |
+| Tier 4 | [cehrd-emis](cehrd-emis.md) | CEHRD | Education Management Information System (EMIS) | annual | manual_upload | paused |
 | Tier 4 | [census-2078-district](census-2078-district.md) | NSO | Census 2078 district-level disaggregated data | ad_hoc | manual_upload | paused |
 | Tier 4 | [customs-exemptions](customs-exemptions.md) | Customs | Customs duty exemption list (budget annex) | annual | manual_upload | paused |
 | Tier 4 | [dhm-hydro-met](dhm-hydro-met.md) | DHM | Flood / discharge / precipitation records | daily | automated_cron | paused |
-| Tier 4 | [dohs-emis](dohs-emis.md) | CEHRD | Education Management Information System (EMIS) | annual | manual_upload | paused |
 | Tier 4 | [dohs-hmis](dohs-hmis.md) | DoHS | Health Management Information System (HMIS) | annual | manual_upload | paused |
 | Tier 4 | [dolm-malpot-stats](dolm-malpot-stats.md) | DoLM | Malpot land-transaction statistics | monthly | manual_upload | paused |
 | Tier 4 | [fepb-manpower-companies](fepb-manpower-companies.md) | FEPB | Recruitment-cost ceilings + manpower licenses | ad_hoc | manual_upload | paused |

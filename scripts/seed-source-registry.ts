@@ -605,7 +605,7 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     notes: 'Where Money Becomes Wealth (health outcomes).',
   },
   {
-    sourceId: 'dohs-emis',
+    sourceId: 'cehrd-emis',
     agency: 'Centre for Education and Human Resource Development',
     agencyShort: 'CEHRD',
     datasetName: 'Education Management Information System (EMIS)',
@@ -619,8 +619,7 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     status: 'paused',
     ingestionMode: 'manual_upload',
     tier: 4,
-    notes:
-      'Where Money Becomes Wealth (education outcomes). Audit proposal labels source-id `dohs-emis` which is a typo for CEHRD/DoEd — preserved as the audit-proposal slug for traceability.',
+    notes: 'Where Money Becomes Wealth (education outcomes).',
   },
   {
     sourceId: 'mof-budget-redbook',
