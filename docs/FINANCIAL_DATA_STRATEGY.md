@@ -1,6 +1,15 @@
 # Financial Data — Inventory, Extraction Strategy, Intelligence Plan
 
-**Status:** Draft for user review. Not yet codified into ADRs or Source Registry.
+- **Title:** Financial Data Strategy + Year 1 Domain Schema
+- **Status:** Accepted (locked by [ADR-0008](decisions/0008-financial-data-strategy.md))
+- **Date:** 2026-05-14
+- **ADR:** 0008
+- **Supersedes:** none
+- **Superseded-by:** none
+
+Locked by ADR-0008 (2026-05-14). Codifies schema work shipped in migration 0002 (PR #17) and sequences the remaining parser/source-registry work.
+
+> **Note on ADR numbering.** Commit `06efa64` (PR #17) references "ADR-0009 (entities + domain fact tables)" in its message; that ADR was never filed. ADR-0008 (this doc) retroactively codifies what shipped in migration 0002. The next ADR (ADR-0009) is reserved for the Source Registry amendment flow that adds the financial sources listed in §"Source Registry pre-requisites" below.
 
 The `Financial Data/` directory in the repo root holds two pre-staged corpuses you flagged. This document inventories what's there, proposes an extraction strategy that respects the Surya/Claude-CLI doctrine, and lays out what intelligence we can extract for which Nepal Ledger vertical.
 
@@ -200,51 +209,44 @@ The white-book project pipeline is rows of (project_name, donor, sector, commitm
 
 ---
 
-## Proposed schema additions (ADR-0008 candidate)
+## Schema additions
 
-```sql
--- Phase 1: entities (the master entity dimension)
-entities (
-  id uuid PK,
-  kind enum ('bank','public_enterprise','local_level','district','province',
-             'cooperative','business_group','ministry','department','donor'),
-  slug text UNIQUE,
-  name_en text NOT NULL,
-  name_ne text,
-  parent_entity_id uuid REF entities(id),
-  metadata jsonb,             -- type-specific extras: 8-digit code, license number, etc.
-  created_at timestamptz,
-  updated_at timestamptz
-)
+### Already landed in migration 0002 (PR #17, commit `06efa64`)
 
--- Phase 2: extend indicators
-ALTER TABLE indicators ADD COLUMN entity_id uuid REF entities(id);
--- macro indicators (NCPI YoY etc.) leave entity_id NULL
--- entity-scoped indicators (NOC Net Profit) reference an entity row
+Shipped tables (see `src/lib/db/migrations/0001_0002_entities_admin_facts.sql` and the corresponding schema files under `src/lib/db/schema/`):
 
--- Phase 3: Local Ledger fact table (the immediate Phase A1 ingest target)
-local_government_fiscal_transfers (
-  id uuid PK,
-  local_level_id uuid REF entities(id),  -- entity.kind = 'local_level'
-  fiscal_year_bs text NOT NULL,
-  grant_type enum ('equalization_minimum','equalization_formula',
-                   'equalization_performance','conditional_current',
-                   'conditional_capital','special_current',
-                   'special_capital','complementary_capital'),
-  amount_npr numeric(20,2) NOT NULL,
-  source_document_id uuid REF source_documents(id),
-  confidence_grade enum ('A','B','C'),
-  promoted_at timestamptz,
-  UNIQUE (local_level_id, fiscal_year_bs, grant_type)
-)
+- **`entities`** (`src/lib/db/schema/entities.ts`) — the master entity dimension. Banks, public enterprises, local levels, districts, provinces, cooperatives, business groups, ministries, departments, donors. Carries `slug`, `name_en`, `name_ne`, `parent_entity_id`, `metadata` jsonb.
+- **`administrative_units`** (`src/lib/db/schema/administrative-units.ts`) — geographic dimension for Nepal's federal structure (province / district / local level), keyed by federal 8-digit code, joined to `entities` for the local-level rows.
+- **`local_government_fiscal_transfers`** (`src/lib/db/schema/fiscal-transfers.ts`) — the Phase A1 target table. Row shape (local_level_id, fiscal_year_bs, grant_type, amount_npr, source_document_id, confidence_grade).
+- **`census_facts`** (`src/lib/db/schema/census-facts.ts`) — CBS NPHC 2021 long-form fact table for the 89 CSVs + DEGURBA XLSX corpus.
+- **`banking_sector_facts`** (`src/lib/db/schema/banking-sector-facts.ts`) — NRB BFI monthly XLSX target table (per-bank-class × indicator × period).
+- **OCR tracking trio** (`src/lib/db/schema/ocr-tracking.ts`): `ocr_tile_manifests`, `ocr_cell_extractions`, `ocr_stitch_disagreements` — provenance + drift tracking for the Surya pipeline.
 
--- Phase 4: domain tables — added when their parser ships
-public_enterprises_annual_financials  -- per Yellow Book
-foreign_aid_projects                  -- per White Book
-loan_agreements                       -- per agreement/
-```
+The `entities` table absorbs everything that was previously homeless: banks (with NRB BFI as data feed), public enterprises (Yellow Books — once parsed), local levels (Cleaned + intergovernmental), business groups (Vertical 3), donors (White Books).
 
-The `entities` table absorbs everything that's currently homeless: banks (with NRB BFI as data feed), public enterprises (Yellow Books), local levels (Cleaned + intergovernmental), business groups (Vertical 3), donors (White Books).
+### Still proposed (not yet shipped)
+
+These are deferred to per-parser PRs and will be added alongside the parser that consumes them:
+
+- **`pe_annual_financials`** — per Yellow Book (revenue, profit/loss, net worth, government investment, subsidies, outstanding loans). Ships with the Yellow Book parser (Phase B2).
+- **`foreign_aid_projects`** — per White Book (project_name, donor_entity_id, sector, commitment_amount, disbursed_to_date, signing_date). Ships with the White Book parser (Phase B4).
+- **`loan_agreements`** — per agreement/ corpus. Ships when an agreement-driven flagship story requires it (Phase B5, parse-on-demand).
+- **`public_enterprises`** — the PE master list. May land as an entities seed rather than a new table; deferred until Yellow Book parser brief.
+
+---
+
+## Source Registry pre-requisites
+
+Before any Phase A2 / Phase B parser runs, the following source rows must be added to `scripts/seed-source-registry.ts`. These additions will be batched under the forthcoming **ADR-0009 amendment flow** (one PR per source, no ADR per source) — that ADR governs how the Source Registry is extended without an ADR per row:
+
+- `nrb-bfi-monthly` — NRB BFI monthly XLSX corpus (Shrawan 2078 → Bhadau 2082, 50 files). Powers Phase A2.
+- `mof-redbook` — Federal Budget Red Books. Powers Phase B3.
+- `mof-whitebook` — Foreign Aid Source Books. Powers Phase B4.
+- `mof-yellowbook` — Public Enterprises Annual Status Reviews. Powers Phase B2.
+- `mof-intergovernmental` — Historical intergovernmental fiscal transfer PDFs (8 FYs). Powers Phase B1.
+- `mof-agreements` — Foreign loan + grant agreements. Powers Phase B5.
+
+Each row needs a Markdown profile under `docs/sources/<id>.md` per [SOURCE_REGISTRY.md](SOURCE_REGISTRY.md) §"Workflow".
 
 ---
 
@@ -256,19 +258,20 @@ The `entities` table absorbs everything that's currently homeless: banks (with N
 4. **OCR phasing.** Phase B's order proposed: B1 intergovernmental (8 PDFs) → B2 Yellow Books (6 PDFs) → B3 Red Books (latest 3) → B4 White Books → B5 agreements on demand. Accept, or reorder?
 5. **`Cleaned/`-style normalization dictionary.** The `manual_match_reasoning.py` Devanagari substitution map is gold. Should I extract it into `scrapers/_common/devanagari_normalization.py` as a reusable post-Surya step? Lean **yes**.
 6. **Reuse vs. rewrite the fuzzy-matching pipeline.** The existing `rapidfuzz` scripts work; I'd port them into `scrapers/_common/municipality_resolver.py` rather than rewrite. Confirm OK?
-7. **`Financial Data/` location.** Currently in repo root, gitignored implicitly via `source-data/` rule? Let me check — actually no, the current `.gitignore` covers `source-data/` and the legacy `NRB Current/`, `Stastical Information/`, `Framework/` folders, but **NOT `Financial Data/`**. Should add to `.gitignore`. Confirm.
 
 ---
 
 ## What I'd execute next (subject to your edits)
 
-1. Add `Financial Data/` to `.gitignore` (it's not currently ignored — risk of committing).
-2. Write **ADR-0008: entities table + domain fact tables**.
-3. Write the migration adding `entities`, `local_government_fiscal_transfers`, `public_enterprises_annual_financials`, `foreign_aid_projects` (skeleton — fields will fill in as parsers ship).
-4. Worker brief: `scripts/ingest-cleaned-fiscal-transfer.ts` (Phase A1 — uses the Cleaned XLSX directly).
-5. Worker brief: `scrapers/nrb_bfi/parser.py` (Phase A2 — the 50-XLSX monthly parser).
-6. Worker brief: `scrapers/_common/devanagari_normalization.py` + `municipality_resolver.py` (port the Cleaned/ scripts).
-7. Wait on Surya findings → write `scrapers/nrb_intergovernmental/parser.py` brief (Phase B1).
-8. Yellow Books parser brief (Phase B2) once Surya stack is proven.
+Status as of ADR-0008 lock (2026-05-14):
+
+1. ~~Add `Financial Data/` to `.gitignore`~~ — **DONE** (`.gitignore` line 59).
+2. ~~Write ADR-0008~~ — **DONE** (this doc is locked by [ADR-0008](decisions/0008-financial-data-strategy.md)).
+3. ~~Migration adding `entities`, `local_government_fiscal_transfers`, ...~~ — **DONE in migration 0002** (`src/lib/db/migrations/0001_0002_entities_admin_facts.sql`, PR #17, commit `06efa64`). Remaining domain tables (`pe_annual_financials`, `foreign_aid_projects`, `loan_agreements`) ship alongside their parser PRs.
+4. Worker brief: `scripts/ingest-cleaned-fiscal-transfer.ts` (Phase A1 — uses the Cleaned XLSX directly). **Pending.**
+5. Worker brief: `scrapers/nrb_bfi/parser.py` (Phase A2 — the 50-XLSX monthly parser). **Pending** — gated on `nrb-bfi-monthly` source registry row (see §"Source Registry pre-requisites").
+6. ~~Worker brief: `scrapers/_common/devanagari_normalization.py` + `municipality_resolver.py`~~ — **DONE** (commit `f5d3290`, PR #20).
+7. Wait on Surya findings → write `scrapers/nrb_intergovernmental/parser.py` brief (Phase B1). **Pending** — gated on `mof-intergovernmental` source registry row.
+8. Yellow Books parser brief (Phase B2) once Surya stack is proven. **Pending** — gated on `mof-yellowbook` source registry row.
 
 Each step is one worker, scope-fenced, returns a PR.
