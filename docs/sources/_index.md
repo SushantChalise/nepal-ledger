@@ -6,7 +6,7 @@ Generated from `scripts/seed-source-registry.ts` (the canonical seed).
 For schema + workflow, see [`../SOURCE_REGISTRY.md`](../SOURCE_REGISTRY.md).
 For the lifetime contract, see [ADR-0009](../decisions/0009-source-registry-single-source-of-truth.md).
 
-Total registered sources: 49
+Total registered sources: 50
 
 | Tier | Source ID | Agency | Dataset | Frequency | Mode | Status |
 |---|---|---|---|---|---|---|
@@ -15,6 +15,7 @@ Total registered sources: 49
 | Tier 1 | [customs-monthly-trade](customs-monthly-trade.md) | Customs | Monthly trade statistics (imports + exports) | monthly | automated_cron | paused |
 | Tier 1 | [fcgo-daily](fcgo-daily.md) | FCGO | Daily revenue + expenditure (preliminary) | daily | automated_cron | paused |
 | Tier 1 | [kalimati-daily-prices](kalimati-daily-prices.md) | Kalimati | Daily wholesale fruit & vegetable prices | daily | automated_cron | paused |
+| Tier 1 | [local-fiscal-transfers-cleaned](local-fiscal-transfers-cleaned.md) | MoF | Federal fiscal transfers to 753 local levels, FY 2082/83 (pre-cleaned XLSX) | annual | manual_upload | active |
 | Tier 1 | [nepse-eod](nepse-eod.md) | NEPSE | End-of-day quotes + market cap by stock | daily | automated_cron | paused |
 | Tier 1 | [noc-petroleum-monthly](noc-petroleum-monthly.md) | NOC | Petroleum imports + price-revision notices | monthly | manual_upload | paused |
 | Tier 1 | [nrb-reserves-daily](nrb-reserves-daily.md) | NRB | Daily foreign exchange reserve disclosure | daily | automated_cron | paused |
