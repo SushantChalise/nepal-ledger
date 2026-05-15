@@ -1,8 +1,8 @@
 # Source: Nepal Rastra Bank — Current Macroeconomic and Financial Situation
 
 **source_id:** `nrb-cmefs-monthly`
-**Status:** Active (parser pending)
-**Last verified:** 2026-05-14
+**Status:** Active (parser v0.1.0 — headline indicators only, English edition; Path B1)
+**Last verified:** 2026-05-15
 
 ## What this is
 
@@ -22,21 +22,36 @@ tempo for Nepal Ledger's Pulse + Monthly Verdict cycle.
 
 ## What we extract
 
-NRB CMEFs is the umbrella publication. Indicator slugs below are the targets
-for the parser; they will be registered alongside the parser PR (Worker C
-sequel). This profile is intentionally enumerative — promote slugs to
-`indicators` only when the parser actually populates them.
+The v0.1.0 parser extracts seven **headline** indicators from the English
+edition of the bulletin — the figures NRB itself foregrounds in the
+executive summary and the body's narrative paragraphs. These feed Pulse
+v0 (BoP, forex reserves, remittances, trade, NCPI). Additional indicators
+in the enumerative list below are slated for v0.2.0+ as Pulse expands.
 
-- `ncpi-headline-yoy` — Year-on-year change in National Consumer Price Index (headline)
-- `ncpi-food-yoy` — YoY change in NCPI food and beverage sub-group
-- `ncpi-non-food-yoy` — YoY change in NCPI non-food and services sub-group
-- `remittance-inflows-cumulative` — Cumulative remittance inflows (NPR, USD)
-- `gross-foreign-exchange-reserves` — Gross forex reserves at period end (NPR, USD)
-- `merchandise-exports-cumulative` — Cumulative merchandise exports
-- `merchandise-imports-cumulative` — Cumulative merchandise imports
-- `bop-balance-cumulative` — Cumulative balance of payments
-- `m2-yoy` — Broad money supply YoY growth
-- `private-sector-credit-yoy` — Banks-and-FIs credit to private sector YoY growth
+**v0.1.0 (shipped):**
+
+| Slug | Unit | Period type | Narrative anchor |
+| --- | --- | --- | --- |
+| `cmefs-ncpi-yoy-overall` | percent_yoy | nine_months_cumulative (end-of-period) | "The y-o-y consumer price inflation in Nepal remained at X percent in mid-Month YYYY" |
+| `cmefs-remittance-inflow-ytd` | npr_billion | nine_months_cumulative | "Remittance inflows increased N percent to Rs.X billion" |
+| `cmefs-merchandise-imports-ytd` | npr_billion | nine_months_cumulative | "mercandise imports increased N percent to Rs.X billion" (NRB typo for "merchandise"; both spellings accepted) |
+| `cmefs-trade-deficit-ytd` | npr_billion | nine_months_cumulative | "Total trade deficit increased N percent to Rs.X billion" |
+| `cmefs-bop-surplus-ytd` | npr_billion | nine_months_cumulative | "Balance of Payments (BOP) remained at a surplus of Rs.X billion" (deficit qualifier noted in `parser_notes`) |
+| `cmefs-gross-forex-reserves` | npr_billion | end-of-period | "Gross foreign exchange reserves increased N percent to Rs.X billion" |
+| `cmefs-forex-reserves-months-of-import-cover` | months | end-of-period | "merchandise and services imports of X months" |
+
+**v0.2.0+ (planned):**
+
+- `cmefs-ncpi-food-yoy`, `cmefs-ncpi-non-food-yoy` — sub-group YoY
+- `cmefs-merchandise-exports-ytd`
+- `cmefs-m2-yoy`
+- `cmefs-private-sector-credit-yoy`
+- `cmefs-bfi-deposits-yoy`
+- USD-denominated counterparts where NRB publishes paired figures
+
+The cross-validation hook: `cmefs-ncpi-yoy-overall` should match the
+`ncpi-overall-index-overall-yoy` row produced by the NCPI parser within
+±0.01pp; mismatch surfaces as a validation-layer reconciliation flag.
 
 ## Provenance
 
@@ -51,11 +66,41 @@ sequel). This profile is intentionally enumerative — promote slugs to
 
 - `url-changes-each-fy` — NRB rotates the slug at FY boundaries
   (e.g. `.../current-macroeconomic-situation-based-on-nine-months-of-202223/`).
-  Parser must use a search-page fallback rather than a hardcoded URL.
+  Downloader (not parser) must use a search-page fallback rather than a
+  hardcoded URL.
 - `pdf-format-shifts-at-fy-boundary` — Column headings, table page numbers,
   and "Table N(B)" labels have historically shifted at FY 2080/81 and
-  FY 2081/82 boundaries. Parser must locate tables by header text, not by
-  page number.
+  FY 2081/82 boundaries. The v0.1.0 parser deliberately reads NRB's
+  **narrative prose** rather than the tables, because the prose phrasings
+  have been stable across the last three FY releases and the tables have
+  not. The Worker H sequel may add table-based extraction once we have
+  more years of fixtures to verify column stability.
+- `chart-text-interleaved-with-narrative` — pdfplumber's column-aware
+  text extraction occasionally interleaves chart-axis labels (e.g.
+  `Chart 3: Gross Foreign Exchange Reserves\n3500\n3000\n…`) between
+  narrative tokens. The v0.1.0 patterns tolerate up to ~250 chars of
+  intervening noise via non-greedy DOTALL gaps. If NRB redesigns the
+  charts or the layout, the patterns will fail open with typed
+  `PageLayoutChanged` errors rather than emit phantom values.
+- `mercandise-typo` — NRB's own narrative has historically misspelled
+  "merchandise" as "mercandise" in the imports paragraph (verified in
+  FY 2082/83 nine-month release). The parser accepts both spellings; if
+  NRB corrects the typo the pattern still matches.
+- `provisional-marker` — when NRB tags a value with an inline ``P``
+  (provisional) marker in the prose (rare in nine-month releases; common
+  in monthly first-cut releases), the parser downgrades that row's
+  confidence from A to B and records the reason in `parser_notes`. The
+  `P=Provisional` table legend itself is **not** treated as an inline
+  marker — only adjacent ``\dP`` patterns.
+
+## Editions covered
+
+- **English** — full coverage (v0.1.0). All headline indicators above.
+- **Nepali (Devanagari)** — **out of scope**. Path B1 (approved
+  2026-05-15) defers Devanagari parsing because Surya OCR's
+  Devanagari-numeral accuracy is unverified and the English edition
+  carries the same headline figures. The Nepali edition may be revisited
+  later for fact-ledger labels (not ingestion).
 
 ## Revision policy
 
@@ -68,12 +113,14 @@ records superseded values in `indicator_revisions` (Worker C-sequel).
 
 ## Parser
 
-- Path: `scrapers/nrb-cmefs/parser.py`
-- Version: 0.0.0 (not yet implemented; Worker C-sequel will land 0.1.0)
+- Path: `scrapers/nrb_cmefs/parser.py`
+- Version: 0.1.0 (Path B1 — English headline indicators)
 - Owner: Mother Opus
-- Tested against: `docs/sources/nrb-cmefs-monthly/samples/` (sample PDF is
-  the in-repo `Stastical Information/CMEFs_Eng_Nine-Months_2082.83.pdf`,
-  copied into the samples directory on parser PR)
+- Tested against: `scrapers/nrb_cmefs/tests/fixtures/cmefs_nine_months_excerpt.pdf`
+  — first 6 pages of the in-repo
+  `Stastical Information/CMEFs_Eng_Nine-Months_2082.83.pdf` (sufficient
+  to exercise every headline pattern; full PDF lives outside the worktree
+  and is archived in Supabase Storage per the archive policy below)
 
 ## Archive policy
 
