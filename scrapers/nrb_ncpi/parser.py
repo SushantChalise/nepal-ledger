@@ -33,10 +33,10 @@ Versioning:
 from __future__ import annotations
 
 import re
-from dataclasses import replace
+from dataclasses import asdict, replace
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 import pandas as pd
 
@@ -262,11 +262,44 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
     )
 
 
+def _serialize_result(result: ParserResult) -> dict[str, Any]:
+    """Serialize ``ParserResult`` to the JSON shape expected by the TS Zod
+    schema (`src/lib/ingestion/types.ts` > ``ParserOutputSchema``).
+
+    Uses ``dataclasses.asdict`` directly rather than the dataclass
+    ``to_json_dict`` method because direct-script invocation (``python -m
+    scrapers.nrb_ncpi.parser``) can produce two distinct class identities
+    for ``_common.types.*`` dataclasses — one via ``__main__`` and one via
+    ``_common.types`` — and the method-bound version may not be visible on
+    every instance. ``asdict`` is duck-typed and works on any dataclass
+    instance regardless of module identity. Datetime fields are then
+    coerced to ISO 8601 strings explicitly.
+    """
+    rows: list[dict[str, Any]] = []
+    for row in result.staging_rows:
+        d = asdict(row)
+        for k in (
+            "reporting_period_ad_start",
+            "reporting_period_ad_end",
+            "publication_date_ad",
+        ):
+            v = d.get(k)
+            if isinstance(v, datetime):
+                d[k] = v.isoformat()
+        rows.append(d)
+    return {
+        "status": result.status,
+        "parser_version": result.parser_version,
+        "staging_rows": rows,
+        "errors": [asdict(e) for e in result.errors],
+    }
+
+
 def _main() -> None:
     """CLI entrypoint used by the Node ingestion orchestrator.
 
     Argv: ``parser.py <source_document_path> <source_document_id>``.
-    Writes ``ParserResult.to_json_dict()`` as JSON to stdout. Exit codes
+    Writes the serialized ``ParserResult`` as JSON to stdout. Exit codes
     follow the subprocess contract in ``src/lib/ingestion/run-parser.ts``:
       - 0: parser ran (status may still be 'failure'; consumer reads stdout)
       - 2: usage error
@@ -282,7 +315,7 @@ def _main() -> None:
         sys.exit(2)
 
     result = parse(sys.argv[1], sys.argv[2])
-    json.dump(result.to_json_dict(), sys.stdout)
+    json.dump(_serialize_result(result), sys.stdout)
 
 
 if __name__ == "__main__":
