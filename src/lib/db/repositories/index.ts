@@ -10,4 +10,5 @@ export * from './parser-runs';
 export * from './staging-indicator-values';
 export * from './approved-indicator-values';
 export * from './data-quality-flags';
+export * from './banking-sector-facts';
 export * as censusFactsRepo from './census-facts';

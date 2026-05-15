@@ -15,6 +15,7 @@ dependencies = [
   "rapidfuzz>=3.9,<4",
   "beautifulsoup4>=4.12,<5",
   "lxml>=5.2,<7",
+  "openpyxl>=3.1,<4",
 ]
 
 [project.optional-dependencies]
@@ -28,7 +29,7 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["_common*", "nrb_ncpi*", "nso_archive*", "cbs_nphc*"]
+include = ["_common*", "nrb_ncpi*", "nrb_bfi*", "nso_archive*", "cbs_nphc*"]
 namespaces = false
 
 # The on-disk folder is `nrb-ncpi` (hyphenated, matching the source_id) but
@@ -60,9 +61,9 @@ warn_return_any = true
 exclude = ["build/", "dist/", ".venv/"]
 
 [[tool.mypy.overrides]]
-module = ["pdfplumber.*"]
+module = ["pdfplumber.*", "openpyxl.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-testpaths = ["_common/tests", "nrb_ncpi/tests", "nso_archive/tests", "cbs_nphc/tests"]
+testpaths = ["_common/tests", "nrb_ncpi/tests", "nrb_bfi/tests", "nso_archive/tests", "cbs_nphc/tests"]
 addopts = "-ra --strict-markers"
