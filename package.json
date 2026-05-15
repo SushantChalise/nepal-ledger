@@ -25,7 +25,8 @@
     "check:source-registry": "tsx scripts/check-source-registry.ts",
     "ingest:census-2021": "tsx scripts/ingest-census-2021.ts",
     "probe:nrb-bfi": "python -m scrapers.nrb_bfi.schema_probe",
-    "ingest:bfi-monthly": "tsx scripts/ingest-bfi-monthly.ts"
+    "ingest:bfi-monthly": "tsx scripts/ingest-bfi-monthly.ts",
+    "ingest:fiscal-transfers": "tsx scripts/ingest-fiscal-transfers.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
