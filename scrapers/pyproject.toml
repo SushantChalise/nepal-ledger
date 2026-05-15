@@ -28,7 +28,7 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["_common*", "nrb_ncpi*", "nso_archive*"]
+include = ["_common*", "nrb_ncpi*", "nso_archive*", "cbs_nphc*"]
 namespaces = false
 
 # The on-disk folder is `nrb-ncpi` (hyphenated, matching the source_id) but
@@ -64,5 +64,5 @@ module = ["pdfplumber.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-testpaths = ["_common/tests", "nrb_ncpi/tests", "nso_archive/tests"]
+testpaths = ["_common/tests", "nrb_ncpi/tests", "nso_archive/tests", "cbs_nphc/tests"]
 addopts = "-ra --strict-markers"

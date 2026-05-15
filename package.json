@@ -22,7 +22,8 @@
     "test:e2e": "playwright test",
     "format": "prettier --write .",
     "gen:source-index": "tsx scripts/gen-source-index.ts",
-    "check:source-registry": "tsx scripts/check-source-registry.ts"
+    "check:source-registry": "tsx scripts/check-source-registry.ts",
+    "ingest:census-2021": "tsx scripts/ingest-census-2021.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",

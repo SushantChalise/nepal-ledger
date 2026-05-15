@@ -1,0 +1,9 @@
+,,,"Table 02: Number of households by type of foundation of housing unit, NPHC 2021",,,,,,,,
+,,,,,,,,,,,
+,,,Area,,,Total,Type of foundation,,,,
+,,,,,,,Mud bonded bricks/ stone,Cement bonded bricks/ stone,Reinforced Cement Concrete with pillars,Wooden pillars,Other
+,,,,,,,,,,,
+prov,dist,gapa,provname,dname,gapaname,rowtotal,a_MudBondBrick,b_CmntBondBrick,c_RCC,d_WoodPillar,e_Other
+0,0,0,NEPAL,NEPAL,NEPAL,6660841,2200886,1984029,1492693,944148,39085
+1,1,1,Province-1,Taplejung,Phaktanlung Gaunpalika,2832,2000,500,200,100,32
+4,40,4,Gandaki,Kaski,Pokhara Metropolitian City,140459,30000,40000,60000,8000,2459

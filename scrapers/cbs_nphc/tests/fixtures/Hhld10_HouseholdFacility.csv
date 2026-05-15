@@ -1,0 +1,4 @@
+prov,dist,gapa,provname,dname,gapaname,rowtotal,x_NoFacility,atleastOne,a_Radio,b_TV,c_LandLinePhone,d_MobilePhone1,e_MobilePhone2,f_Computer,g_Internet,h_CarJeep,i_Motorcycle,j_Bicycle,k_ElectricFan,l_Refrigerator,m_WashingMachine,n_AirConditionr
+0,0,0,NEPAL,NEPAL,NEPAL,6660841,258540,6402301,2280123,3291185,301604,4876561,4862885,998478,2514510,204990,1816121,2347433,3535338,1577195,279637,56601
+1,1,1,Province-1,Taplejung,Phaktanlung Gaunpalika,2832,200,2632,800,500,10,1200,1100,50,200,5,100,300,400,80,20,5
+4,40,4,Gandaki,Kaski,Pokhara Metropolitian City,140459,500,139959,60000,90000,5000,100000,98000,30000,75000,3000,40000,50000,80000,40000,7000,1500
