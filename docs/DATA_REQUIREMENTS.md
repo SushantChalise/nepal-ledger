@@ -64,7 +64,7 @@ Three tier tables. Status reflects commit `f5d3290` (HEAD as of 2026-05-14). "Ow
 
 | source_id | Agency | Dataset | Period | Format | Confidence target | Status | Owner brief | Blocker |
 |---|---|---|---|---|---|---|---|---|
-| `nrb-cmefs-monthly` | NRB | Current Macroeconomic and Financial Situation | monthly + nine-month cumulative | PDF (tables) | A | Registered | Future (NRB CMEFs PDF parser) | Surya OCR stack proving on a labelled NRB page (Surya findings §"Devanagari regression at v0.17.1") |
+| `nrb-cmefs-monthly` | NRB | Current Macroeconomic and Financial Situation | monthly + nine-month cumulative | PDF (tables, English edition) | A | Registered | Future (NRB CMEFs English-PDF parser, Path B1 approved 2026-05-15) | None — English-only target sidesteps the Devanagari OCR risk. Brief queued behind parallel parser workers P1/P2/P3. |
 | `nrb-ncpi-table` | NRB | NCPI Table 2(B) | nine-months cumulative | CSV | A | Parser complete | Worker C ([tasks/worker-C-python-scrapers.md](tasks/worker-C-python-scrapers.md)) | Validation job to promote — Worker G in flight at time of writing (brief at [tasks/worker-G-validation-job.md](tasks/worker-G-validation-job.md); implementation will ship in a separate PR after the repositories land) |
 | `local-fiscal-transfers-cleaned` | MoF (Cleaned/) | Federal fiscal transfers to 753 local levels FY 2082/83 | annual (one FY) | XLSX (pre-cleaned) | A | Not started (data in repo at `Financial Data/mof_documents/Cleaned/Fiscal Transfer_2082_82.xlsx`) | Pending (FINANCIAL_DATA_STRATEGY §"Phase A1") | Needs `local_government_fiscal_transfers` ingest script; schema already shipped in migration 0002 (`src/lib/db/schema/fiscal-transfers.ts`) |
 | `nrb-bfi-monthly-xlsx` | NRB | Banking & Financial Statistics monthly XLSX (50 files, Shrawan 2078 → Bhadau 2082) | monthly | XLSX | A | Not started (corpus on disk at `Financial Data/nrb_monthly_statistics/`) | Pending (FINANCIAL_DATA_STRATEGY §"Phase A2") | Schema layout drift across 49 months — needs schema-discovery probe before parser write |
@@ -175,9 +175,9 @@ This phasing is **proposed** in FINANCIAL_DATA_STRATEGY (still marked "Draft for
 
 These are ambiguities the upstream docs do not resolve. The §6 in the upstream FINANCIAL_DATA_STRATEGY lists author-asked open questions; this section lists only questions a consolidator cannot answer from existing text.
 
-- **OQ-1.** `nrb-cmefs-monthly` parser ship date. BACKEND_PLAN Day 11–28 lists CMEFs *registration* and *archival* but the row's verifiable output cites "23 NCPI subcategories × 3 geographies × 3 periods in `approved_indicator_values`" — that is the NCPI Table 2(B) deliverable, not CMEFs proper. Days 29–45 then assumes CMEFs values flow into Pulse cards. **Is the CMEFs PDF parser a Day 11–28 deliverable or a Day 29–45 deliverable?** STRATEGY and BACKEND_PLAN read inconsistently on this. *(Upstream loci: BACKEND_PLAN rows "11–28" and "29–45".)*
+- **OQ-1.** ~~`nrb-cmefs-monthly` parser ship date.~~ **RESOLVED 2026-05-15 (Path B1 approved):** CMEFs PDF parser ships in Days 11–28, targeting the **English-language CMEFs PDF only** (skip the Surya Devanagari benchmark — Nep-edition parsing deferred until fact-ledger labels require it). Worker brief to be filed after parallel parser workers P1/P2/P3 return. *(Decision: Mother chat 2026-05-15.)*
 
-- **OQ-2.** Signature utility choice for Days 76–90. BACKEND_PLAN says "Household Ledger Calculator OR Loan→Project→Asset Tracker v0" — one, not both. STRATEGY §"3 Signature Public Utilities" lists both as Year 1 candidates plus a third ("Cost of Leaving Nepal Calculator"). **Which one ships first?** This determines which Tier-3 OCR phase (B4 White Books for Loan→Project; none for Household Ledger) gets prioritized. *(Upstream loci: BACKEND_PLAN row "76–90", STRATEGY §"Three Signature Public Utilities".)*
+- **OQ-2.** Signature utility choice for Days 76–90. **DEFERRED 2026-05-15:** decide after Days 46–60 (Money Map v0) so the choice reflects what data has actually approved by then. The three candidates remain in play: Household Ledger Calculator, Loan→Project→Asset Tracker, Cost of Leaving Nepal Calculator. *(Decision: Mother chat 2026-05-15.)*
 
 - **OQ-3.** ~~FINANCIAL_DATA_STRATEGY status.~~ **RESOLVED 2026-05-14 (ADR-0008):** locked after retrofitting 6 drifts. See [`docs/decisions/0008-financial-data-strategy.md`](decisions/0008-financial-data-strategy.md).
 
@@ -185,7 +185,7 @@ These are ambiguities the upstream docs do not resolve. The §6 in the upstream 
 
 - **OQ-5.** District MRI Year 1 districts. **DEFERRED 2026-05-14:** pick after first three Tier-1 feeds reach `approved` — let the available district-disaggregated dimensions in those feeds inform the choice. *(Upstream loci: CLAUDE.md glossary entry "District MRI"; ADR-0009 absorbed sources.)*
 
-- **OQ-6.** Sahakari Tracker shape (vertical vs. utility). STRATEGY V5 frames it as a vertical with a "Check your cooperative" search. the (now-deleted) audit proposal OQ-2 flags whether it's a 4th signature utility instead. **No upstream decision recorded.**
+- **OQ-6.** ~~Sahakari Tracker shape (vertical vs. utility).~~ **RESOLVED 2026-05-15:** Sahakari is **Vertical V5** with an embedded "Check your cooperative" search, per STRATEGY's original framing. NOT promoted to a 4th signature utility. The search is one tool inside a broader editorial vertical. *(Decision: Mother chat 2026-05-15.)*
 
 ---
 
@@ -196,3 +196,4 @@ These are ambiguities the upstream docs do not resolve. The §6 in the upstream 
 | 2026-05-14 | Initial consolidation (Worker R) | (this PR) |
 | 2026-05-14 | ADR-0008 locked; OQ-3 + OQ-5 resolved | PR-6 |
 | 2026-05-14 | ADR-0009 locks source-registry single-source-of-truth; OQ-4 resolved; SOURCE_REGISTRY_AUDIT_PROPOSAL absorbed into seed and deleted; `tier` column added | PR-7 |
+| 2026-05-15 | OQ-1 resolved (CMEFs Path B1 approved — English-only PDF parser, skip Devanagari benchmark); OQ-2 deferred until after Days 46–60; OQ-6 resolved (Sahakari = Vertical V5 with embedded search); CMEFs Tier-1 feed-inventory row updated | PR-9 |
