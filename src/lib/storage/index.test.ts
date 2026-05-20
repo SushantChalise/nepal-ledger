@@ -202,6 +202,27 @@ describe('uploadSourceDocument', () => {
     expect(result.value.storageKey).toBe('nrb-cmefs/2026-05-13/My_Report________.pdf');
   });
 
+  it('probe: body-encoded 404 (HTTP 400 + statusCode "404") is treated as not-found', async () => {
+    // Supabase Storage returns HTTP 400 with body {"statusCode":"404", ...}
+    // when an object is absent. Earlier versions of the probe checked only
+    // error.status (=== 400 here) and incorrectly raised an External error,
+    // breaking every first-time upload.
+    const client = makeClient({
+      download: () =>
+        Promise.resolve({
+          data: null,
+          error: { message: 'Object not found', status: 400, statusCode: '404' },
+        }),
+      upload: () =>
+        Promise.resolve({
+          data: { id: 'obj-x', path: 'p', fullPath: 'p' },
+          error: null,
+        }),
+    });
+    const result = await uploadSourceDocument({ ...VALID_INPUT_BASE, body }, client);
+    expect(result.ok).toBe(true);
+  });
+
   it('external: upload error → External error', async () => {
     const client = makeClient({
       download: () => Promise.resolve({ data: null, error: { message: 'not found', status: 404 } }),

@@ -53,6 +53,29 @@ describe('safeQuery', () => {
     }
   });
 
+  it('unwraps DrizzleError.cause so the underlying error classifies correctly', async () => {
+    // postgres-js attaches the connection error as DrizzleError.cause. Without
+    // the cause-recursion in toAppError(), this would mask EAI_AGAIN inside a
+    // generic "Failed query: …" string and lose the DatabaseUnavailable signal.
+    const wrapped = new DrizzleError({ message: 'Failed query: select 1' });
+    (wrapped as DrizzleError & { cause?: unknown }).cause = Object.assign(
+      new Error('getaddrinfo EAI_AGAIN db.x.supabase.co'),
+      { code: 'EAI_AGAIN' },
+    );
+    const result = await safeQuery(() => Promise.reject(wrapped));
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.kind).toBe('DatabaseUnavailable');
+    }
+  });
+
+  it('classifies bare connection-failure error codes as DatabaseUnavailable', async () => {
+    const e = Object.assign(new Error('connect ECONNREFUSED'), { code: 'ECONNREFUSED' });
+    const result = await safeQuery(() => Promise.reject(e));
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.kind).toBe('DatabaseUnavailable');
+  });
+
   it('does not throw — failure is reified as a Result', async () => {
     await expect(
       safeQuery(() => {

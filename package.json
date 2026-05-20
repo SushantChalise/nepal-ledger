@@ -23,12 +23,12 @@
     "format": "prettier --write .",
     "gen:source-index": "tsx scripts/gen-source-index.ts",
     "check:source-registry": "tsx scripts/check-source-registry.ts",
-    "ingest:census-2021": "tsx scripts/ingest-census-2021.ts",
+    "ingest:cmefs": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-cmefs.ts",
+    "ingest:census-2021": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-census-2021.ts",
     "probe:nrb-bfi": "python -m scrapers.nrb_bfi.schema_probe",
-    "ingest:bfi-monthly": "tsx scripts/ingest-bfi-monthly.ts",
-    "ingest:fiscal-transfers": "tsx scripts/ingest-fiscal-transfers.ts",
-    "seed:local-levels": "tsx scripts/seed-local-level-entities.ts",
-    "ingest:cmefs": "tsx scripts/ingest-cmefs.ts"
+    "ingest:bfi-monthly": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-bfi-monthly.ts",
+    "ingest:fiscal-transfers": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-fiscal-transfers.ts",
+    "seed:local-levels": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-local-level-entities.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",

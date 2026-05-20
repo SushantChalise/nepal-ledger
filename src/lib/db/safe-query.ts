@@ -54,9 +54,25 @@ function toAppError(e: unknown): AppError {
     return { kind: 'QueryFailed', detail: e.message };
   }
   if (e instanceof DrizzleError) {
+    // DrizzleError.cause holds the underlying postgres-js exception — recurse
+    // so SQLSTATE classification still happens, and so connection failures
+    // (e.g. EAI_AGAIN, ECONNREFUSED) surface as DatabaseUnavailable instead of
+    // being lost in a `Failed query: …` wrapper.
+    const cause = (e as DrizzleError & { cause?: unknown }).cause;
+    if (cause !== undefined && cause !== e) return toAppError(cause);
     return { kind: 'QueryFailed', detail: e.message };
   }
   if (e instanceof Error) {
+    const code = (e as Error & { code?: string }).code;
+    if (
+      code === 'EAI_AGAIN' ||
+      code === 'ENOTFOUND' ||
+      code === 'ECONNREFUSED' ||
+      code === 'ETIMEDOUT' ||
+      code === 'ECONNRESET'
+    ) {
+      return { kind: 'DatabaseUnavailable', detail: `${code}: ${e.message}` };
+    }
     return { kind: 'QueryFailed', detail: e.message };
   }
   return { kind: 'QueryFailed', detail: String(e) };

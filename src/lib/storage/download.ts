@@ -10,7 +10,7 @@ import { err, ok, type Result } from '@/lib/errors';
 import { serverEnv } from '@/lib/env';
 
 import { getSupabaseClient } from './supabase-client';
-import type { DownloadResult, StorageClientLike } from './types';
+import { isNotFoundStorageError, type DownloadResult, type StorageClientLike } from './types';
 
 export async function downloadSourceDocument(
   storageKey: string,
@@ -23,7 +23,7 @@ export async function downloadSourceDocument(
   const bucket = serverEnv().SUPABASE_STORAGE_BUCKET;
   const resp = await client.storage.from(bucket).download(storageKey);
   if (resp.data === null) {
-    if (resp.error.status === 404) {
+    if (isNotFoundStorageError(resp.error)) {
       return err({ kind: 'NotFound', resource: 'source_document', id: storageKey });
     }
     return err({
