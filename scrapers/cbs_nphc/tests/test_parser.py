@@ -195,3 +195,95 @@ def test_json_round_trip() -> None:
         "confidence_grade_proposed",
     ):
         assert key in sample
+
+
+# ---------------------------------------------------------------------------
+# Financial-inclusion + migration batch (Hhld11, Hhld12, Hhld17)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    ("stem", "expected_mode", "expected_value_cols", "expected_family"),
+    [
+        ("Hhld11_FemaleOwnershipOfFixedAsset", "B", 6, "household_economic"),
+        ("Hhld12_SmallScaleBusiness", "B", 13, "household_economic"),
+        ("Hhld17_AbsentHousehold", "B", 6, "household_demographic"),
+    ],
+)
+def test_migration_batch_parses(
+    stem: str,
+    expected_mode: str,
+    expected_value_cols: int,
+    expected_family: str,
+) -> None:
+    """Happy-path for the three parseable migration/financial-inclusion tables."""
+    result = parse(
+        str(FIXTURES / f"{stem}.csv"),
+        "doc-id-test",
+        resolver_for_tests=_stub_resolver,
+    )
+    assert result.status == "success", f"errors: {result.errors}"
+    assert result.mode == expected_mode
+    # Each fixture has 2 palika rows (aggregate row with gapa==0 is skipped).
+    assert len(result.facts) == 2 * expected_value_cols, (
+        f"got {len(result.facts)} facts; expected 2*{expected_value_cols}"
+    )
+    families = {f.indicator_family for f in result.facts}
+    assert families == {expected_family}
+
+
+def test_hhld11_slug_format_and_unit() -> None:
+    """Hhld11 slugs follow the kebab-case stem+col convention; unit is 'households'."""
+    result = parse(
+        str(FIXTURES / "Hhld11_FemaleOwnershipOfFixedAsset.csv"),
+        "doc-id",
+        resolver_for_tests=_stub_resolver,
+    )
+    slugs = {f.indicator_slug for f in result.facts}
+    assert "hhld11-femaleownershipoffixedasset-rowtotal" in slugs
+    assert "hhld11-femaleownershipoffixedasset-a-houseonly" in slugs
+    assert "hhld11-femaleownershipoffixedasset-d-noownership" in slugs
+    units = {f.unit for f in result.facts}
+    assert units == {"households"}
+
+
+def test_hhld11_female_ownership_values() -> None:
+    """Hhld11 emits correct numeric values for a known palika row."""
+    result = parse(
+        str(FIXTURES / "Hhld11_FemaleOwnershipOfFixedAsset.csv"),
+        "doc-id",
+        resolver_for_tests=_stub_resolver,
+    )
+    # Phaktanlung fixture row: rowtotal=2832, a_HouseOnly=10, b_LandOnly=159,
+    # c_HouseAndLand=83, d_NoOwnership=2547, e_notstd=33
+    phaktanlung = [f for f in result.facts if f.entity_slug == "01010101"]
+    assert len(phaktanlung) == 6
+    by_slug = {f.indicator_slug: f.value for f in phaktanlung}
+    assert by_slug["hhld11-femaleownershipoffixedasset-rowtotal"] == 2832.0
+    assert by_slug["hhld11-femaleownershipoffixedasset-a-houseonly"] == 10.0
+    assert by_slug["hhld11-femaleownershipoffixedasset-d-noownership"] == 2547.0
+
+
+def test_hhld19_not_yet_supported_returns_table_unknown(tmp_path: Path) -> None:
+    """Hhld19 (multi-row-per-palika: sex × age-group) is a known blocker.
+
+    The parser currently returns TableUnknown for Hhld18/19/20 because those
+    tables have multiple sub-rows per palika (sex × age-group dimensions) that
+    would cause duplicate (entity, indicator_slug) collisions under the current
+    single-row-per-palika model. Support requires a slug-dimension extension —
+    tracked in worker-P3-followup-census-batches.md §"Multi-dim tables".
+
+    We write a minimal stub CSV under tmp_path so the file-existence check
+    passes and the parser reaches the registry lookup (the code path we test).
+    """
+    stub = tmp_path / "Hhld19_AbsentPopnByCountry.csv"
+    stub.write_text(
+        "prov,dist,gapa,sex,agegrp,provname,dname,gapaname,sexname,agegrpname,"
+        "rowtotal,a_india,b_saarc\n"
+        "0,0,0,0,0,NEPAL,NEPAL,NEPAL,Total,All Ages,100,50,10\n",
+        encoding="utf-8",
+    )
+    result = parse(str(stub), "doc-id", resolver_for_tests=_stub_resolver)
+    assert result.status == "failure"
+    assert len(result.errors) == 1
+    assert result.errors[0].error_class == "TableUnknown"
+    assert "Hhld19_AbsentPopnByCountry" in result.errors[0].error_detail

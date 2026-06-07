@@ -1,0 +1,4 @@
+prov,dist,gapa,provname,dname,gapaname,rowtotal,a_HouseOnly,b_LandOnly,c_HouseAndLand,d_NoOwnership,e_notstd
+0,0,0,NEPAL,NEPAL,NEPAL,6660841,156376,643675,788917,4966548,105325
+1,1,1,Province-1,Taplejung,Phaktanlung Gaunpalika,2832,10,159,83,2547,33
+4,40,4,Gandaki,Kaski,Pokhara Metropolitian City,140459,5000,12000,18000,103000,2459

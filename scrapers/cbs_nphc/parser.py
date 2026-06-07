@@ -81,14 +81,28 @@ CensusIndicatorFamily = Literal[
 ]
 
 # Mapping from CSV file stem → (indicator_family, unit). Limited to the
-# first-batch 5 files. Extending the parser to more files means extending
-# this table (and writing a fixture + test row) — see the follow-up brief.
+# first-batch 5 files plus the financial-inclusion + migration batch (3 of 6
+# targets; see blocker note below for Hhld18/19/20).
+# Extending the parser to more files means extending this table (and writing a
+# fixture + test row) — see the follow-up brief.
 _TABLE_REGISTRY: Final[dict[str, tuple[CensusIndicatorFamily, str]]] = {
     "Hhld01_OwnershipOfHouse": ("household_housing", "households"),
     "Hhld02_FoundationOfHouse": ("household_housing", "households"),
     "Hhld05_FloorOfHouse": ("household_housing", "households"),
     "Hhld10_HouseholdFacility": ("household_facility", "households"),
     "Indv01_PopulationBySex": ("individual_demographic", "persons"),
+    # --- Financial inclusion + migration batch ---
+    # Hhld11: female ownership of fixed assets (land/house) — Money Becomes Wealth.
+    "Hhld11_FemaleOwnershipOfFixedAsset": ("household_economic", "households"),
+    # Hhld12: household-level small-scale business — entrepreneurship denominator.
+    "Hhld12_SmallScaleBusiness": ("household_economic", "households"),
+    # Hhld17: households with absent members — migration driver.
+    "Hhld17_AbsentHousehold": ("household_demographic", "households"),
+    # BLOCKER — Hhld18/19/20 are multi-row-per-palika (sex × age-group sub-rows).
+    # The current parser assumes exactly one data row per palika; ingesting these
+    # tables requires a slug-dimension extension (encode sex/agegrp into the
+    # indicator_slug) to avoid duplicate (entity, indicator) collisions.
+    # Tracking issue: worker-P3-followup-census-batches.md §"Multi-dim tables".
 }
 
 # Columns common to every Hhld*/Indv* CSV. The parser refuses to run if any
@@ -158,6 +172,38 @@ _TABLE_VALUE_COLUMNS: Final[dict[str, tuple[str, ...]]] = {
         "sex_ratio",
         "growth_rate",
         "pop_density",
+    ),
+    # --- Financial inclusion + migration batch ---
+    "Hhld11_FemaleOwnershipOfFixedAsset": (
+        "rowtotal",
+        "a_HouseOnly",
+        "b_LandOnly",
+        "c_HouseAndLand",
+        "d_NoOwnership",
+        "e_notstd",
+    ),
+    "Hhld12_SmallScaleBusiness": (
+        "rowtotal",
+        "NoBusiness",
+        "a_Cottage_m",
+        "a_Cottage_f",
+        "b_Trade_m",
+        "b_Trade_f",
+        "c_Transprt_m",
+        "c_Transprt_f",
+        "d_Service_m",
+        "d_Service_f",
+        "e_Others_m",
+        "e_Others_f",
+        "notstd",
+    ),
+    "Hhld17_AbsentHousehold": (
+        "TotHhld",
+        "absntHhld",
+        "total",
+        "male",
+        "female",
+        "AbsntHhldnotstd",
     ),
 }
 
@@ -350,10 +396,12 @@ def parse(
 ) -> CensusParserResult:
     """Parse a single CBS NPHC 2021 CSV → :class:`CensusParserResult`.
 
-    The CSV must be one of the 5 first-batch files (key into
-    ``_TABLE_REGISTRY``); other filenames return ``TableUnknown``. Adding a
-    new table means extending ``_TABLE_REGISTRY``, ``_TABLE_VALUE_COLUMNS``,
-    and the fixture set.
+    The CSV must be a key in ``_TABLE_REGISTRY`` (currently 8 tables);
+    other filenames return ``TableUnknown``. Adding a new table means
+    extending ``_TABLE_REGISTRY``, ``_TABLE_VALUE_COLUMNS``, and the
+    fixture set. Multi-row-per-palika tables (Hhld18/19/20) require a
+    slug-dimension extension before they can be added — see the blocker
+    note in ``_TABLE_REGISTRY``.
     """
     _ = source_document_id  # threaded for symmetry with the NCPI parser
 
