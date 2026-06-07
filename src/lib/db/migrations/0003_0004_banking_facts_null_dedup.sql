@@ -1,0 +1,2 @@
+DROP INDEX "banking_facts_unique_idx";--> statement-breakpoint
+CREATE UNIQUE INDEX "banking_facts_unique_idx" ON "banking_sector_facts" USING btree ("bank_class",coalesce("bank_entity_id", '00000000-0000-0000-0000-000000000000'::uuid),"indicator_slug","reporting_period_bs","reporting_period_type");

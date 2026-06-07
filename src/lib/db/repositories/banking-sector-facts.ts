@@ -40,11 +40,23 @@ export async function insertBankingSectorFact(
 }
 
 /**
- * Bulk insert with idempotency. The unique index on
- * (bank_class, bank_entity_id, indicator_slug, reporting_period_bs,
- * reporting_period_type) is the natural key — `onConflictDoNothing` means
- * a repeat ingestion of the same XLSX is a no-op (matches the parser
- * contract in DATA_PIPELINE.md).
+ * Bulk insert with idempotency. The natural key is the unique index
+ * `banking_facts_unique_idx` on
+ *   (bank_class, coalesce(bank_entity_id, <null-sentinel>::uuid),
+ *    indicator_slug, reporting_period_bs, reporting_period_type).
+ *
+ * The COALESCE wrapper is load-bearing: system-aggregate rows carry
+ * `bank_entity_id IS NULL`, and Postgres treats NULLs as DISTINCT in a plain
+ * unique index — so a repeat ingest would re-insert every aggregate row.
+ * Coalescing NULL to BANK_ENTITY_NULL_SENTINEL makes those rows collide.
+ *
+ * `onConflictDoNothing()` is called WITHOUT an explicit `target`. That is
+ * deliberate and required here: Drizzle's `target` only accepts plain columns
+ * (it emits a `(col, …)` list and cannot express a `coalesce(…)` expression
+ * index). The bare form skips on ANY unique-constraint violation; this table
+ * has exactly one unique index (`banking_facts_unique_idx`), so "any conflict"
+ * is precisely the natural key. Re-ingesting the same XLSX is thus a no-op
+ * (matches the parser contract in DATA_PIPELINE.md).
  *
  * Returns the rows actually inserted (drizzle `returning()` only yields
  * conflict-skipped rows on inserts that produced new rows).
