@@ -8,7 +8,7 @@
  *   Column C: 4 local-level types (metropolitan_city, sub_metropolitan_city,
  *             municipality, rural_municipality)
  *
- * All amounts are stored in NPR_thousand; the query sums them to a single
+ * All amounts are stored in npr_crore; the query sums them to a single
  * numeric that we format for display in the component.
  *
  * SCOPE: only the money-map feature. Reads from DB directly; does NOT edit
@@ -51,8 +51,8 @@ export type SankeyNodeData = {
   id: string;
   /** Display label. */
   label: string;
-  /** Total amount in NPR thousands. */
-  totalNprThousand: number;
+  /** Total amount in NPR crore. */
+  totalNprCrore: number;
   /** Which column (0=Federal, 1=GrantType, 2=LocalLevelType). */
   column: 0 | 1 | 2;
 };
@@ -62,8 +62,8 @@ export type SankeyLinkData = {
   sourceId: string;
   /** Matches SankeyNodeData.id of the target node. */
   targetId: string;
-  /** Flow value in NPR thousands. */
-  valueNprThousand: number;
+  /** Flow value in NPR crore. */
+  valueNprCrore: number;
 };
 
 export type SankeyData = {
@@ -71,10 +71,10 @@ export type SankeyData = {
   links: SankeyLinkData[];
   /** Reporting period from the data. */
   fiscalYearBs: string;
-  /** Unit label — always 'NPR_thousand' from this table. */
+  /** Unit label — always 'npr_crore' from this table. */
   unit: string;
   /** Grand total across all transfers. */
-  grandTotalNprThousand: number;
+  grandTotalNprCrore: number;
 };
 
 // ---------------------------------------------------------------------------
@@ -194,7 +194,7 @@ export async function getFiscalTransferSankeyData(): Promise<Result<SankeyData>>
   const federalNode: SankeyNodeData = {
     id: 'federal',
     label: 'Federal Government',
-    totalNprThousand: grandTotal,
+    totalNprCrore: grandTotal,
     column: 0,
   };
 
@@ -203,7 +203,7 @@ export async function getFiscalTransferSankeyData(): Promise<Result<SankeyData>>
     grantNodes.push({
       id: `grant:${grantType}`,
       label: GRANT_TYPE_LABELS[grantType as GrantType] ?? grantType,
-      totalNprThousand: total,
+      totalNprCrore: total,
       column: 1,
     });
   }
@@ -222,7 +222,7 @@ export async function getFiscalTransferSankeyData(): Promise<Result<SankeyData>>
     localNodes.push({
       id: `local:${localType}`,
       label: LOCAL_LEVEL_TYPE_LABELS[localType] ?? localType,
-      totalNprThousand: total,
+      totalNprCrore: total,
       column: 2,
     });
   }
@@ -236,7 +236,7 @@ export async function getFiscalTransferSankeyData(): Promise<Result<SankeyData>>
     links.push({
       sourceId: federalNode.id,
       targetId: grantNode.id,
-      valueNprThousand: grantNode.totalNprThousand,
+      valueNprCrore: grantNode.totalNprCrore,
     });
   }
 
@@ -246,7 +246,7 @@ export async function getFiscalTransferSankeyData(): Promise<Result<SankeyData>>
       links.push({
         sourceId: `grant:${grantType}`,
         targetId: `local:${localType}`,
-        valueNprThousand: amount,
+        valueNprCrore: amount,
       });
     }
   }
@@ -258,6 +258,6 @@ export async function getFiscalTransferSankeyData(): Promise<Result<SankeyData>>
     links,
     fiscalYearBs,
     unit,
-    grandTotalNprThousand: grandTotal,
+    grandTotalNprCrore: grandTotal,
   });
 }

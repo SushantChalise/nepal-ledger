@@ -46,13 +46,17 @@ from _common.municipality_resolver import (
 )
 from _common.types import ParserError, ParserStatus
 
-PARSER_VERSION: Final[str] = "0.3.0"
+PARSER_VERSION: Final[str] = "0.4.0"
 SOURCE_ID: Final[str] = "local-fiscal-transfers-cleaned"
 
 # Fiscal year + confidence anchors. The cleaned XLSX covers FY 2082/83 only.
 _DEFAULT_FISCAL_YEAR_BS: Final[str] = "2082/83"
 _DEFAULT_CONFIDENCE: Final[Literal["A", "B", "C"]] = "A"
-_DEFAULT_UNIT: Final[str] = "NPR_thousand"
+# The Cleaned/ XLSX stores amounts in NPR crore (1 crore = 10 million NPR).
+# Verified: grand total 95,551.69 → NPR 955 billion; matches published FY
+# 2082/83 intergovernmental transfer budget. Previously mis-labeled as
+# NPR_thousand (would imply only NPR 95 million total — off by 4 orders).
+_DEFAULT_UNIT: Final[str] = "npr_crore"
 _DEFAULT_TRANSFER_SHEET: Final[str] = "Sheet1"
 _NAME_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("local level", "municipality", "name", "स्थानीय")
 _DISTRICT_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("district", "जिल्ला")

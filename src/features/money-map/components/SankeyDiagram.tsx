@@ -27,7 +27,7 @@ import { sankey, sankeyJustify, sankeyLinkHorizontal } from 'd3-sankey';
 import type { SankeyGraph, SankeyLink, SankeyNode } from 'd3-sankey';
 
 import type { SankeyData, SankeyNodeData } from '../server/queries';
-import { formatNprThousand } from '../format';
+import { formatNprCrore } from '../format';
 
 // ---------------------------------------------------------------------------
 // D3 Sankey node/link extra properties (user-defined fields)
@@ -36,12 +36,12 @@ import { formatNprThousand } from '../format';
 type SankeyN = {
   id: string;
   label: string;
-  totalNprThousand: number;
+  totalNprCrore: number;
   column: 0 | 1 | 2;
 };
 
 type SankeyL = {
-  valueNprThousand: number;
+  valueNprCrore: number;
 };
 
 // Resolved node type after d3-sankey layout — x0/y0/x1/y1 are guaranteed.
@@ -75,29 +75,29 @@ const LINK_COLOR = '#94a3b8'; // slate-400 — neutral link colour
 
 function StackedBarFallback({ data }: { data: SankeyData }) {
   const localNodes = data.nodes.filter((n) => n.column === 2);
-  const grand = data.grandTotalNprThousand;
+  const grand = data.grandTotalNprCrore;
 
   return (
     <div aria-label="Fiscal transfers by local-level type (mobile summary)">
       <p className="mb-2 text-xs text-zinc-500 dark:text-zinc-400">
-        FY {data.fiscalYearBs} · amounts in NPR (thousands)
+        FY {data.fiscalYearBs} · amounts in NPR crore
       </p>
       <div className="flex h-8 w-full overflow-hidden rounded" role="img" aria-hidden="true">
         {localNodes.map((node, i) => {
-          const pct = grand > 0 ? (node.totalNprThousand / grand) * 100 : 0;
+          const pct = grand > 0 ? (node.totalNprCrore / grand) * 100 : 0;
           const colors = ['#1d4ed8', '#0891b2', '#0d9488', '#059669'];
           return (
             <div
               key={node.id}
               style={{ width: `${pct.toFixed(2)}%`, backgroundColor: colors[i % colors.length] }}
-              title={`${node.label}: ${formatNprThousand(node.totalNprThousand)}`}
+              title={`${node.label}: ${formatNprCrore(node.totalNprCrore)}`}
             />
           );
         })}
       </div>
       <ul className="mt-2 space-y-1">
         {localNodes.map((node, i) => {
-          const pct = grand > 0 ? (node.totalNprThousand / grand) * 100 : 0;
+          const pct = grand > 0 ? (node.totalNprCrore / grand) * 100 : 0;
           const colors = ['#1d4ed8', '#0891b2', '#0d9488', '#059669'];
           return (
             <li
@@ -110,9 +110,7 @@ function StackedBarFallback({ data }: { data: SankeyData }) {
                 aria-hidden="true"
               />
               <span>{node.label}</span>
-              <span className="ml-auto tabular-nums">
-                {formatNprThousand(node.totalNprThousand)}
-              </span>
+              <span className="ml-auto tabular-nums">{formatNprCrore(node.totalNprCrore)}</span>
               <span className="w-10 text-right text-zinc-500">{pct.toFixed(1)}%</span>
             </li>
           );
@@ -137,7 +135,7 @@ function FullSankey({ data, width }: { data: SankeyData; width: number }) {
   const inputNodes: SankeyN[] = data.nodes.map((n) => ({
     id: n.id,
     label: n.label,
-    totalNprThousand: n.totalNprThousand,
+    totalNprCrore: n.totalNprCrore,
     column: n.column,
   }));
 
@@ -145,8 +143,8 @@ function FullSankey({ data, width }: { data: SankeyData; width: number }) {
   const inputLinks = data.links.map((l) => ({
     source: l.sourceId,
     target: l.targetId,
-    value: l.valueNprThousand,
-    valueNprThousand: l.valueNprThousand,
+    value: l.valueNprCrore,
+    valueNprCrore: l.valueNprCrore,
   }));
 
   const layout = sankey<SankeyN, SankeyL>()
@@ -167,7 +165,7 @@ function FullSankey({ data, width }: { data: SankeyData; width: number }) {
       source: string;
       target: string;
       value: number;
-      valueNprThousand: number;
+      valueNprCrore: number;
     }>,
   } as unknown as SankeyGraph<SankeyN, SankeyL>);
 
@@ -187,7 +185,7 @@ function FullSankey({ data, width }: { data: SankeyData; width: number }) {
     >
       <desc id={descId}>
         Sankey diagram of Nepal federal fiscal transfers for FY {data.fiscalYearBs}. Federal
-        Government distributes {formatNprThousand(data.grandTotalNprThousand)} across{' '}
+        Government distributes {formatNprCrore(data.grandTotalNprCrore)} across{' '}
         {data.nodes.filter((n) => n.column === 1).length} grant types to{' '}
         {data.nodes.filter((n) => n.column === 2).length} local-level types.
       </desc>
@@ -202,7 +200,7 @@ function FullSankey({ data, width }: { data: SankeyData; width: number }) {
           const pathD = linkGen(link as unknown as Parameters<typeof linkGen>[0]);
           const srcLabel = srcNode.label;
           const tgtLabel = tgtNode.label;
-          const valLabel = formatNprThousand(link.valueNprThousand);
+          const valLabel = formatNprCrore(link.valueNprCrore);
 
           return (
             <path
@@ -232,10 +230,7 @@ function FullSankey({ data, width }: { data: SankeyData; width: number }) {
           const midY = node.y0 + nodeHeight / 2;
 
           return (
-            <g
-              key={node.id}
-              aria-label={`${node.label}: ${formatNprThousand(node.totalNprThousand)}`}
-            >
+            <g key={node.id} aria-label={`${node.label}: ${formatNprCrore(node.totalNprCrore)}`}>
               <rect
                 x={node.x0}
                 y={node.y0}
@@ -245,7 +240,7 @@ function FullSankey({ data, width }: { data: SankeyData; width: number }) {
                 rx={3}
               >
                 <title>
-                  {node.label}: {formatNprThousand(node.totalNprThousand)}
+                  {node.label}: {formatNprCrore(node.totalNprCrore)}
                 </title>
               </rect>
 
@@ -274,7 +269,7 @@ function FullSankey({ data, width }: { data: SankeyData; width: number }) {
                   aria-hidden="true"
                   className="select-none fill-zinc-500 dark:fill-zinc-400"
                 >
-                  {formatNprThousand(node.totalNprThousand)}
+                  {formatNprCrore(node.totalNprCrore)}
                 </text>
               )}
             </g>
@@ -309,7 +304,7 @@ function AccessibleTableFallback({ data }: { data: SankeyData }) {
               <tr key={i}>
                 <td>{srcNode?.label ?? link.sourceId}</td>
                 <td>{tgtNode?.label ?? link.targetId}</td>
-                <td>{formatNprThousand(link.valueNprThousand)}</td>
+                <td>{formatNprCrore(link.valueNprCrore)}</td>
               </tr>
             );
           })}

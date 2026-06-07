@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { formatAppError } from '@/lib/errors';
 import { getFiscalTransferSankeyData } from '@/features/money-map/server/queries';
 import { SankeyDiagram } from '@/features/money-map/components/SankeyDiagram';
-import { formatNprThousand } from '@/features/money-map/format';
+import { formatNprCrore } from '@/features/money-map/format';
 
 export const metadata: Metadata = {
   title: 'Money Map — Nepal Ledger',
@@ -70,15 +70,15 @@ export default async function MoneyMapPage() {
     <main className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       <MoneyMapHeader
         fiscalYearBs={sankeyData.fiscalYearBs}
-        grandTotal={sankeyData.grandTotalNprThousand}
+        grandTotal={sankeyData.grandTotalNprCrore}
       />
 
       {/* Plain-language interpretation — required by UI_ACCEPTANCE.md §"Required Content Elements" */}
       <div className="mt-6 rounded-lg border border-blue-100 bg-blue-50 px-5 py-4 dark:border-blue-900 dark:bg-blue-950">
         <p className="text-sm text-blue-800 dark:text-blue-200">
           <span className="font-semibold">What this shows:</span> The federal government distributed{' '}
-          <span className="font-medium">{formatNprThousand(sankeyData.grandTotalNprThousand)}</span>{' '}
-          to Nepal&apos;s 753 local governments in FY {sankeyData.fiscalYearBs} through{' '}
+          <span className="font-medium">{formatNprCrore(sankeyData.grandTotalNprCrore)}</span> to
+          Nepal&apos;s 753 local governments in FY {sankeyData.fiscalYearBs} through{' '}
           {sankeyData.nodes.filter((n) => n.column === 1).length} grant types. Each column shows a
           stage in the flow: who sends → what channel → who receives. Wider bands mean larger
           transfers.
@@ -117,7 +117,7 @@ export default async function MoneyMapPage() {
           </div>
           <div className="flex gap-1">
             <dt className="font-medium text-zinc-600 dark:text-zinc-400">Unit:</dt>
-            <dd>NPR thousands (NPR K)</dd>
+            <dd>NPR crore</dd>
           </div>
           <div className="flex gap-1">
             <dt className="font-medium text-zinc-600 dark:text-zinc-400">Data status:</dt>
@@ -129,9 +129,9 @@ export default async function MoneyMapPage() {
           </div>
         </dl>
         <p className="mt-3 text-xs text-zinc-400 dark:text-zinc-500">
-          Transfer amounts are in NPR thousands (K). Figures cover all 753 local governments —
-          metropolitan cities, sub-metropolitan cities, municipalities, and rural municipalities —
-          for the fiscal year indicated.{' '}
+          Transfer amounts are in NPR crore. Figures cover all 753 local governments — metropolitan
+          cities, sub-metropolitan cities, municipalities, and rural municipalities — for the fiscal
+          year indicated.{' '}
           <Link
             href="/pulse"
             className="text-blue-600 underline hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
@@ -173,7 +173,7 @@ function MoneyMapHeader({ fiscalYearBs, grandTotal }: MoneyMapHeaderProps) {
           <span>
             Total transfers:{' '}
             <span className="font-medium text-zinc-700 dark:text-zinc-300">
-              {formatNprThousand(grandTotal)}
+              {formatNprCrore(grandTotal)}
             </span>
           </span>
           <span className="mx-2" aria-hidden="true">

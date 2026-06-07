@@ -40,7 +40,7 @@ def test_status_success(result: dict[str, object]) -> None:
 
 
 def test_parser_version(result: dict[str, object]) -> None:
-    assert result["parser_version"] == PARSER_VERSION == "0.3.0"
+    assert result["parser_version"] == PARSER_VERSION == "0.4.0"
 
 
 def test_reads_data_when_sheet_named_sheet2(tmp_path: Path) -> None:
@@ -109,7 +109,7 @@ def test_kathmandu_equalization_minimum(result: dict[str, object]) -> None:
     ]
     assert len(matches) == 1
     assert matches[0]["amount_npr"] == pytest.approx(100000.0)
-    assert matches[0]["unit"] == "NPR_thousand"
+    assert matches[0]["unit"] == "npr_crore"
     assert matches[0]["confidence_grade"] == "A"
     assert matches[0]["fiscal_year_bs"] == "2082/83"
 
@@ -146,7 +146,7 @@ def test_all_row_fields_typed(result: dict[str, object]) -> None:
         assert len(rebuilt.federal_code) == 8
         assert rebuilt.grant_type in EXPECTED_GRANT_TYPES
         assert rebuilt.amount_npr >= 0
-        assert rebuilt.unit == "NPR_thousand"
+        assert rebuilt.unit == "npr_crore"
 
 
 def test_idempotent() -> None:
