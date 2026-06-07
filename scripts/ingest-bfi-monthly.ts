@@ -22,7 +22,9 @@
  */
 
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
+import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -37,6 +39,35 @@ const DEFAULT_INPUT = path.join(
   'Bhadau_2082_Publish.xlsx',
 );
 const PLACEHOLDER_SOURCE_DOC_ID = '00000000-0000-0000-0000-000000000000';
+const BFI_SOURCE_ID = 'nrb-bfi-monthly-xlsx';
+
+/**
+ * Ensure a `source_documents` row exists for the input file and return its id.
+ * Mirrors the fiscal-transfers pattern: provenance row with content hash +
+ * deterministic storage key (bytes are not uploaded to Storage here — that
+ * archival step is a separate follow-up shared with fiscal-transfers).
+ */
+async function ensureSourceDocument(inputPath: string): Promise<string> {
+  const { insertSourceDocument } = await import('@/lib/db/repositories/source-documents');
+  const buf = await readFile(inputPath);
+  const hash = createHash('sha256').update(buf).digest('hex');
+  const st = await stat(inputPath);
+  const today = new Date().toISOString().slice(0, 10);
+  const result = await insertSourceDocument({
+    sourceId: BFI_SOURCE_ID,
+    originalUrl: `file://${inputPath}`,
+    storageProvider: 'supabase',
+    storageKey: `${BFI_SOURCE_ID}/${today}/${path.basename(inputPath)}`,
+    fileHashSha256: hash,
+    fileSizeBytes: st.size,
+    contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    reportingPeriodLabel: null,
+  });
+  if (!result.ok) {
+    throw new Error(`insertSourceDocument failed: ${JSON.stringify(result.error)}`);
+  }
+  return result.value.id;
+}
 
 const FactRowSchema = z.object({
   bank_class: z.enum(['commercial', 'development', 'finance', 'system_total']),
@@ -101,8 +132,12 @@ function parseArgs(argv: readonly string[]): {
 
 async function runParser(inputPath: string, sourceDocumentId: string): Promise<ParserOutput> {
   const scrapersDir = path.join(REPO_ROOT, 'scrapers');
+  // Honor the PYTHON env var (points at scrapers/.venv, which has the parser
+  // deps) — matches ingest-cmefs / ingest-fiscal-transfers. Bare 'python'
+  // resolves to the global interpreter, which lacks openpyxl.
+  const python = process.env['PYTHON'] ?? (process.platform === 'win32' ? 'python' : 'python3');
   return new Promise((resolve, reject) => {
-    const child = spawn('python', ['-m', 'nrb_bfi.parser', inputPath, sourceDocumentId], {
+    const child = spawn(python, ['-m', 'nrb_bfi.parser', inputPath, sourceDocumentId], {
       cwd: scrapersDir,
       env: { ...process.env, PYTHONPATH: scrapersDir },
     });
@@ -143,6 +178,13 @@ async function main(): Promise<void> {
   if (result.status === 'failure') {
     throw new Error('parser status=failure; refusing to write');
   }
+  // Self-create the source_documents provenance row unless the caller threaded
+  // a real FK in (the placeholder is only valid for --dry-run).
+  const sourceDocumentId =
+    args.sourceDocumentId === PLACEHOLDER_SOURCE_DOC_ID
+      ? await ensureSourceDocument(args.input)
+      : args.sourceDocumentId;
+  process.stdout.write(`[ingest-bfi-monthly] source_documents.id = ${sourceDocumentId}\n`);
   // Lazy import to keep --dry-run free of DATABASE_URL requirement.
   const { bulkInsertBankingSectorFacts } = await import('@/lib/db/repositories');
   const rows = result.fact_rows.map((r) => ({
@@ -159,7 +201,7 @@ async function main(): Promise<void> {
     publicationDateAd: r.publication_date_ad,
     publicationDateBs: r.publication_date_bs,
     fiscalYearBs: r.fiscal_year_bs,
-    sourceDocumentId: args.sourceDocumentId,
+    sourceDocumentId,
     confidenceGrade: r.confidence_grade,
     promotedBy: 'scripts/ingest-bfi-monthly.ts',
   }));
