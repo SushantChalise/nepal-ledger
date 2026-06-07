@@ -1,0 +1,8 @@
+# Fixture crosswalk for parser tests — NOT the production file.
+# Covers the two fixture-CSV palikas plus a same-name pair to prove the
+# (prov,dist,gapa) key disambiguates two identically-named palikas.
+prov,dist,gapa,federal_code,name_en
+1,1,1,80101302,Phaktanglung Rural Municipality
+4,40,4,80104040,Pokhara Metropolitan City
+1,2,9,80109901,Madi Municipality (Sankhuwasabha)
+3,35,7,80109902,Madi Municipality (Chitwan)

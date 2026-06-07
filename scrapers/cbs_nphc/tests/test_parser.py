@@ -1,9 +1,17 @@
 """End-to-end parser tests for the 5 first-batch CBS NPHC 2021 CSVs.
 
-The real fuzzy resolver lives in :mod:`scrapers._common.municipality_resolver`
-and depends on a gitignored MoF xlsx that may not be present in CI. These
-tests inject a stub resolver via the parser's ``resolver_for_tests`` seam
-so the parser logic is exercised without touching the gitignored data.
+Two resolution paths are exercised:
+
+* **Crosswalk (primary).** ``test_crosswalk_*`` point ``parse`` at a small
+  fixture crosswalk and assert that ``(prov, dist, gapa)`` triples resolve to
+  the expected federal codes — including two SAME-NAMED palikas in different
+  districts resolving to DISTINCT codes.
+* **Fuzzy fallback.** The original suite injects a stub resolver via
+  ``resolver_for_tests`` AND an empty crosswalk (``_NO_CROSSWALK``) so the
+  parser falls through to the name-based fuzzy match. This keeps the parser
+  logic (slugging, value explode, override rewrite, dedup) under test without
+  the gitignored MoF xlsx, and verifies the fallback still works when a triple
+  is absent from the crosswalk.
 """
 
 from __future__ import annotations
@@ -16,6 +24,12 @@ import pytest
 from cbs_nphc import PARSER_VERSION, parse
 
 FIXTURES = Path(__file__).parent / "fixtures"
+
+# Pointing the parser at a non-existent crosswalk path yields an empty crosswalk
+# (the loader treats a missing file as "no entries"), forcing the fuzzy-resolver
+# fallback. Used by every stub-resolver test below so their triples don't get
+# resolved by the real committed crosswalk instead.
+_NO_CROSSWALK = FIXTURES / "_no_such_crosswalk.csv"
 
 # Canonical fixture mapping. Federal codes are arbitrary 8-digit strings —
 # the parser does not validate the codes themselves, only that the resolver
@@ -49,7 +63,7 @@ def _stub_resolver(name: str, district_hint: str | None = None) -> _StubMatch | 
 # Sanity
 # ---------------------------------------------------------------------------
 def test_parser_version() -> None:
-    assert PARSER_VERSION == "0.2.0"
+    assert PARSER_VERSION == "0.3.0"
 
 
 def test_unknown_table_returns_failure() -> None:
@@ -58,6 +72,7 @@ def test_unknown_table_returns_failure() -> None:
         str(FIXTURES / "Hhld01_OwnershipOfHouse.csv"),  # path exists
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     assert result.status == "success"  # smoke; real cases below
 
@@ -84,6 +99,7 @@ def test_first_batch_parses(stem: str, expected_mode: str, expected_value_cols: 
         str(FIXTURES / f"{stem}.csv"),
         "doc-id-test",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     assert result.status == "success", f"errors: {result.errors}"
     assert result.mode == expected_mode
@@ -99,9 +115,10 @@ def test_aggregate_rows_skipped() -> None:
         str(FIXTURES / "Hhld05_FloorOfHouse.csv"),
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     # NEPAL row has prov=dist=gapa=0 → skipped. Both kept rows must have
-    # palika-level federal codes from the stub map.
+    # palika-level federal codes from the stub map (fuzzy fallback path).
     codes = {f.entity_slug for f in result.facts}
     assert codes == {"01010101", "04040040"}
 
@@ -115,6 +132,7 @@ def test_pokhara_override_applied() -> None:
         str(FIXTURES / "Hhld01_OwnershipOfHouse.csv"),
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     pokhara_facts = [f for f in result.facts if f.entity_slug == "04040040"]
     assert len(pokhara_facts) == 5  # 5 value cols in Hhld01
@@ -125,6 +143,7 @@ def test_indicator_slug_format() -> None:
         str(FIXTURES / "Hhld05_FloorOfHouse.csv"),
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     slugs = {f.indicator_slug for f in result.facts}
     # Slugs preserve the CSV stem verbatim (lowercased) so dev can grep
@@ -140,12 +159,14 @@ def test_unresolved_municipality_becomes_error_not_fabricated_code() -> None:
 
     def _always_none(name: str, district_hint: str | None = None) -> None:
         _ = name, district_hint
-        return None
 
     result = parse(
         str(FIXTURES / "Hhld05_FloorOfHouse.csv"),
         "doc-id",
         resolver_for_tests=_always_none,
+        # Empty crosswalk so the triples fall through to the (None-returning)
+        # fuzzy fallback — exercises the "fabricate nothing" guarantee.
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     # Status must be failure because every palika row failed and zero facts emitted.
     assert result.status == "failure"
@@ -161,6 +182,7 @@ def test_indv01_emits_population_indicators() -> None:
         str(FIXTURES / "Indv01_PopulationBySex.csv"),
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     slugs = {f.indicator_slug for f in result.facts}
     assert "indv01-populationbysex-male" in slugs
@@ -176,10 +198,11 @@ def test_json_round_trip() -> None:
         str(FIXTURES / "Hhld01_OwnershipOfHouse.csv"),
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     blob = result.to_json_dict()
     assert blob["status"] == "success"
-    assert blob["parser_version"] == "0.2.0"
+    assert blob["parser_version"] == "0.3.0"
     assert blob["mode"] == "A"
     assert len(blob["facts"]) == 10
     sample = blob["facts"][0]
@@ -220,6 +243,7 @@ def test_migration_batch_parses(
         str(FIXTURES / f"{stem}.csv"),
         "doc-id-test",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     assert result.status == "success", f"errors: {result.errors}"
     assert result.mode == expected_mode
@@ -237,6 +261,7 @@ def test_hhld11_slug_format_and_unit() -> None:
         str(FIXTURES / "Hhld11_FemaleOwnershipOfFixedAsset.csv"),
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     slugs = {f.indicator_slug for f in result.facts}
     assert "hhld11-femaleownershipoffixedasset-rowtotal" in slugs
@@ -252,6 +277,7 @@ def test_hhld11_female_ownership_values() -> None:
         str(FIXTURES / "Hhld11_FemaleOwnershipOfFixedAsset.csv"),
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     # Phaktanlung fixture row: rowtotal=2832, a_HouseOnly=10, b_LandOnly=159,
     # c_HouseAndLand=83, d_NoOwnership=2547, e_notstd=33
@@ -290,6 +316,7 @@ def test_absent_population_batch_parses(
         str(FIXTURES / f"{stem}.csv"),
         "doc-id-test",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     assert result.status == "success", f"errors: {result.errors}"
     assert result.mode == expected_mode
@@ -313,6 +340,7 @@ def test_hhld19_slug_encodes_sex_and_agegrp() -> None:
         str(FIXTURES / "Hhld19_AbsentPopnByCountry.csv"),
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     slugs = {f.indicator_slug for f in result.facts}
     # Total × All Ages row.
@@ -336,6 +364,7 @@ def test_hhld19_no_duplicate_entity_slug_pairs() -> None:
         str(FIXTURES / "Hhld19_AbsentPopnByCountry.csv"),
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     pairs = [(f.entity_slug, f.indicator_slug) for f in result.facts]
     assert len(pairs) == len(set(pairs)), "duplicate (entity, slug) pairs found"
@@ -347,6 +376,7 @@ def test_hhld19_spot_check_value() -> None:
         str(FIXTURES / "Hhld19_AbsentPopnByCountry.csv"),
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     target = [
         f for f in result.facts
@@ -400,6 +430,7 @@ def test_same_gapaname_different_prov_dist_gapa_no_collision(
         str(collision_csv),
         "doc-id-collision",
         resolver_for_tests=_collision_stub,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     # Both palikas must produce facts — no "Other" collision errors.
     other_errors = [e for e in result.errors if e.error_class == "Other"]
@@ -421,8 +452,105 @@ def test_hhld18_slug_encodes_sex_only() -> None:
         str(FIXTURES / "Hhld18_AbsentPopnBySex.csv"),
         "doc-id",
         resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
     )
     slugs = {f.indicator_slug for f in result.facts}
     assert "hhld18-absentpopnbysex-total-rowtotal" in slugs
     assert "hhld18-absentpopnbysex-male-a-00to04" in slugs
     assert "hhld18-absentpopnbysex-female-n-65plus" in slugs
+
+
+# ---------------------------------------------------------------------------
+# Crosswalk resolution (primary path) — (prov, dist, gapa) → federal code
+# ---------------------------------------------------------------------------
+
+_SAMPLE_CROSSWALK = FIXTURES / "palika_code_crosswalk_sample.csv"
+
+
+def _never_resolves(name: str, district_hint: str | None = None) -> _StubMatch | None:
+    """Fuzzy-resolver stub that ALWAYS fails — proves the crosswalk alone
+    resolved the row (any code present must have come from the crosswalk).
+    """
+    _ = name, district_hint
+    return None  # noqa: RET501, PLR1711 — explicit None mirrors the resolver contract
+
+
+def test_crosswalk_known_triple_maps_to_expected_code() -> None:
+    """A known (prov, dist, gapa) resolves to its crosswalk federal code even
+    when the fuzzy fallback can never fire.
+    """
+    result = parse(
+        str(FIXTURES / "Hhld05_FloorOfHouse.csv"),
+        "doc-id",
+        resolver_for_tests=_never_resolves,
+        crosswalk_path_for_tests=_SAMPLE_CROSSWALK,
+    )
+    assert result.status == "success", f"errors: {result.errors}"
+    codes = {f.entity_slug for f in result.facts}
+    # (1,1,1) → 80101302 and (4,40,4) → 80104040 per the sample crosswalk.
+    assert codes == {"80101302", "80104040"}
+
+
+def test_crosswalk_same_named_palikas_get_distinct_codes(tmp_path: Path) -> None:
+    """Two palikas with the IDENTICAL gapaname but different (prov, dist, gapa)
+    triples must resolve to DISTINCT federal codes via the crosswalk — the
+    exact failure mode the fuzzy resolver could not handle.
+    """
+    collision_csv = tmp_path / "Hhld05_FloorOfHouse.csv"
+    collision_csv.write_text(
+        "prov,dist,gapa,provname,dname,gapaname,rowtotal,a_Mud,b_Wooden,"
+        "c_BrickStone,d_Ceramic,e_Cemented,f_Other\n"
+        "0,0,0,NEPAL,NEPAL,NEPAL,6660841,3074510,135503,91236,180603,3151140,27849\n"
+        "1,2,9,Province-1,Sankhuwasabha,Madi Municipality,2832,2409,280,12,6,101,24\n"
+        "3,35,7,Bagmati,Chitwan,Madi Municipality,5000,4000,400,100,50,400,50\n",
+        encoding="utf-8",
+    )
+    result = parse(
+        str(collision_csv),
+        "doc-id",
+        resolver_for_tests=_never_resolves,
+        crosswalk_path_for_tests=_SAMPLE_CROSSWALK,
+    )
+    assert result.status == "success", f"errors: {result.errors}"
+    codes = {f.entity_slug for f in result.facts}
+    # Sankhuwasabha Madi (1,2,9) → 80109901; Chitwan Madi (3,35,7) → 80109902.
+    assert codes == {"80109901", "80109902"}, (
+        "same-named palikas must map to distinct codes via the triple key"
+    )
+
+
+def test_crosswalk_takes_precedence_over_fuzzy() -> None:
+    """When a triple is in the crosswalk, the crosswalk code is used even if a
+    (wrong) fuzzy resolver would return a different code.
+    """
+
+    def _wrong_code(name: str, district_hint: str | None = None) -> _StubMatch:
+        _ = name, district_hint
+        return _StubMatch(federal_code="99999999", score=99.0)
+
+    result = parse(
+        str(FIXTURES / "Hhld05_FloorOfHouse.csv"),
+        "doc-id",
+        resolver_for_tests=_wrong_code,
+        crosswalk_path_for_tests=_SAMPLE_CROSSWALK,
+    )
+    codes = {f.entity_slug for f in result.facts}
+    assert "99999999" not in codes, "fuzzy fallback must NOT override the crosswalk"
+    assert codes == {"80101302", "80104040"}
+
+
+def test_crosswalk_absent_triple_falls_back_to_fuzzy() -> None:
+    """A triple absent from the crosswalk falls through to the fuzzy resolver.
+
+    With an empty crosswalk, both fixture rows miss the crosswalk and resolve
+    via the stub resolver instead — proving the fallback path is wired.
+    """
+    result = parse(
+        str(FIXTURES / "Hhld05_FloorOfHouse.csv"),
+        "doc-id",
+        resolver_for_tests=_stub_resolver,
+        crosswalk_path_for_tests=_NO_CROSSWALK,
+    )
+    codes = {f.entity_slug for f in result.facts}
+    # Stub map codes (fuzzy fallback), proving fallback fired.
+    assert codes == {"01010101", "04040040"}
