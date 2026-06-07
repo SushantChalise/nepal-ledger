@@ -29,7 +29,7 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["_common*", "nrb_ncpi*", "nrb_cmefs*", "nrb_bfi*", "nso_archive*", "cbs_nphc*", "mof_fiscal_transfers*"]
+include = ["_common*", "nrb_ncpi*", "nrb_cmefs*", "nrb_bfi*", "nso_archive*", "cbs_nphc*", "mof_fiscal_transfers*", "nrb_dne*"]
 namespaces = false
 
 # The on-disk folder is `nrb-ncpi` (hyphenated, matching the source_id) but
