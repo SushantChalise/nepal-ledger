@@ -46,7 +46,7 @@ def test_happy_status_success(happy_result: ParserResult) -> None:
 
 
 def test_happy_parser_version(happy_result: ParserResult) -> None:
-    assert happy_result.parser_version == PARSER_VERSION == "0.5.0"
+    assert happy_result.parser_version == PARSER_VERSION == "0.6.0"
 
 
 def test_happy_source_id() -> None:
@@ -719,3 +719,212 @@ def test_fx_slug_collision_qualified_by_parent(fx_slug_result: ParserResult) -> 
     slugs = {r.indicator_slug_raw for r in fx_slug_result.staging_rows}
     assert "dne-convertible" in slugs
     assert "dne-convertible-gross-foreign-exchange-reserve" in slugs
+
+
+# ---------------------------------------------------------------------------
+# v0.6.0 — real-sector GDP headline single series (annual column-series layout)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def na_result(national_accounts_xlsx: Path) -> ParserResult:
+    """National-Accounts → headline GDP single series via the allowlist parser."""
+    return parse(str(national_accounts_xlsx), source_document_id="test-na")
+
+
+def test_na_status_success(na_result: ParserResult) -> None:
+    assert na_result.status == "success", f"errors={na_result.errors}"
+
+
+def test_na_only_allowlisted_slugs(na_result: ParserResult) -> None:
+    """ONLY the explicit headline allowlist is promoted (ADR-0014: no pollution)."""
+    slugs = {r.indicator_slug_raw for r in na_result.staging_rows}
+    assert slugs == {
+        "dne-gdp-nominal",
+        "dne-gdp-real-growth",
+        "dne-gdp-real",
+        "dne-gdp-per-capita-usd",
+        "dne-gdp-deflator",
+    }
+
+
+def test_na_no_industry_pollution(na_result: ParserResult) -> None:
+    """The GVA-by-industry / 'as percent of GDP' columns are NOT promoted."""
+    slugs = {r.indicator_slug_raw for r in na_result.staging_rows}
+    assert "dne-agriculture" not in slugs
+    assert "dne-industry" not in slugs
+    assert not any("percent" in s for s in slugs if s != "dne-gdp-real-growth")
+
+
+def test_na_nominal_gdp_unit_npr_billion(na_result: ParserResult) -> None:
+    """ADR-0011: Nominal GDP is NPR billion (5709 ≈ 5.7 trillion), not million."""
+    nom = [r for r in na_result.staging_rows if r.indicator_slug_raw == "dne-gdp-nominal"]
+    assert nom, "no dne-gdp-nominal rows"
+    assert all(r.unit == "npr_billion" for r in nom)
+    by_bs = {r.fiscal_year_bs: r.value for r in nom}
+    # The fixture's FY 2080/81 value mirrors the real file: NPR 5,709 billion.
+    assert by_bs["2080/81"] == pytest.approx(5709.09)
+    assert 5_000 < by_bs["2080/81"] < 7_000  # ≈ NPR 5–7 trillion sanity band
+
+
+def test_na_revision_suffix_stripped(na_result: ParserResult) -> None:
+    """FY labels with R/P suffixes parse to plain BS FY (2080/81R → 2080/81)."""
+    fy_labels = {r.fiscal_year_bs for r in na_result.staging_rows}
+    assert "2080/81" in fy_labels
+    assert "2081/82" in fy_labels
+    assert not any(s.endswith(("R", "P")) for s in fy_labels)
+
+
+def test_na_real_and_per_capita_units(na_result: ParserResult) -> None:
+    """Real GDP is npr_billion; per-capita GDP is USD; growth/deflator are %/index."""
+    by_slug_units: dict[str, set[str]] = {}
+    for r in na_result.staging_rows:
+        by_slug_units.setdefault(r.indicator_slug_raw, set()).add(r.unit)
+    assert by_slug_units["dne-gdp-real"] == {"npr_billion"}
+    assert by_slug_units["dne-gdp-per-capita-usd"] == {"usd"}
+    assert by_slug_units["dne-gdp-real-growth"] == {"percent"}
+    assert by_slug_units["dne-gdp-deflator"] == {"index_points"}
+
+
+def test_na_per_capita_magnitude(na_result: ParserResult) -> None:
+    """ADR-0011: per-capita GDP ≈ USD 1,400–1,500 (not 1.4 or 1.4M)."""
+    pc = [r for r in na_result.staging_rows if r.indicator_slug_raw == "dne-gdp-per-capita-usd"]
+    assert all(500 < r.value < 5_000 for r in pc), [r.value for r in pc]
+
+
+def test_na_all_annual_grade_b(na_result: ParserResult) -> None:
+    assert all(r.reporting_period_type == "annual" for r in na_result.staging_rows)
+    assert all(r.confidence_grade_proposed == "B" for r in na_result.staging_rows)
+
+
+def test_na_footer_row_not_an_error(na_result: ParserResult) -> None:
+    """The 'Source: …' footer row inside the data block is skipped silently."""
+    assert na_result.errors == [], f"unexpected errors: {na_result.errors}"
+
+
+# ---------------------------------------------------------------------------
+# v0.6.0 — CPI headline (index + inflation rate)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def cpi_result(cpi_xlsx: Path) -> ParserResult:
+    return parse(str(cpi_xlsx), source_document_id="test-cpi")
+
+
+def test_cpi_status_success(cpi_result: ParserResult) -> None:
+    assert cpi_result.status == "success", f"errors={cpi_result.errors}"
+
+
+def test_cpi_two_headline_slugs(cpi_result: ParserResult) -> None:
+    slugs = {r.indicator_slug_raw for r in cpi_result.staging_rows}
+    assert slugs == {"dne-cpi", "dne-inflation-rate"}
+
+
+def test_cpi_index_unit_and_magnitude(cpi_result: ParserResult) -> None:
+    """ADR-0011: CPI is an index (base 2014/15=100), ~100–200 range, index_points."""
+    cpi = [r for r in cpi_result.staging_rows if r.indicator_slug_raw == "dne-cpi"]
+    assert all(r.unit == "index_points" for r in cpi)
+    by_bs = {r.fiscal_year_bs: r.value for r in cpi}
+    assert by_bs["2080/81"] == pytest.approx(166.22)
+    assert all(50 < r.value < 300 for r in cpi)
+
+
+def test_cpi_inflation_unit_and_magnitude(cpi_result: ParserResult) -> None:
+    """ADR-0011: inflation rate is a percent, single-digit-ish (not an index)."""
+    infl = [r for r in cpi_result.staging_rows if r.indicator_slug_raw == "dne-inflation-rate"]
+    assert all(r.unit == "percent" for r in infl)
+    by_bs = {r.fiscal_year_bs: r.value for r in infl}
+    assert by_bs["2080/81"] == pytest.approx(5.44)
+    assert all(-5 < r.value < 30 for r in infl)
+
+
+# ---------------------------------------------------------------------------
+# v0.6.0 — Provincial GDP → dimensional facts (dimension_kind='province')
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def prov_result(provincial_gdp_xlsx: Path) -> DneParserResult:
+    """Provincial-GDP → province dimensional facts via parse_dne dispatch."""
+    return parse_dne(str(provincial_gdp_xlsx), source_document_id="test-prov")
+
+
+def test_prov_status_success(prov_result: DneParserResult) -> None:
+    assert prov_result.status == "success", f"errors={prov_result.errors}"
+
+
+def test_prov_no_staging_rows(prov_result: DneParserResult) -> None:
+    """A dimensional file emits NO single-series staging rows (ADR-0015)."""
+    assert prov_result.staging_rows == []
+
+
+def test_prov_dimensional_drafts(prov_result: DneParserResult) -> None:
+    for row in prov_result.dimensional_rows:
+        assert isinstance(row, DimensionalRowDraft)
+
+
+def test_prov_row_count(prov_result: DneParserResult) -> None:
+    # 2 provinces (Koshi, Bagamati) × 7 FY columns = 14. Total GVA block excluded.
+    assert len(prov_result.dimensional_rows) == 14
+
+
+def test_prov_total_gva_excluded(prov_result: DneParserResult) -> None:
+    """'Total GVA' is not a province → no fact carries it as a dimension."""
+    dims = {r.dimension_value for r in prov_result.dimensional_rows}
+    assert dims == {"koshi", "bagamati"}
+    assert "total-gva" not in dims
+
+
+def test_prov_base_measure_and_kind(prov_result: DneParserResult) -> None:
+    assert {r.base_indicator_slug for r in prov_result.dimensional_rows} == {
+        "dne-provincial-gdp"
+    }
+    assert {r.dimension_kind for r in prov_result.dimensional_rows} == {"province"}
+
+
+def test_prov_unit_npr_million(prov_result: DneParserResult) -> None:
+    """ADR-0011: sheet header '(in million)' → npr_million; values ≈ 10^5–10^6."""
+    assert {r.unit for r in prov_result.dimensional_rows} == {"npr_million"}
+    # Bagamati (Kathmandu valley) is the largest province → ≈ NPR 1.9 trillion.
+    bag = [r for r in prov_result.dimensional_rows if r.dimension_value == "bagamati"]
+    by_bs = {r.fiscal_year_bs: r.value for r in bag}
+    assert by_bs["2080/81"] == pytest.approx(1964517.0)
+    assert 1_000_000 < by_bs["2080/81"] < 3_000_000  # ≈ NPR 1–3 trillion
+
+
+def test_prov_picks_headline_gdp_row(prov_result: DneParserResult) -> None:
+    """The '(GDP)' total row is selected, NOT the 'at basic prices' sub-row."""
+    koshi = {r.fiscal_year_bs: r.value for r in prov_result.dimensional_rows
+             if r.dimension_value == "koshi"}
+    # Headline GDP (908830/970743), not basic-prices GDP (804000/855000).
+    assert koshi["2080/81"] == pytest.approx(908830.0)
+    assert koshi["2081/82"] == pytest.approx(970743.0)
+
+
+def test_prov_revision_suffix_stripped(prov_result: DneParserResult) -> None:
+    fy = {r.fiscal_year_bs for r in prov_result.dimensional_rows}
+    # 7 FY columns; the last two carried R/P suffixes that must be stripped.
+    assert {"2080/81", "2081/82"} <= fy
+    assert not any(s.endswith(("R", "P")) for s in fy)
+
+
+def test_prov_no_unique_key_collisions(prov_result: DneParserResult) -> None:
+    """No two facts share the dne_facts unique key (else ON CONFLICT drops data)."""
+    keys = [
+        (r.base_indicator_slug, r.dimension_kind, r.dimension_value,
+         r.reporting_period_bs, r.reporting_period_type)
+        for r in prov_result.dimensional_rows
+    ]
+    assert len(keys) == len(set(keys))
+
+
+def test_prov_ad_span_valid(prov_result: DneParserResult) -> None:
+    for r in prov_result.dimensional_rows:
+        assert r.reporting_period_ad_start < r.reporting_period_ad_end
+
+
+def test_prov_json_serialisable(prov_result: DneParserResult) -> None:
+    dumped = json.dumps(prov_result.to_json_dict())
+    assert "dne-provincial-gdp" in dumped
+    assert "province" in dumped

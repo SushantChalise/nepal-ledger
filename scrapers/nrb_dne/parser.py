@@ -40,6 +40,13 @@ Period detection (four layouts, tried in priority order):
     4. Transposed — AD MONTH names as column headers with integer AD YEARS as row
        labels down col 0 (Tourist-arrivals); long-formatted to one row per
        year×month.
+    5. Annual column-series (v0.6.0, real-sector) — annual FY labels stacked DOWN
+       col 0 (a "Year"/"Fiscal Year" column) with named-indicator value columns to
+       the right (GDP Series_Nominal/_Real, CPI_National/_KTM Valley). The inverse
+       of standard wide. Only an EXPLICIT ALLOWLIST of headline columns is promoted
+       to single series (ADR-0014: no catalogue pollution) — nominal/real GDP,
+       real-GDP growth, per-capita GDP, GDP deflator, CPI index, inflation rate —
+       each with a hard-mapped slug + verified unit (ADR-0011).
 
     AD calendar months are mapped to the BS month containing their 15th (a
     documented mid-month approximation, the exact inverse of
@@ -53,6 +60,12 @@ Confidence: ``B`` default for all DNE rows (NRB compiles from multiple
 agencies; figures revised across publications).
 
 ADR: ADR-0003 — no LLM / AI calls. Pure file-in → dataclass-out.
+
+Version history:
+    0.6.0 — real-sector files: annual column-series layout (GDP/CPI headline single
+            series) + Provincial-GDP dimensional (`dimension_kind='province'`).
+    0.5.0 — Foreign-Trade dimensional_rows (ADR-0015) + single-series slug cleanup.
+    0.4.0 — three non-standard AD layouts (long panel, two-row monthly, transposed).
 """
 
 from __future__ import annotations
@@ -82,14 +95,25 @@ from _common.types import (
     StagingRowDraft,
 )
 
-PARSER_VERSION: Final[str] = "0.5.0"
+PARSER_VERSION: Final[str] = "0.6.0"
 SOURCE_ID: Final[str] = "nrb-dne-xlsx"
 
 # Filename stems (lowercased, no extension) routed to the dimensional fact path
 # (ADR-0015) instead of the single-series staging path. Foreign Trade's commodity
 # matrices (exports/imports by SITC group and by major commodity) do not fit the
 # single-series (indicator, period, value) shape; they emit `dimensional_rows`.
-_DIMENSIONAL_FILE_STEMS: Final[frozenset[str]] = frozenset({"foreign-trade"})
+# Provincial-GDP (v0.6.0) is a GDP-by-province matrix → `dimension_kind='province'`.
+_DIMENSIONAL_FILE_STEMS: Final[frozenset[str]] = frozenset(
+    {"foreign-trade", "provincial-gdp-2024-25"}
+)
+
+# Filename stems routed to the v0.6.0 real-sector single-series path (annual
+# column-series layout: FY labels down col 0, headline-indicator value columns to
+# the right). Only an EXPLICIT ALLOWLIST of headline columns is promoted (ADR-0014:
+# no catalogue pollution); see `_REAL_SECTOR_COLUMN_SPECS`.
+_REAL_SECTOR_FILE_STEMS: Final[frozenset[str]] = frozenset(
+    {"national-accounts", "consumer-price-index"}
+)
 
 
 # ---------------------------------------------------------------------------
@@ -1745,6 +1769,450 @@ def _parse_foreign_trade(path: Path) -> tuple[list[DimensionalRowDraft], list[Pa
 
 
 # ---------------------------------------------------------------------------
+# Real sector (v0.6.0) — GDP & CPI headline single series + Provincial GDP
+# ---------------------------------------------------------------------------
+#
+# The real-sector National-Accounts and CPI files use an ANNUAL COLUMN-SERIES
+# layout: annual fiscal-year labels stacked DOWN col 0 (a "Year"/"Fiscal Year"
+# column), with named-indicator VALUE COLUMNS to the right. This is the inverse of
+# the standard wide layout (where periods are column headers). The generic
+# standard-wide detector mis-parses these (it would treat the per-industry rows as
+# indicators — catalogue pollution, ADR-0014), so these files route here instead.
+#
+# We promote ONLY an explicit allowlist of clean headline columns (ADR-0014: no
+# catalogue pollution). Each spec hard-maps a (sheet, column-header substring) to a
+# canonical slug + a VERIFIED unit (ADR-0011 magnitude check, see the README /
+# source profile). Everything else on the sheet (the "As Percent of GDP" sub-cols,
+# CPI sub-groups, the GVA-by-industry detail) is intentionally NOT promoted — the
+# GVA-by-industry breakdown is a dimensional concern (deferred, same model as
+# Provincial GDP). A spec whose column cannot be located in a sheet is skipped (the
+# sheet may be from a different edition); a sheet with FY labels but no matched spec
+# emits no rows for that sheet (not an error — most sheets are intentionally unused).
+
+
+@dataclass(frozen=True)
+class _RealSectorColumnSpec:
+    """One allowlisted headline column: where to find it and how to label it.
+
+    ``sheet`` is the exact worksheet name. ``header_contains`` is a lowercased
+    substring matched against the joined multi-row header text of a candidate value
+    column (newlines normalised to spaces) — chosen so the match survives NRB's
+    embedded line-breaks/footnote markers ("Per Capita GDP \\n(in USD)"). ``slug``
+    and ``unit`` are the canonical, ADR-0011-verified outputs.
+    """
+
+    sheet: str
+    header_contains: str
+    slug: str
+    name: str
+    unit: str
+
+
+# The allowlist. Units are VERIFIED by order of magnitude (ADR-0011): Nominal GDP
+# FY2023/24 = 5709.097 (sheet header "Rs. in billion") = NPR 5.7 trillion ✓; CPI
+# Overall Index FY2023/24 = 166.22 (base 2014/15=100) ✓; inflation FY2023/24 =
+# 5.44% ✓. Header substrings are lowercased; the most specific spec per column is
+# resolved by longest-substring-wins when two specs could match one column.
+_REAL_SECTOR_COLUMN_SPECS: Final[tuple[_RealSectorColumnSpec, ...]] = (
+    _RealSectorColumnSpec(
+        "GDP Series_Nominal", "nominal gdp (rs. in billion)",
+        "dne-gdp-nominal", "Nominal GDP (at producers' price)", "npr_billion",
+    ),
+    _RealSectorColumnSpec(
+        "GDP Series_Real", "real gdp growth rate (at purchasers' price)",
+        "dne-gdp-real-growth", "Real GDP Growth Rate (at purchasers' price)", "percent",
+    ),
+    _RealSectorColumnSpec(
+        "GDP Series_Real", "real gdp (at purchasers' price)",
+        "dne-gdp-real", "Real GDP (at purchasers' price)", "npr_billion",
+    ),
+    _RealSectorColumnSpec(
+        "GDP Series_Real", "per capita gdp (in usd)",
+        "dne-gdp-per-capita-usd", "Per Capita GDP", "usd",
+    ),
+    _RealSectorColumnSpec(
+        "GDP Series_Real", "gdp deflator",
+        "dne-gdp-deflator", "GDP Deflator", "index_points",
+    ),
+    _RealSectorColumnSpec(
+        "CPI_National", "index",  # row-3 sub-header "Overall" under r2 "Index"
+        "dne-cpi", "National Consumer Price Index — Overall", "index_points",
+    ),
+    _RealSectorColumnSpec(
+        "CPI_National", "percentage change",
+        "dne-inflation-rate", "Consumer Price Inflation — Overall", "percent",
+    ),
+)
+
+# Col-0 label that marks the FY column in the annual column-series layout.
+_FY_COLUMN_LABELS: Final[frozenset[str]] = frozenset({"year", "fiscal year"})
+
+# Minimum annual FY rows stacked in col 0 to accept the layout (avoid false hits).
+_MIN_FY_ROWS_DOWN_COL0: Final[int] = 3
+
+# How many rows of header sit above the first FY data row (joined per column to
+# match a spec's ``header_contains``). Generous; blanks are skipped in the join.
+_REAL_SECTOR_HEADER_ROWS: Final[int] = 6
+
+
+def _col_header_text(rows: list[tuple[object, ...]], first_data_row: int, col: int) -> str:
+    """Join the header cells above ``first_data_row`` for ``col`` (newlines→spaces).
+
+    NRB embeds line-breaks and footnote markers inside header cells ("Per Capita GDP
+    \\n(in USD)", "Population (million)1"); ``_norm_text`` already collapses internal
+    whitespace, so the joined, lowercased text is stable for substring matching.
+    """
+    parts = [
+        _norm_text(rows[r][col])
+        for r in range(min(first_data_row, len(rows)))
+        if col < len(rows[r]) and _norm_text(rows[r][col])
+    ]
+    return " ".join(parts).lower()
+
+
+def _find_fy_column_start(rows: list[tuple[object, ...]]) -> tuple[int, int] | None:
+    """Locate the annual column-series anchor: (fy_col, first_fy_data_row), or None.
+
+    Scans col 0 (and col 1 as a fallback, for sheets whose row labels begin in col 1)
+    for a run of ≥ ``_MIN_FY_ROWS_DOWN_COL0`` consecutive annual FY labels. Returns
+    the column and the row index of the FIRST FY label in that run.
+    """
+    for fy_col in (0, 1):
+        first_row: int | None = None
+        run = 0
+        for ri, row in enumerate(rows):
+            cell = _norm_text(row[fy_col]) if fy_col < len(row) else ""
+            if cell and _parse_annual_fy(cell) is not None:
+                if first_row is None:
+                    first_row = ri
+                run += 1
+                if run >= _MIN_FY_ROWS_DOWN_COL0:
+                    return fy_col, first_row
+            else:
+                first_row, run = None, 0
+    return None
+
+
+def _parse_real_sector_sheet(
+    rows: list[tuple[object, ...]],
+    sheet_name: str,
+    specs: list[_RealSectorColumnSpec],
+) -> tuple[list[StagingRowDraft], list[ParserError]]:
+    """Emit staging rows for the allowlisted headline columns of one real-sector sheet.
+
+    For each spec, locate the value column whose joined header text contains the
+    spec's substring (longest-substring-wins on ties so "real gdp growth rate…"
+    binds before a looser "index"), then emit one annual StagingRowDraft per FY row
+    with a parseable numeric value. Returns ([], []) when the sheet has no FY column
+    (it is not this layout — the caller decides whether that is an error)."""
+    anchor = _find_fy_column_start(rows)
+    if anchor is None:
+        return [], []
+    fy_col, first_data_row = anchor
+    staging: list[StagingRowDraft] = []
+    errors: list[ParserError] = []
+
+    # Resolve each spec to a concrete column (first value column whose header
+    # contains the substring). Skip a spec whose column is absent in this edition.
+    max_col = max((len(r) for r in rows), default=0)
+    for spec in specs:
+        matched_col: int | None = None
+        for col in range(fy_col + 1, max_col):
+            header = _col_header_text(rows, first_data_row, col)
+            if spec.header_contains in header:
+                matched_col = col
+                break
+        if matched_col is None:
+            continue
+        for ri in range(first_data_row, len(rows)):
+            row = rows[ri]
+            if fy_col >= len(row):
+                continue
+            fy = _parse_annual_fy(_norm_text(row[fy_col]))
+            if fy is None:
+                continue  # footer/source row inside the data block — skip, not error
+            value = _safe_float(row[matched_col]) if matched_col < len(row) else None
+            if value is None:
+                continue
+            fy_bs, fy_ad = fy
+            staging.append(
+                _annual_fy_to_draft_fields(
+                    fy_bs=fy_bs, fy_ad=fy_ad, unit=spec.unit,
+                    slug=spec.slug, value=value,
+                )
+            )
+    _ = (sheet_name, errors)
+    return staging, errors
+
+
+def _parse_real_sector(path: Path) -> tuple[list[StagingRowDraft], list[ParserError]]:
+    """Parse a real-sector file (National-Accounts / CPI) → headline single series.
+
+    Iterates only the sheets named in ``_REAL_SECTOR_COLUMN_SPECS`` (the allowlist),
+    parsing each via the annual column-series layout. Never raises: an unreadable
+    file yields a typed EncodingError; a missing allowlisted sheet is silently
+    skipped (different edition); the caller turns an empty result into the standard
+    NoDataExtracted partial.
+    """
+    try:
+        wb = openpyxl.load_workbook(filename=str(path), read_only=True, data_only=True)
+    except (OSError, KeyError, ValueError, Exception) as exc:  # noqa: BLE001
+        return [], [
+            ParserError(
+                error_class="EncodingError",
+                error_detail=f"openpyxl could not open {path.name}: {exc}",
+            )
+        ]
+    # Group specs by sheet so each sheet is read once.
+    by_sheet: dict[str, list[_RealSectorColumnSpec]] = {}
+    for spec in _REAL_SECTOR_COLUMN_SPECS:
+        by_sheet.setdefault(spec.sheet, []).append(spec)
+    staging: list[StagingRowDraft] = []
+    errors: list[ParserError] = []
+    for sheet_name, specs in by_sheet.items():
+        if sheet_name not in wb.sheetnames:
+            continue
+        rows = list(wb[sheet_name].iter_rows(values_only=True))
+        s, e = _parse_real_sector_sheet(rows, sheet_name, specs)
+        staging.extend(s)
+        errors.extend(e)
+    return staging, errors
+
+
+# ---------------------------------------------------------------------------
+# Provincial GDP → dimensional facts (ADR-0015), dimension_kind='province'
+# ---------------------------------------------------------------------------
+#
+# Provincial-GDP-2024-25.xlsx ("Tables" sheet) is a GDP-BY-PROVINCE matrix. Each of
+# the eight provinces (+ a "Total GVA" block) spans seven consecutive FY columns
+# under a province-name banner row; below it sit two FY rows (BS then AD) and then
+# industry rows, ending in a "Gross Domestic Product (GDP)" total per province. We
+# emit ONE DimensionalRowDraft per (province × FY) for the headline GDP total only:
+#   base_indicator_slug : dne-provincial-gdp
+#   dimension_kind      : "province"
+#   dimension_value     : kebab province name ("koshi", "sudur-pashchim")
+# This is the Money-Map "GDP by province" composition surface. The per-industry GVA
+# rows within each province block are a SECOND dimension (industry) and are deferred
+# to keep one dimension per fact (ADR-0015). The file has Table 1 (current prices,
+# nominal) and Table 2 (constant prices, real); we promote the NOMINAL total (Table
+# 1) — the headline "GDP by province" figure — and defer the real table.
+
+# The base measure for provincial GDP facts.
+_PROV_GDP_BASE_SLUG: Final[str] = "dne-provincial-gdp"
+_PROV_GDP_BASE_NAME: Final[str] = "Provincial GDP (at producers' price, nominal)"
+_PROV_GDP_UNIT: Final[str] = "npr_million"  # sheet header: "(at current prices, in million)"
+
+# Province banner labels that are NOT a province (skip these dimension blocks).
+_PROV_NON_PROVINCE_BANNERS: Final[frozenset[str]] = frozenset(
+    {"total gva", "total", "nepal", "industrial classification"}
+)
+
+# The headline total-GDP row label within each province block. Matched by
+# ENDSWITH (not substring): the real sheet has both "Gross Domestic Product (GDP)
+# at basic prices" (a sub-row) and the headline "Gross Domestic Product (GDP)";
+# both CONTAIN "(gdp)", so a substring match would wrongly pick the basic-prices
+# row. The headline row ends in "(gdp)"; the basic-prices row ends in "prices".
+_PROV_GDP_TOTAL_ROW_ENDSWITH: Final[str] = "(gdp)"
+_PROV_GDP_TOTAL_ROW_REQUIRES: Final[str] = "gross domestic product"
+
+# FY columns per province block in the Provincial GDP banner layout.
+_PROV_FY_PER_BLOCK: Final[int] = 7
+
+# The Provincial GDP matrix sheet name.
+_PROV_GDP_SHEET: Final[str] = "Tables"
+
+
+def _detect_province_banner_row(
+    rows: list[tuple[object, ...]],
+) -> tuple[int, dict[int, str]] | None:
+    """Find the province banner row + its column→province map for Table 1 (nominal).
+
+    The banner row carries province names every 7 columns (e.g. col2 "Koshi", col9
+    "Madhes", …). We require ≥2 known province names to accept it, and return the
+    FIRST such row (Table 1 / current prices). Returns ``(banner_row_idx,
+    {col: province_label})`` or None.
+
+    A banner cell must be NON-FY text: the BS-FY and AD-FY rows beneath the banner
+    also "head a block" structurally, so without this guard the FY row itself would
+    be mistaken for the banner (its FY labels read as province names). Province names
+    never parse as fiscal years; FY labels always do.
+    """
+    for ri, row in enumerate(rows):
+        provinces: dict[int, str] = {}
+        for ci, cell in enumerate(row):
+            label = _norm_text(cell)
+            low = label.lower()
+            if not label or low in _PROV_NON_PROVINCE_BANNERS:
+                continue
+            if _parse_annual_fy(label) is not None:
+                continue  # an FY label is never a province banner cell
+            # A province banner cell is followed by a run of FY labels two rows down
+            # (the AD FY row) OR one row down (the BS FY row). Confirm the cell heads
+            # a block by checking the row beneath it carries an FY label.
+            if _looks_like_province_block_head(rows, ri, ci):
+                provinces[ci] = label
+        if len(provinces) >= 2:  # noqa: PLR2004 — ≥2 provinces confirms the banner
+            return ri, provinces
+    return None
+
+
+def _looks_like_province_block_head(
+    rows: list[tuple[object, ...]], banner_row: int, col: int
+) -> bool:
+    """True if ``col`` heads an FY block: an annual FY label sits 1 or 2 rows below."""
+    for delta in (1, 2):
+        r = banner_row + delta
+        if (
+            r < len(rows)
+            and col < len(rows[r])
+            and _parse_annual_fy(_norm_text(rows[r][col])) is not None
+        ):
+            return True
+    return False
+
+
+def _province_fy_row(rows: list[tuple[object, ...]], banner_row: int) -> int | None:
+    """Return the row index holding BS FY labels under the banner (banner_row+1 or +2).
+
+    Provincial GDP stacks a BS-FY row then an AD-FY row beneath the banner. We key
+    periods off the BS row (canonical ``reporting_period_bs``). Prefer the row whose
+    labels parse as BS (lead year ≥ 2040 via ``_parse_annual_fy`` → BS path)."""
+    for delta in (1, 2):
+        r = banner_row + delta
+        if r >= len(rows):
+            continue
+        # Count FY labels on this row; the BS row and AD row both parse, but the BS
+        # row's labels have lead year ≥ 2040. Use the first FY-bearing row.
+        if any(
+            _parse_annual_fy(_norm_text(c)) is not None for c in rows[r]
+        ):
+            return r
+    return None
+
+
+def _parse_provincial_gdp_sheet(
+    rows: list[tuple[object, ...]],
+) -> list[DimensionalRowDraft]:
+    """Walk the Provincial GDP banner layout → one province×FY GDP-total fact each.
+
+    Locates the banner row + per-block FY row, then finds the "Gross Domestic Product
+    (GDP)" total row within Table 1, and emits a dimensional fact for each
+    province-block column whose FY label and value both parse. Stops before Table 2
+    (constant prices) by only consuming the first GDP-total row after the banner.
+    """
+    out: list[DimensionalRowDraft] = []
+    banner = _detect_province_banner_row(rows)
+    if banner is None:
+        return out
+    banner_row, provinces = banner
+    fy_row = _province_fy_row(rows, banner_row)
+    if fy_row is None:
+        return out
+    # Find the headline GDP-total row (first occurrence after the FY row). Match by
+    # endswith "(gdp)" so the "…(GDP) at basic prices" sub-row is NOT chosen.
+    total_row: int | None = None
+    for ri in range(fy_row + 1, len(rows)):
+        label = _norm_text(rows[ri][1]).lower() if len(rows[ri]) > 1 else ""
+        if (
+            _PROV_GDP_TOTAL_ROW_REQUIRES in label
+            and label.endswith(_PROV_GDP_TOTAL_ROW_ENDSWITH)
+        ):
+            total_row = ri
+            break
+    if total_row is None:
+        return out
+    total = rows[total_row]
+    for banner_col, prov_label in provinces.items():
+        dim_value = _dimension_slug(prov_label)
+        for col in range(banner_col, banner_col + _PROV_FY_PER_BLOCK):
+            if col >= len(total) or fy_row >= len(rows) or col >= len(rows[fy_row]):
+                continue
+            fy = _parse_annual_fy(_norm_text(rows[fy_row][col]))
+            if fy is None:
+                continue
+            value = _safe_float(total[col])
+            if value is None:
+                continue
+            fy_bs, fy_ad = fy
+            bs_start = int(fy_bs.split("/")[0])
+            ad_start_year = bs_start - _BS_AD_FY_OFFSET
+            out.append(
+                DimensionalRowDraft(
+                    base_indicator_slug=_PROV_GDP_BASE_SLUG,
+                    base_indicator_name=_PROV_GDP_BASE_NAME,
+                    dimension_kind="province",
+                    dimension_value=dim_value,
+                    dimension_label=prov_label,
+                    value=value,
+                    unit=_PROV_GDP_UNIT,
+                    reporting_period_type="annual",
+                    reporting_period_bs=fy_bs,
+                    reporting_period_ad_start=datetime(ad_start_year, 7, 15, tzinfo=UTC),
+                    reporting_period_ad_end=datetime(ad_start_year + 1, 7, 15, tzinfo=UTC),
+                    fiscal_year_bs=fy_bs,
+                    fiscal_year_ad_label=fy_ad,
+                    confidence_grade=_CONFIDENCE,
+                )
+            )
+    return out
+
+
+def _parse_provincial_gdp(path: Path) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Parse Provincial-GDP-2024-25.xlsx → province-dimensional GDP facts (ADR-0015).
+
+    Promotes the NOMINAL (Table 1, current prices) headline GDP total per province.
+    The real table and the per-industry GVA breakdown are deferred (one dimension per
+    fact). Never raises: an unreadable/missing sheet yields a typed error and the
+    caller turns an empty result into NoDataExtracted.
+    """
+    try:
+        wb = openpyxl.load_workbook(filename=str(path), read_only=True, data_only=True)
+    except (OSError, KeyError, ValueError, Exception) as exc:  # noqa: BLE001
+        return [], [
+            ParserError(
+                error_class="EncodingError",
+                error_detail=f"openpyxl could not open {path.name}: {exc}",
+            )
+        ]
+    sheet = _PROV_GDP_SHEET if _PROV_GDP_SHEET in wb.sheetnames else wb.sheetnames[0]
+    rows = list(wb[sheet].iter_rows(values_only=True))
+    return _parse_provincial_gdp_sheet(rows), []
+
+
+def _real_sector_result(path: Path) -> ParserResult:
+    """Wrap ``_parse_real_sector`` into a ``ParserResult`` (single return site).
+
+    Extracted from ``parse`` so that function stays under the branch/return caps.
+    An empty result becomes a ``partial`` with a NoDataExtracted note; otherwise the
+    status is ``success`` (no errors) or ``partial`` (some columns flagged).
+    """
+    rs_staging, rs_errors = _parse_real_sector(path)
+    if not rs_staging:
+        rs_errors.append(
+            ParserError(
+                error_class="Other",
+                error_detail=(
+                    "NoDataExtracted: no real-sector headline series produced "
+                    f"from {path.name} (no allowlisted column matched)"
+                ),
+            )
+        )
+        return ParserResult(
+            status="partial",
+            parser_version=PARSER_VERSION,
+            staging_rows=[],
+            errors=rs_errors,
+        )
+    status: ParserStatus = "partial" if rs_errors else "success"
+    return ParserResult(
+        status=status,
+        parser_version=PARSER_VERSION,
+        staging_rows=rs_staging,
+        errors=rs_errors,
+    )
+
+
+# ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
@@ -1794,6 +2262,13 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
                 )
             ],
         )
+
+    if _is_real_sector_path(path):
+        # Real-sector files (National-Accounts, CPI) use the annual column-series
+        # layout (FY down col 0, headline-indicator value columns). Route to the
+        # allowlist parser instead of the generic per-sheet detector — the generic
+        # one would mis-read the GVA-by-industry rows as indicators (ADR-0014).
+        return _real_sector_result(path)
 
     try:
         wb = openpyxl.load_workbook(
@@ -1852,13 +2327,37 @@ def _is_dimensional_path(path: Path) -> bool:
     return path.stem.strip().lower() in _DIMENSIONAL_FILE_STEMS
 
 
+def _is_real_sector_path(path: Path) -> bool:
+    """True if a file routes to the v0.6.0 real-sector single-series path.
+
+    Matched on the filename stem (case-insensitive), e.g. ``National-Accounts.xlsx``
+    → stem ``national-accounts`` ∈ ``_REAL_SECTOR_FILE_STEMS``.
+    """
+    return path.stem.strip().lower() in _REAL_SECTOR_FILE_STEMS
+
+
+def _dispatch_dimensional(
+    path: Path,
+) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Route a dimensional file to its parser by filename stem.
+
+    ``foreign-trade`` → commodity facts (ADR-0015); ``provincial-gdp-2024-25`` →
+    province facts (v0.6.0). The caller has already confirmed the stem is in
+    ``_DIMENSIONAL_FILE_STEMS`` via ``_is_dimensional_path``.
+    """
+    if path.stem.strip().lower() == "provincial-gdp-2024-25":
+        return _parse_provincial_gdp(path)
+    return _parse_foreign_trade(path)
+
+
 def parse_dne(source_document_path: str, source_document_id: str) -> DneParserResult:
     """DNE entry point carrying BOTH single-series and dimensional output.
 
     This is what the DNE ingest CLI invokes. For dimensional matrix files
-    (Foreign-Trade) it returns populated ``dimensional_rows`` (ADR-0015) and empty
-    ``staging_rows``; for every other DNE file it wraps ``parse()`` and returns
-    its ``staging_rows`` with empty ``dimensional_rows``. Never raises on bad data.
+    (Foreign-Trade by commodity, Provincial-GDP by province) it returns populated
+    ``dimensional_rows`` (ADR-0015) and empty ``staging_rows``; for every other DNE
+    file it wraps ``parse()`` and returns its ``staging_rows`` with empty
+    ``dimensional_rows``. Never raises on bad data.
     """
     path = Path(source_document_path)
     if not path.exists():
@@ -1874,7 +2373,7 @@ def parse_dne(source_document_path: str, source_document_id: str) -> DneParserRe
         )
 
     if _is_dimensional_path(path):
-        dim_rows, dim_errors = _parse_foreign_trade(path)
+        dim_rows, dim_errors = _dispatch_dimensional(path)
         if not dim_rows:
             dim_errors.append(
                 ParserError(

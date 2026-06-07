@@ -557,3 +557,202 @@ def transposed_xlsx() -> Path:
     if not p.exists():
         _build_transposed(p)
     return p
+
+
+# ---------------------------------------------------------------------------
+# v0.6.0 fixtures — real-sector annual column-series + Provincial-GDP dimensional
+# ---------------------------------------------------------------------------
+
+
+def _build_national_accounts(path: Path) -> None:
+    """Fixture: the National-Accounts annual column-series layout (GDP headline).
+
+    Mirrors the real file's "GDP Series_Nominal" and "GDP Series_Real" sheets:
+    annual FY labels stacked DOWN col 0 (a "Year" column) with named-indicator value
+    columns to the right, and a 2-3 row header above the first FY row. Includes:
+      - "GDP Series_Nominal": col1 "Nominal GDP (Rs. in billion)" (allowlisted) +
+        an "As Percent of GDP" sub-column (col2, NOT allowlisted → must be ignored).
+      - "GDP Series_Real": col1 real-GDP growth %, col6 real GDP (Rs. in billion),
+        col9 per-capita GDP (USD), col12 GDP deflator — all allowlisted.
+      - A trailing "Source:" footer row inside the data block (must be skipped, not
+        error). One FY label carries a "R"/"P" revision suffix to exercise stripping.
+    """
+    _ensure_fixture_dir()
+    wb = openpyxl.Workbook()
+    nom = wb.active
+    assert nom is not None
+    nom.title = "GDP Series_Nominal"
+    nom.cell(row=1, column=1, value="Real Sector Indicators")
+    nom.cell(row=3, column=1, value="Year")  # openpyxl row 3 == rows index 2
+    nom.cell(row=3, column=2, value="Nominal GDP (Rs. in billion)")
+    nom.cell(row=3, column=3, value="As Percent of GDP*")  # NOT allowlisted
+    # Data rows: FY label col1, nominal GDP col2, a percent col3 (ignored).
+    nom_data = [
+        ("2079/80", 5366.99, 24.0),
+        ("2080/81R", 5709.09, 24.7),  # revision suffix → stripped to 2080/81
+        ("2081/82P", 6107.22, 25.1),
+    ]
+    for r_off, (fy, gdp, pct) in enumerate(nom_data):
+        r = 5 + r_off
+        nom.cell(row=r, column=1, value=fy)
+        nom.cell(row=r, column=2, value=gdp)
+        nom.cell(row=r, column=3, value=pct)
+    nom.cell(row=5 + len(nom_data), column=1, value="Source: Various issues")  # footer
+
+    real = wb.create_sheet("GDP Series_Real")
+    real.cell(row=1, column=1, value="Real Sector Indicators")
+    real.cell(row=3, column=1, value="Year")
+    real.cell(row=3, column=2, value="Real GDP Growth Rate \n(at purchasers'  price)")
+    real.cell(row=3, column=7, value="Real GDP \n(at purchasers' price) \n(Rs. in billion)")
+    real.cell(row=3, column=10, value="Per Capita GDP \n(in USD)")
+    real.cell(row=3, column=13, value="GDP Deflator2")
+    # Columns: 1=FY, 2=growth%, 7=real GDP bn, 10=per-capita USD, 13=deflator.
+    # ≥3 FY rows so the annual column-series anchor (≥3 consecutive FY in col 0) fires.
+    real_data = [
+        ("2078/79", 1.983, 2530.0, 1390.0, 110.0),
+        ("2079/80", 3.665, 2580.0, 1443.46, 115.37),
+        ("2080/81R", 4.606, 2674.39, 1496.21, 124.64),
+    ]
+    for r_off, (fy, growth, rgdp, pc, defl) in enumerate(real_data):
+        r = 5 + r_off
+        real.cell(row=r, column=1, value=fy)
+        real.cell(row=r, column=2, value=growth)
+        real.cell(row=r, column=7, value=rgdp)
+        real.cell(row=r, column=10, value=pc)
+        real.cell(row=r, column=13, value=defl)
+    wb.save(str(path))
+
+
+def _build_cpi(path: Path) -> None:
+    """Fixture: the Consumer-Price-Index annual column-series layout.
+
+    Mirrors "CPI_National": FY labels down col 0, with a 2-row header — row "Index"
+    over "Overall" (col1, allowlisted → dne-cpi) and "Percentage Change" over
+    "Overall" (col4, allowlisted → dne-inflation-rate). Sub-group columns are not
+    present here (they would not be allowlisted). One blank trailing row.
+    """
+    _ensure_fixture_dir()
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = "CPI_National"
+    ws.cell(row=1, column=1, value="National Consumer Price Index")
+    ws.cell(row=2, column=1, value="Base Year : 2014/15 = 100")
+    ws.cell(row=5, column=1, value="Fiscal Year")  # openpyxl row 5 == index 4
+    ws.cell(row=5, column=2, value="Index")
+    ws.cell(row=5, column=5, value="Percentage Change")
+    ws.cell(row=6, column=2, value="Overall")
+    ws.cell(row=6, column=5, value="Overall")
+    cpi_data = [
+        ("2079/80", 157.64, 7.74),
+        ("2080/81", 166.22, 5.44),
+        ("2081/82", 175.0, 5.28),
+    ]
+    for r_off, (fy, idx, chg) in enumerate(cpi_data):
+        r = 7 + r_off
+        ws.cell(row=r, column=1, value=fy)
+        ws.cell(row=r, column=2, value=idx)
+        ws.cell(row=r, column=5, value=chg)
+    wb.save(str(path))
+
+
+def _build_provincial_gdp(path: Path) -> None:
+    """Fixture: the Provincial-GDP banner layout (GDP by province, ADR-0015).
+
+    Mirrors the real "Tables" sheet Table 1 (nominal, current prices) EXACTLY in
+    stride: each province block spans 7 consecutive FY columns under a province-name
+    banner, with a BS-FY row then an AD-FY row beneath, industry rows, and a
+    "Gross Domestic Product (GDP)" total row per province. Two provinces + a trailing
+    "Total GVA" block that MUST be excluded (not a province):
+      cols  3-9  : Koshi      (7 FY cols)
+      cols 10-16 : Bagamati   (7 FY cols)
+      cols 17-23 : Total GVA  (excluded)
+    The "(GDP)" total row is preceded by a "...at basic prices" and a "Taxes..." row
+    to confirm the substring match picks the right (headline) row. To keep magnitude
+    assertions tied to specific FYs, only the first two FY columns of each block carry
+    distinct asserted values; the rest are filled with plausible (non-colliding) data.
+    """
+    _ensure_fixture_dir()
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = "Tables"
+    ws.cell(row=1, column=1, value="Table 1: Provincial Annual GDP")
+    ws.cell(row=2, column=1, value="(at current prices, in million)")
+    span = 7  # FY columns per province block — matches the real file
+    blocks = [(3, "Koshi"), (3 + span, "Bagamati"), (3 + 2 * span, "Total GVA")]
+    # Banner row (openpyxl row 4 == index 3).
+    ws.cell(row=4, column=2, value="Industrial Classification")  # ignored banner
+    for start, name in blocks:
+        ws.cell(row=4, column=start, value=name)
+    # BS FY row (row 5) + AD FY row (row 6): 7 distinct FY per block.
+    bs = ["2075/76", "2076/77", "2077/78", "2078/79", "2079/80", "2080/81R", "2081/82P"]
+    ad = ["2018/19", "2019/20", "2020/21", "2021/22", "2022/23", "2023/24", "2024/25"]
+    for start, _name in blocks:
+        for i in range(span):
+            ws.cell(row=5, column=start + i, value=bs[i])
+            ws.cell(row=6, column=start + i, value=ad[i])
+
+    # The headline GDP-total row's asserted values for FY index 5 (2080/81R) and 6
+    # (2081/82P), per block: Koshi, Bagamati, Total GVA.
+    headline_5 = {"Koshi": 908830.0, "Bagamati": 1964517.0, "Total GVA": 2873000.0}
+    headline_6 = {"Koshi": 970743.0, "Bagamati": 2100000.0, "Total GVA": 3070000.0}
+    basic_5 = {"Koshi": 804000.0, "Bagamati": 1700000.0, "Total GVA": 2504000.0}
+
+    def _block_vals(start_val: float) -> list[float]:
+        # 7 ascending, distinct values for the 5 filler FY columns + 2 asserted.
+        return [start_val + i * 1000.0 for i in range(span)]
+
+    # Build body rows. For the headline + basic rows we override FY cols 5 & 6.
+    def _row_for(base: float, override5: dict[str, float] | None,
+                 override6: dict[str, float] | None) -> None:
+        for start, name in blocks:
+            vals = _block_vals(base)
+            if override5 is not None:
+                vals[5] = override5[name]
+            if override6 is not None:
+                vals[6] = override6[name]
+            for i, v in enumerate(vals):
+                ws.cell(row=_row_for.r, column=start + i, value=v)  # type: ignore[attr-defined]
+
+    _row_for.r = 7  # type: ignore[attr-defined]
+    ws.cell(row=7, column=2, value="Agriculture, forestry and fishing")
+    _row_for(150000.0, None, None)
+    _row_for.r = 8  # type: ignore[attr-defined]
+    ws.cell(row=8, column=2, value="Gross Domestic Product  (GDP) at basic prices")
+    _row_for(700000.0, basic_5, None)
+    _row_for.r = 9  # type: ignore[attr-defined]
+    ws.cell(row=9, column=2, value="Taxes less subsidies on products")
+    _row_for(100000.0, None, None)
+    _row_for.r = 10  # type: ignore[attr-defined]
+    ws.cell(row=10, column=2, value="Gross Domestic Product (GDP)")
+    _row_for(800000.0, headline_5, headline_6)
+    wb.save(str(path))
+
+
+@pytest.fixture(scope="session")
+def national_accounts_xlsx() -> Path:
+    # Named "National-Accounts.xlsx" so parse()'s _REAL_SECTOR_FILE_STEMS dispatch
+    # routes it to the real-sector single-series path end-to-end.
+    p = FIXTURE_DIR / "National-Accounts.xlsx"
+    if not p.exists():
+        _build_national_accounts(p)
+    return p
+
+
+@pytest.fixture(scope="session")
+def cpi_xlsx() -> Path:
+    p = FIXTURE_DIR / "Consumer-Price-Index.xlsx"
+    if not p.exists():
+        _build_cpi(p)
+    return p
+
+
+@pytest.fixture(scope="session")
+def provincial_gdp_xlsx() -> Path:
+    # Named "Provincial-GDP-2024-25.xlsx" so parse_dne's _DIMENSIONAL_FILE_STEMS
+    # dispatch routes it to the province dimensional path end-to-end.
+    p = FIXTURE_DIR / "Provincial-GDP-2024-25.xlsx"
+    if not p.exists():
+        _build_provincial_gdp(p)
+    return p

@@ -35,6 +35,7 @@ const CMEFS_SOURCE_ID = 'nrb-cmefs-monthly';
 const NCPI_SOURCE_ID = 'nrb-ncpi-table';
 const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
+const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -90,6 +91,38 @@ const FCGO_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// MoF Economic Survey — Annex 6.1 (Number of Workers having Foreign Employment
+// Permit), the one cleanly-parseable annex table (ADR-0016; EN 2023/24 edition).
+// The headline macro annex is RTL-mirrored and the Nepali editions are
+// CID-broken, so GDP/CPI/fiscal series are deferred. Category 'labour'; unit
+// 'count'; annual. Verified FY2079/80 total = 494,224 (female + male = total).
+const ECONOMIC_SURVEY_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'economic-survey-foreign-employment-permits-total',
+    nameEn: 'Foreign Employment Permits Issued (Total)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Ministry of Finance',
+  },
+  {
+    slug: 'economic-survey-foreign-employment-permits-female',
+    nameEn: 'Foreign Employment Permits Issued (Female)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Ministry of Finance',
+  },
+  {
+    slug: 'economic-survey-foreign-employment-permits-male',
+    nameEn: 'Foreign Employment Permits Issued (Male)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Ministry of Finance',
+  },
+];
+
 // DNE single-series indicators (ADR-0014): ONLY genuinely single-dimensional
 // DNE series are registered here. The DNE dimensional matrices (Foreign Trade
 // by commodity, Remittance by country/district) and the messy auto-prefixed
@@ -102,6 +135,64 @@ const DNE_INDICATORS: readonly SeedIndicator[] = [
     category: 'tourism',
     unit: 'count',
     nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  // Real-sector + price headline series (parser nrb_dne v0.6.0 — National
+  // Accounts + CPI). GDP is npr_billion (sheet unit "Rs. in billion", ADR-0011).
+  {
+    slug: 'dne-gdp-nominal',
+    nameEn: "Nominal GDP (at producers' price)",
+    category: 'real_sector',
+    unit: 'npr_billion',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'dne-gdp-real',
+    nameEn: "Real GDP (at purchasers' price)",
+    category: 'real_sector',
+    unit: 'npr_billion',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'dne-gdp-real-growth',
+    nameEn: "Real GDP Growth Rate (at purchasers' price)",
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'dne-gdp-per-capita-usd',
+    nameEn: 'Per Capita GDP (USD)',
+    category: 'real_sector',
+    unit: 'usd',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'dne-gdp-deflator',
+    nameEn: 'GDP Deflator',
+    category: 'real_sector',
+    unit: 'index_points',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'dne-cpi',
+    nameEn: 'National Consumer Price Index — Overall',
+    category: 'price',
+    unit: 'index_points',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'dne-inflation-rate',
+    nameEn: 'Consumer Price Inflation — Overall',
+    category: 'price',
+    unit: 'percent',
+    nativeFrequency: 'annual',
     sourceAgency: 'Nepal Rastra Bank',
   },
 ];
@@ -978,6 +1069,37 @@ async function persist(): Promise<void> {
     fcgoLinked += 1;
   }
   log(`indicator_source_map: ${fcgoLinked} links ensured → ${FCGO_SOURCE_ID}`);
+
+  // 10. MoF Economic Survey Annex-6.1 foreign-employment-permit series (ADR-0016).
+  const esInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...ECONOMIC_SURVEY_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!esInsertResult.ok)
+    throw new Error(
+      `economic-survey indicators insert failed: ${JSON.stringify(esInsertResult.error)}`,
+    );
+  log(
+    `indicators (Economic Survey): ${esInsertResult.value.length} inserted (of ${ECONOMIC_SURVEY_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 11. Economic Survey source map links.
+  let esLinked = 0;
+  for (const ind of ECONOMIC_SURVEY_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      ECONOMIC_SURVEY_SOURCE_ID,
+      'Economic Survey Annex 6.1 (foreign employment permits)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    esLinked += 1;
+  }
+  log(`indicator_source_map: ${esLinked} links ensured → ${ECONOMIC_SURVEY_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {

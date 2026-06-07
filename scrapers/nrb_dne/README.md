@@ -38,10 +38,77 @@ The parser handles all five pages identically.
 
 ## PARSER_VERSION
 
-`0.5.0`
+`0.6.0`
 
-Defined in `parser.py` as `PARSER_VERSION: Final[str] = "0.5.0"`. Bump on any
+Defined in `parser.py` as `PARSER_VERSION: Final[str] = "0.6.0"`. Bump on any
 behavior change (see [CONVENTIONS.md](../../docs/CONVENTIONS.md)).
+
+### v0.6.0 changes (2026-06-07)
+
+Real-sector ingest: GDP & CPI headline single series + Provincial GDP dimensional
+(source profile: [`docs/sources/nrb-db-real-sector.md`](../../docs/sources/nrb-db-real-sector.md)).
+
+**(A) Annual column-series layout (5th layout).** National-Accounts and CPI use the
+INVERSE of the standard wide layout: annual fiscal-year labels stacked DOWN col 0
+(a "Year"/"Fiscal Year" column) with named-indicator value columns to the right.
+Files `National-Accounts.xlsx` and `Consumer-Price-Index.xlsx` route here (by
+filename stem) instead of the generic per-sheet detector — which previously
+mis-read the GVA-by-industry rows as ~14k bogus single-series "indicators"
+(catalogue pollution, ADR-0014). Only an **explicit allowlist** of headline columns
+is promoted (`_REAL_SECTOR_COLUMN_SPECS`), each hard-mapped to a canonical slug +
+an ADR-0011-verified unit:
+
+| Sheet | Column | slug | unit |
+|-------|--------|------|------|
+| GDP Series_Nominal | Nominal GDP (Rs. in billion) | `dne-gdp-nominal` | `npr_billion` |
+| GDP Series_Real | Real GDP Growth Rate (purchasers' price) | `dne-gdp-real-growth` | `percent` |
+| GDP Series_Real | Real GDP (purchasers' price) | `dne-gdp-real` | `npr_billion` |
+| GDP Series_Real | Per Capita GDP (in USD) | `dne-gdp-per-capita-usd` | `usd` |
+| GDP Series_Real | GDP Deflator | `dne-gdp-deflator` | `index_points` |
+| CPI_National | Index → Overall | `dne-cpi` | `index_points` |
+| CPI_National | Percentage Change → Overall | `dne-inflation-rate` | `percent` |
+
+Everything else (the "As Percent of GDP" sub-columns, CPI sub-groups, the
+GVA-by-industry detail) is intentionally NOT promoted. A "Source:" footer row
+inside the data block is skipped (not an error). FY revision suffixes (R/P) are
+stripped by the existing `_parse_annual_fy`.
+
+**ADR-0011 magnitude verification (ran on the real files):**
+- `dne-gdp-nominal` FY2080/81 (AD 2023/24) = **5709.097 npr_billion = NPR 5.71
+  trillion** ✓ (matches NRB's published ~NPR 5.7 trillion nominal GDP).
+- `dne-gdp-per-capita-usd` FY2081/82 = **USD 1,496** ✓ (Nepal per-capita GDP band).
+- `dne-cpi` FY2080/81 = **166.22 index_points** (base 2014/15 = 100) ✓.
+- `dne-inflation-rate` FY2080/81 = **5.44%** ✓.
+
+**(B) Provincial GDP → `dimensional_rows` (`dimension_kind='province'`).**
+`Provincial-GDP-2024-25.xlsx` ("Tables" sheet) is a GDP-by-province matrix: each of
+the 7 provinces spans 7 consecutive FY columns under a province-name banner, with a
+BS-FY row then an AD-FY row beneath, and a headline "Gross Domestic Product (GDP)"
+total row. We emit one `DimensionalRowDraft` per (province × FY) for the NOMINAL
+(Table 1, current prices) headline total:
+- `base_indicator_slug = dne-provincial-gdp`, `dimension_kind = "province"`,
+  `dimension_value` = kebab province name (`koshi`, `sudur-pashchim`),
+  `unit = npr_million` (sheet header "in million"), annual periods.
+- The headline GDP row is matched by **endswith "(gdp)"** (NOT substring) so the
+  "…(GDP) at basic prices" sub-row is not chosen. The banner detector excludes
+  FY-parseable cells (so the BS-FY row is never mistaken for the banner) and
+  "Total GVA" (not a province).
+- **ADR-0011 cross-check:** sum of the 7 provinces ≈ NPR 5.4 trillion for AD
+  2024/25, consistent order-of-magnitude with national nominal GDP (NPR 6.1
+  trillion; the gap is taxes-less-subsidies + statistical discrepancy added at the
+  national level). Bagamati (Kathmandu valley, largest) FY2024/25 = NPR 2.23
+  trillion; Sudur Pashchim (smallest) = NPR 0.38 trillion. ✓ No `dne_facts`
+  unique-key collisions; 49 facts (7 provinces × 7 FY).
+
+**Deferred (real-sector, next round):**
+- National-Accounts GVA-by-industry breakdown (a SECOND dimension — `industry`;
+  follows the same dimensional model as Provincial GDP).
+- The Provincial-GDP REAL (Table 2, constant prices) table.
+- `Quarterly-GDP.xlsx` (heavy old+new base-year series; ADR-0011 discontinuity).
+- `Energy.xlsx`, `Agriculture-production.xlsx` (multi-block, many `UnitAmbiguous` —
+  unit-per-row reconciliation needed; not the per-capita denominator priority).
+- `Direction-of-foreign-trade.xlsx` (a by-partner trade matrix — dimensional, same
+  family as Foreign-Trade; defer to the dimensional round).
 
 ### v0.5.0 changes (2026-06-07)
 
@@ -166,6 +233,18 @@ Other v0.4.0 notes:
 | `Exchange-rate.xlsx` | long panel (FY col + month col) | 2172 | `partial` — `UnitAmbiguous`×3 (no vocab unit for FX rate; raw label carried) |
 | `Tourist-arrivals.xlsx` | transposed (years-as-rows) | 407 | `success` (monthly, count) |
 | `Migrant-Workers-Remittance.xlsx` | standard wide (Country sheet) | 1407 | `partial` — `PeriodUnparseable`×1 (the `Migrant Worker` sheet uses datetime-object period columns — still deferred) |
+
+### Real-sector compatibility matrix (tested 2026-06-07, v0.6.0)
+
+| File | Layout | Rows | Parser result |
+|------|--------|------|---------------|
+| `National-Accounts.xlsx` | **annual column-series (v0.6.0)** | **249 `staging_rows`** | `success` — 5 headline GDP series (nominal/real/growth/per-capita/deflator) from the allowlist; GVA-by-industry NOT promoted (was 14428 bogus rows pre-v0.6.0). |
+| `Consumer-Price-Index.xlsx` | **annual column-series (v0.6.0)** | **103 `staging_rows`** | `success` — `dne-cpi` (index_points) + `dne-inflation-rate` (percent); was 0 rows pre-v0.6.0 (no layout matched). |
+| `Provincial-GDP-2024-25.xlsx` | **dimensional matrix (v0.6.0)** | **49 `dimensional_rows`** | `success` — GDP by province (7 provinces × 7 FY), `dimension_kind='province'`, `npr_million`; `staging_rows` empty (ADR-0015). Was 5208 flattened rows pre-v0.6.0. |
+| `Quarterly-GDP.xlsx` | (deferred) | — | parses via generic detector but old+new base-year series mix → **deferred** (ADR-0011 discontinuity). |
+| `Energy.xlsx` | (deferred) | — | `partial`, many `UnitAmbiguous` — unit-per-row reconciliation needed; **deferred**. |
+| `Agriculture-production.xlsx` | (deferred) | — | `partial`, many `UnitAmbiguous`; **deferred**. |
+| `Direction-of-foreign-trade.xlsx` | (deferred) | — | by-partner trade matrix (dimensional, Foreign-Trade family); **deferred**. |
 
 **v0.4.0 status:** All six External Sector files now ingest. The three previously-
 unparseable layouts (FX-reserves two-row monthly header, Exchange-rate long panel,
