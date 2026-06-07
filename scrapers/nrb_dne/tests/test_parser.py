@@ -46,7 +46,7 @@ def test_happy_status_success(happy_result: ParserResult) -> None:
 
 
 def test_happy_parser_version(happy_result: ParserResult) -> None:
-    assert happy_result.parser_version == PARSER_VERSION == "0.6.0"
+    assert happy_result.parser_version == PARSER_VERSION == "0.7.0"
 
 
 def test_happy_source_id() -> None:
@@ -928,3 +928,158 @@ def test_prov_json_serialisable(prov_result: DneParserResult) -> None:
     dumped = json.dumps(prov_result.to_json_dict())
     assert "dne-provincial-gdp" in dumped
     assert "province" in dumped
+
+
+# ---------------------------------------------------------------------------
+# v0.7.0 — Migrant workers → dimensional facts (dimension_kind='country')
+#
+# DATA-HONESTY: this file is migrant-worker HEADCOUNTS, not remittance NPR (despite
+# the filename). The parser emits base `dne-migrant-workers` / unit `count`, NOT
+# `dne-remittance-inflow` / `npr_million`. These tests lock that determination in.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def mw_result(migrant_workers_xlsx: Path) -> DneParserResult:
+    """Migrant-Workers Country sheet → country headcount facts via parse_dne dispatch."""
+    return parse_dne(str(migrant_workers_xlsx), source_document_id="test-mw")
+
+
+def test_mw_status_partial(mw_result: DneParserResult) -> None:
+    """The fixture's duplicate month group raises PeriodAmbiguous → partial."""
+    assert mw_result.status == "partial", f"errors={mw_result.errors}"
+
+
+def test_mw_no_staging_rows(mw_result: DneParserResult) -> None:
+    """A dimensional file emits NO single-series staging rows (ADR-0015)."""
+    assert mw_result.staging_rows == []
+
+
+def test_mw_dimensional_drafts(mw_result: DneParserResult) -> None:
+    for row in mw_result.dimensional_rows:
+        assert isinstance(row, DimensionalRowDraft)
+
+
+def test_mw_row_count(mw_result: DneParserResult) -> None:
+    # 2 countries (Qatar, Malaysia) × 5 month groups = 10 facts. The "Nepal"
+    # placeholder and the "Total" aggregate rows are excluded as dimensions.
+    assert len(mw_result.dimensional_rows) == 10
+
+
+def test_mw_base_measure_is_headcount_not_remittance(mw_result: DneParserResult) -> None:
+    """The crux data-honesty assertion: HEADCOUNT measure + count unit, never NPR.
+
+    ADR-0015 named `dne-remittance-inflow`/`npr_million` assuming this file held NPR;
+    the real file is worker headcounts (Male/Female/Total demographic triples), so the
+    parser MUST emit the honest measure/unit instead.
+    """
+    assert {r.base_indicator_slug for r in mw_result.dimensional_rows} == {
+        "dne-migrant-workers"
+    }
+    assert {r.unit for r in mw_result.dimensional_rows} == {"count"}
+    # Guard against a regression that re-mislabels headcounts as remittance NPR.
+    assert all(r.base_indicator_slug != "dne-remittance-inflow"
+               for r in mw_result.dimensional_rows)
+    assert all(r.unit not in ("npr_million", "npr_billion")
+               for r in mw_result.dimensional_rows)
+
+
+def test_mw_dimension_kind_country(mw_result: DneParserResult) -> None:
+    assert {r.dimension_kind for r in mw_result.dimensional_rows} == {"country"}
+
+
+def test_mw_dimensions_are_countries(mw_result: DneParserResult) -> None:
+    """Only real source countries become dimensions; aggregates/placeholders excluded."""
+    dims = {r.dimension_value for r in mw_result.dimensional_rows}
+    assert dims == {"qatar", "malaysia"}
+    assert "total" not in dims  # the aggregate "Total" row is not a country
+    assert "nepal" not in dims  # the all-zero "Nepal" placeholder is not a destination
+
+
+def test_mw_all_monthly_grade_b(mw_result: DneParserResult) -> None:
+    assert all(r.reporting_period_type == "monthly" for r in mw_result.dimensional_rows)
+    assert all(r.confidence_grade == "B" for r in mw_result.dimensional_rows)
+
+
+def test_mw_row_shape_has_all_adr0015_fields(mw_result: DneParserResult) -> None:
+    """Each dimensional row carries exactly the ADR-0015 contract fields."""
+    expected = {
+        "base_indicator_slug", "base_indicator_name", "dimension_kind",
+        "dimension_value", "dimension_label", "value", "unit",
+        "reporting_period_type", "reporting_period_bs",
+        "reporting_period_ad_start", "reporting_period_ad_end",
+        "fiscal_year_bs", "fiscal_year_ad_label", "confidence_grade",
+    }
+    assert set(mw_result.dimensional_rows[0].to_json_dict().keys()) == expected
+
+
+def test_mw_total_column_used_not_sum(mw_result: DneParserResult) -> None:
+    """A fact equals the group's "Total" column value (Male+Female), read directly.
+
+    Qatar Mid-Aug FY2021/22 → AD Aug 2021 → BS Bhadra 2078, Total = 105 (the explicit
+    Total cell), not Male (100) and not a re-summed 100+5.
+    """
+    aug = next(
+        r for r in mw_result.dimensional_rows
+        if r.dimension_value == "qatar"
+        and r.fiscal_year_ad_label == "2021/22"
+        and r.reporting_period_ad_start.year == 2021
+        and r.reporting_period_ad_start.month == 8
+    )
+    assert aug.value == pytest.approx(105.0)
+    assert aug.reporting_period_bs == "Bhadra 2078"
+    assert aug.fiscal_year_bs == "2078/79"
+    assert aug.base_indicator_name == "Migrant Workers (departures, headcount)"
+
+
+def test_mw_ad_month_span_is_exact_gregorian(mw_result: DneParserResult) -> None:
+    """AD month span is the real Gregorian month (Aug = 1st–28th), not BS-derived."""
+    aug = next(
+        r for r in mw_result.dimensional_rows
+        if r.dimension_value == "qatar" and r.reporting_period_bs == "Bhadra 2078"
+    )
+    assert aug.reporting_period_ad_start.month == 8
+    assert aug.reporting_period_ad_end.month == 8
+    assert aug.reporting_period_ad_start < aug.reporting_period_ad_end
+
+
+def test_mw_aug_started_fy_calendar_split(mw_result: DneParserResult) -> None:
+    """Aug–Dec fall in the FY's lead AD year (Aug 2022 ∈ FY 2022/23, not 2023)."""
+    aug = next(
+        r for r in mw_result.dimensional_rows
+        if r.dimension_value == "malaysia"
+        and r.fiscal_year_ad_label == "2022/23"
+        and r.reporting_period_ad_start.month == 8
+    )
+    assert aug.reporting_period_ad_start.year == 2022
+    assert aug.fiscal_year_bs == "2079/80"
+
+
+def test_mw_duplicate_month_group_emits_period_ambiguous(mw_result: DneParserResult) -> None:
+    """The fixture's stray duplicate Mid-Aug group surfaces a PeriodAmbiguous error."""
+    assert "PeriodAmbiguous" in [e.error_class for e in mw_result.errors]
+
+
+def test_mw_duplicate_month_group_keeps_both_values(mw_result: DneParserResult) -> None:
+    """The duplicate group is NOT dropped — both Bhadra 2079 facts for Qatar exist.
+
+    Honest no-data-loss behaviour (mirrors the two-row-monthly precedent): the real
+    group (Total=127) and the source-duplicate group (Total=0) are BOTH emitted. On a
+    live `dne_facts` insert the unique key collides and ON CONFLICT DO NOTHING keeps
+    the FIRST-inserted (the real 127, emitted left-to-right before the dup), so no real
+    data is lost; the PeriodAmbiguous flag tells the validator to adjudicate.
+    """
+    qatar_bhadra_2079 = [
+        r for r in mw_result.dimensional_rows
+        if r.dimension_value == "qatar" and r.reporting_period_bs == "Bhadra 2079"
+    ]
+    assert len(qatar_bhadra_2079) == 2
+    assert sorted(r.value for r in qatar_bhadra_2079) == pytest.approx([0.0, 127.0])
+
+
+def test_mw_json_serialisable(mw_result: DneParserResult) -> None:
+    """The DNE result dict (with dimensional_rows) round-trips through json."""
+    dumped = json.dumps(mw_result.to_json_dict())
+    assert "dne-migrant-workers" in dumped
+    assert "country" in dumped
+    assert "staging_rows" in dumped  # present (empty) for the contract

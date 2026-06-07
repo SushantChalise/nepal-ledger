@@ -38,10 +38,77 @@ The parser handles all five pages identically.
 
 ## PARSER_VERSION
 
-`0.6.0`
+`0.7.0`
 
-Defined in `parser.py` as `PARSER_VERSION: Final[str] = "0.6.0"`. Bump on any
+Defined in `parser.py` as `PARSER_VERSION: Final[str] = "0.7.0"`. Bump on any
 behavior change (see [CONVENTIONS.md](../../docs/CONVENTIONS.md)).
+
+### v0.7.0 changes (2026-06-07)
+
+Migrant workers → `dimensional_rows` (`dimension_kind='country'`), per
+[ADR-0015](../../docs/decisions/0015-dne-dimensional-fact-model.md).
+
+**DATA-HONESTY DETERMINATION — the file is HEADCOUNTS, not remittance NPR.**
+`Migrant-Workers-Remittance.xlsx` is, despite its filename, a migrant-WORKER
+**headcount** matrix — there is **zero remittance NPR** in the workbook. Verified
+(ADR-0011) on the real file before writing any code:
+
+- Sheet titles: "Migrant workers by Country", "Migrant Workers by District",
+  "Number of Migrant Workers" — no `Rs`/`NPR` unit annotation anywhere.
+- Every value is a **(Male, Female, Total)** demographic triple — structurally
+  impossible for a currency series.
+- **Magnitude check:** FY2021/22 grand total ≈ **630,686 workers**; Qatar FY2021/22 ≈
+  **185,023 workers**; Afghanistan Mid-Aug 2021/22 = **125 workers**. This is the
+  headcount band (10^5–10^6 persons/yr), NOT NRB's ~NPR 1.4-trillion annual
+  remittance inflow.
+
+ADR-0015 listed the base measure as `dne-remittance-inflow` / `npr_million`
+**assuming** this file held NPR. It does not — so the parser emits the HONEST measure
+instead: **`base_indicator_slug = dne-migrant-workers`**, **`unit = count`**. Mislabelling
+headcounts as remittance NPR is exactly the failure mode `DATA_BUILDOUT_PLAN.md` §6
+warns about; we avoid it. (Remittance NPR, when found, lives elsewhere in the DNE
+corpus and will use `dne-remittance-inflow`/`npr_million` then.)
+
+| Field | Value |
+|-------|-------|
+| Sheet promoted | `Country` only |
+| `base_indicator_slug` | `dne-migrant-workers` |
+| `base_indicator_name` | `Migrant Workers (departures, headcount)` |
+| `dimension_kind` | `country` |
+| `dimension_value` | kebab country name (`qatar`, `malaysia`, `antigua-and-barbuda`) |
+| `unit` | `count` |
+| period | monthly (one fact per country × month, from the group's "Total" column) |
+
+**Layout (3-row header — the most complex DNE shape).** Row 2 is a sparse fiscal-year
+banner ("2021/22") forward-filled, each FY block = 12 months × 3 sub-columns; row 3 is
+an AD month label ("Mid-Aug" … "Mid-Jul") at each group's first (Male) column (a new
+`_parse_mid_ad_month` strips the "Mid-" prefix; some groups carry an ignored interleaved
+BS month name); row 4 is Male/Female/Total repeating. We read the monthly **"Total"**
+column (Male + Female) per group. The calendar-year split is **August-started**
+(Aug–Dec → FY lead year, Jan–Jul → trailing), like the Foreign-Trade commodity panel.
+AD month → BS month via the documented mid-month approximation (Aug → Bhadra, etc.).
+
+**Source quirk (FY2024/25):** a stray, **all-zero** "Mid-Jan" month group sits between
+Mid-April and Mid-May (a source mislabel) — it collides with the real Mid-Jan group on
+(fiscal year, month). Per the two-row-monthly precedent we **never drop** either: both
+are emitted and one `PeriodAmbiguous` surfaces the duplicate. On a live `dne_facts`
+insert, `ON CONFLICT DO NOTHING` keeps the first-inserted (the real Mid-Jan, emitted
+left-to-right before the all-zero duplicate), so no real data is lost.
+
+**Aggregates excluded:** a "Total" row and an all-zero "Nepal" placeholder row in the
+Country sheet are skipped (never emitted as a country dimension).
+
+**ADR-0011 cross-check (real file):** **11,010** dimensional facts, **234** distinct
+source countries, 5 fiscal years (BS 2078/79–2082/83 / AD 2021/22–2025/26); 1
+`PeriodAmbiguous` (the stray FY2024/25 month group).
+
+**Deferred (same contract, next round):**
+- The **`district`** sheet — a recipient-district matrix (identical 3-row layout) →
+  `dimension_kind='district'`.
+- The **sex split** (Male/Female) — a SECOND dimension on the Country/district sheets;
+  one dimension per fact (ADR-0015).
+- The **`Migrant Worker`** sheet — a datetime-keyed New-Entry/Renew-Entry/Total monthly
+  outflow series (a single-series shape, not dimensional).
 
 ### v0.6.0 changes (2026-06-07)
 
@@ -150,8 +217,8 @@ contract) instead of `staging_rows`:
 - **Deferred (same contract, next round):** the "Export Import SITC Groupwise"
   sheet (a *different* classification of the same totals — would double-count if
   mixed under one base measure), the two "Direction of Foreign Trade" partner
-  sheets (USD + by-partner, not by-commodity), and the "Working" sheet. Remittance
-  by country/district (ADR-0015) also follows next.
+  sheets (USD + by-partner, not by-commodity), and the "Working" sheet. Migrant
+  workers by country (ADR-0015) followed in v0.7.0; by-district follows next.
 
 **(B) Single-series slug cleanup (FX-reserves / BoP).** Slug derivation now:
 
@@ -232,7 +299,7 @@ Other v0.4.0 notes:
 | `Foreign-exchange-reserves.xlsx` | two-row integer-year + monthly | 6716 | `partial` — `PeriodAmbiguous`×1 (repeated Oct 2025 column, both values kept + flagged); **v0.5.0: slugs cleaned, no enumerator prefix / `-rNN`** |
 | `Exchange-rate.xlsx` | long panel (FY col + month col) | 2172 | `partial` — `UnitAmbiguous`×3 (no vocab unit for FX rate; raw label carried) |
 | `Tourist-arrivals.xlsx` | transposed (years-as-rows) | 407 | `success` (monthly, count) |
-| `Migrant-Workers-Remittance.xlsx` | standard wide (Country sheet) | 1407 | `partial` — `PeriodUnparseable`×1 (the `Migrant Worker` sheet uses datetime-object period columns — still deferred) |
+| `Migrant-Workers-Remittance.xlsx` | **dimensional matrix (v0.7.0)** | **11010 `dimensional_rows`** | `partial` — migrant-WORKER HEADCOUNTS by country (`dne-migrant-workers`, `count`, `dimension_kind='country'`), NOT remittance NPR (ADR-0011); 234 countries × monthly; `PeriodAmbiguous`×1 (stray FY2024/25 month group). `staging_rows` empty (ADR-0015). Was a bogus 1407 single-series rows (country labels mis-promoted as "indicators") pre-v0.7.0. |
 
 ### Real-sector compatibility matrix (tested 2026-06-07, v0.6.0)
 
@@ -253,8 +320,9 @@ honest data-quality flags, not parse failures:
 - FX-reserves: one source-side repeated `(year, month)` column → `PeriodAmbiguous`
   (both values emitted and flagged; validator adjudicates).
 - Exchange-rate: FX rate has no controlled-vocab unit → `UnitAmbiguous` (expected).
-- Migrant-Workers-Remittance: one sheet (`Migrant Worker`) uses `datetime`-object
-  period columns — **still deferred** (a separate layout, not in this task's scope).
+- Migrant-Workers-Remittance: the `Country` sheet is now a dimensional HEADCOUNT
+  matrix (v0.7.0, above). Its `district` sheet and the datetime-keyed `Migrant Worker`
+  total sheet remain deferred.
 
 **Files NOT yet tested:** Fiscal Sector (`Government-budgetary-operation.xlsx`,
 `Outstanding-government-debt-1.xlsx`) and Financial Sector files, which may
@@ -369,6 +437,7 @@ Test matrix:
 | `test_transposed_*` | Transposed years-as-rows; Total column ignored; AD→BS month mapping (v0.4.0) |
 | `test_ft_*` | Foreign-Trade → `dimensional_rows` (ADR-0015): shape, partner-qualified base slugs, commodity dimension, `npr_million`, no over-stripped commodity slug, structural FY-advance / no unique-key collisions, JSON round-trip (v0.5.0) |
 | `test_fx_slug_*` | Single-series slug cleanup: no enumerator prefix, no `-rNN`, enumerator + `(1+2)` stripped, collision qualified by section parent (v0.5.0) |
+| `test_mw_*` | Migrant workers → `dimensional_rows` (ADR-0015): HEADCOUNT base measure + `count` unit (NOT remittance NPR), `dimension_kind='country'`, "Total"-column read, Aug-started FY split, aggregate/placeholder exclusion, duplicate-month-group `PeriodAmbiguous` (both values kept), JSON round-trip (v0.7.0) |
 
 ## Cross-reference
 

@@ -62,6 +62,10 @@ agencies; figures revised across publications).
 ADR: ADR-0003 — no LLM / AI calls. Pure file-in → dataclass-out.
 
 Version history:
+    0.7.0 — Migrant-Workers-Remittance → dimensional_rows (`dimension_kind='country'`,
+            ADR-0015). VERIFIED HEADCOUNT, not remittance NPR (ADR-0011): base measure
+            `dne-migrant-workers`, unit `count`. Country sheet only; district + the
+            datetime-keyed "Migrant Worker" total sheet deferred.
     0.6.0 — real-sector files: annual column-series layout (GDP/CPI headline single
             series) + Provincial-GDP dimensional (`dimension_kind='province'`).
     0.5.0 — Foreign-Trade dimensional_rows (ADR-0015) + single-series slug cleanup.
@@ -95,7 +99,7 @@ from _common.types import (
     StagingRowDraft,
 )
 
-PARSER_VERSION: Final[str] = "0.6.0"
+PARSER_VERSION: Final[str] = "0.7.0"
 SOURCE_ID: Final[str] = "nrb-dne-xlsx"
 
 # Filename stems (lowercased, no extension) routed to the dimensional fact path
@@ -103,8 +107,11 @@ SOURCE_ID: Final[str] = "nrb-dne-xlsx"
 # matrices (exports/imports by SITC group and by major commodity) do not fit the
 # single-series (indicator, period, value) shape; they emit `dimensional_rows`.
 # Provincial-GDP (v0.6.0) is a GDP-by-province matrix → `dimension_kind='province'`.
+# Migrant-Workers-Remittance (v0.7.0) is a migrant-WORKER-headcount-by-country matrix
+# → `dimension_kind='country'` (see the v0.7.0 module note: this file is HEADCOUNTS,
+# not remittance NPR, despite its filename).
 _DIMENSIONAL_FILE_STEMS: Final[frozenset[str]] = frozenset(
-    {"foreign-trade", "provincial-gdp-2024-25"}
+    {"foreign-trade", "provincial-gdp-2024-25", "migrant-workers-remittance"}
 )
 
 # Filename stems routed to the v0.6.0 real-sector single-series path (annual
@@ -2179,6 +2186,273 @@ def _parse_provincial_gdp(path: Path) -> tuple[list[DimensionalRowDraft], list[P
     return _parse_provincial_gdp_sheet(rows), []
 
 
+# ---------------------------------------------------------------------------
+# Migrant workers → dimensional facts (ADR-0015), dimension_kind='country'
+# ---------------------------------------------------------------------------
+#
+# DATA-HONESTY DETERMINATION (ADR-0011, ran 2026-06-07 on the real file):
+# Migrant-Workers-Remittance.xlsx is migrant-WORKER HEADCOUNTS, NOT remittance NPR —
+# despite the filename. Evidence: sheet titles "Migrant workers by Country" /
+# "…by District" / "Number of Migrant Workers" (no Rs/NPR annotation anywhere); every
+# value is a (Male, Female, Total) demographic triple (impossible for currency);
+# magnitude FY2021/22 grand total ≈ 630,686 workers, Qatar ≈ 185,023 — the headcount
+# band (10^5–10^6/yr), not NRB's ~NPR 1.4-trillion annual remittance inflow. ADR-0015
+# named `dne-remittance-inflow`/`npr_million` ASSUMING this file held NPR; it does
+# not. So we emit the honest measure: base `dne-migrant-workers`, unit `count`.
+#
+# Only the "Country" sheet is promoted → one fact per (country × month) from the
+# monthly "Total" column. The sex split (Male/Female) is a SECOND dimension and is
+# deferred (one dimension per fact, ADR-0015); the "district" sheet (identical layout,
+# `dimension_kind='district'`) and the datetime-keyed "Migrant Worker" total sheet (a
+# single-series shape, not dimensional) are deferred — see the README deferral list.
+#
+# Header layout (3 rows): row 2 = sparse FY banner ("2021/22") forward-filled, each FY
+# block = 12 months × 3 sub-columns; row 3 = AD month label ("Mid-Aug" … "Mid-Jul") at
+# each group's first (Male) column (some groups also carry an ignored BS month name);
+# row 4 = Male/Female/Total repeating. Periods key off row 3 (group anchor) + row 2
+# (FY); the value is the group's "Total" column (anchor + 2, confirmed == "Total").
+#
+# SOURCE QUIRK (FY2024/25): a stray all-zero "Mid-Jan" group sits between Mid-April and
+# Mid-May (a source mislabel) — it collides with the real Mid-Jan group on (FY, month).
+# Per the two-row-monthly precedent (`_parse_year_month_layout`) we NEVER drop either:
+# both are emitted and one PeriodAmbiguous error surfaces the duplicate.
+
+# The base measure for migrant-worker headcount facts. NOT a remittance measure —
+# see the determination above.
+_MW_BASE_SLUG: Final[str] = "dne-migrant-workers"
+_MW_BASE_NAME: Final[str] = "Migrant Workers (departures, headcount)"
+
+# VERIFIED unit (ADR-0011): worker headcounts, not currency.
+_MW_UNIT: Final[str] = "count"
+
+# The Country sheet (the only one promoted this round). Case-sensitive sheet name.
+_MW_COUNTRY_SHEET: Final[str] = "Country"
+
+# Row indices of the three-row header in the Country sheet.
+_MW_FY_BANNER_ROW: Final[int] = 2
+_MW_MONTH_LABEL_ROW: Final[int] = 3
+_MW_SEX_ROW: Final[int] = 4
+_MW_FIRST_DATA_ROW: Final[int] = 5
+
+# Offset from a month-group's anchor (Male) column to its "Total" column.
+_MW_TOTAL_COL_OFFSET: Final[int] = 2
+
+# Row labels that are aggregates/placeholders, never a country dimension. "Nepal"
+# is an all-zero placeholder row in the real file (domestic, not a destination).
+_MW_NON_COUNTRY_LABELS: Final[frozenset[str]] = frozenset(
+    {"total", "grand total", "major", "nepal", "subtotal", "sub-total"}
+)
+
+
+def _parse_mid_ad_month(label: str) -> int | None:
+    """Parse a "Mid-<AD month>" group label → AD month number (1-12), or None.
+
+    The Country sheet labels each monthly group with the Gregorian mid-month name
+    NRB uses for BS-month boundaries ("Mid-Aug" ≈ the Shrawan/Bhadra turn, etc.):
+    "Mid-Aug", "Mid-August", "Mid-March", "Mid-Jul". We strip the "Mid-" / "Mid "
+    prefix and defer to the existing AD-month-name map. A bare AD month name (no
+    "Mid-" prefix) is also accepted so the helper is robust to header variants.
+    """
+    s = label.strip().lower()
+    if s.startswith("mid-"):
+        s = s[len("mid-"):]
+    elif s.startswith("mid "):
+        s = s[len("mid "):]
+    return _AD_MONTH_NAME_TO_NUM.get(s.strip())
+
+
+def _mw_map_month_groups(
+    rows: list[tuple[object, ...]],
+) -> tuple[list[tuple[int, int, str]], list[int]]:
+    """Map the Country sheet's monthly groups → [(total_col, ad_month, fy_ad)], dups.
+
+    Walks the month-label row (row 3) left→right. Each non-empty cell that parses as
+    a "Mid-<month>" label anchors a 3-column group whose "Total" sub-column is
+    ``anchor + 2`` (confirmed against row 4 == "Total"). The fiscal year is read from
+    the sparse FY banner (row 2), forward-filled across columns. Returns the ordered
+    group list plus the indices (into that list) of groups whose (fy, ad_month)
+    repeats an earlier group — the source-side duplicate columns to flag.
+    """
+    fy_row = rows[_MW_FY_BANNER_ROW] if len(rows) > _MW_FY_BANNER_ROW else ()
+    month_row = rows[_MW_MONTH_LABEL_ROW] if len(rows) > _MW_MONTH_LABEL_ROW else ()
+    sex_row = rows[_MW_SEX_ROW] if len(rows) > _MW_SEX_ROW else ()
+    max_col = max(len(fy_row), len(month_row), len(sex_row))
+
+    # Forward-fill the FY banner across all columns.
+    fy_at: dict[int, str | None] = {}
+    current_fy: str | None = None
+    for col in range(max_col):
+        banner = _norm_text(fy_row[col]) if col < len(fy_row) else ""
+        parsed = _parse_annual_fy(banner) if banner else None
+        if parsed is not None:
+            current_fy = parsed[1]  # AD "YYYY/YY" label
+        fy_at[col] = current_fy
+
+    groups: list[tuple[int, int, str]] = []
+    seen_periods: set[tuple[str, int]] = set()
+    dup_indices: list[int] = []
+    for col in range(max_col):
+        label = _norm_text(month_row[col]) if col < len(month_row) else ""
+        if not label:
+            continue
+        ad_month = _parse_mid_ad_month(label)
+        if ad_month is None:
+            continue
+        total_col = col + _MW_TOTAL_COL_OFFSET
+        # Confirm the group's third sub-column is the "Total" column.
+        if total_col >= len(sex_row) or _norm_text(sex_row[total_col]).lower() != "total":
+            continue
+        fy_ad = fy_at.get(col)
+        if fy_ad is None:
+            continue
+        key = (fy_ad, ad_month)
+        if key in seen_periods:
+            dup_indices.append(len(groups))
+        else:
+            seen_periods.add(key)
+        groups.append((total_col, ad_month, fy_ad))
+    return groups, dup_indices
+
+
+def _mw_dimensional_row(
+    country_label: str,
+    value: float,
+    ad_month: int,
+    fy_ad: str,
+) -> DimensionalRowDraft:
+    """Build one country-headcount DimensionalRowDraft for an (AD month, FY) cell.
+
+    The AD month span is the exact Gregorian month (1st–28th, the safe lower bound the
+    validator widens). The BS month *label* is the documented mid-month approximation
+    (``_ad_month_to_bs``); the FY is the section banner's AD FY (BS = AD lead + 57),
+    carried from the header rather than re-derived from the month. Source-duplicate
+    month columns are surfaced via a sheet-level ``PeriodAmbiguous`` error (the
+    ADR-0015 ``DimensionalRowDraft`` has no per-row notes field, unlike the
+    single-series ``StagingRowDraft``), and no value is ever dropped.
+    """
+    ad_year = _mw_calendar_year(fy_ad, ad_month)
+    bs_month, bs_year = _ad_month_to_bs(ad_year, ad_month)
+    ad_start = datetime(ad_year, ad_month, 1, tzinfo=UTC)
+    ad_end = datetime(ad_year, ad_month, 28, tzinfo=UTC)
+    fy_bs = fiscal_year_label(int(fy_ad.split("/")[0]) + _BS_AD_FY_OFFSET)
+    return DimensionalRowDraft(
+        base_indicator_slug=_MW_BASE_SLUG,
+        base_indicator_name=_MW_BASE_NAME,
+        dimension_kind="country",
+        dimension_value=_dimension_slug(country_label),
+        dimension_label=country_label,
+        value=value,
+        unit=_MW_UNIT,
+        reporting_period_type="monthly",
+        reporting_period_bs=f"{bs_month} {bs_year}",
+        reporting_period_ad_start=ad_start,
+        reporting_period_ad_end=ad_end,
+        fiscal_year_bs=fy_bs,
+        fiscal_year_ad_label=fy_ad,
+        confidence_grade=_CONFIDENCE,
+    )
+
+
+def _mw_calendar_year(fy_ad_label: str, ad_month: int) -> int:
+    """AD calendar year of ``ad_month`` within an Aug-started AD FY label.
+
+    The Country panel orders months Aug → next Jul (the Gregorian face of the
+    Shrawan→Asadh fiscal year), so months Aug–Dec fall in the lead year and Jan–Jul
+    in the trailing year — the same split as the Foreign-Trade commodity panel
+    (``_ft_calendar_year``). For AD FY "2021/22": Aug 2021 … Dec 2021, Jan 2022 …
+    Jul 2022. The label is header-derived and always well-formed here, so a malformed
+    label falls back to the lead year (never raises).
+    """
+    lead = int(fy_ad_label.split("/")[0])
+    return lead if ad_month >= _FT_FY_START_AD_MONTH else lead + 1
+
+
+def _parse_migrant_workers_country_sheet(
+    rows: list[tuple[object, ...]],
+) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Walk the Country sheet → one country×month headcount fact per "Total" cell.
+
+    Emits a ``PeriodAmbiguous`` (and per-fact note) for any source-duplicate month
+    column, never dropping either value. Aggregate/placeholder rows ("Total",
+    "Nepal", …) are skipped — they must not become a country dimension.
+    """
+    out: list[DimensionalRowDraft] = []
+    errors: list[ParserError] = []
+    if len(rows) <= _MW_FIRST_DATA_ROW:
+        return out, errors
+
+    groups, dup_indices = _mw_map_month_groups(rows)
+    if not groups:
+        return out, errors
+
+    dup_cols = {groups[i][0] for i in dup_indices}
+    if dup_cols:
+        dup_sample = ", ".join(
+            dict.fromkeys(
+                f"{_AD_MONTH_NUM_TO_BS_MONTH[groups[i][1]]} (FY {groups[i][2]})"
+                for i in dup_indices
+            )
+        )
+        errors.append(
+            ParserError(
+                error_class="PeriodAmbiguous",
+                error_detail=(
+                    f"sheet={_MW_COUNTRY_SHEET!r}: header has a repeated month group "
+                    f"for the same fiscal year ({dup_sample}); all values emitted and "
+                    f"flagged — validator must adjudicate the source-side duplicate"
+                ),
+                source_excerpt=dup_sample,
+            )
+        )
+
+    for row_idx in range(_MW_FIRST_DATA_ROW, len(rows)):
+        row = rows[row_idx]
+        country = _norm_text(row[0]) if row else ""
+        if not country or country.lower() in _MW_NON_COUNTRY_LABELS:
+            continue
+        for total_col, ad_month, fy_ad in groups:
+            if total_col >= len(row):
+                continue
+            value = _safe_float(row[total_col])
+            if value is None:
+                continue
+            out.append(_mw_dimensional_row(country, value, ad_month, fy_ad))
+    return out, errors
+
+
+def _parse_migrant_workers(path: Path) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Parse Migrant-Workers-Remittance.xlsx → country-dimensional HEADCOUNT facts.
+
+    Promotes the "Country" sheet only (dimension_kind='country'); the "district" and
+    datetime-keyed "Migrant Worker" sheets are deferred. Never raises: an
+    unreadable/missing sheet yields a typed error and the caller turns an empty result
+    into NoDataExtracted.
+    """
+    try:
+        wb = openpyxl.load_workbook(filename=str(path), read_only=True, data_only=True)
+    except (OSError, KeyError, ValueError, Exception) as exc:  # noqa: BLE001
+        return [], [
+            ParserError(
+                error_class="EncodingError",
+                error_detail=f"openpyxl could not open {path.name}: {exc}",
+            )
+        ]
+    if _MW_COUNTRY_SHEET not in wb.sheetnames:
+        return [], [
+            ParserError(
+                error_class="Other",
+                error_detail=(
+                    f"Migrant-Workers file lacks the {_MW_COUNTRY_SHEET!r} sheet; "
+                    f"sheets present: {wb.sheetnames}"
+                ),
+            )
+        ]
+    rows: list[tuple[object, ...]] = list(
+        wb[_MW_COUNTRY_SHEET].iter_rows(values_only=True)
+    )
+    return _parse_migrant_workers_country_sheet(rows)
+
+
 def _real_sector_result(path: Path) -> ParserResult:
     """Wrap ``_parse_real_sector`` into a ``ParserResult`` (single return site).
 
@@ -2342,11 +2616,15 @@ def _dispatch_dimensional(
     """Route a dimensional file to its parser by filename stem.
 
     ``foreign-trade`` → commodity facts (ADR-0015); ``provincial-gdp-2024-25`` →
-    province facts (v0.6.0). The caller has already confirmed the stem is in
+    province facts (v0.6.0); ``migrant-workers-remittance`` → country HEADCOUNT facts
+    (v0.7.0). The caller has already confirmed the stem is in
     ``_DIMENSIONAL_FILE_STEMS`` via ``_is_dimensional_path``.
     """
-    if path.stem.strip().lower() == "provincial-gdp-2024-25":
+    stem = path.stem.strip().lower()
+    if stem == "provincial-gdp-2024-25":
         return _parse_provincial_gdp(path)
+    if stem == "migrant-workers-remittance":
+        return _parse_migrant_workers(path)
     return _parse_foreign_trade(path)
 
 

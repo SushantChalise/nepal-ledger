@@ -29,7 +29,24 @@ directly feed the Money In and Money Out pillars of Pulse v1.
 - `exchange-rate-monthly` — NPR per major currencies (USD, INR, EUR, GBP)
 - `foreign-trade-monthly` — Exports + imports (NPR billion)
 - `remittance-inflows-monthly` — Migrant worker remittance inflows (NPR billion)
+  — **see the data-honesty note below: the `Migrant-Workers-Remittance.xlsx` file
+  currently on disk is migrant-worker HEADCOUNTS, not remittance NPR.**
 - `tourist-arrivals-monthly` — Arrivals by nationality/mode
+
+> **Data-honesty note — `Migrant-Workers-Remittance.xlsx` is HEADCOUNTS, not NPR
+> (verified 2026-06-07, ADR-0011).** Despite its filename and the
+> `remittance-inflows-monthly` line above, the downloaded
+> `Migrant-Workers-Remittance.xlsx` workbook contains migrant-WORKER **headcounts**
+> (departures by country / by district / by month), with **zero remittance NPR** in
+> any sheet. Evidence: every value is a (Male, Female, Total) demographic triple; the
+> sheet titles read "Migrant workers by Country" / "Number of Migrant Workers"; the
+> FY2021/22 grand total ≈ 630,686 workers (the headcount band, not NRB's ~NPR
+> 1.4-trillion annual inflow). The DNE parser (v0.7.0) therefore ingests its `Country`
+> sheet as dimensional facts under base measure **`dne-migrant-workers`** / unit
+> **`count`** (`dimension_kind='country'`), **NOT** `dne-remittance-inflow`/`npr_million`.
+> Remittance **NPR** must be sourced from a different DNE file (e.g. the BoP /
+> external-sector summary tables); `remittance-inflows-monthly` remains an
+> unfulfilled extraction target until that NPR series is located and registered.
 
 ## Provenance
 

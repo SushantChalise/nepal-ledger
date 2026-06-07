@@ -756,3 +756,84 @@ def provincial_gdp_xlsx() -> Path:
     if not p.exists():
         _build_provincial_gdp(p)
     return p
+
+
+# ---------------------------------------------------------------------------
+# v0.7.0 fixture — Migrant-Workers-Remittance "Country" sheet (HEADCOUNT, ADR-0015)
+# ---------------------------------------------------------------------------
+
+
+def _build_migrant_workers(path: Path) -> None:
+    """Fixture: the Migrant-Workers-Remittance "Country" sheet (HEADCOUNT matrix).
+
+    Mirrors the real 3-row header EXACTLY in stride: a sparse fiscal-year banner
+    (row 3 == index 2) at the head of each 12-month×3-subcol block, an AD month label
+    ("Mid-Aug" … "Mid-Jul", at each group's first/Male column) on row 4 (== index 3),
+    and a "Male"/"Female"/"Total" sub-header on row 5 (== index 4). Country rows start
+    on row 6 (== index 5); the value read for a fact is the group's "Total" column.
+
+    To keep the suite fast, this fixture uses TWO month groups per FY (Mid-Aug,
+    Mid-Sep) across TWO fiscal years (2021/22, 2022/23), plus — for FY2022/23 — a
+    THIRD group whose label is a DUPLICATE "Mid-Aug" (the real file's stray-month
+    mislabel), to exercise the PeriodAmbiguous path without dropping data.
+
+    Layout (openpyxl 1-indexed cols; each group = [Male, Female, Total]):
+      FY 2021/22 : cols  2-4  (Mid-Aug),  5-7  (Mid-Sep)
+      FY 2022/23 : cols  8-10 (Mid-Aug), 11-13 (Mid-Sep), 14-16 (Mid-Aug DUP)
+    Country rows: Qatar, Malaysia, and a "Total" aggregate row + a "Nepal" all-zero
+    placeholder row — both MUST be excluded as dimensions.
+    """
+    _ensure_fixture_dir()
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = "Country"
+    ws.cell(row=1, column=1, value="Migrant workers by Country")
+    # Row 3 (index 2): FY banner — sparse, at the first column of each FY block.
+    ws.cell(row=3, column=1, value="Country")
+    ws.cell(row=3, column=2, value="2021/22")
+    ws.cell(row=3, column=8, value="2022/23")
+    # Row 4 (index 3): AD month label at each group's Male (first) column.
+    #   FY2021/22: Mid-Aug @2, Mid-Sep @5;  FY2022/23: Mid-Aug @8, Mid-Sep @11,
+    #   and a DUPLICATE Mid-Aug @14 (the source mislabel quirk).
+    for col, label in ((2, "Mid-Aug"), (5, "Mid-Sep"), (8, "Mid-Aug"),
+                       (11, "Mid-Sep"), (14, "Mid-Aug")):
+        ws.cell(row=4, column=col, value=label)
+    # Row 5 (index 4): Male/Female/Total repeating across all 5 groups (cols 2..16).
+    for g_start in (2, 5, 8, 11, 14):
+        ws.cell(row=5, column=g_start, value="Male")
+        ws.cell(row=5, column=g_start + 1, value="Female")
+        ws.cell(row=5, column=g_start + 2, value="Total")
+
+    # Data rows (row 6+ == index 5+). For each group we set Male, Female and an
+    # explicit Total (Male+Female) so a fact equals the Total column, not a sum.
+    # Group order across cols: (2021/22 Aug),(2021/22 Sep),(2022/23 Aug),
+    #                          (2022/23 Sep),(2022/23 Aug DUP).
+    # Each tuple below is (Male, Female, Total) per group, left→right.
+    bodies: list[tuple[str, list[tuple[int, int, int]]]] = [
+        ("Qatar", [(100, 5, 105), (110, 6, 116), (120, 7, 127), (130, 8, 138), (0, 0, 0)]),
+        ("Malaysia", [(40, 1, 41), (45, 2, 47), (50, 3, 53), (55, 4, 59), (0, 0, 0)]),
+        # "Nepal" is an all-zero placeholder in the real file — must be EXCLUDED.
+        ("Nepal", [(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)]),
+        # "Total" aggregate row — must be EXCLUDED as a country dimension.
+        ("Total", [(140, 6, 146), (155, 8, 163), (170, 10, 180), (185, 12, 197), (0, 0, 0)]),
+    ]
+    for r_off, (country, groups) in enumerate(bodies):
+        r = 6 + r_off
+        ws.cell(row=r, column=1, value=country)
+        for g_idx, (male, female, total) in enumerate(groups):
+            g_start = 2 + g_idx * 3
+            ws.cell(row=r, column=g_start, value=male)
+            ws.cell(row=r, column=g_start + 1, value=female)
+            ws.cell(row=r, column=g_start + 2, value=total)
+    wb.save(str(path))
+
+
+@pytest.fixture(scope="session")
+def migrant_workers_xlsx() -> Path:
+    # Named "Migrant-Workers-Remittance.xlsx" so parse_dne's _DIMENSIONAL_FILE_STEMS
+    # dispatch routes it to the country HEADCOUNT dimensional path end-to-end.
+    p = FIXTURE_DIR / "Migrant-Workers-Remittance.xlsx"
+    if not p.exists():
+        _build_migrant_workers(p)
+    return p
