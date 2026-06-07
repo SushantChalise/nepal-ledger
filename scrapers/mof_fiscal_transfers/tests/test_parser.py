@@ -40,7 +40,7 @@ def test_status_success(result: dict[str, object]) -> None:
 
 
 def test_parser_version(result: dict[str, object]) -> None:
-    assert result["parser_version"] == PARSER_VERSION == "0.2.0"
+    assert result["parser_version"] == PARSER_VERSION == "0.3.0"
 
 
 def test_reads_data_when_sheet_named_sheet2(tmp_path: Path) -> None:
@@ -180,3 +180,95 @@ def test_fixture_xlsx_is_real_xlsx() -> None:
 def test_fixture_path_under_tests_dir() -> None:
     """Fixture lives under the tests/ tree, not in the repo root."""
     assert SAMPLE_XLSX.parent == Path(__file__).resolve().parent / "fixtures"
+
+
+def test_real_file_short_form_headers(tmp_path: Path) -> None:
+    """Parser must extract equalization grants when the real MoF file uses
+    short-form column headers: "Minimum Grant", "Formula Based Grant",
+    "Performance Based Grant" (no "Equalization" prefix). Regression for
+    v0.3.0 equalization extraction from Fiscal Transfer_2082_82.xlsx.
+    """
+    from openpyxl import Workbook
+
+    wb = Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = "Sheet2"
+    ws.append(["Annex 1: Fiscal Transfer FY 2082/83 (in NPR thousand)"])
+    ws.append(
+        [
+            "S.N.",
+            "District",
+            "Local Level Name",
+            "Minimum Grant",
+            "Formula Based Grant",
+            "Performance Based Grant",
+            "Total Equalization",        # aggregator — must be EXCLUDED
+            "Conditional Grant (Current)",
+            "Conditional Grant (Capital)",
+            "Special Grant (Current)",
+            "Special Grant (Capital)",
+            "Complementary Grant (Capital)",
+            "Total",                     # grand-total aggregator — must be EXCLUDED
+        ],
+    )
+    ws.append(
+        [
+            1, "Kathmandu", "Kathmandu",
+            111000, 222000, 333000,   # eq_min, eq_formula, eq_perf
+            666000,                   # Total Equalization (excluded)
+            800000, 600000, 0, 30000, 20000,  # conditional + special + complementary
+            1800000,                  # grand Total (excluded)
+        ],
+    )
+    short_form_xlsx = tmp_path / "short_form_headers.xlsx"
+    wb.save(short_form_xlsx)
+
+    result = parse(str(short_form_xlsx), source_document_id="test-short-form")
+
+    assert result["status"] == "success", (
+        f"got status={result['status']!r} errors={result['errors']!r}"
+    )
+    rows = result["rows"]
+    assert isinstance(rows, list)
+
+    grant_types_emitted = {r["grant_type"] for r in rows}
+    assert "equalization_minimum" in grant_types_emitted
+    assert "equalization_formula" in grant_types_emitted
+    assert "equalization_performance" in grant_types_emitted
+
+    # Total columns must be excluded — row count must be exactly 8 (one per grant type).
+    assert len(rows) == len(EXPECTED_GRANT_TYPES), (
+        f"expected {len(EXPECTED_GRANT_TYPES)} rows (8 grant types), got {len(rows)}; "
+        f"grant_types={grant_types_emitted!r}"
+    )
+
+    # Spot-check equalization values.
+    eq_min = next((r for r in rows if r["grant_type"] == "equalization_minimum"), None)
+    assert eq_min is not None
+    assert eq_min["amount_npr"] == pytest.approx(111000.0)
+
+    eq_formula = next((r for r in rows if r["grant_type"] == "equalization_formula"), None)
+    assert eq_formula is not None
+    assert eq_formula["amount_npr"] == pytest.approx(222000.0)
+
+    eq_perf = next((r for r in rows if r["grant_type"] == "equalization_performance"), None)
+    assert eq_perf is not None
+    assert eq_perf["amount_npr"] == pytest.approx(333000.0)
+
+
+def test_total_columns_excluded() -> None:
+    """_match_grant_type must return None for any header containing 'total'."""
+    from mof_fiscal_transfers.parser import _match_grant_type
+
+    for header in (
+        "Total Equalization",
+        "Total Conditional",
+        "Total Special",
+        "Grand Total",
+        "Total",
+        "total equalization grant",
+    ):
+        assert _match_grant_type(header) is None, (
+            f"_match_grant_type({header!r}) should return None (total column)"
+        )

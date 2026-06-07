@@ -46,7 +46,7 @@ from _common.municipality_resolver import (
 )
 from _common.types import ParserError, ParserStatus
 
-PARSER_VERSION: Final[str] = "0.2.0"
+PARSER_VERSION: Final[str] = "0.3.0"
 SOURCE_ID: Final[str] = "local-fiscal-transfers-cleaned"
 
 # Fiscal year + confidence anchors. The cleaned XLSX covers FY 2082/83 only.
@@ -62,11 +62,30 @@ _DISTRICT_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("district", "जिल्�
 # match wins, so list the most specific entries first. This shape tolerates
 # the MoF "X Grant (Y)" pattern AND short-form headers like "Conditional
 # Current" without depending on punctuation or budget-head codes.
+#
+# Equalization rules cover TWO naming conventions used by MoF:
+#   - Long form (fixture / some exports): "Equalization Grant (Minimum)" etc.
+#     → contains "equalization" + "minimum"/"formula"/"performance"
+#   - Short form (real Fiscal Transfer_2082_82.xlsx Sheet2 column headers):
+#     "Minimum Grant", "Formula Based Grant", "Performance Based Grant"
+#     → do NOT contain "equalization"; matched by standalone keyword pairs.
+# Total columns ("Total Equalization", "Total Conditional", etc.) are
+# excluded before rule matching in ``_match_grant_type`` — they never reach
+# the per-rule checks.
 _GRANT_HEADER_RULES: Final[tuple[tuple[tuple[str, ...], str], ...]] = (
-    # Equalization (3 sub-types) — order: most-specific keyword first.
+    # Equalization — long form: "Equalization Grant (Minimum)" etc.
     (("equalization", "minimum"), "equalization_minimum"),
     (("equalization", "formula"), "equalization_formula"),
     (("equalization", "performance"), "equalization_performance"),
+    # Equalization — short form: "Minimum Grant", "Formula Based Grant",
+    # "Performance Based Grant" (real file; no "equalization" prefix).
+    # Listed AFTER the long-form rules so the long form wins on any header
+    # that contains both "equalization" and the sub-type keyword.
+    (("minimum", "grant"), "equalization_minimum"),
+    (("formula", "grant"), "equalization_formula"),
+    (("formula", "based"), "equalization_formula"),
+    (("performance", "grant"), "equalization_performance"),
+    (("performance", "based"), "equalization_performance"),
     # Conditional (current + capital)
     (("conditional", "current"), "conditional_current"),
     (("conditional", "recurrent"), "conditional_current"),
@@ -130,7 +149,17 @@ def _safe_float(value: object) -> float | None:
 
 
 def _match_grant_type(header_text: str) -> str | None:
+    """Return the grant_type slug for a column header, or None.
+
+    Total-aggregator columns ("Total Equalization", "Total Conditional",
+    "Total Special", "Grand Total", etc.) are excluded first to prevent
+    double-counting. Any header containing the word "total" is skipped
+    before the keyword rules are evaluated.
+    """
     lowered = header_text.lower()
+    # Exclude any aggregator / total column — must come before rule matching.
+    if "total" in lowered:
+        return None
     for required, enum_value in _GRANT_HEADER_RULES:
         if all(token in lowered for token in required):
             return enum_value
