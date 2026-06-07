@@ -93,7 +93,7 @@ from _common.municipality_resolver import (
 )
 from .two_mode_reader import CsvMode, read_census_csv
 
-PARSER_VERSION: Final[str] = "0.1.0"
+PARSER_VERSION: Final[str] = "0.2.0"
 SOURCE_ID: Final[str] = "cbs-nphc-2021"
 CENSUS_YEAR_AD: Final[str] = "2021"
 CENSUS_YEAR_BS: Final[str] = "2078"
@@ -463,11 +463,12 @@ def _expand_value_columns(
     dim_values: tuple[str, ...],
     table_stem: str,
     federal_code: str,
+    palika_key: tuple[str, str, str],
     gapaname: str,
     family: CensusIndicatorFamily,
     unit: str,
     raw_idx: int,
-    seen: set[tuple[str, str]],
+    seen: set[tuple[tuple[str, str, str], str]],
     facts: list[CensusFactDraft],
     errors: list[CensusParserError],
 ) -> None:
@@ -475,6 +476,21 @@ def _expand_value_columns(
 
     Encapsulated to keep :func:`parse` branch-count within the linter limit.
     Mutates ``facts``, ``errors``, and ``seen`` in-place.
+
+    ``palika_key`` is the ``(prov, dist, gapa)`` string triple taken directly
+    from the CSV.  The ``seen`` set is keyed on
+    ``(palika_key, indicator_slug)`` rather than ``(federal_code, indicator_slug)``
+    so that two distinct palikas that share a romanized name — and are therefore
+    incorrectly resolved to the same federal code by the fuzzy resolver — are
+    still treated as separate entities within one parse.  This eliminates the
+    378 false-positive "duplicate" errors that occurred when, e.g., Madi
+    Municipality in Sankhuwasabha and Madi Municipality in Chitwan both
+    resolved to the same code and the second palika's facts were silently
+    dropped.
+
+    The downstream DB insert may still surface a true duplicate if the resolver
+    maps two palikas to the same code; that is a data-quality signal to fix the
+    override map, not a parser logic error.
     """
     for col in value_columns:
         value = _parse_value(row[header_index[col]])
@@ -492,15 +508,15 @@ def _expand_value_columns(
             slug = _slugify_indicator_with_dims(table_stem, dim_values, col)
         else:
             slug = _slugify_indicator(table_stem, col)
-        key = (federal_code, slug)
+        key = (palika_key, slug)
         if key in seen:
-            # Duplicate (entity, indicator) within one file would violate
+            # Duplicate (palika, indicator) within one file would violate
             # the census_facts unique index — surface it loudly rather
             # than emit a row Postgres will reject anyway.
             errors.append(
                 CensusParserError(
                     "Other",
-                    f"duplicate (entity={federal_code}, indicator={slug}) "
+                    f"duplicate (palika={palika_key}, indicator={slug}) "
                     f"within {table_stem}; row {raw_idx}",
                     source_excerpt=gapaname,
                 )
@@ -563,6 +579,47 @@ def _resolve_federal_code(
     if match.score < HIGH_CONFIDENCE_THRESHOLD:
         return None
     return match.federal_code
+
+
+def _build_palika_code_cache(
+    rows: list[list[str]],
+    header_index: dict[str, int],
+    *,
+    resolver_for_tests: Any = None,
+) -> dict[tuple[str, str, str], str | None]:
+    """Pre-resolve every unique ``(prov, dist, gapa)`` triple to a federal code.
+
+    Each distinct palika in the CSV is resolved exactly once, even when a
+    multi-row-per-palika table (Hhld18/19/20) repeats the same geo-triple
+    across many sub-rows.  Memoising by the CBS ``(prov, dist, gapa)`` triple
+    rather than by ``gapaname`` prevents the fuzzy resolver from being applied
+    to sub-rows of the same palika multiple times and, more importantly,
+    ensures that two distinct palikas that share a romanized name (e.g. "Madi
+    Municipality" in Sankhuwasabha vs. Chitwan) each get one resolver call
+    with their own ``dname`` district hint — the only CBS-provided discriminant
+    besides the numeric triple itself.
+
+    Returns a mapping ``(prov, dist, gapa) → federal_code | None``.
+    ``None`` means the resolver failed for that palika.
+    """
+    cache: dict[tuple[str, str, str], str | None] = {}
+    for row in rows:
+        prov = row[header_index["prov"]]
+        dist = row[header_index["dist"]]
+        gapa = row[header_index["gapa"]]
+        if not _is_palika_row(prov, dist, gapa):
+            continue
+        triple = (prov, dist, gapa)
+        if triple in cache:
+            continue  # already resolved
+        gapaname = row[header_index["gapaname"]].strip().strip('"')
+        dname = row[header_index["dname"]].strip().strip('"')
+        cache[triple] = _resolve_federal_code(
+            gapaname,
+            dname,
+            resolver_for_tests=resolver_for_tests,
+        )
+    return cache
 
 
 def _is_palika_row(prov: str, dist: str, gapa: str) -> bool:
@@ -651,24 +708,42 @@ def parse(
             ],
         )
 
+    # Materialise all rows upfront so we can pre-resolve every unique
+    # (prov, dist, gapa) triple exactly once before iterating for facts.
+    # This avoids calling the fuzzy resolver 27 times for each palika in
+    # multi-row tables (Hhld18/19/20) and, crucially, means two distinct
+    # palikas that share a romanised name are each resolved with their own
+    # ``dname`` district hint — the only CBS-provided discriminant besides
+    # the numeric triple itself.
+    all_rows = list(read.rows)
+
+    # Pre-resolve: (prov, dist, gapa) → federal_code | None.
+    # Each unique CBS triple calls the fuzzy resolver at most once.
+    palika_cache: dict[tuple[str, str, str], str | None] = _build_palika_code_cache(
+        all_rows,
+        header_index,
+        resolver_for_tests=resolver_for_tests,
+    )
+
     facts: list[CensusFactDraft] = []
     errors: list[CensusParserError] = []
-    seen: set[tuple[str, str]] = set()  # (entity_slug, indicator_slug) idempotence within one parse
+    # seen keyed by (palika_key, indicator_slug) — not (federal_code, slug).
+    # Using the CBS (prov, dist, gapa) triple as the entity discriminant
+    # prevents two distinct palikas that the fuzzy resolver wrongly maps to
+    # the same federal code from generating spurious "duplicate" errors.
+    seen: set[tuple[tuple[str, str, str], str]] = set()
 
-    for raw_idx, row in enumerate(read.rows):
+    for raw_idx, row in enumerate(all_rows):
         prov = row[header_index["prov"]]
         dist = row[header_index["dist"]]
         gapa = row[header_index["gapa"]]
         if not _is_palika_row(prov, dist, gapa):
             continue
 
+        palika_key = (prov, dist, gapa)
         gapaname = row[header_index["gapaname"]].strip().strip('"')
         dname = row[header_index["dname"]].strip().strip('"')
-        federal_code = _resolve_federal_code(
-            gapaname,
-            dname,
-            resolver_for_tests=resolver_for_tests,
-        )
+        federal_code = palika_cache[palika_key]
         if federal_code is None:
             errors.append(
                 CensusParserError(
@@ -693,6 +768,7 @@ def parse(
             dim_values,
             table_stem,
             federal_code,
+            palika_key,
             gapaname,
             family,
             unit,

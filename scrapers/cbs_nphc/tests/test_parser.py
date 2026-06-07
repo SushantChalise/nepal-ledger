@@ -49,7 +49,7 @@ def _stub_resolver(name: str, district_hint: str | None = None) -> _StubMatch | 
 # Sanity
 # ---------------------------------------------------------------------------
 def test_parser_version() -> None:
-    assert PARSER_VERSION == "0.1.0"
+    assert PARSER_VERSION == "0.2.0"
 
 
 def test_unknown_table_returns_failure() -> None:
@@ -179,7 +179,7 @@ def test_json_round_trip() -> None:
     )
     blob = result.to_json_dict()
     assert blob["status"] == "success"
-    assert blob["parser_version"] == "0.1.0"
+    assert blob["parser_version"] == "0.2.0"
     assert blob["mode"] == "A"
     assert len(blob["facts"]) == 10
     sample = blob["facts"][0]
@@ -356,6 +356,63 @@ def test_hhld19_spot_check_value() -> None:
     assert len(target) == 1
     assert target[0].value == 83.0
     assert target[0].unit == "persons"
+
+
+def test_same_gapaname_different_prov_dist_gapa_no_collision(
+    tmp_path: Path,
+) -> None:
+    """Two palika rows with identical gapaname but different (prov, dist, gapa) triples
+    must each produce facts — no collision errors — even when the stub resolver maps
+    both names to the same federal code.
+
+    This is the class of bug that caused ~378 dropped facts on Hhld19: two palikas
+    named "Madi Municipality" (e.g. Sankhuwasabha and Chitwan) both resolved to the
+    same federal code, so the second palika's facts were suppressed as "duplicates."
+    The fix keys the seen-set on (prov, dist, gapa) not federal_code.
+    """
+    # Write a minimal Hhld05_FloorOfHouse CSV with two palika rows sharing the
+    # same gapaname but different (prov, dist, gapa) triples.
+    # The filename stem must match a registered table key.
+    collision_csv = tmp_path / "Hhld05_FloorOfHouse.csv"
+    collision_csv.write_text(
+        "prov,dist,gapa,provname,dname,gapaname,rowtotal,a_Mud,b_Wooden,"
+        "c_BrickStone,d_Ceramic,e_Cemented,f_Other\n"
+        "0,0,0,NEPAL,NEPAL,NEPAL,6660841,3074510,135503,91236,180603,3151140,27849\n"
+        "1,2,9,Province-1,Sankhuwasabha,Madi Municipality,2832,2409,280,12,6,101,24\n"
+        "3,35,7,Bagmati,Chitwan,Madi Municipality,5000,4000,400,100,50,400,50\n",
+        encoding="utf-8",
+    )
+
+    # Resolver that always maps "Madi Municipality" to the same code — simulating
+    # the real resolver's failure to disambiguate by district.
+    collision_codes: dict[str, str] = {
+        "Madi Municipality": "09090909",
+    }
+
+    def _collision_stub(name: str, district_hint: str | None = None) -> _StubMatch | None:
+        _ = district_hint  # intentionally ignored — simulates resolver collision
+        code = collision_codes.get(name.strip())
+        if code is None:
+            return None
+        return _StubMatch(federal_code=code, score=95.0)
+
+    result = parse(
+        str(collision_csv),
+        "doc-id-collision",
+        resolver_for_tests=_collision_stub,
+    )
+    # Both palikas must produce facts — no "Other" collision errors.
+    other_errors = [e for e in result.errors if e.error_class == "Other"]
+    assert other_errors == [], f"unexpected collision errors: {other_errors}"
+    assert result.status == "success", f"errors: {result.errors}"
+    # Two palika rows × 7 value cols = 14 facts.  Both rows share the same
+    # entity_slug (the resolver returns the same code for both) but they come
+    # from distinct (prov, dist, gapa) triples, so the seen-set does not
+    # suppress either.
+    assert len(result.facts) == 14, f"got {len(result.facts)} facts, expected 14"
+    # Both facts use entity_slug="09090909" (the collision code).
+    slugs_by_code = [f.entity_slug for f in result.facts]
+    assert all(s == "09090909" for s in slugs_by_code)
 
 
 def test_hhld18_slug_encodes_sex_only() -> None:
