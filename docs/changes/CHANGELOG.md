@@ -8,6 +8,24 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-07 (round 8) — Wave 3: GDP/CPI real-sector, labour annex, SOE page + ingest resilience
+
+**What changed:** Ran Wave 3 as a 3-worker parallel batch (one DNE-parser slot + one new PDF parser + one render page), then root-caused and fixed a connection-resilience bug that was silently aborting chatty ingests. The mission's per-capita denominators (GDP, CPI) are now live.
+
+- **DNE real-sector → GDP + CPI live** (parser v0.6.0, Worker A): National-Accounts + CPI + Provincial-GDP. Headline series in `approved_indicator_values` (50yr GDP, 52yr CPI): **nominal GDP FY2081/82 = NPR 6,107 bn (~6.1 trillion)**, real GDP 2,798 bn, per-capita **USD 1,496**, real growth 4.61%, CPI 166.2, inflation 5.44%. Unit is `npr_billion` (sheet header "Rs. in billion"; ADR-0011 — a 10³ trap avoided). **Provincial-GDP → 49 `dne_facts`** (7 provinces, `dimension_kind='province'`; Bagamati NPR 2.23 tn). Province sum ≈ 88% of national (taxes-less-subsidies + statistical discrepancy) ✓. Deferred (documented): GVA-by-industry, Quarterly-GDP (base-year discontinuity), Energy/Agriculture (unit reconciliation).
+- **MoF Economic Survey annex parser** (`scrapers/mof_economic_survey/`, Worker B, [ADR-0016](../decisions/0016-economic-survey-annex-only-parsing.md)): the EN edition's headline macro annex is **RTL-mirrored** (char/column/row-reversed) and the Nepali editions' annex is **CID-broken** — both deferred (ADR-0003 forbids the fragile un-mirroring), documented with typed `PageLayoutChanged`/`EncodingError` diagnostics. Extracted the one clean table: **Annex 6.1 foreign-employment permits → 24 rows** (8 FY × total/female/male, `labour`, `count`). FY2079/80 total 494,224 (female 53,500 + male 440,724 ✓). A decoded mirrored GDP cell read NPR 5,704.8 bn — **independently matching NRB's National-Accounts** figure.
+- **`/state-enterprises` render page** (Worker C): the 7th live page — Public Enterprise X-Ray ranking SOEs by government equity vs loan exposure from the Yellow Book `dne_facts` (NEA NPR 181.33 bn), npr_thousand→NPR bn, accessible table + decorative composition bar.
+- **Ingest resilience fix** ([safe-query](../../src/lib/db/safe-query.ts) + [validation](../../src/lib/validation/index.ts)): the National-Accounts ingest aborted twice at different queries. A 400-pair probe pinned it to **`ECONNRESET` ~0.1%/query** on Supabase's pooler — over the validation loop's ~1,000 round-trips that's a ~70% chance of one reset (census survived because it bulk-inserts). Two fixes: (1) `safeQuery` now inspects `Error.cause` for connection codes (a latent bug — resets were mis-typed `QueryFailed` instead of `DatabaseUnavailable`, since the wrapper isn't a `DrizzleError` instance); (2) the validation driver retries `DatabaseUnavailable` per-row with exponential backoff (reads idempotent; promote is transactional; the `DuplicateOfApproved` check absorbs any post-commit-reset re-run). + regression test.
+- **CI completeness:** `mof_economic_survey` added to `pyproject.toml` include + testpaths; full suite **319 → 378** (+25 nrb_dne real-sector, +34 economic-survey).
+
+**Live DB:** approved_indicator_values **874** (was 498; +GDP/CPI/labour) · **dne_facts 38,623** (was 38,574; +49 provincial) · fiscal 6,008 · banking 2,088 · census 531,618 · source_registry 68.
+
+**Next (Wave 3 remaining → Wave 4):** customs-monthly-trade (#7, needs download), whitebook foreign-aid (#12, new fact table + migration), DNE GVA-by-industry + SITC/Direction-of-Trade dimensional sheets, a shared site nav (7 pages, currently inline-cross-linked only).
+
+**Related:** ADR-0016; ADR-0011 (units); ADR-0014/0015 (DNE single-series vs dimensional); DATA_BUILDOUT_PLAN.md §"#9/10"; HANDOFF_2026-06-07.
+
+---
+
 ## 2026-06-07 (round 7) — Wave 2: migration map + Yellow Book SOE balance-sheet
 
 **What changed:** Executed Wave 2 of the build-out roadmap — a render page on already-ingested census data, plus a new audited gov-finance source (public enterprises). Both workers held the line on the project's data-honesty rules: one correctly relabelled its own output, the other deliberately narrowed scope rather than ship a fragile parser.
