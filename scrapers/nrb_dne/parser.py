@@ -52,6 +52,7 @@ from _common.periods import (
     BS_MONTHS,
     BsMonth,
     fiscal_year_ad_label,
+    fiscal_year_label,
     mid_month_ad,
 )
 from _common.types import (
@@ -61,7 +62,7 @@ from _common.types import (
     StagingRowDraft,
 )
 
-PARSER_VERSION: Final[str] = "0.2.0"
+PARSER_VERSION: Final[str] = "0.3.0"
 SOURCE_ID: Final[str] = "nrb-dne-xlsx"
 
 # ---------------------------------------------------------------------------
@@ -166,8 +167,13 @@ _AD_YEAR_INT_MAX: Final[int] = 2040  # same as _BS_YEAR_MIN; ambiguous zone defe
 _MIN_PERIOD_COLS: Final[int] = 1
 
 # Minimum BS fiscal-year start to distinguish BS years (2040+) from AD years
-# (e.g. 2006/07 in Foreign Trade sheets). AD-year FY headers are skipped.
+# (≤2039). The two ranges cannot overlap for any data this project ingests:
+# BS 2040 ≈ AD 1983; AD 2039 is the future. ADR-0013.
 _BS_YEAR_MIN: Final[int] = 2040
+
+# Maximum AD fiscal-year start accepted for AD→BS conversion (exclusive upper
+# bound = _BS_YEAR_MIN - 1). Any lead year ≥ _BS_YEAR_MIN is treated as BS.
+_AD_YEAR_FY_MAX: Final[int] = _BS_YEAR_MIN - 1  # 2039
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -234,17 +240,25 @@ def _detect_unit_from_text(text: str) -> str | None:
 def _parse_annual_fy(label: str) -> tuple[str, str] | None:
     """Parse annual FY label → (fiscal_year_bs "YYYY/YY", fiscal_year_ad_label).
 
-    Accepts:
+    Accepts BS fiscal years (lead year ≥ 2040) and AD fiscal years (lead year
+    ≤ 2039), as per ADR-0013.  The magnitude heuristic is deterministic: the
+    two ranges cannot overlap for any data this project ingests.
+
+    BS inputs (lead ≥ 2040):
     - "2079/80", "2079-80"            — standard BS format
     - "2079/80R", "2079/80P"          — NRB revised/provisional suffix
     - "2079/2080"                     — 4-digit tail (some SITC sheets)
+
+    AD inputs (lead ≤ 2039) — converted to BS via the +57 fiscal-year offset:
+    - "2022/23", "2022/23R"           — plain AD FY (External Sector files)
     - "(2071-72) 2014/15"             — bracketed BS label + AD year prefix
+      (The bracketed part is stripped by the regex; the AD lead year is used.)
 
-    Accepts ONLY BS fiscal years (start year >= 2040) to avoid misclassifying
-    AD calendar years (e.g. 2006/07) as BS years. AD-year FY headers are out
-    of scope for this parser and logged as PeriodUnparseable by the caller.
+    The AD→BS conversion is done via ``fiscal_year_label(ad_start + 57)``
+    which mirrors ``fiscal_year_ad_label`` in reverse.  Known pair:
+    AD 2022/23 → BS 2079/80; AD 2023/24 → BS 2080/81.
 
-    Returns None if not a match or not a plausible BS year.
+    Returns None if the regex does not match or the tail is inconsistent.
     """
     m = _ANNUAL_FY_RE.match(label)
     if not m:
@@ -258,15 +272,22 @@ def _parse_annual_fy(label: str) -> tuple[str, str] | None:
     if tail_int != expected_tail:
         return None
 
-    # Reject AD-era years (< 2040 = implausible as BS FY start).
-    # BS fiscal years currently run ~2040–2090; AD fiscal years like 2006/07
-    # start with 2006 which is below this threshold.
-    if start < _BS_YEAR_MIN:
-        return None
+    if start >= _BS_YEAR_MIN:
+        # BS fiscal year — keep as-is, derive AD label from periods helper.
+        fy_bs = f"{start}/{expected_tail:02d}"
+        fy_ad = fiscal_year_ad_label(start)
+        return fy_bs, fy_ad
 
-    fy_bs = f"{start}/{expected_tail:02d}"
-    fy_ad = fiscal_year_ad_label(start)
-    return fy_bs, fy_ad
+    if start <= _AD_YEAR_FY_MAX:
+        # AD fiscal year — convert to BS by adding 57 to the lead year.
+        # The Nepal fiscal year runs mid-July to mid-July, so AD YYYY/(YY+1)
+        # corresponds 1:1 to BS (YYYY+57)/((YYYY+58)%100).  ADR-0013.
+        bs_start = start + 57
+        fy_bs = fiscal_year_label(bs_start)
+        fy_ad = f"{start}/{expected_tail:02d}"
+        return fy_bs, fy_ad
+
+    return None
 
 
 def _parse_monthly_bs(label: str) -> tuple[BsMonth, int] | None:
@@ -587,9 +608,11 @@ def _parse_sheet(
                 ParserError(
                     error_class="PeriodUnparseable",
                     error_detail=(
-                        f"sheet={sheet_name!r}: no BS fiscal-year header found; "
-                        f"AD-calendar-year tokens detected (e.g. {sample!r}) — "
-                        f"this sheet uses AD fiscal years which are out of scope"
+                        f"sheet={sheet_name!r}: no parseable period header found; "
+                        f"year-like tokens detected (e.g. {sample!r}) but the layout "
+                        f"is not a standard wide annual/monthly format — "
+                        f"likely transposed (years-as-rows) or datetime-period column; "
+                        f"deferred per ADR-0013"
                     ),
                     source_excerpt=sample,
                 )

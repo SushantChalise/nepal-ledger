@@ -39,7 +39,7 @@ def test_happy_status_success(happy_result: ParserResult) -> None:
 
 
 def test_happy_parser_version(happy_result: ParserResult) -> None:
-    assert happy_result.parser_version == PARSER_VERSION == "0.2.0"
+    assert happy_result.parser_version == PARSER_VERSION == "0.3.0"
 
 
 def test_happy_source_id() -> None:
@@ -319,30 +319,30 @@ def test_bs_fy_suffix_values(bs_fy_suffix_result: ParserResult) -> None:
 
 @pytest.fixture(scope="module")
 def ad_year_result(ad_year_sheet_xlsx: Path) -> ParserResult:
-    """AD-calendar-year FY headers (e.g. "2021/22") — out of scope for BS parser."""
+    """AD-calendar-year FY headers (e.g. "2021/22") — converted to BS per ADR-0013."""
     return parse(str(ad_year_sheet_xlsx), source_document_id="test-doc-ad-year")
 
 
-def test_ad_year_sheet_status_partial(ad_year_result: ParserResult) -> None:
-    """AD-year sheets cannot be parsed; status must be partial, not failure."""
-    assert ad_year_result.status == "partial"
+def test_ad_year_sheet_status_success(ad_year_result: ParserResult) -> None:
+    """AD-year FY headers now parse (ADR-0013): converted to BS, status success."""
+    assert ad_year_result.status == "success", f"errors: {ad_year_result.errors}"
 
 
-def test_ad_year_sheet_no_rows(ad_year_result: ParserResult) -> None:
-    assert ad_year_result.staging_rows == []
+def test_ad_year_sheet_emits_rows(ad_year_result: ParserResult) -> None:
+    """The fixture's two AD-year columns (2021/22, 2022/23) yield two facts."""
+    assert len(ad_year_result.staging_rows) == 2
 
 
-def test_ad_year_sheet_emits_period_unparseable(ad_year_result: ParserResult) -> None:
-    """Must emit PeriodUnparseable (not bare NoDataExtracted) so Mother knows why."""
-    error_classes = [e.error_class for e in ad_year_result.errors]
-    assert "PeriodUnparseable" in error_classes, (
-        f"expected PeriodUnparseable in errors, got: {error_classes}"
-    )
+def test_ad_year_sheet_converts_ad_fy_to_bs(ad_year_result: ParserResult) -> None:
+    """AD fiscal year → BS via the +57 offset (ADR-0013): 2021/22→2078/79,
+    2022/23→2079/80. The AD label is preserved in fiscal_year_ad_label."""
+    by_bs = {r.reporting_period_bs: r for r in ad_year_result.staging_rows}
+    assert set(by_bs) == {"2078/79", "2079/80"}
+    assert by_bs["2078/79"].fiscal_year_ad_label == "2021/22"
+    assert by_bs["2079/80"].fiscal_year_ad_label == "2022/23"
+    assert by_bs["2078/79"].reporting_period_type == "annual"
 
 
-def test_ad_year_sheet_error_mentions_ad_tokens(ad_year_result: ParserResult) -> None:
-    """The PeriodUnparseable error detail should mention AD-year tokens."""
-    period_errors = [e for e in ad_year_result.errors if e.error_class == "PeriodUnparseable"]
-    assert any("AD" in e.error_detail or "2021" in e.error_detail for e in period_errors), (
-        f"error detail does not mention AD years: {[e.error_detail for e in period_errors]}"
-    )
+def test_ad_year_sheet_no_period_error(ad_year_result: ParserResult) -> None:
+    """No PeriodUnparseable now that AD fiscal years are accepted."""
+    assert "PeriodUnparseable" not in [e.error_class for e in ad_year_result.errors]
