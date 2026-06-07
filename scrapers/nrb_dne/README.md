@@ -38,10 +38,48 @@ The parser handles all five pages identically.
 
 ## PARSER_VERSION
 
-`0.1.0`
+`0.2.0`
 
-Defined in `parser.py` as `PARSER_VERSION: Final[str] = "0.1.0"`. Bump on any
+Defined in `parser.py` as `PARSER_VERSION: Final[str] = "0.2.0"`. Bump on any
 behavior change (see [CONVENTIONS.md](../../docs/CONVENTIONS.md)).
+
+### v0.2.0 changes (2026-06-07)
+
+- `_parse_annual_fy`: accepts NRB revision/provisional suffixes (`R`, `P`, `E`) on
+  BS FY labels — e.g. `"2079/80R"` now parses to `("2079/80", "2022/23")`.
+- `_parse_annual_fy`: accepts `YYYY/YYYY` 4-digit tail (e.g. `"2079/2080"`) used
+  in some SITC sheets.
+- `_parse_annual_fy`: rejects AD-era year labels (`< 2040`) so that AD fiscal
+  years like `"2006/07"` (Foreign Trade) or `"2022/23R"` (BoP BPM6) are correctly
+  classified as unparseable rather than silently stamped with wrong BC-era AD dates.
+- `_detect_unit_from_text`: strips surrounding parentheses before lookup, handling
+  NRB's common `"(Rs in Million)"` and `"(NPR in Million)"` annotation style.
+- `_parse_sheet`: when no BS header is found, emits an explicit `PeriodUnparseable`
+  error listing the AD-year tokens found, making incompatibility visible to Mother.
+- Unit map: added `"npr in million"`, `"in npr million"`, `"nrs million"` variants.
+
+### Real-file compatibility matrix (tested 2026-06-07)
+
+| File | Sheets | Period type | Parser result |
+|------|--------|-------------|---------------|
+| `Foreign-exchange-reserves.xlsx` | FX Reserves | AD year+month (2001–2025) | `partial` — `PeriodUnparseable` (AD-year layout, out of scope) |
+| `Balance-of-Payments-BPM6.xlsx` | BOP BPM6 | AD FY with R/P suffix | `partial` — `PeriodUnparseable` (AD-year layout) |
+| `Foreign-Trade.xlsx` (main sheets) | 2 | AD FY "2006/07" | `partial` — `PeriodUnparseable` (AD-year) |
+| `Foreign-Trade.xlsx` (SITC sheet) | 1 | Mixed `"(2071-72) 2014/15"` | `partial` — `PeriodUnparseable` |
+| `Migrant-Workers-Remittance.xlsx` | 3 | AD FY "2021/22" | `partial` — `PeriodUnparseable` (was silently wrong before) |
+| `Tourist-arrivals.xlsx` | Tourist Arrival | Integer AD years (1992–2025) | `partial` — `PeriodUnparseable` |
+| `Exchange-rate.xlsx` | Time series | Rows-not-columns layout | `partial` — `PeriodUnparseable` |
+
+**Root finding:** All 6 tested External Sector files use AD calendar years as period
+labels, not BS. The parser is designed for the BS-year wide-format layout described
+in the NRB CATALOG AUDIT (External Sector section). The External Sector files
+prioritised for ingestion require an **AD-year extension** to handle their period
+headers (see blocker note in INGEST_RUNBOOK or raise ADR). Files in other sectors
+(Fiscal, Financial, Real) may use BS FY headers — test them separately.
+
+**Files NOT yet tested:** Fiscal Sector (`Government-budgetary-operation.xlsx`,
+`Outstanding-government-debt-1.xlsx`) and Financial Sector files, which may
+use BS FY notation. Prioritise those for next ingestion batch.
 
 ## Slug and unit conventions
 

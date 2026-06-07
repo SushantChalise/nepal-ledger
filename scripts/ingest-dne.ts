@@ -47,15 +47,17 @@ const REPO_ROOT = path.resolve(SCRIPT_DIR, '..');
 // SOURCE_ID from scrapers/nrb_dne/parser.py: SOURCE_ID = "nrb-dne-xlsx"
 const DEFAULT_SOURCE_ID = 'nrb-dne-xlsx';
 
-// Default input: the synthetic test fixture, so --dry-run works without a
-// real downloaded file. A live run requires passing --input explicitly.
+// Default input: real NRB DNE External Sector — Foreign Exchange Reserves
+// (downloaded 2026-06-07 from https://nrb.org.np/contents/uploads/2026/01/Foreign-exchange-reserves.xlsx).
+// This file uses AD-year column headers (2001–2025 AD), which the parser
+// correctly classifies as PeriodUnparseable. A BS-year file (e.g. one from
+// the Fiscal or Financial sector that uses BS FY headers) would produce rows.
+// Override with --input to point at a different DNE XLSX.
 const DEFAULT_INPUT = path.join(
   REPO_ROOT,
-  'scrapers',
+  'Financial Data',
   'nrb_dne',
-  'tests',
-  'fixtures',
-  'happy_path.xlsx',
+  'Foreign-exchange-reserves.xlsx',
 );
 
 // Parser path — absolute so it resolves regardless of process.cwd().

@@ -61,7 +61,7 @@ from _common.types import (
     StagingRowDraft,
 )
 
-PARSER_VERSION: Final[str] = "0.1.0"
+PARSER_VERSION: Final[str] = "0.2.0"
 SOURCE_ID: Final[str] = "nrb-dne-xlsx"
 
 # ---------------------------------------------------------------------------
@@ -78,9 +78,14 @@ _CONFIDENCE: Final = "B"
 _PUB_DATE_SENTINEL: Final[datetime] = datetime(1970, 1, 1, tzinfo=UTC)
 _PUB_DATE_BS_SENTINEL: Final[str] = "unknown"
 
-# Regex: annual FY label like "2079/80" or "2079-80".
+# Regex: annual FY label like "2079/80", "2079-80", "2079/80R", "2079/80P",
+# "2079/2080" (4-digit tail used in some SITC sheets), optionally prefixed
+# with a bracketed BS label like "(2071-72) 2014/15".
+# Groups: (1) = BS/AD start year 4-digit, (2) = tail 2- or 4-digit.
+# Revision suffix [R/P/E] is stripped before matching.
 _ANNUAL_FY_RE: Final = re.compile(
-    r"^\s*(\d{4})\s*[/\-]\s*(\d{2})\s*$"
+    r"^\s*(?:\(\d{4}[-/]\d{2,4}\)\s+)?"  # optional "(YYYY-YY) " prefix
+    r"(\d{4})\s*[/\-]\s*(\d{2,4})\s*[RPEQrpeq]?\s*$"
 )
 
 # Regex: monthly BS period like "Shrawan 2082", "Bhadra 2081", case-insensitive.
@@ -115,6 +120,9 @@ _UNIT_MAP: Final[dict[str, str]] = {
     "in million rs.": "npr_million",
     "in million rs": "npr_million",
     "in rs. million": "npr_million",
+    "npr in million": "npr_million",
+    "in npr million": "npr_million",
+    "nrs million": "npr_million",
     "rs. in billion": "npr_billion",
     "rs in billion": "npr_billion",
     "nrs. in billion": "npr_billion",
@@ -148,8 +156,18 @@ _UNIT_MAP: Final[dict[str, str]] = {
 # Max rows to scan before the detected header row when searching for a unit.
 _PREAMBLE_SCAN_ROWS: Final[int] = 10
 
+# AD calendar year bounds for bare integer year detection in preamble rows.
+# NRB uses bare integers like 2001, 2002 as year-row labels in the FX-reserves
+# file; these are AD years, not BS.
+_AD_YEAR_INT_MIN: Final[int] = 1990
+_AD_YEAR_INT_MAX: Final[int] = 2040  # same as _BS_YEAR_MIN; ambiguous zone deferred
+
 # Minimum parseable period columns required to call a sheet non-empty.
 _MIN_PERIOD_COLS: Final[int] = 1
+
+# Minimum BS fiscal-year start to distinguish BS years (2040+) from AD years
+# (e.g. 2006/07 in Foreign Trade sheets). AD-year FY headers are skipped.
+_BS_YEAR_MIN: Final[int] = 2040
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -193,8 +211,16 @@ def _safe_float(raw: object) -> float | None:
 
 
 def _detect_unit_from_text(text: str) -> str | None:
-    """Look up a raw unit string in the unit map. Returns canonical vocab or None."""
-    normalised = " ".join(text.lower().split())
+    """Look up a raw unit string in the unit map. Returns canonical vocab or None.
+
+    Strips surrounding parentheses before lookup to handle NRB's common pattern
+    of writing unit annotations as "(Rs in Million)" or "(NPR in Million)".
+    """
+    # Strip leading/trailing parentheses that NRB wraps around unit strings.
+    stripped = text.strip()
+    if stripped.startswith("(") and stripped.endswith(")"):
+        stripped = stripped[1:-1]
+    normalised = " ".join(stripped.lower().split())
     # Direct match first.
     if normalised in _UNIT_MAP:
         return _UNIT_MAP[normalised]
@@ -206,20 +232,40 @@ def _detect_unit_from_text(text: str) -> str | None:
 
 
 def _parse_annual_fy(label: str) -> tuple[str, str] | None:
-    """Parse "2079/80" or "2079-80" → (fiscal_year_bs "2079/80", fiscal_year_ad_label).
+    """Parse annual FY label → (fiscal_year_bs "YYYY/YY", fiscal_year_ad_label).
 
-    Returns None if not a match.
+    Accepts:
+    - "2079/80", "2079-80"            — standard BS format
+    - "2079/80R", "2079/80P"          — NRB revised/provisional suffix
+    - "2079/2080"                     — 4-digit tail (some SITC sheets)
+    - "(2071-72) 2014/15"             — bracketed BS label + AD year prefix
+
+    Accepts ONLY BS fiscal years (start year >= 2040) to avoid misclassifying
+    AD calendar years (e.g. 2006/07) as BS years. AD-year FY headers are out
+    of scope for this parser and logged as PeriodUnparseable by the caller.
+
+    Returns None if not a match or not a plausible BS year.
     """
     m = _ANNUAL_FY_RE.match(label)
     if not m:
         return None
-    bs_start = int(m.group(1))
-    # Validate the two-digit tail matches bs_start + 1 mod 100.
-    expected_tail = (bs_start + 1) % 100
-    if int(m.group(2)) != expected_tail:
+    start = int(m.group(1))
+    tail_raw = m.group(2)
+    tail_int = int(tail_raw) % 100  # normalise 4-digit "2080" → 80
+
+    # Validate: tail must equal (start + 1) mod 100.
+    expected_tail = (start + 1) % 100
+    if tail_int != expected_tail:
         return None
-    fy_bs = f"{bs_start}/{expected_tail:02d}"
-    fy_ad = fiscal_year_ad_label(bs_start)
+
+    # Reject AD-era years (< 2040 = implausible as BS FY start).
+    # BS fiscal years currently run ~2040–2090; AD fiscal years like 2006/07
+    # start with 2006 which is below this threshold.
+    if start < _BS_YEAR_MIN:
+        return None
+
+    fy_bs = f"{start}/{expected_tail:02d}"
+    fy_ad = fiscal_year_ad_label(start)
     return fy_bs, fy_ad
 
 
@@ -510,6 +556,44 @@ def _parse_sheet(
     unit_hint = _scan_unit_hint(rows, sheet_name)
     header_row_idx, period_cols = _detect_header(rows)
     if header_row_idx is None or not period_cols:
+        # Emit diagnostic if there are AD-year-like FY tokens in preamble rows
+        # (e.g. "2021/22" or "2022/23R") — these are AD-fiscal-year files that
+        # the parser does not yet handle. This makes the incompatibility explicit
+        # rather than silently producing NoDataExtracted.
+        ad_year_tokens: list[str] = []
+        for row in rows[:_PREAMBLE_SCAN_ROWS]:
+            for cell in row:
+                if cell is None:
+                    continue
+                text = _norm_text(cell)
+                # Match AD-year FY labels ("2022/23R"), bare AD year integers
+                # (2001, 2002...), or integer AD years in cell numeric values.
+                cell_int = (
+                    int(cell)  # type: ignore[call-overload]
+                    if isinstance(cell, int | float) and cell == int(cell)  # type: ignore[call-overload]
+                    else None
+                )
+                is_ad_int = (
+                    cell_int is not None
+                    and _AD_YEAR_INT_MIN <= cell_int <= _AD_YEAR_INT_MAX
+                )
+                if is_ad_int or re.search(
+                    r"\b(20\d{2}|19\d{2})\s*[/\-]\s*\d{2}[RPEQrpeq]?\b", text
+                ):
+                    ad_year_tokens.append(text if text else str(cell))
+        if ad_year_tokens:
+            sample = ", ".join(dict.fromkeys(ad_year_tokens[:3]))
+            return [], [
+                ParserError(
+                    error_class="PeriodUnparseable",
+                    error_detail=(
+                        f"sheet={sheet_name!r}: no BS fiscal-year header found; "
+                        f"AD-calendar-year tokens detected (e.g. {sample!r}) — "
+                        f"this sheet uses AD fiscal years which are out of scope"
+                    ),
+                    source_excerpt=sample,
+                )
+            ]
         return [], []
 
     first_period_col = min(period_cols.keys())

@@ -165,3 +165,75 @@ def bad_period_xlsx() -> Path:
     if not p.exists():
         _build_bad_period(p)
     return p
+
+
+def _build_bs_fy_suffix(path: Path) -> None:
+    """Fixture: BS FY column headers with NRB revision/provisional suffixes.
+
+    Mirrors the real BoP BPM6 pattern but using BS-era years (2079/80R,
+    2080/81P, 2081/82) so the parser can detect them.
+
+    Layout:
+      Row 1: title "External Debt (Rs. in million)"
+      Row 2: "Indicator", "2079/80R", "2080/81P", "2081/82"
+      Row 3: "Total External Debt",  5000.0,  5500.0,  6000.0
+    """
+    _ensure_fixture_dir()
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = "External Debt"
+    ws.cell(row=1, column=1, value="External Debt (Rs. in million)")
+    ws.cell(row=2, column=1, value="Indicator")
+    ws.cell(row=2, column=2, value="2079/80R")   # revised suffix
+    ws.cell(row=2, column=3, value="2080/81P")   # provisional suffix
+    ws.cell(row=2, column=4, value="2081/82")    # plain
+    ws.cell(row=3, column=1, value="Total External Debt")
+    ws.cell(row=3, column=2, value=5000.0)
+    ws.cell(row=3, column=3, value=5500.0)
+    ws.cell(row=3, column=4, value=6000.0)
+    wb.save(str(path))
+
+
+def _build_ad_year_sheet(path: Path) -> None:
+    """Fixture: AD-calendar-year FY column headers (2021/22, 2022/23).
+
+    Mirrors the Migrant Workers / Foreign Trade real-file pattern where NRB
+    uses AD fiscal years instead of BS. The parser should emit PeriodUnparseable
+    with an explicit AD-year diagnostic rather than a bare NoDataExtracted.
+
+    Layout:
+      Row 1: "Migrant Workers by Country"
+      Row 2: blank
+      Row 3: "Country", "2021/22", "2022/23"
+      Row 4: "Qatar", 45000, 50000
+    """
+    _ensure_fixture_dir()
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = "Country"
+    ws.cell(row=1, column=1, value="Migrant Workers by Country")
+    ws.cell(row=3, column=1, value="Country")
+    ws.cell(row=3, column=2, value="2021/22")
+    ws.cell(row=3, column=3, value="2022/23")
+    ws.cell(row=4, column=1, value="Qatar")
+    ws.cell(row=4, column=2, value=45000)
+    ws.cell(row=4, column=3, value=50000)
+    wb.save(str(path))
+
+
+@pytest.fixture(scope="session")
+def bs_fy_suffix_xlsx() -> Path:
+    p = FIXTURE_DIR / "bs_fy_suffix.xlsx"
+    if not p.exists():
+        _build_bs_fy_suffix(p)
+    return p
+
+
+@pytest.fixture(scope="session")
+def ad_year_sheet_xlsx() -> Path:
+    p = FIXTURE_DIR / "ad_year_sheet.xlsx"
+    if not p.exists():
+        _build_ad_year_sheet(p)
+    return p

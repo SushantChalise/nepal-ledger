@@ -39,7 +39,7 @@ def test_happy_status_success(happy_result: ParserResult) -> None:
 
 
 def test_happy_parser_version(happy_result: ParserResult) -> None:
-    assert happy_result.parser_version == PARSER_VERSION == "0.1.0"
+    assert happy_result.parser_version == PARSER_VERSION == "0.2.0"
 
 
 def test_happy_source_id() -> None:
@@ -273,3 +273,76 @@ def test_sample_row_shape(happy_result: ParserResult) -> None:
     assert row.confidence_grade_proposed == "B"
     assert row.fiscal_year_ad_label == "2025/26"
     assert row.reporting_period_bs == "2082/83"
+
+
+# ---------------------------------------------------------------------------
+# Real-file structure tests (v0.2.0 — derived from actual NRB DNE XLSX layouts)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def bs_fy_suffix_result(bs_fy_suffix_xlsx: Path) -> ParserResult:
+    """BS FY with NRB revision/provisional suffixes (e.g. "2079/80R", "2080/81P")."""
+    return parse(str(bs_fy_suffix_xlsx), source_document_id="test-doc-bs-suffix")
+
+
+def test_bs_fy_suffix_parses_successfully(bs_fy_suffix_result: ParserResult) -> None:
+    """NRB revision suffix R/P/E should be stripped; BS FY should parse."""
+    assert bs_fy_suffix_result.status == "success", (
+        f"expected success, got {bs_fy_suffix_result.status}; "
+        f"errors={bs_fy_suffix_result.errors}"
+    )
+
+
+def test_bs_fy_suffix_row_count(bs_fy_suffix_result: ParserResult) -> None:
+    # 1 indicator × 3 FY columns (2079/80R, 2080/81P, 2081/82) = 3 rows.
+    assert len(bs_fy_suffix_result.staging_rows) == 3
+
+
+def test_bs_fy_suffix_stripped_to_plain_bs(bs_fy_suffix_result: ParserResult) -> None:
+    """Suffixes must be stripped; fiscal_year_bs must be plain YYYY/YY."""
+    fy_labels = {r.fiscal_year_bs for r in bs_fy_suffix_result.staging_rows}
+    assert fy_labels == {"2079/80", "2080/81", "2081/82"}
+
+
+def test_bs_fy_suffix_unit_npr_million(bs_fy_suffix_result: ParserResult) -> None:
+    for row in bs_fy_suffix_result.staging_rows:
+        assert row.unit == "npr_million", f"unit={row.unit!r}"
+
+
+def test_bs_fy_suffix_values(bs_fy_suffix_result: ParserResult) -> None:
+    vals = {r.fiscal_year_bs: r.value for r in bs_fy_suffix_result.staging_rows}
+    assert vals["2079/80"] == pytest.approx(5000.0)
+    assert vals["2080/81"] == pytest.approx(5500.0)
+    assert vals["2081/82"] == pytest.approx(6000.0)
+
+
+@pytest.fixture(scope="module")
+def ad_year_result(ad_year_sheet_xlsx: Path) -> ParserResult:
+    """AD-calendar-year FY headers (e.g. "2021/22") — out of scope for BS parser."""
+    return parse(str(ad_year_sheet_xlsx), source_document_id="test-doc-ad-year")
+
+
+def test_ad_year_sheet_status_partial(ad_year_result: ParserResult) -> None:
+    """AD-year sheets cannot be parsed; status must be partial, not failure."""
+    assert ad_year_result.status == "partial"
+
+
+def test_ad_year_sheet_no_rows(ad_year_result: ParserResult) -> None:
+    assert ad_year_result.staging_rows == []
+
+
+def test_ad_year_sheet_emits_period_unparseable(ad_year_result: ParserResult) -> None:
+    """Must emit PeriodUnparseable (not bare NoDataExtracted) so Mother knows why."""
+    error_classes = [e.error_class for e in ad_year_result.errors]
+    assert "PeriodUnparseable" in error_classes, (
+        f"expected PeriodUnparseable in errors, got: {error_classes}"
+    )
+
+
+def test_ad_year_sheet_error_mentions_ad_tokens(ad_year_result: ParserResult) -> None:
+    """The PeriodUnparseable error detail should mention AD-year tokens."""
+    period_errors = [e for e in ad_year_result.errors if e.error_class == "PeriodUnparseable"]
+    assert any("AD" in e.error_detail or "2021" in e.error_detail for e in period_errors), (
+        f"error detail does not mention AD years: {[e.error_detail for e in period_errors]}"
+    )
