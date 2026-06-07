@@ -40,7 +40,49 @@ def test_status_success(result: dict[str, object]) -> None:
 
 
 def test_parser_version(result: dict[str, object]) -> None:
-    assert result["parser_version"] == PARSER_VERSION == "0.1.0"
+    assert result["parser_version"] == PARSER_VERSION == "0.2.0"
+
+
+def test_reads_data_when_sheet_named_sheet2(tmp_path: Path) -> None:
+    """The real Cleaned/ exports ship transfer data on a sheet NOT named
+    'Sheet1' (e.g. 'Sheet2'). The parser must fall back to the first sheet
+    by position rather than failing with EncodingError. Regression for the
+    Fiscal Transfer_2082_82.xlsx ingest blocker.
+    """
+    from openpyxl import Workbook
+
+    wb = Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = "Sheet2"
+    ws.append(["Annex 1: Fiscal Transfer FY 2082/83 (in NPR thousand)"])
+    ws.append(
+        [
+            "S.N.",
+            "District",
+            "Local Level Name",
+            "Equalization Grant (Minimum)",
+            "Equalization Grant (Formula-Based)",
+            "Equalization Grant (Performance-Based)",
+            "Conditional Grant (Current)",
+            "Conditional Grant (Capital)",
+            "Special Grant (Current)",
+            "Special Grant (Capital)",
+            "Complementary Grant (Capital)",
+        ],
+    )
+    ws.append([1, "Kathmandu", "Kathmandu", 100000, 250000, 50000, 800000, 600000, 0, 30000, 20000])
+    sheet2_xlsx = tmp_path / "sheet2_only.xlsx"
+    wb.save(sheet2_xlsx)
+
+    result = parse(str(sheet2_xlsx), source_document_id="test-doc-sheet2")
+
+    assert result["status"] == "success", (
+        f"got status={result['status']!r} errors={result['errors']!r}"
+    )
+    rows = result["rows"]
+    assert isinstance(rows, list)
+    assert len(rows) > 0
 
 
 def test_row_count(result: dict[str, object]) -> None:

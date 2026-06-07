@@ -46,7 +46,7 @@ from _common.municipality_resolver import (
 )
 from _common.types import ParserError, ParserStatus
 
-PARSER_VERSION: Final[str] = "0.1.0"
+PARSER_VERSION: Final[str] = "0.2.0"
 SOURCE_ID: Final[str] = "local-fiscal-transfers-cleaned"
 
 # Fiscal year + confidence anchors. The cleaned XLSX covers FY 2082/83 only.
@@ -180,19 +180,27 @@ def _detect_name_columns(
 
 
 def _read_workbook(path: Path) -> tuple[pd.DataFrame | None, ParserError | None]:
+    # `engine='openpyxl'` is the canonical XLSX reader (openpyxl is a pinned
+    # dependency in scrapers/pyproject.toml).
+    def _read(sheet: str | int) -> pd.DataFrame:
+        return pd.read_excel(path, sheet_name=sheet, header=None, dtype=object, engine="openpyxl")
+
     try:
-        # `engine='openpyxl'` is the canonical XLSX reader (openpyxl is a
-        # pinned dependency in scrapers/pyproject.toml).
-        df = pd.read_excel(
-            path,
-            sheet_name=_DEFAULT_TRANSFER_SHEET,
-            header=None,
-            dtype=object,
-            engine="openpyxl",
-        )
+        df = _read(_DEFAULT_TRANSFER_SHEET)
     except FileNotFoundError as exc:
         return None, ParserError(error_class="Other", error_detail=f"source file not found: {exc}")
-    except (OSError, ValueError) as exc:
+    except ValueError:
+        # Named transfer sheet absent — the Cleaned/ exports ship the data on
+        # a differently-named sheet (e.g. 'Sheet2'). Fall back to the first
+        # sheet by position rather than failing the whole parse.
+        try:
+            df = _read(0)
+        except (OSError, ValueError) as exc:
+            return None, ParserError(
+                error_class="EncodingError",
+                error_detail=f"xlsx read failed (name + positional fallback): {exc}",
+            )
+    except OSError as exc:
         return None, ParserError(
             error_class="EncodingError",
             error_detail=f"xlsx read failed: {exc}",
