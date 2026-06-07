@@ -960,6 +960,36 @@ const ROWS: readonly NewSourceRegistryRow[] = [
   // ─── NRB Database on Nepalese Economy (4 sector sources) ─────────────────
 
   {
+    // Umbrella ingest source for the Database on Nepalese Economy XLSX corpus.
+    // The scrapers/nrb_dne parser declares SOURCE_ID 'nrb-dne-xlsx'; this row is
+    // its source_documents FK target (ADR-0010: a parser's SOURCE_ID must exist
+    // in the seed). The per-sector nrb-db-* rows below are the finer-grained
+    // catalog entries (one per sectoral page); a DNE ingest is tagged with this
+    // umbrella id and the sector is captured in the indicator slug / parser_notes.
+    sourceId: 'nrb-dne-xlsx',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName: 'Database on Nepalese Economy — structured time-series XLSX (all sectors)',
+    sourceUrl: 'https://www.nrb.org.np/database-on-nepalese-economy/',
+    publicationFrequency: 'monthly',
+    reportingPeriodType: 'monthly',
+    fileFormat: 'xlsx',
+    requiresTableExtraction: false,
+    historicalCoverage: 'Varies by series; Real/External/Fiscal/Monetary/Financial sectors',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb_dne/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Files updated in-place each cycle; download URL embeds upload date (scrape sector page for current link).',
+    knownBreakageModes: ['upload-url-embeds-date-not-hardcodeable', 'sector-page-layout-shift'],
+    confidenceDefault: 'B',
+    status: 'active',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    notes:
+      'Ingest source for scrapers/nrb_dne (ingest:dne). Long-formats wide period-column XLSX into staging. No real files downloaded yet (2026-06). Subsumes nrb-db-external/fiscal/real/financial-sector catalog rows.',
+  },
+  {
     // NRB audit #1 — highest-priority NRB gap: BoP, forex, remittance, trade
     // all in structured XLSX — no PDF extraction needed. Feeds Pulse v1 directly.
     sourceId: 'nrb-db-external-sector',

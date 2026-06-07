@@ -6,7 +6,7 @@ Generated from `scripts/seed-source-registry.ts` (the canonical seed).
 For schema + workflow, see [`../SOURCE_REGISTRY.md`](../SOURCE_REGISTRY.md).
 For the lifetime contract, see [ADR-0009](../decisions/0009-source-registry-single-source-of-truth.md).
 
-Total registered sources: 67
+Total registered sources: 68
 
 | Tier | Source ID | Agency | Dataset | Frequency | Mode | Status |
 |---|---|---|---|---|---|---|
@@ -22,6 +22,7 @@ Total registered sources: 67
 | Tier 1 | [nrb-bfi-monthly-xlsx](nrb-bfi-monthly-xlsx.md) | NRB | Banking & Financial Statistics — Monthly (BFI XLSX) | monthly | manual_upload | active |
 | Tier 1 | [nrb-db-external-sector](nrb-db-external-sector.md) | NRB | Database on Nepalese Economy — External Sector (BoP, Forex, Trade, Remittance, Tourism) | monthly | manual_upload | paused |
 | Tier 1 | [nrb-db-fiscal-sector](nrb-db-fiscal-sector.md) | NRB | Database on Nepalese Economy — Fiscal Sector (Government Revenue, Expenditure, Debt) | monthly | manual_upload | paused |
+| Tier 1 | [nrb-dne-xlsx](nrb-dne-xlsx.md) | NRB | Database on Nepalese Economy — structured time-series XLSX (all sectors) | monthly | manual_upload | active |
 | Tier 1 | [nrb-reserves-daily](nrb-reserves-daily.md) | NRB | Daily foreign exchange reserve disclosure | daily | automated_cron | paused |
 | Tier 2 | [dofe-labour-migration](dofe-labour-migration.md) | DoFE | Monthly labour permits + airport-records | monthly | manual_upload | paused |
 | Tier 2 | [mof-budget-speech](mof-budget-speech.md) | MoF | Budget Speech (बजेट वक्तव्य) | annual | manual_upload | paused |
