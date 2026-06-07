@@ -46,8 +46,26 @@ from _common.municipality_resolver import (
 )
 from _common.types import ParserError, ParserStatus
 
-PARSER_VERSION: Final[str] = "0.4.0"
+PARSER_VERSION: Final[str] = "0.5.0"
 SOURCE_ID: Final[str] = "local-fiscal-transfers-cleaned"
+
+# When the workbook carries its own federal Code column we read identity
+# directly from it (exact, 1:1) instead of fuzzy-matching the name. Fuzzy
+# resolution collided distinct municipalities onto the same federal_code,
+# producing duplicate rows whose wrong (larger) value won the ON CONFLICT
+# DO NOTHING insert — inflating the FY 2082/83 total by ~65%. The cleaned
+# Fiscal Transfer XLSX has the 8-digit code in its first column.
+_CODE_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("code", "संकेत", "सङ्केत")
+_NAME_EN_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("name (english)", "english")
+_TYPE_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("type", "प्रकार")
+_FEDERAL_CODE_LEN: Final[int] = 8
+_TYPE_LABEL_TO_SLUG: Final[dict[str, str]] = {
+    "municipality": "municipality",
+    "rural municipality": "rural_municipality",
+    "metropolitan city": "metropolitan_city",
+    "sub-metropolitan city": "sub_metropolitan_city",
+    "sub metropolitan city": "sub_metropolitan_city",
+}
 
 # Fiscal year + confidence anchors. The cleaned XLSX covers FY 2082/83 only.
 _DEFAULT_FISCAL_YEAR_BS: Final[str] = "2082/83"
@@ -241,6 +259,100 @@ def _read_workbook(path: Path) -> tuple[pd.DataFrame | None, ParserError | None]
     return df, None
 
 
+def _detect_identity_columns(
+    df: pd.DataFrame,
+    header_row: int,
+) -> tuple[int | None, int | None, int | None]:
+    """Return ``(code_col, name_en_col, type_col)`` from the header row.
+
+    Present in the cleaned Fiscal Transfer XLSX (which is self-identifying via
+    an 8-digit federal Code column); absent in the minimal test fixture, which
+    falls back to fuzzy name resolution.
+    """
+    code_col: int | None = None
+    name_en_col: int | None = None
+    type_col: int | None = None
+    for col_idx in range(len(df.columns)):
+        text = _cell_text(df.iat[header_row, col_idx]).lower()
+        if not text:
+            continue
+        if code_col is None and text in {"code", "संकेत", "सङ्केत"}:
+            code_col = col_idx
+        if name_en_col is None and any(k in text for k in _NAME_EN_COLUMN_KEYWORDS):
+            name_en_col = col_idx
+        # "Local Level Type" — must contain 'type' but not be a grant column.
+        if (
+            type_col is None
+            and any(k in text for k in _TYPE_COLUMN_KEYWORDS)
+            and _match_grant_type(text) is None
+        ):
+            type_col = col_idx
+    return code_col, name_en_col, type_col
+
+
+def _direct_identity(
+    df: pd.DataFrame,
+    raw_idx: int,
+    code_col: int,
+    name_en_col: int | None,
+    name_col: int,
+    district_col: int | None,
+    type_col: int | None,
+) -> MunicipalityMatch | None:
+    """Build a MunicipalityMatch straight from the row's own columns.
+
+    Returns None when the code is not a parseable 8-digit federal code or the
+    local-level type is unrecognised (e.g. a stray district aggregate row).
+    """
+    code_raw = _cell_text(df.iat[raw_idx, code_col]).replace(".0", "")
+    digits = "".join(ch for ch in code_raw if ch.isdigit())
+    if len(digits) != _FEDERAL_CODE_LEN:
+        return None
+    type_raw = _cell_text(df.iat[raw_idx, type_col]).lower() if type_col is not None else ""
+    slug = _TYPE_LABEL_TO_SLUG.get(type_raw)
+    if slug is None:
+        return None
+    name_en = _cell_text(df.iat[raw_idx, name_en_col]) if name_en_col is not None else ""
+    name_ne = _cell_text(df.iat[raw_idx, name_col])
+    district = _cell_text(df.iat[raw_idx, district_col]) if district_col is not None else ""
+    return MunicipalityMatch(
+        federal_code=digits,
+        name_en=name_en or name_ne,
+        name_ne=name_ne,
+        local_level_type=slug,
+        district_en=district,
+        score=100.0,
+    )
+
+
+def _row_identity(  # noqa: PLR0913 — column indices threaded through; cohesive
+    df: pd.DataFrame,
+    raw_idx: int,
+    code_col: int | None,
+    name_en_col: int | None,
+    name_col: int,
+    district_col: int | None,
+    type_col: int | None,
+    name_raw: str,
+    district_raw: str,
+    errors: list[ParserError],
+) -> MunicipalityMatch | None:
+    """Resolve one row's canonical identity.
+
+    Code-column path (self-identifying workbook) is exact; returning None there
+    is a silent skip (footer/aggregate row). Fuzzy fallback (no Code column)
+    appends a RegexMismatch error on miss.
+    """
+    if code_col is not None:
+        return _direct_identity(
+            df, raw_idx, code_col, name_en_col, name_col, district_col, type_col
+        )
+    match, resolve_err = _resolve_row(name_raw, district_raw)
+    if match is None and resolve_err is not None:
+        errors.append(resolve_err)
+    return match
+
+
 def _resolve_row(
     name_raw: str,
     district_raw: str,
@@ -315,6 +427,11 @@ def parse(
         )
         return _result("failure", rows, errors)
 
+    # If the workbook is self-identifying (has a federal Code column), read the
+    # code directly — exact and 1:1. Otherwise fall back to fuzzy name
+    # resolution (the minimal test fixture has no Code column).
+    code_col, name_en_col, type_col = _detect_identity_columns(df, header_row)
+
     for raw_idx in range(header_row + 1, len(df)):
         name_raw = _cell_text(df.iat[raw_idx, name_col])
         district_raw = _cell_text(df.iat[raw_idx, district_col]) if district_col is not None else ""
@@ -327,10 +444,11 @@ def parse(
         if any(tok in name_lower for tok in ("total", "जम्मा", "कुल")):
             continue
 
-        match, resolve_err = _resolve_row(name_raw, district_raw)
+        match = _row_identity(
+            df, raw_idx, code_col, name_en_col, name_col, district_col, type_col,
+            name_raw, district_raw, errors,
+        )
         if match is None:
-            if resolve_err is not None:
-                errors.append(resolve_err)
             continue
 
         for col_idx, grant_type in grant_columns.items():

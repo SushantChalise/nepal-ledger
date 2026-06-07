@@ -40,7 +40,7 @@ def test_status_success(result: dict[str, object]) -> None:
 
 
 def test_parser_version(result: dict[str, object]) -> None:
-    assert result["parser_version"] == PARSER_VERSION == "0.4.0"
+    assert result["parser_version"] == PARSER_VERSION == "0.5.0"
 
 
 def test_reads_data_when_sheet_named_sheet2(tmp_path: Path) -> None:
@@ -83,6 +83,50 @@ def test_reads_data_when_sheet_named_sheet2(tmp_path: Path) -> None:
     rows = result["rows"]
     assert isinstance(rows, list)
     assert len(rows) > 0
+
+
+def test_code_column_used_directly_no_fuzzy_collision(tmp_path: Path) -> None:
+    """When the workbook has a federal Code column, identity comes from it
+    directly — not fuzzy name matching. Two rows with near-identical names but
+    distinct codes must map to distinct federal_codes (regression for the
+    fuzzy-collision bug that inflated FY 2082/83 totals ~65%).
+    """
+    from openpyxl import Workbook
+
+    wb = Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = "Sheet2"
+    ws.append(["Annex 1: Fiscal Transfer FY 2082/83 (NPR crore)"])
+    ws.append(
+        [
+            "Code",
+            "District (English)",
+            "Local Level Name (Nepali)",
+            "Local Level Name (English)",
+            "Local Level Type",
+            "Minimum Grant",
+            "Conditional Grant Current",
+        ],
+    )
+    # Two near-identically-named rural municipalities, distinct codes.
+    rm = "Rural Municipality"
+    ws.append([80101101, "Taplejung", "आठराई त्रिवेणी", "Aathrai Tribeni", rm, 5.0, 19.0])
+    ws.append([80101102, "Taplejung", "आठराई", "Aathrai", rm, 6.0, 21.0])
+    p = tmp_path / "coded.xlsx"
+    wb.save(p)
+
+    result = parse(str(p), source_document_id="t")
+    rows = result["rows"]
+    assert isinstance(rows, list)
+    codes = {r["federal_code"] for r in rows}
+    assert codes == {"80101101", "80101102"}, codes
+    # No federal_code appears more than once per grant_type.
+    cc = [r for r in rows if r["grant_type"] == "conditional_current"]
+    assert len(cc) == len({r["federal_code"] for r in cc}) == 2
+    by_code = {r["federal_code"]: r["amount_npr"] for r in cc}
+    assert by_code["80101101"] == pytest.approx(19.0)
+    assert by_code["80101102"] == pytest.approx(21.0)
 
 
 def test_row_count(result: dict[str, object]) -> None:
