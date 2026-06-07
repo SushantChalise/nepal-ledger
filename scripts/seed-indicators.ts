@@ -34,6 +34,61 @@ import type { NewIndicatorUnitRow } from '@/lib/db/schema/indicators';
 const CMEFS_SOURCE_ID = 'nrb-cmefs-monthly';
 const NCPI_SOURCE_ID = 'nrb-ncpi-table';
 const DNE_SOURCE_ID = 'nrb-dne-xlsx';
+const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
+
+// FCGO Consolidated Financial Statements — audited all-of-government fiscal
+// outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
+// million. Category 'fiscal'. Verified FY 2079/80: total revenue 1,506,321.5.
+const FCGO_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'fcgo-total-revenue-outturn-annual',
+    nameEn: 'Total Revenue Outturn (consolidated)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-total-expenditure-outturn-annual',
+    nameEn: 'Total Expenditure Outturn (consolidated)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-recurrent-expenditure-outturn-annual',
+    nameEn: 'Recurrent Expenditure Outturn (consolidated)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-capital-expenditure-outturn-annual',
+    nameEn: 'Capital Expenditure Outturn (consolidated)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-provincial-expenditure-consolidated-annual',
+    nameEn: 'Provincial Expenditure (consolidated)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-local-level-expenditure-consolidated-annual',
+    nameEn: 'Local-Level Expenditure (consolidated)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+];
 
 // DNE single-series indicators (ADR-0014): ONLY genuinely single-dimensional
 // DNE series are registered here. The DNE dimensional matrices (Foreign Trade
@@ -894,6 +949,35 @@ async function persist(): Promise<void> {
     dneLinked += 1;
   }
   log(`indicator_source_map: ${dneLinked} links ensured → ${DNE_SOURCE_ID}`);
+
+  // 8. FCGO consolidated financial statements (audited gov-finance aggregates).
+  const fcgoInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...FCGO_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!fcgoInsertResult.ok)
+    throw new Error(`FCGO indicators insert failed: ${JSON.stringify(fcgoInsertResult.error)}`);
+  log(
+    `indicators (FCGO): ${fcgoInsertResult.value.length} inserted (of ${FCGO_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 9. FCGO source map links.
+  let fcgoLinked = 0;
+  for (const ind of FCGO_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      FCGO_SOURCE_ID,
+      'FCGO CFS headline aggregates',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    fcgoLinked += 1;
+  }
+  log(`indicator_source_map: ${fcgoLinked} links ensured → ${FCGO_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {

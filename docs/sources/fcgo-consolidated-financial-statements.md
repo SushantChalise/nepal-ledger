@@ -1,10 +1,10 @@
 # Source: Financial Comptroller General Office — Consolidated Financial Statements
 
 **source_id:** `fcgo-consolidated-financial-statements`
-**Status:** Paused
+**Status:** Active (parser v0.1.0 — 6 headline aggregates extract from FY 2022/23 PDF)
 **Tier:** Tier 1
 **Registered at:** 2026-06-07
-**Last verified:** 2026-05-20 (Worker B catalog audit)
+**Last verified:** 2026-06-07 (parser built + run against FY 2022/23 CFS PDF)
 
 ## What this is
 
@@ -24,12 +24,34 @@ available from FY 2018/19 (2075/76 BS) onward; the Nepali edition from FY 2074/7
 
 ## What we extract
 
-- `total-revenue-outturn-annual` — Final actual total revenue (NPR billion)
-- `total-expenditure-outturn-annual` — Final actual total expenditure (NPR billion)
-- `capital-expenditure-outturn-annual` — Capital spending actual (NPR billion)
-- `recurrent-expenditure-outturn-annual` — Recurrent spending actual (NPR billion)
-- `provincial-expenditure-consolidated-annual` — Sum of 7 province expenditures (NPR billion)
-- `local-level-expenditure-consolidated-annual` — Sum of 753 local government expenditures (NPR billion)
+> **UNIT CORRECTION (2026-06-07):** the figures are **`npr_million`**, NOT "NPR
+> billion" as originally written here. Verified against the FY 2022/23 CFS:
+> total revenue utilization = NPR **1,506,321.46 million** (≈ NPR 1.5 trillion),
+> the correct order of magnitude for Nepal's 3-tier consolidated revenue. The
+> parser stamps `unit = "npr_million"` on every row (see ADR-0011 unit-verification
+> protocol).
+
+Slugs are prefixed `fcgo-` to match the `SOURCE_ID` family (consistent with the
+NRB CMEFs convention where `cmefs-…` slugs map to `nrb-cmefs-monthly`). Values
+shown are the verified FY 2022/23 (BS 2079/80) outturn.
+
+- `fcgo-total-revenue-outturn-annual` — Total revenue utilization of 3 tiers, after revenue-sharing settlements (npr_million; FY22/23 = 1,506,321.46)
+- `fcgo-total-expenditure-outturn-annual` — Total expenditure after eliminating intergovernmental transfers, excl. EBUs (npr_million; FY22/23 = 1,672,128.84)
+- `fcgo-capital-expenditure-outturn-annual` — Consolidated capital expenditure, Σ across 3 tiers, **gross** (npr_million; FY22/23 = 527,447.04)
+- `fcgo-recurrent-expenditure-outturn-annual` — Consolidated recurrent expenditure, Σ across 3 tiers, **gross** (npr_million; FY22/23 = 1,356,150.86)
+- `fcgo-provincial-expenditure-consolidated-annual` — Sum of 7 province expenditures (npr_million; FY22/23 = 204,678.62)
+- `fcgo-local-level-expenditure-consolidated-annual` — Sum of 753 local government expenditures (npr_million; FY22/23 = 453,817.73)
+
+> **Basis caveat:** `total-revenue` / `total-expenditure` are *after-elimination*
+> figures; `recurrent` / `capital` are *gross* consolidated sums (before
+> eliminating intergovernmental transfers). So recurrent + capital + financing
+> (NPR 2,079,823.31 million) ≠ total-expenditure (NPR 1,672,128.84 million). The
+> parser records this in each row's `parser_notes`.
+
+> **Extraction strategy:** the detailed statement tables render with reversed
+> glyph order under pdfplumber and are NOT machine-read. The parser anchors on the
+> clean forward-text Executive Summary (pp. 12–13) + Treasury-Position prose
+> (p. 31) and scans all pages (page numbers drift across editions).
 
 ## Provenance
 
@@ -54,10 +76,12 @@ a corrected edition, it appears as a new file at the same category URL.
 
 ## Parser
 
-- Path: `scrapers/fcgo-consolidated-financial-statements/parser.py`
-- Version: 0.0.0
-- Owner: Mother Opus
-- Tested against: `docs/sources/fcgo-consolidated-financial-statements/samples/`
+- Path: `scrapers/fcgo_consolidated/parser.py` (underscore dir — Python-importable; the on-disk folder is NOT the hyphenated profile name)
+- Version: 0.1.0
+- Owner: Mother Opus (built by Sonnet worker W2, 2026-06-07)
+- Unit: `npr_million`; reporting period: `annual`; confidence: `A`
+- Tested against: `Financial Data/fcgo_consolidated/FCGO_CFS_2022-23.pdf` (FY 2022/23, 325 pp) + synthesized text fixtures in `scrapers/fcgo_consolidated/tests/`
+- Period mapping: AD fiscal year → BS via +57 on the lead year (ADR-0013); FY 2022/23 → BS 2079/80
 
 ## Archive policy
 
