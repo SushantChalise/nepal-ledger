@@ -27,6 +27,7 @@
     "ingest:ncpi": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-ncpi.ts",
     "ingest:dne": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-dne.ts",
     "ingest:dne-dimensional": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-dne-dimensional.ts",
+    "ingest:fcgo-cfs": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-fcgo-cfs.ts",
     "ingest:census-2021": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-census-2021.ts",
     "probe:nrb-bfi": "python -m scrapers.nrb_bfi.schema_probe",
     "ingest:bfi-monthly": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-bfi-monthly.ts",
@@ -37,6 +38,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
     "d3-sankey": "^0.12.3",
+    "d3-scale": "^4.0.2",
     "d3-shape": "^3.2.0",
     "drizzle-orm": "^0.45.2",
     "drizzle-zod": "^0.8.3",
@@ -53,6 +55,7 @@
     "@opennextjs/cloudflare": "^1.10.1",
     "@tailwindcss/postcss": "^4",
     "@types/d3-sankey": "^0.12.5",
+    "@types/d3-scale": "^4.0.9",
     "@types/d3-shape": "^3.1.8",
     "@types/node": "^20",
     "@types/pg": "^8.20.0",
