@@ -27,7 +27,6 @@ import { useId, useState } from 'react';
 import {
   computeSankeyLayout,
   sankeyLinkHorizontal,
-  type ResolvedLink,
   type ResolvedNode,
 } from '@/lib/viz/adapters/d3-sankey';
 

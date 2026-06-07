@@ -71,9 +71,12 @@ _TYPE_LABEL_TO_SLUG: Final[dict[str, str]] = {
 _DEFAULT_FISCAL_YEAR_BS: Final[str] = "2082/83"
 _DEFAULT_CONFIDENCE: Final[Literal["A", "B", "C"]] = "A"
 # The Cleaned/ XLSX stores amounts in NPR crore (1 crore = 10 million NPR).
-# Verified: grand total 95,551.69 → NPR 955 billion; matches published FY
-# 2082/83 intergovernmental transfer budget. Previously mis-labeled as
-# NPR_thousand (would imply only NPR 95 million total — off by 4 orders).
+# Verified by order-of-magnitude: the 8 atomic grant components sum to
+# ~32,157 crore = NPR 321 billion, matching the published FY 2082/83
+# intergovernmental transfer budget. (The sheet's "Grand Total" column sums
+# to ~95,552 crore because it double-counts the Total-* subtotal columns;
+# we never store those.) Previously mis-labeled NPR_thousand — that would
+# imply only NPR 321 million total, off by four orders of magnitude.
 _DEFAULT_UNIT: Final[str] = "npr_crore"
 _DEFAULT_TRANSFER_SHEET: Final[str] = "Sheet1"
 _NAME_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("local level", "municipality", "name", "स्थानीय")
