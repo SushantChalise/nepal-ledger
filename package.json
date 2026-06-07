@@ -28,7 +28,8 @@
     "probe:nrb-bfi": "python -m scrapers.nrb_bfi.schema_probe",
     "ingest:bfi-monthly": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-bfi-monthly.ts",
     "ingest:fiscal-transfers": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-fiscal-transfers.ts",
-    "seed:local-levels": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-local-level-entities.ts"
+    "seed:local-levels": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-local-level-entities.ts",
+    "seed:indicators": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-indicators.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",

@@ -22,6 +22,7 @@
  */
 
 import { findIndicatorBySlug } from '@/lib/db/repositories/indicators';
+import { listKnownUnits } from '@/lib/db/repositories/indicator-units';
 import {
   findLatestApprovedByPeriod,
   listApprovedTrailingForIndicator,
@@ -52,9 +53,11 @@ import { promoteStagingRow } from './promote';
 import type { CheckOutcome, ValidationSummary } from './types';
 
 /**
- * Starter unit vocabulary. Used until `indicator_units` is seeded; the
- * orchestrator (Worker H) will swap this for a DB-backed set. Order
- * doesn't matter — membership is set-semantics.
+ * Starter unit vocabulary — the floor. The authoritative set lives in the
+ * `indicator_units` table (loaded via `listKnownUnits`); we union the two so
+ * that (a) a freshly-migrated DB with no seeded units still recognizes the
+ * core vocabulary, and (b) seeded units extend it without code changes.
+ * Order doesn't matter — membership is set-semantics.
  */
 const STARTER_KNOWN_UNITS: ReadonlySet<string> = new Set([
   'NPR_billion',
@@ -120,17 +123,30 @@ async function loadRowContext(row: StagingIndicatorValueRow): Promise<Result<Row
   return ok({ row, doc, indicator, trailing, existing });
 }
 
-function runChecks(ctx: RowContext): CheckOutcome[] {
+function runChecks(ctx: RowContext, knownUnits: ReadonlySet<string>): CheckOutcome[] {
   return [
     schemaCheck(ctx.row),
     indicatorResolutionCheck(ctx.row, ctx.indicator),
     periodParseCheck(ctx.row),
-    unitRecognitionCheck(ctx.row, STARTER_KNOWN_UNITS),
+    unitRecognitionCheck(ctx.row, knownUnits),
     plausibilityCheck(ctx.row, ctx.trailing),
     duplicateCheck(ctx.row, ctx.existing),
     revisionFlowCheck(ctx.row, ctx.existing),
     sourceIntegrityCheck(ctx.row, ctx.doc),
   ];
+}
+
+/**
+ * Load the recognized-unit set: the seeded `indicator_units` table unioned
+ * with the in-code starter floor. A DB error degrades gracefully to the
+ * starter set rather than failing the whole run (units are one check of
+ * eight; a transient read failure shouldn't block promotion of otherwise
+ * valid rows whose units are in the floor).
+ */
+async function loadKnownUnits(): Promise<ReadonlySet<string>> {
+  const fromDb = await listKnownUnits();
+  if (!fromDb.ok) return STARTER_KNOWN_UNITS;
+  return new Set([...STARTER_KNOWN_UNITS, ...fromDb.value]);
 }
 
 export type { ValidationSummary, CheckContext, CheckOutcome } from './types';
@@ -139,6 +155,7 @@ type BlockingFlag = { stagingRowId: string; flagType: DataQualityFlagType; detai
 
 async function processRow(
   row: StagingIndicatorValueRow,
+  knownUnits: ReadonlySet<string>,
   summary: {
     promoted: number;
     promotedWithWarnings: number;
@@ -150,7 +167,7 @@ async function processRow(
   if (!ctxResult.ok) return ctxResult;
   const ctx = ctxResult.value;
 
-  const outcomes = runChecks(ctx);
+  const outcomes = runChecks(ctx, knownUnits);
   const blocks = outcomes.filter(
     (o): o is Extract<CheckOutcome, { kind: 'block' }> => o.kind === 'block',
   );
@@ -216,6 +233,9 @@ export async function validateParserRun(parserRunId: string): Promise<Result<Val
   if (!stagingResult.ok) return stagingResult;
   const stagingRows = stagingResult.value;
 
+  // No rows → nothing to check; skip the units read entirely.
+  const knownUnits = stagingRows.length > 0 ? await loadKnownUnits() : STARTER_KNOWN_UNITS;
+
   const summary: {
     promoted: number;
     promotedWithWarnings: number;
@@ -229,7 +249,7 @@ export async function validateParserRun(parserRunId: string): Promise<Result<Val
   };
 
   for (const row of stagingRows) {
-    const result = await processRow(row, summary);
+    const result = await processRow(row, knownUnits, summary);
     if (!result.ok) return result;
   }
 

@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   listStagingRowsForParserRun: vi.fn(),
   findSourceDocumentById: vi.fn(),
   findIndicatorBySlug: vi.fn(),
+  listKnownUnits: vi.fn(),
   listApprovedTrailingForIndicator: vi.fn(),
   findLatestApprovedByPeriod: vi.fn(),
   insertDataQualityFlag: vi.fn(),
@@ -27,6 +28,9 @@ vi.mock('@/lib/db/repositories/source-documents', () => ({
 }));
 vi.mock('@/lib/db/repositories/indicators', () => ({
   findIndicatorBySlug: mocks.findIndicatorBySlug,
+}));
+vi.mock('@/lib/db/repositories/indicator-units', () => ({
+  listKnownUnits: mocks.listKnownUnits,
 }));
 vi.mock('@/lib/db/repositories/approved-indicator-values', () => ({
   listApprovedTrailingForIndicator: mocks.listApprovedTrailingForIndicator,
@@ -43,6 +47,7 @@ const {
   listStagingRowsForParserRun,
   findSourceDocumentById,
   findIndicatorBySlug,
+  listKnownUnits,
   listApprovedTrailingForIndicator,
   findLatestApprovedByPeriod,
   insertDataQualityFlag,
@@ -139,6 +144,9 @@ const promotedRow: ApprovedIndicatorValueRow = {
 function setHappyDefaults(): void {
   findSourceDocumentById.mockResolvedValue(ok(document));
   findIndicatorBySlug.mockResolvedValue(ok(indicator));
+  // Empty DB set → validator falls back to the in-code STARTER_KNOWN_UNITS,
+  // which already contains the fixture's `percent` unit.
+  listKnownUnits.mockResolvedValue(ok(new Set<string>()));
   listApprovedTrailingForIndicator.mockResolvedValue(ok([]));
   findLatestApprovedByPeriod.mockResolvedValue(ok(null));
   insertDataQualityFlag.mockResolvedValue(
@@ -160,6 +168,7 @@ beforeEach(() => {
   listStagingRowsForParserRun.mockReset();
   findSourceDocumentById.mockReset();
   findIndicatorBySlug.mockReset();
+  listKnownUnits.mockReset();
   listApprovedTrailingForIndicator.mockReset();
   findLatestApprovedByPeriod.mockReset();
   insertDataQualityFlag.mockReset();
