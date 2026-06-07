@@ -211,7 +211,7 @@ async function persist(
 ): Promise<{ wrote: number; skipped: number; unresolved: number }> {
   // Lazy import so --dry-run doesn't need DATABASE_URL set.
   const { insertSourceDocument } = await import('@/lib/db/repositories/source-documents');
-  const { findLocalLevelEntityBySlug, bulkInsertIdempotent } =
+  const { findLocalLevelEntitiesBySlugs, bulkInsertIdempotent } =
     await import('@/lib/db/repositories/local-government-fiscal-transfers');
 
   // 1. Record the source document (append-only).
@@ -249,20 +249,25 @@ async function persist(
     promotedBy: string;
     notes: string | null;
   }> = [];
+  // Batch-resolve all federal codes in ONE query (was an N+1 loop of ~4.4k
+  // sequential lookups — minutes of round-trips over a remote connection).
+  const entityMapResult = await findLocalLevelEntitiesBySlugs(rows.map((r) => r.federal_code));
+  if (!entityMapResult.ok) {
+    throw new Error(
+      `findLocalLevelEntitiesBySlugs failed: ${JSON.stringify(entityMapResult.error)}`,
+    );
+  }
+  const entityBySlug = entityMapResult.value;
+
   let unresolved = 0;
   for (const row of rows) {
-    const entityResult = await findLocalLevelEntityBySlug(row.federal_code);
-    if (!entityResult.ok) {
-      throw new Error(
-        `findLocalLevelEntityBySlug(${row.federal_code}) failed: ${JSON.stringify(entityResult.error)}`,
-      );
-    }
-    if (entityResult.value === null) {
+    const entity = entityBySlug.get(row.federal_code);
+    if (entity === undefined) {
       unresolved += 1;
       continue;
     }
     inserts.push({
-      localLevelEntityId: entityResult.value.id,
+      localLevelEntityId: entity.id,
       fiscalYearBs: row.fiscal_year_bs,
       grantType: row.grant_type,
       // numeric(20,2) — pass as string per Drizzle convention.

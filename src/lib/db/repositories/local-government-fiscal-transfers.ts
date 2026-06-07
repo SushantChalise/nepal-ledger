@@ -13,7 +13,7 @@
  * into a standalone `entities.ts` repository.
  */
 
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 
 import { db } from '@/lib/db/client';
 import { safeQuery } from '@/lib/db/safe-query';
@@ -120,6 +120,27 @@ export async function findLocalLevelEntityBySlug(slug: string): Promise<Result<E
   );
   if (!queried.ok) return queried;
   return ok(queried.value ?? null);
+}
+
+/**
+ * Batch-resolve many 8-digit federal codes to their `entities` rows in a
+ * single query, returned as a `slug → row` Map. Replaces the per-row N+1
+ * lookup in the ingest path (≈4.4k sequential round-trips → 1). Slugs with
+ * no matching entity are simply absent from the Map — callers branch on
+ * `map.has(slug)` for the "skip unresolved" path.
+ */
+export async function findLocalLevelEntitiesBySlugs(
+  slugs: readonly string[],
+): Promise<Result<Map<string, EntityRow>>> {
+  if (slugs.length === 0) return ok(new Map());
+  const unique = [...new Set(slugs)];
+  const queried = await safeQuery(() =>
+    db().query.entities.findMany({
+      where: and(eq(entities.kind, 'local_level'), inArray(entities.slug, unique)),
+    }),
+  );
+  if (!queried.ok) return queried;
+  return ok(new Map(queried.value.map((row) => [row.slug, row])));
 }
 
 void RESOURCE; // reserved for future NotFound branches; quiets the linter
