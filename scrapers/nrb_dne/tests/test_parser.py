@@ -22,7 +22,14 @@ from pathlib import Path
 import pytest
 
 from _common.types import ParserResult, StagingRowDraft
-from nrb_dne import PARSER_VERSION, SOURCE_ID, parse
+from nrb_dne import (
+    PARSER_VERSION,
+    SOURCE_ID,
+    DimensionalRowDraft,
+    DneParserResult,
+    parse,
+    parse_dne,
+)
 
 # ---------------------------------------------------------------------------
 # Happy path
@@ -39,7 +46,7 @@ def test_happy_status_success(happy_result: ParserResult) -> None:
 
 
 def test_happy_parser_version(happy_result: ParserResult) -> None:
-    assert happy_result.parser_version == PARSER_VERSION == "0.4.0"
+    assert happy_result.parser_version == PARSER_VERSION == "0.5.0"
 
 
 def test_happy_source_id() -> None:
@@ -382,12 +389,14 @@ def test_ym_year_forward_filled(ym_result: ParserResult) -> None:
         (r.indicator_slug_raw, r.reporting_period_bs): r
         for r in ym_result.staging_rows
     }
+    # Slug "dne-nepal-rastra-bank": the "A." outline enumerator on the source
+    # label "A. Nepal Rastra Bank" is stripped for slug derivation (v0.5.0).
     # Aug 2001 → Bhadra (AD month 8), BS year 2001+57 = 2058.
-    aug = by_label[("dne-a-nepal-rastra-bank", "Bhadra 2058")]
+    aug = by_label[("dne-nepal-rastra-bank", "Bhadra 2058")]
     assert aug.value == pytest.approx(100.0)
     assert aug.fiscal_year_ad_label == "2001/02"
     # Jan 2002 → Magh (AD month 1, < July), BS year 2002+56 = 2058.
-    jan = by_label[("dne-a-nepal-rastra-bank", "Magh 2058")]
+    jan = by_label[("dne-nepal-rastra-bank", "Magh 2058")]
     assert jan.value == pytest.approx(150.0)
     # Jan belongs to FY that began the prior July (AD 2001/02).
     assert jan.fiscal_year_ad_label == "2001/02"
@@ -397,7 +406,7 @@ def test_ym_ad_month_span_is_exact_gregorian(ym_result: ParserResult) -> None:
     """AD monthly span is the real Gregorian month, not a BS-derived guess."""
     aug = next(
         r for r in ym_result.staging_rows
-        if r.indicator_slug_raw == "dne-a-nepal-rastra-bank"
+        if r.indicator_slug_raw == "dne-nepal-rastra-bank"
         and r.reporting_period_bs == "Bhadra 2058"
     )
     assert aug.reporting_period_ad_start.year == 2001
@@ -545,3 +554,168 @@ def test_transposed_single_indicator_slug(transposed_result: ParserResult) -> No
     assert {r.indicator_slug_raw for r in transposed_result.staging_rows} == {
         "dne-tourist-arrival"
     }
+
+
+# ---------------------------------------------------------------------------
+# v0.5.0 — Foreign Trade → dimensional_rows (ADR-0015)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def ft_result(foreign_trade_commodities_xlsx: Path) -> DneParserResult:
+    """Foreign-Trade commodity matrix → dimensional rows via parse_dne dispatch."""
+    return parse_dne(str(foreign_trade_commodities_xlsx), source_document_id="test-ft")
+
+
+def test_ft_status_success(ft_result: DneParserResult) -> None:
+    assert ft_result.status == "success", f"errors={ft_result.errors}"
+
+
+def test_ft_no_staging_rows(ft_result: DneParserResult) -> None:
+    """A dimensional file emits NO single-series staging rows (ADR-0015)."""
+    assert ft_result.staging_rows == []
+
+
+def test_ft_dimensional_row_count(ft_result: DneParserResult) -> None:
+    # 2 sections: export-india has 3 commodities, import-china has 1 = 4 rows;
+    # × 24 month columns (2 FY blocks × 12) = 96 dimensional rows. TOTAL skipped.
+    assert len(ft_result.dimensional_rows) == 96
+
+
+def test_ft_all_rows_are_dimensional_drafts(ft_result: DneParserResult) -> None:
+    for row in ft_result.dimensional_rows:
+        assert isinstance(row, DimensionalRowDraft)
+
+
+def test_ft_row_shape_has_all_adr0015_fields(ft_result: DneParserResult) -> None:
+    """Each dimensional row carries exactly the ADR-0015 contract fields."""
+    expected = {
+        "base_indicator_slug", "base_indicator_name", "dimension_kind",
+        "dimension_value", "dimension_label", "value", "unit",
+        "reporting_period_type", "reporting_period_bs",
+        "reporting_period_ad_start", "reporting_period_ad_end",
+        "fiscal_year_bs", "fiscal_year_ad_label", "confidence_grade",
+    }
+    assert set(ft_result.dimensional_rows[0].to_json_dict().keys()) == expected
+
+
+def test_ft_base_slugs_partner_qualified(ft_result: DneParserResult) -> None:
+    """Export/import direction + trade partner determine the base measure slug."""
+    bases = {r.base_indicator_slug for r in ft_result.dimensional_rows}
+    assert bases == {
+        "dne-merchandise-exports-india",
+        "dne-merchandise-imports-china",
+    }
+
+
+def test_ft_dimension_kind_is_commodity(ft_result: DneParserResult) -> None:
+    assert {r.dimension_kind for r in ft_result.dimensional_rows} == {"commodity"}
+
+
+def test_ft_unit_npr_million(ft_result: DneParserResult) -> None:
+    assert {r.unit for r in ft_result.dimensional_rows} == {"npr_million"}
+
+
+def test_ft_all_monthly_grade_b(ft_result: DneParserResult) -> None:
+    assert all(r.reporting_period_type == "monthly" for r in ft_result.dimensional_rows)
+    assert all(r.confidence_grade == "B" for r in ft_result.dimensional_rows)
+
+
+def test_ft_known_commodity_present(ft_result: DneParserResult) -> None:
+    """Cardamom (export to India) is present with the raw label preserved."""
+    card = [
+        r for r in ft_result.dimensional_rows
+        if r.dimension_value == "cardamom"
+        and r.base_indicator_slug == "dne-merchandise-exports-india"
+    ]
+    assert len(card) == 24  # 2 FY blocks × 12 months
+    assert {r.dimension_label for r in card} == {"Cardamom"}
+    aug12 = next(
+        r for r in card
+        if r.reporting_period_ad_start.year == 2012
+        and r.reporting_period_ad_start.month == 8
+    )
+    assert aug12.value == pytest.approx(100.0)  # base_val + 0 for the Aug column
+    assert aug12.fiscal_year_ad_label == "2012/13"
+    assert aug12.base_indicator_name == "Merchandise Exports to India"
+
+
+def test_ft_commodity_slug_not_over_stripped(ft_result: DneParserResult) -> None:
+    """"G.I. pipe"/"M.S. Pipe" stay DISTINCT slugs (leading G.I./M.S. not stripped)."""
+    slugs = {r.dimension_value for r in ft_result.dimensional_rows}
+    assert "g-i-pipe" in slugs
+    assert "m-s-pipe" in slugs
+    assert "pipe" not in slugs  # would mean both collapsed → data loss
+
+
+def test_ft_no_unique_key_collisions(ft_result: DneParserResult) -> None:
+    """No two rows share the dne_facts unique key (else ON CONFLICT drops data).
+
+    Exercises the structural FY-advance: the second 12-month block has a BLANK
+    FY-label cell; without the advance it would reuse 2012/13 and collide with
+    block 1 on (base, dimension, period_bs, period_type).
+    """
+    keys = [
+        (r.base_indicator_slug, r.dimension_kind, r.dimension_value,
+         r.reporting_period_bs, r.reporting_period_type)
+        for r in ft_result.dimensional_rows
+    ]
+    assert len(keys) == len(set(keys))
+    # And both fiscal years are represented (block 2 was not collapsed onto block 1).
+    fys = {r.fiscal_year_ad_label for r in ft_result.dimensional_rows}
+    assert {"2012/13", "2013/14"} <= fys
+
+
+def test_ft_json_serialisable(ft_result: DneParserResult) -> None:
+    """The DNE result dict (with dimensional_rows) round-trips through json."""
+    dumped = json.dumps(ft_result.to_json_dict())
+    assert "dimensional_rows" in dumped
+    assert "base_indicator_slug" in dumped
+    assert "staging_rows" in dumped  # present (empty) for the contract
+
+
+# ---------------------------------------------------------------------------
+# v0.5.0 — single-series slug cleanup (FX-reserves / BoP enumerators + collisions)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def fx_slug_result(fx_reserve_slug_xlsx: Path) -> ParserResult:
+    return parse(str(fx_reserve_slug_xlsx), source_document_id="test-fx-slug")
+
+
+def test_fx_slug_no_enumerator_prefix(fx_slug_result: ParserResult) -> None:
+    """No emitted slug retains a leading single-letter/numeric outline enumerator."""
+    import re as _re
+
+    slugs = {r.indicator_slug_raw for r in fx_slug_result.staging_rows}
+    offenders = [s for s in slugs if _re.match(r"dne-(?:[a-z]|\d+)-", s)]
+    assert not offenders, f"enumerator-prefixed slugs remain: {offenders}"
+
+
+def test_fx_slug_no_row_index_suffix(fx_slug_result: ParserResult) -> None:
+    """No emitted slug uses the artifact "-rNN" collision suffix anymore."""
+    import re as _re
+
+    slugs = {r.indicator_slug_raw for r in fx_slug_result.staging_rows}
+    offenders = [s for s in slugs if _re.search(r"-r\d+$", s)]
+    assert not offenders, f"-rNN slugs remain: {offenders}"
+
+
+def test_fx_slug_enumerator_and_agg_hint_stripped(fx_slug_result: ParserResult) -> None:
+    """"A. Nepal Rastra Bank (1+2)" → clean "dne-nepal-rastra-bank"."""
+    slugs = {r.indicator_slug_raw for r in fx_slug_result.staging_rows}
+    assert "dne-nepal-rastra-bank" in slugs
+    assert "dne-gross-foreign-exchange-reserve" in slugs
+
+
+def test_fx_slug_collision_qualified_by_parent(fx_slug_result: ParserResult) -> None:
+    """The repeated "Convertible" sub-row is qualified by its section parent.
+
+    First "Convertible" (under "A. Nepal Rastra Bank") → "dne-convertible";
+    second (under "C. Gross Foreign Exchange Reserve") →
+    "dne-convertible-gross-foreign-exchange-reserve" — both present, neither lost.
+    """
+    slugs = {r.indicator_slug_raw for r in fx_slug_result.staging_rows}
+    assert "dne-convertible" in slugs
+    assert "dne-convertible-gross-foreign-exchange-reserve" in slugs

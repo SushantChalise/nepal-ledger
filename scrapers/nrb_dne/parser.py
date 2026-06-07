@@ -60,10 +60,10 @@ from __future__ import annotations
 import json
 import re
 import sys
-from dataclasses import asdict
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 import openpyxl
 
@@ -78,11 +78,95 @@ from _common.types import (
     ParserError,
     ParserResult,
     ParserStatus,
+    ReportingPeriodType,
     StagingRowDraft,
 )
 
-PARSER_VERSION: Final[str] = "0.4.0"
+PARSER_VERSION: Final[str] = "0.5.0"
 SOURCE_ID: Final[str] = "nrb-dne-xlsx"
+
+# Filename stems (lowercased, no extension) routed to the dimensional fact path
+# (ADR-0015) instead of the single-series staging path. Foreign Trade's commodity
+# matrices (exports/imports by SITC group and by major commodity) do not fit the
+# single-series (indicator, period, value) shape; they emit `dimensional_rows`.
+_DIMENSIONAL_FILE_STEMS: Final[frozenset[str]] = frozenset({"foreign-trade"})
+
+
+# ---------------------------------------------------------------------------
+# Dimensional fact contract (ADR-0015) — DNE-LOCAL, intentionally NOT in
+# _common/types.py. The shared ParserResult stays single-series; this parser's
+# __main__ adds a `dimensional_rows` key to its JSON dict and the DNE ingest CLI
+# reads it. Fields mirror the ADR-0015 `dne_facts` parser contract exactly.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class DimensionalRowDraft:
+    """One dimensional fact: a base measure sliced by exactly one dimension.
+
+    Mirrors the ADR-0015 parser contract field-for-field. Datetimes are real
+    ``datetime`` objects here; ``to_json_dict`` serialises them to ISO-8601 for
+    the CLI/ingest boundary (same convention as ``StagingRowDraft``).
+    """
+
+    base_indicator_slug: str
+    base_indicator_name: str
+    dimension_kind: str
+    dimension_value: str
+    dimension_label: str
+    value: float
+    unit: str
+    reporting_period_type: ReportingPeriodType
+    reporting_period_bs: str
+    reporting_period_ad_start: datetime
+    reporting_period_ad_end: datetime
+    fiscal_year_bs: str
+    fiscal_year_ad_label: str
+    confidence_grade: str
+
+    def to_json_dict(self) -> dict[str, Any]:
+        return {
+            "base_indicator_slug": self.base_indicator_slug,
+            "base_indicator_name": self.base_indicator_name,
+            "dimension_kind": self.dimension_kind,
+            "dimension_value": self.dimension_value,
+            "dimension_label": self.dimension_label,
+            "value": self.value,
+            "unit": self.unit,
+            "reporting_period_type": self.reporting_period_type,
+            "reporting_period_bs": self.reporting_period_bs,
+            "reporting_period_ad_start": self.reporting_period_ad_start.isoformat(),
+            "reporting_period_ad_end": self.reporting_period_ad_end.isoformat(),
+            "fiscal_year_bs": self.fiscal_year_bs,
+            "fiscal_year_ad_label": self.fiscal_year_ad_label,
+            "confidence_grade": self.confidence_grade,
+        }
+
+
+@dataclass(frozen=True)
+class DneParserResult:
+    """DNE-local result carrying BOTH single-series and dimensional output.
+
+    The shared ``ParserResult`` (``_common.types``) is unchanged; this wrapper is
+    what the DNE CLI serialises. ``staging_rows`` and ``dimensional_rows`` are
+    mutually exclusive per file (single-series files populate the former; the
+    Foreign-Trade matrix file populates the latter).
+    """
+
+    status: ParserStatus
+    parser_version: str
+    staging_rows: list[StagingRowDraft] = field(default_factory=list)
+    dimensional_rows: list[DimensionalRowDraft] = field(default_factory=list)
+    errors: list[ParserError] = field(default_factory=list)
+
+    def to_json_dict(self) -> dict[str, Any]:
+        return {
+            "status": self.status,
+            "parser_version": self.parser_version,
+            "staging_rows": [r.to_json_dict() for r in self.staging_rows],
+            "dimensional_rows": [r.to_json_dict() for r in self.dimensional_rows],
+            "errors": [e.to_json_dict() for e in self.errors],
+        }
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -277,13 +361,63 @@ _FY_FIRST_AD_MONTH: Final[int] = 7
 # ---------------------------------------------------------------------------
 
 
+# Leading outline-enumerator prefix on a row label. NRB statistical tables number
+# rows with section enumerators that are layout scaffolding, not part of the
+# indicator name — stripping them yields clean, stable slugs (ADR-0015 follow-up):
+#   "A. Nepal Rastra Bank"        → "Nepal Rastra Bank"
+#   "C. Gross Foreign Exchange…"  → "Gross Foreign Exchange…"
+#   "1. Gold, SDR, IMF…"          → "Gold, SDR, IMF…"
+#   "2.1 Other capital transfers" → "Other capital transfers"
+#   "iii) Convertible"            → "Convertible"
+#   "(a) Merchandise"             → "Merchandise"
+# Matches a single leading token of letters/digits/dots (an outline code like
+# "1.A.a.1" or a bare "A"/"1"), optionally bracketed, followed by a separator
+# ('.', ')', ':', '-') and whitespace. Conservative: requires the trailing
+# separator+space so real labels beginning with a word are never truncated.
+_LEADING_ENUMERATOR_RE: Final = re.compile(
+    r"^\s*\(?\s*"            # optional opening paren
+    r"[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*"  # outline code: A | 1 | 1.A.a.1
+    r"\s*\)?"                # optional closing paren
+    r"\s*[.):\-]\s+"         # mandatory separator + whitespace
+)
+
+# Trailing aggregation hint NRB appends to a parent/total row, e.g.
+# "A. Nepal Rastra Bank (1+2)", "D. Gross Foreign Assets (A+B)",
+# "I. Change in NFA (G+H)". The parenthetical encodes which child rows sum into
+# the parent — useful provenance, but it pollutes the slug and is not part of the
+# indicator name. Stripped for slug derivation only (the raw label is preserved
+# elsewhere). Matches a trailing "(...)" whose interior is only enumerator-like
+# tokens joined by + / , (so genuine descriptive parentheticals are kept).
+_TRAILING_AGG_HINT_RE: Final = re.compile(
+    r"\s*\(\s*[A-Za-z0-9]+(?:\s*[+,]\s*[A-Za-z0-9]+)*\s*\)\s*$"
+)
+
+
+def _strip_enumerator(label: str) -> str:
+    """Remove a leading outline enumerator and trailing aggregation hint.
+
+    Used only for slug derivation. Returns the cleaned label, or the original
+    (trimmed) text if nothing matched. Never returns empty: if stripping would
+    empty the label (degenerate row whose label is purely an enumerator), the
+    original trimmed text is kept so the slug stays non-empty and traceable.
+    """
+    cleaned = _LEADING_ENUMERATOR_RE.sub("", label, count=1)
+    cleaned = _TRAILING_AGG_HINT_RE.sub("", cleaned)
+    cleaned = cleaned.strip()
+    return cleaned if cleaned else label.strip()
+
+
 def _slugify(label: str) -> str:
     """Convert an indicator label to a dne-prefixed kebab-case slug.
 
-    E.g. "Total Foreign Exchange Reserves" → "dne-total-foreign-exchange-reserves".
+    Strips leading outline enumerators ("A.", "1.A.a.1") and trailing aggregation
+    hints ("(1+2)", "(A+B)") first so slugs are clean and stable:
+    "A. Nepal Rastra Bank (1+2)" → "dne-nepal-rastra-bank";
+    "Total Foreign Exchange Reserves" → "dne-total-foreign-exchange-reserves".
     """
+    base = _strip_enumerator(label)
     # Lowercase, keep alphanumeric and spaces, strip other chars, then hyphenate.
-    slug = label.lower()
+    slug = base.lower()
     slug = re.sub(r"[^a-z0-9\s]+", " ", slug)
     slug = re.sub(r"\s+", "-", slug.strip())
     return f"dne-{slug}"
@@ -691,6 +825,47 @@ _SKIP_LABELS: Final[frozenset[str]] = frozenset(
 )
 
 
+def _qualifier_fragment(qualifier: str | None) -> str | None:
+    """Slugify a collision qualifier (outline code or parent label) → kebab tail.
+
+    "3.4.1.1"                     → "3-4-1-1"
+    "C. Gross Foreign Exchange…"  → "gross-foreign-exchange…" (enumerator stripped)
+    Returns None when the qualifier is empty/whitespace (no usable qualifier).
+    """
+    if qualifier is None:
+        return None
+    base = _strip_enumerator(qualifier)
+    frag = re.sub(r"[^a-z0-9\s]+", " ", base.lower())
+    frag = re.sub(r"\s+", "-", frag.strip())
+    return frag or None
+
+
+def _resolve_slug_collision(
+    slug: str,
+    qualifier: str | None,
+    seen_slugs: set[str],
+    row_idx: int,
+) -> str:
+    """Return a unique slug for a row whose plain slug already occurred.
+
+    Resolution order (deterministic, documented per ADR-0015 follow-up):
+      1. Qualify with the section/parent label (FX-reserves) or outline code (BoP)
+         — e.g. "dne-nrb" under outline "3.4.1.1" → "dne-nrb-3-4-1-1"; "Convertible"
+         under "C. Gross Foreign Exchange Reserve" →
+         "dne-convertible-gross-foreign-exchange-reserve".
+      2. If no qualifier is available, or the qualified slug ALSO collides, fall
+         back to the row-index suffix "-r{row_idx}" (stable for a given file
+         layout — the previous behaviour, retained only as a last resort).
+    The non-colliding case never reaches here; callers gate on ``slug in seen``.
+    """
+    frag = _qualifier_fragment(qualifier)
+    if frag is not None:
+        qualified = f"{slug}-{frag}"
+        if qualified not in seen_slugs:
+            return qualified
+    return f"{slug}-r{row_idx}"
+
+
 def _parse_data_rows(
     rows: list[tuple[object, ...]],
     header_row_idx: int,
@@ -714,7 +889,11 @@ def _parse_data_rows(
 
         slug = _slugify(label_raw)
         if slug in seen_slugs:
-            slug = f"{slug}-r{row_idx}"
+            # Qualifier for a duplicate label: the outline code in a column to the
+            # LEFT of the label column (BoP's "S.N." column carries "3.4.1.1"-style
+            # codes that uniquely place each repeated label, e.g. "NRB").
+            outline = _norm_text(row[0]) if label_col_idx > 0 and row else None
+            slug = _resolve_slug_collision(slug, outline, seen_slugs, row_idx)
         seen_slugs.add(slug)
 
         row_unit, unit_err = _resolve_unit(unit_hint, label_raw, row_idx, slug, sheet_name)
@@ -864,8 +1043,15 @@ def _parse_year_month_layout(
             )
         )
 
+    # Running section parent: the most recent row whose col-0 cell carried a
+    # label (e.g. "C. Gross Foreign Exchange Reserve"). Sub-rows that live only in
+    # col 1 ("Convertible", "Inconvertible", "Share in total (in percent)") repeat
+    # across sections; we qualify their colliding slugs with this parent so each
+    # gets a stable, source-derived slug instead of a row-index suffix.
+    current_parent: str | None = None
     for row_idx in range(month_row_idx + 1, len(rows)):
         row = rows[row_idx]
+        col0 = _norm_text(row[0]) if row else ""
         # Label may sit in col 0 or, for indented sub-items, col 1. Join the
         # non-empty label cells that precede the first period column.
         label_parts = [
@@ -876,10 +1062,16 @@ def _parse_year_month_layout(
         label_raw = " ".join(label_parts)
         if not label_raw or label_raw.lower() in _SKIP_LABELS:
             continue
+        # A row that owns a col-0 label becomes the new section parent for the
+        # col-1-only sub-rows that follow it.
+        if col0:
+            current_parent = label_raw
 
         slug = _slugify(label_raw)
         if slug in seen_slugs:
-            slug = f"{slug}-r{row_idx}"
+            # Sub-row with no col-0 label of its own → qualify by section parent.
+            qualifier = current_parent if not col0 else None
+            slug = _resolve_slug_collision(slug, qualifier, seen_slugs, row_idx)
         seen_slugs.add(slug)
 
         row_unit, unit_err = _resolve_unit(unit_hint, label_raw, row_idx, slug, sheet_name)
@@ -1239,6 +1431,320 @@ def _parse_sheet(
 
 
 # ---------------------------------------------------------------------------
+# Foreign Trade → dimensional facts (ADR-0015)
+# ---------------------------------------------------------------------------
+#
+# Foreign-Trade.xlsx is a dimensional matrix, not a single series. Its
+# "Export Import Major Commodities" sheet breaks merchandise trade down by
+# COMMODITY (~hundreds of named goods: "Cardamom", "Aluminium Section…"), split
+# into sections by direction (Export/Import) and trade partner (India / China /
+# Other Countries). Each section is a wide MONTHLY panel: a sparse fiscal-year
+# label every 12 columns (forward-filled) over a repeating AD month-name row.
+#
+# We emit one `DimensionalRowDraft` per (commodity row × month column):
+#   base_indicator_slug : dne-merchandise-exports-<partner> / -imports-<partner>
+#   dimension_kind      : "commodity"
+#   dimension_value     : bare kebab of the commodity label ("cardamom")
+#   dimension_label     : the raw source label
+#
+# SCOPE / DEVIATION (flagged): ADR-0015 names the base measures
+# `dne-merchandise-exports` / `dne-merchandise-imports`. We QUALIFY the base slug
+# with the trade partner because each sheet carries separate India/China/Other
+# sections for the SAME commodity+period; an unqualified base would collide on the
+# `dne_facts` unique index `(base_indicator_slug, dimension_kind, dimension_value,
+# reporting_period_bs, reporting_period_type, source_document_id)` and silently
+# drop 2 of every 3 partner facts under ON CONFLICT DO NOTHING (a Rule-6 silent
+# failure / data loss). Partner qualification keeps every fact and is derivable
+# from the section header ("…to India"). The headline (partner-agnostic) total can
+# be registered later as a single indicator. The "Export Import SITC Groupwise"
+# sheet (a DIFFERENT classification of the same totals) and the two "Direction of
+# Foreign Trade" partner sheets are intentionally DEFERRED here to avoid mixing
+# classifications under one base measure — they follow the same contract next.
+
+# Per the sheet preamble ("Rs in Million") — all Major-Commodities values are NPR
+# million. Hard-coded (not unit-scanned) because each section repeats the title.
+_FT_COMMODITY_UNIT: Final[str] = "npr_million"
+
+# The single Foreign-Trade sheet promoted to the dimensional model in this round.
+_FT_COMMODITY_SHEET: Final[str] = "Export Import Major Commodities"
+
+# Months per fiscal-year block in the commodity panel (AD Aug → next Jul).
+_FT_MONTHS_PER_FY: Final[int] = 12
+
+# First data column in the commodity panel (col 0 = S.No., col 1 = label).
+_FT_FIRST_VALUE_COL: Final[int] = 2
+
+# The AD month that begins each fiscal-year block in the commodity panel. NRB
+# orders the 12 monthly columns Aug → next Jul (the Gregorian face of the
+# Shrawan→Asadh fiscal year), so a new "Aug" column marks a new FY block.
+_FT_FY_START_AD_MONTH: Final[int] = 8
+
+
+def _dimension_slug(label: str) -> str:
+    """Bare kebab slug of a dimension member (NO ``dne-`` prefix).
+
+    "Cardamom" → "cardamom"; "Aluminium Section(Bars, rods…)" →
+    "aluminium-section-bars-rods…"; "G.I. pipe" → "g-i-pipe";
+    "Ghee (Clarified)" → "ghee-clarified".
+
+    Deliberately does NOT apply ``_strip_enumerator``: for COMMODITY leaf labels,
+    leading tokens like "G.I."/"M.S." (Galvanised Iron / Mild Steel) and trailing
+    parentheticals ("(Clarified)" vs "(Vegetable)") are MEANINGFUL and
+    distinguish distinct goods — stripping them would collapse two commodities to
+    one slug and silently drop facts under the dne_facts ON CONFLICT. The S.No.
+    enumerator lives in its own column (col 0), never in this label (col 1).
+    """
+    s = re.sub(r"[^a-z0-9\s]+", " ", label.lower())
+    return re.sub(r"\s+", "-", s.strip())
+
+
+def _ft_section_base(title: str) -> tuple[str, str] | None:
+    """Map a section title → (base_indicator_slug, base_indicator_name), or None.
+
+    "Export of Major Commodities to India"        → ("dne-merchandise-exports-india",
+                                                      "Merchandise Exports to India")
+    "Import of Major Commodities from Other Coun…" → ("dne-merchandise-imports-other-countries",
+                                                      "Merchandise Imports to Other Countries")
+    Returns None when the title is not an Export/Import section header.
+    """
+    t = title.strip()
+    low = t.lower()
+    if low.startswith("export"):
+        direction_slug, direction_name = "exports", "Exports"
+    elif low.startswith("import"):
+        direction_slug, direction_name = "imports", "Imports"
+    else:
+        return None
+    # Partner follows "to"/"from" at the tail of the title.
+    m = re.search(r"\b(?:to|from)\s+(.+)$", t, re.IGNORECASE)
+    if not m:
+        return None
+    partner_raw = m.group(1).strip()
+    partner_slug = re.sub(r"\s+", "-", re.sub(r"[^a-z0-9\s]+", " ", partner_raw.lower()).strip())
+    if not partner_slug:
+        return None
+    base_slug = f"dne-merchandise-{direction_slug}-{partner_slug}"
+    base_name = f"Merchandise {direction_name} to {partner_raw}"
+    return base_slug, base_name
+
+
+def _ft_calendar_year(fy_ad_label: str, ad_month: int) -> int | None:
+    """AD calendar year of ``ad_month`` within an AD FY label, AUGUST-started.
+
+    The commodity panel orders months Aug → next Jul, so its calendar-year split
+    differs from the July-started long panel (``_fy_label_to_calendar_year``):
+    months Aug–Dec fall in the lead year, Jan–Jul in the trailing year. For AD FY
+    "2012/13": Aug 2012 … Dec 2012, then Jan 2013 … Jul 2013. Returns None on a
+    malformed label.
+    """
+    m = re.match(r"^\s*(\d{4})\s*/\s*\d{2,4}\s*$", fy_ad_label)
+    if not m:
+        return None
+    lead = int(m.group(1))
+    return lead if ad_month >= _FT_FY_START_AD_MONTH else lead + 1
+
+
+def _advance_fy_ad_label(fy_ad: str) -> str | None:
+    """Return the AD fiscal-year label one year later than ``fy_ad``.
+
+    "2023/24" → "2024/25". Used to derive a missing block label structurally when
+    the source leaves a 12-month block's FY cell blank (a merged-cell artifact in
+    some sections). Returns None on a malformed input.
+    """
+    m = re.match(r"^\s*(\d{4})\s*/\s*\d{2,4}\s*$", fy_ad)
+    if not m:
+        return None
+    lead = int(m.group(1)) + 1
+    return f"{lead}/{(lead + 1) % 100:02d}"
+
+
+def _ft_map_value_columns(
+    fy_row: tuple[object, ...],
+    month_row: tuple[object, ...],
+) -> dict[int, tuple[int, int, str]]:
+    """Map each value column → (ad_year, ad_month, fy_ad_label) for a section.
+
+    ``fy_row`` carries a fiscal-year label at the head of each 12-month block;
+    ``month_row`` carries the AD month name (Aug → next Jul) in every value column.
+    The AD calendar year is resolved from the AD fiscal-year label + month via
+    ``_fy_label_to_calendar_year`` (Jul–Dec → lead year, Jan–Jun → trailing year).
+
+    The FY label is sparse and OCCASIONALLY ABSENT for a whole block (a merged-cell
+    artifact — some sections drop the label cell for the 2024/25 block). Relying on
+    a plain forward-fill would then label two physically-distinct blocks with the
+    same FY and collapse them onto identical periods (data loss under the dne_facts
+    ON CONFLICT). We instead advance the FY STRUCTURALLY: every new Aug column (the
+    fiscal-year start) without a fresh label increments the carried FY by one year.
+    Columns whose FY or month is unparseable are skipped (panel padding).
+    """
+    out: dict[int, tuple[int, int, str]] = {}
+    current_fy_ad: str | None = None
+    seen_first_block = False
+    for col in range(_FT_FIRST_VALUE_COL, max(len(fy_row), len(month_row))):
+        fy_cell = _norm_text(fy_row[col]) if col < len(fy_row) else ""
+        labelled_here = False
+        if fy_cell:
+            parsed = _parse_annual_fy(fy_cell)
+            if parsed is not None:
+                current_fy_ad = parsed[1]  # AD "YYYY/YY" label
+                labelled_here = True
+                seen_first_block = True
+        month_cell = _norm_text(month_row[col]) if col < len(month_row) else ""
+        ad_month = _parse_ad_month_name(month_cell)
+        if ad_month is None:
+            continue
+        # A new fiscal block begins at each Aug column. If this block carries no
+        # fresh label, derive it by advancing the previous block's FY by one year.
+        if (
+            ad_month == _FT_FY_START_AD_MONTH
+            and not labelled_here
+            and seen_first_block
+            and current_fy_ad is not None
+        ):
+            current_fy_ad = _advance_fy_ad_label(current_fy_ad)
+        if current_fy_ad is None:
+            continue
+        ad_year = _ft_calendar_year(current_fy_ad, ad_month)
+        if ad_year is None:
+            continue
+        out[col] = (ad_year, ad_month, current_fy_ad)
+    return out
+
+
+def _ft_dimensional_row(
+    base_slug: str,
+    base_name: str,
+    label_raw: str,
+    value: float,
+    ad_year: int,
+    ad_month: int,
+    fy_ad: str,
+) -> DimensionalRowDraft:
+    """Build one commodity DimensionalRowDraft for an (AD year, month) cell.
+
+    ``fy_ad`` is the section's AD fiscal-year label for this column (e.g.
+    "2012/13"), carried from the header — NOT re-derived from the month, because
+    the Aug-started panel puts the trailing "Jul" in the SAME FY as the leading
+    "Aug" (a month-based re-derivation would split them). ``fy_bs`` is the BS
+    equivalent (AD lead + 57). The AD month span is the exact Gregorian month
+    (1st–28th, a safe lower bound the validator widens); only the BS month *label*
+    is the documented mid-month approximation.
+    """
+    bs_month, bs_year = _ad_month_to_bs(ad_year, ad_month)
+    ad_start = datetime(ad_year, ad_month, 1, tzinfo=UTC)
+    ad_end = datetime(ad_year, ad_month, 28, tzinfo=UTC)
+    fy_lead_ad = int(fy_ad.split("/")[0])
+    fy_bs = fiscal_year_label(fy_lead_ad + _BS_AD_FY_OFFSET)
+    return DimensionalRowDraft(
+        base_indicator_slug=base_slug,
+        base_indicator_name=base_name,
+        dimension_kind="commodity",
+        dimension_value=_dimension_slug(label_raw),
+        dimension_label=label_raw,
+        value=value,
+        unit=_FT_COMMODITY_UNIT,
+        reporting_period_type="monthly",
+        reporting_period_bs=f"{bs_month} {bs_year}",
+        reporting_period_ad_start=ad_start,
+        reporting_period_ad_end=ad_end,
+        fiscal_year_bs=fy_bs,
+        fiscal_year_ad_label=fy_ad,
+        confidence_grade=_CONFIDENCE,
+    )
+
+
+def _ft_is_section_title(col0: str) -> bool:
+    """True if a col-0 string is an Export/Import section title (not a data row)."""
+    low = col0.lower()
+    return ("export" in low or "import" in low) and "commodit" in low
+
+
+def _ft_is_header_row(row: tuple[object, ...]) -> bool:
+    """True if a row is the "S.No. | Major Commodities | <FY>…" header row."""
+    return _norm_text(row[0]).lower().startswith("s.no") if row else False
+
+
+def _parse_ft_commodity_sheet(
+    rows: list[tuple[object, ...]],
+) -> list[DimensionalRowDraft]:
+    """Walk the multi-section Major-Commodities sheet → commodity dimensional rows.
+
+    State machine over rows: a section title sets the current base measure; the
+    following "S.No." header row + month row define the value-column → (year,
+    month) map; subsequent rows with a numeric value and a commodity label in
+    col 1 become facts, until the next title / a TOTAL row / the notes block.
+    """
+    out: list[DimensionalRowDraft] = []
+    base: tuple[str, str] | None = None
+    col_map: dict[int, tuple[int, int, str]] = {}
+    idx = 0
+    n = len(rows)
+    while idx < n:
+        row = rows[idx]
+        col0 = _norm_text(row[0]) if row else ""
+        if _ft_is_section_title(col0):
+            base = _ft_section_base(col0)
+            col_map = {}
+            idx += 1
+            continue
+        if base is not None and _ft_is_header_row(row) and idx + 1 < n:
+            col_map = _ft_map_value_columns(row, rows[idx + 1])
+            idx += 2  # skip the FY header row and the month row
+            continue
+        if base is not None and col_map:
+            label_raw = _norm_text(row[1]) if len(row) > 1 else ""
+            if label_raw and label_raw.lower() not in _SKIP_LABELS:
+                base_slug, base_name = base
+                for col, (ad_year, ad_month, fy_ad) in col_map.items():
+                    if col >= len(row):
+                        continue
+                    value = _safe_float(row[col])
+                    if value is None:
+                        continue
+                    out.append(
+                        _ft_dimensional_row(
+                            base_slug, base_name, label_raw, value,
+                            ad_year, ad_month, fy_ad,
+                        )
+                    )
+        idx += 1
+    return out
+
+
+def _parse_foreign_trade(path: Path) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Parse Foreign-Trade.xlsx → dimensional commodity rows (ADR-0015).
+
+    Only the "Export Import Major Commodities" sheet is promoted in this round
+    (see the module note above). Other sheets are intentionally deferred. Never
+    raises: a missing/unreadable sheet yields an empty list (the caller turns an
+    empty result into the standard NoDataExtracted partial).
+    """
+    try:
+        wb = openpyxl.load_workbook(filename=str(path), read_only=True, data_only=True)
+    except (OSError, KeyError, ValueError, Exception) as exc:  # noqa: BLE001
+        return [], [
+            ParserError(
+                error_class="EncodingError",
+                error_detail=f"openpyxl could not open {path.name}: {exc}",
+            )
+        ]
+    if _FT_COMMODITY_SHEET not in wb.sheetnames:
+        return [], [
+            ParserError(
+                error_class="Other",
+                error_detail=(
+                    f"Foreign-Trade file lacks the {_FT_COMMODITY_SHEET!r} sheet; "
+                    f"sheets present: {wb.sheetnames}"
+                ),
+            )
+        ]
+    rows: list[tuple[object, ...]] = list(
+        wb[_FT_COMMODITY_SHEET].iter_rows(values_only=True)
+    )
+    return _parse_ft_commodity_sheet(rows), []
+
+
+# ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
@@ -1265,6 +1771,26 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
                 ParserError(
                     error_class="Other",
                     error_detail=f"source file not found: {path}",
+                )
+            ],
+        )
+
+    if _is_dimensional_path(path):
+        # Dimensional matrix files (Foreign-Trade) have NO single-series staging
+        # output — they route through ``parse_dne`` → ``dimensional_rows``. Return
+        # empty staging with an explicit note so this never silently emits the
+        # mis-detected per-section "indicator" rows the standard layout would.
+        return ParserResult(
+            status="partial",
+            parser_version=PARSER_VERSION,
+            staging_rows=[],
+            errors=[
+                ParserError(
+                    error_class="Other",
+                    error_detail=(
+                        f"{path.name} is a dimensional matrix (ADR-0015); use "
+                        f"parse_dne() — staging_rows is intentionally empty here"
+                    ),
                 )
             ],
         )
@@ -1317,6 +1843,73 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
     )
 
 
+def _is_dimensional_path(path: Path) -> bool:
+    """True if a file routes to the dimensional fact path (ADR-0015).
+
+    Matched on the filename stem (case-insensitive), e.g. ``Foreign-Trade.xlsx``
+    → stem ``foreign-trade`` ∈ ``_DIMENSIONAL_FILE_STEMS``.
+    """
+    return path.stem.strip().lower() in _DIMENSIONAL_FILE_STEMS
+
+
+def parse_dne(source_document_path: str, source_document_id: str) -> DneParserResult:
+    """DNE entry point carrying BOTH single-series and dimensional output.
+
+    This is what the DNE ingest CLI invokes. For dimensional matrix files
+    (Foreign-Trade) it returns populated ``dimensional_rows`` (ADR-0015) and empty
+    ``staging_rows``; for every other DNE file it wraps ``parse()`` and returns
+    its ``staging_rows`` with empty ``dimensional_rows``. Never raises on bad data.
+    """
+    path = Path(source_document_path)
+    if not path.exists():
+        return DneParserResult(
+            status="failure",
+            parser_version=PARSER_VERSION,
+            errors=[
+                ParserError(
+                    error_class="Other",
+                    error_detail=f"source file not found: {path}",
+                )
+            ],
+        )
+
+    if _is_dimensional_path(path):
+        dim_rows, dim_errors = _parse_foreign_trade(path)
+        if not dim_rows:
+            dim_errors.append(
+                ParserError(
+                    error_class="Other",
+                    error_detail=(
+                        "NoDataExtracted: no dimensional rows produced from "
+                        f"{path.name}"
+                    ),
+                )
+            )
+            return DneParserResult(
+                status="partial",
+                parser_version=PARSER_VERSION,
+                dimensional_rows=[],
+                errors=dim_errors,
+            )
+        status: ParserStatus = "partial" if dim_errors else "success"
+        return DneParserResult(
+            status=status,
+            parser_version=PARSER_VERSION,
+            dimensional_rows=dim_rows,
+            errors=dim_errors,
+        )
+
+    # Single-series file: delegate to the existing parser unchanged.
+    single = parse(source_document_path, source_document_id)
+    return DneParserResult(
+        status=single.status,
+        parser_version=single.parser_version,
+        staging_rows=single.staging_rows,
+        dimensional_rows=[],
+        errors=single.errors,
+    )
+
+
 # ---------------------------------------------------------------------------
 # CLI entrypoint (orchestrator contract — mirror of nrb_cmefs)
 # ---------------------------------------------------------------------------
@@ -1325,7 +1918,8 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
 def _main() -> None:
     """Argv: ``parser.py <source_document_path> <source_document_id>``.
 
-    Writes ``dataclasses.asdict(result)`` JSON to stdout (ISO-8601 datetimes).
+    Writes the DNE result JSON to stdout — including the ``dimensional_rows`` key
+    (ADR-0015) that the DNE ingest CLI reads. Datetimes are ISO-8601 strings.
     Exit codes: 0 = ran (status may be failure), 2 = usage error.
     """
     if len(sys.argv) != 3:  # noqa: PLR2004
@@ -1334,19 +1928,8 @@ def _main() -> None:
         )
         sys.exit(2)
 
-    result = parse(sys.argv[1], sys.argv[2])
-    payload = asdict(result)
-    for row in payload.get("staging_rows", []):
-        for key in (
-            "reporting_period_ad_start",
-            "reporting_period_ad_end",
-            "publication_date_ad",
-        ):
-            val = row.get(key)
-            if isinstance(val, datetime):
-                row[key] = val.isoformat()
-
-    json.dump(payload, sys.stdout)
+    result = parse_dne(sys.argv[1], sys.argv[2])
+    json.dump(result.to_json_dict(), sys.stdout)
 
 
 if __name__ == "__main__":

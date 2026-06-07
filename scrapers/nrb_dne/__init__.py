@@ -13,6 +13,20 @@ parser normalises every XLSX into long-format ``StagingRowDraft`` rows.
 
 from __future__ import annotations
 
-from .parser import PARSER_VERSION, SOURCE_ID, parse
+from .parser import (
+    PARSER_VERSION,
+    SOURCE_ID,
+    DimensionalRowDraft,
+    DneParserResult,
+    parse,
+    parse_dne,
+)
 
-__all__ = ["PARSER_VERSION", "SOURCE_ID", "parse"]
+__all__ = [
+    "PARSER_VERSION",
+    "SOURCE_ID",
+    "DimensionalRowDraft",
+    "DneParserResult",
+    "parse",
+    "parse_dne",
+]

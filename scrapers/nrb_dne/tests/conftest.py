@@ -397,6 +397,136 @@ def _build_transposed(path: Path) -> None:
     wb.save(str(path))
 
 
+def _build_foreign_trade_commodities(path: Path) -> None:
+    """Fixture: the Foreign-Trade "Export Import Major Commodities" matrix.
+
+    Two sections (one Export, one Import), each a wide MONTHLY panel: a section
+    title in col 0, an "S.No. | Major Commodities | <FY>" header row whose FY
+    label is sparse (only the first column of each 12-month block), a repeating
+    AD month-name row (Aug → next Jul), then commodity rows (S.No. col 0, label
+    col 1, monthly values from col 2).
+
+    Two fiscal-year blocks (2012/2013, 2013/2014) × 12 months = 24 value columns,
+    so columns 2..25. To exercise the structural FY-advance fix, the SECOND block's
+    FY label cell is left BLANK (a merged-cell artifact in the real file) — the
+    parser must still place it in 2013/14, not collapse it onto 2012/13.
+
+    A trailing "TOTAL" row per section must be skipped. Commodity labels include
+    "G.I. pipe" (whose "G.I." must NOT be stripped as an enumerator — it
+    distinguishes it from "M.S. Pipe") to lock in the dimension-slug behaviour.
+    """
+    _ensure_fixture_dir()
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = "Export Import Major Commodities"
+    months = ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan",
+              "Feb", "Mar", "Apr", "May", "Jun", "Jul"]
+
+    def _write_section(start_row: int, title: str, commodities: list[tuple[str, float]]) -> int:
+        r = start_row
+        ws.cell(row=r, column=1, value=title)
+        r += 1
+        # Header row: S.No. | Major Commodities | FY (sparse: block 1 only).
+        ws.cell(row=r, column=1, value="S.No.")
+        ws.cell(row=r, column=2, value="Major Commodities")
+        ws.cell(row=r, column=3, value="2012/2013")     # block 1 FY (col 3)
+        # block 2 FY cell (col 15) deliberately BLANK → structural advance.
+        header_row = r
+        r += 1
+        # Month row: 24 columns (2 blocks × 12 months), cols 3..26.
+        for i in range(24):
+            ws.cell(row=r, column=3 + i, value=months[i % 12])
+        r += 1
+        # Commodity rows: same value in every month column (value = base + month).
+        for sno, (label, base_val) in enumerate(commodities, start=1):
+            ws.cell(row=r, column=1, value=sno)
+            ws.cell(row=r, column=2, value=label)
+            for i in range(24):
+                ws.cell(row=r, column=3 + i, value=base_val + i)
+            r += 1
+        # Trailing TOTAL row (must be skipped).
+        ws.cell(row=r, column=2, value="TOTAL")
+        for i in range(24):
+            ws.cell(row=r, column=3 + i, value=9999.0)
+        r += 2  # blank spacer row after the section
+        _ = header_row
+        return r
+
+    next_row = _write_section(
+        1,
+        "Export of Major Commodities to India",
+        [("Cardamom", 100.0), ("G.I. pipe", 10.0), ("M.S. Pipe", 20.0)],
+    )
+    _write_section(
+        next_row,
+        "Import of Major Commodities from China",
+        [("Crude Soyabean Oil", 500.0)],
+    )
+    wb.save(str(path))
+
+
+def _build_fx_reserve_slug(path: Path) -> None:
+    """Fixture: an FX-reserves-shaped sheet that exercises slug cleanup (v0.5.0).
+
+    Two-row monthly header (integer AD years over AD month names), with row labels
+    that carry outline enumerators and a sub-label that repeats across sections —
+    the exact shapes that previously produced artifact slugs:
+      "A. Nepal Rastra Bank (1+2)"  → dne-nepal-rastra-bank        (enum + (1+2) stripped)
+      "C. Gross Foreign Exchange…"  → dne-gross-foreign-exchange-reserve
+      "Convertible" (under A.)      → dne-convertible
+      "Convertible" (under C.)      → dne-convertible-gross-foreign-exchange-reserve
+                                       (collision qualified by section parent, NOT -rNN)
+    """
+    _ensure_fixture_dir()
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = "FX Reserves"
+    ws.cell(row=1, column=1, value="Gross Foreign Assets of the Banking Sector")
+    ws.cell(row=2, column=1, value="(Rs in Million)")
+    # Year row (row 3) + month row (row 4): 6 months Aug..Jan 2025, cols 3..8.
+    for c in (3, 4, 5):
+        ws.cell(row=3, column=c, value=2025)
+    months = ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan"]
+    for i, m in enumerate(months):
+        ws.cell(row=4, column=3 + i, value=m)
+    # Data rows: enumerated parents in col 0, repeating sub-labels in col 1.
+    body = [
+        ("A. Nepal Rastra Bank (1+2)", None, 100.0),
+        (None, "Convertible", 60.0),                       # under A.
+        ("C. Gross Foreign Exchange Reserve", None, 150.0),
+        (None, "Convertible", 90.0),                       # under C. → collision
+    ]
+    for r_off, (col0, col1, val) in enumerate(body):
+        r = 5 + r_off
+        if col0 is not None:
+            ws.cell(row=r, column=1, value=col0)
+        if col1 is not None:
+            ws.cell(row=r, column=2, value=col1)
+        for i in range(6):
+            ws.cell(row=r, column=3 + i, value=val + i)
+    wb.save(str(path))
+
+
+@pytest.fixture(scope="session")
+def foreign_trade_commodities_xlsx() -> Path:
+    # Named "Foreign-Trade.xlsx" so parse_dne's filename-stem dispatch
+    # (_DIMENSIONAL_FILE_STEMS) routes it to the dimensional path end-to-end.
+    p = FIXTURE_DIR / "Foreign-Trade.xlsx"
+    if not p.exists():
+        _build_foreign_trade_commodities(p)
+    return p
+
+
+@pytest.fixture(scope="session")
+def fx_reserve_slug_xlsx() -> Path:
+    p = FIXTURE_DIR / "fx_reserve_slug.xlsx"
+    if not p.exists():
+        _build_fx_reserve_slug(p)
+    return p
+
+
 @pytest.fixture(scope="session")
 def year_month_header_xlsx() -> Path:
     p = FIXTURE_DIR / "year_month_header.xlsx"

@@ -38,10 +38,69 @@ The parser handles all five pages identically.
 
 ## PARSER_VERSION
 
-`0.4.0`
+`0.5.0`
 
-Defined in `parser.py` as `PARSER_VERSION: Final[str] = "0.4.0"`. Bump on any
+Defined in `parser.py` as `PARSER_VERSION: Final[str] = "0.5.0"`. Bump on any
 behavior change (see [CONVENTIONS.md](../../docs/CONVENTIONS.md)).
+
+### v0.5.0 changes (2026-06-07)
+
+Two changes, per [ADR-0015](../../docs/decisions/0015-dne-dimensional-fact-model.md).
+
+**(A) Foreign Trade → `dimensional_rows`.** `Foreign-Trade.xlsx` is a dimensional
+matrix, not a single series. Its **"Export Import Major Commodities"** sheet breaks
+merchandise trade down by COMMODITY. The parser now routes this file (by filename
+stem) to a dimensional path that emits a **`dimensional_rows`** array (ADR-0015
+contract) instead of `staging_rows`:
+
+- New public entry `parse_dne(path, id) -> DneParserResult` carries BOTH
+  `staging_rows` (single-series files) and `dimensional_rows` (matrix files); the
+  CLI `__main__` now dumps `parse_dne(...).to_json_dict()`, adding the
+  `dimensional_rows` key the DNE ingest CLI reads. The shared `ParserResult` in
+  `_common/types.py` is **unchanged**; `DimensionalRowDraft`/`DneParserResult` are
+  DNE-local dataclasses. `parse()` is unchanged for single-series files and now
+  short-circuits dimensional files to empty `staging_rows` + an explanatory note.
+- Each dimensional row: `base_indicator_slug`, `base_indicator_name`,
+  `dimension_kind="commodity"`, `dimension_value` (bare kebab of the commodity
+  label), `dimension_label` (raw), `value`, `unit="npr_million"`, monthly period
+  fields (BS + exact-Gregorian AD span), `confidence_grade="B"`.
+- **Base-slug partner qualification (deviation, flagged).** ADR-0015 names the base
+  measures `dne-merchandise-exports` / `dne-merchandise-imports`. The sheet carries
+  separate **India / China / Other Countries** sections for the SAME commodity and
+  period; emitting them all under one base slug would collide on the `dne_facts`
+  unique index and silently drop 2 of every 3 partner facts under `ON CONFLICT DO
+  NOTHING`. We therefore qualify the base slug with the trade partner
+  (`dne-merchandise-exports-india`, `…-china`, `…-other-countries`) — derivable from
+  the section header ("…to India"). The partner-agnostic headline total may be
+  registered as a single indicator later.
+- **Period mapping.** The panel is a wide MONTHLY layout: a sparse fiscal-year
+  label every 12 columns (Aug → next Jul) over a repeating AD month row. The FY is
+  forward-filled AND advanced **structurally** at each new "Aug" column when the
+  label cell is blank (a real merged-cell artifact in some sections) — without this
+  two physically-distinct year-blocks collapse onto identical periods. The
+  calendar-year split is August-started (Aug–Dec → lead year, Jan–Jul → trailing),
+  distinct from the July-started long panel.
+- **Deferred (same contract, next round):** the "Export Import SITC Groupwise"
+  sheet (a *different* classification of the same totals — would double-count if
+  mixed under one base measure), the two "Direction of Foreign Trade" partner
+  sheets (USD + by-partner, not by-commodity), and the "Working" sheet. Remittance
+  by country/district (ADR-0015) also follows next.
+
+**(B) Single-series slug cleanup (FX-reserves / BoP).** Slug derivation now:
+
+- **Strips leading outline enumerators** ("A. Nepal Rastra Bank" →
+  `dne-nepal-rastra-bank`; "1. Gold…" → `dne-gold…`; BoP "1.A.a.1 …") and trailing
+  aggregation hints ("(1+2)", "(A+B)"). Genuine abbreviations like "O/W" (of which)
+  are preserved.
+- **Resolves `-rNN` duplicate-label collisions by qualifier** instead of the
+  volatile row-index suffix: the **outline code** in the S.N. column for BoP
+  (`3.4.1.1 NRB` → `dne-nrb-3-4-1-1`) or the **section parent** for FX-reserves
+  (`Convertible` under "C. Gross Foreign Exchange Reserve" →
+  `dne-convertible-gross-foreign-exchange-reserve`). `-rNN` remains only as a
+  last-resort fallback when no qualifier is determinable.
+- Dimension (commodity) slugs deliberately do NOT strip enumerators/parentheticals:
+  "G.I. pipe" vs "M.S. Pipe" and "Ghee (Clarified)" vs "Ghee (Vegetable)" must stay
+  distinct or facts collide and drop.
 
 ### v0.4.0 changes (2026-06-07)
 
@@ -101,9 +160,9 @@ Other v0.4.0 notes:
 
 | File | Layout | Rows | Parser result |
 |------|--------|------|---------------|
-| `Balance-of-Payments-BPM6.xlsx` | standard wide, AD FY | 360 | `success` (annual, npr_million) |
-| `Foreign-Trade.xlsx` | standard wide, AD FY | 11334 | `success` (annual, npr_million) |
-| `Foreign-exchange-reserves.xlsx` | two-row integer-year + monthly | 6716 | `partial` — `PeriodAmbiguous`×1 (repeated Oct 2025 column, both values kept + flagged) |
+| `Balance-of-Payments-BPM6.xlsx` | standard wide, AD FY | 360 | `success` (annual, npr_million) — **v0.5.0: slugs cleaned, no `-rNN`** |
+| `Foreign-Trade.xlsx` | **dimensional matrix (v0.5.0)** | **38490 `dimensional_rows`** | `success` — Major-Commodities by commodity × 6 partner-qualified base measures; `staging_rows` empty (ADR-0015). Was a bogus 11334 single-series rows pre-v0.5.0. |
+| `Foreign-exchange-reserves.xlsx` | two-row integer-year + monthly | 6716 | `partial` — `PeriodAmbiguous`×1 (repeated Oct 2025 column, both values kept + flagged); **v0.5.0: slugs cleaned, no enumerator prefix / `-rNN`** |
 | `Exchange-rate.xlsx` | long panel (FY col + month col) | 2172 | `partial` — `UnitAmbiguous`×3 (no vocab unit for FX rate; raw label carried) |
 | `Tourist-arrivals.xlsx` | transposed (years-as-rows) | 407 | `success` (monthly, count) |
 | `Migrant-Workers-Remittance.xlsx` | standard wide (Country sheet) | 1407 | `partial` — `PeriodUnparseable`×1 (the `Migrant Worker` sheet uses datetime-object period columns — still deferred) |
@@ -229,6 +288,8 @@ Test matrix:
 | `test_ym_dup_*` | Repeated `(year, month)` column → both values kept + `PeriodAmbiguous` (v0.4.0) |
 | `test_long_panel_*` | Long panel: FY/month cols, forward-fill, aggregate-row skip, `UnitAmbiguous` (v0.4.0) |
 | `test_transposed_*` | Transposed years-as-rows; Total column ignored; AD→BS month mapping (v0.4.0) |
+| `test_ft_*` | Foreign-Trade → `dimensional_rows` (ADR-0015): shape, partner-qualified base slugs, commodity dimension, `npr_million`, no over-stripped commodity slug, structural FY-advance / no unique-key collisions, JSON round-trip (v0.5.0) |
+| `test_fx_slug_*` | Single-series slug cleanup: no enumerator prefix, no `-rNN`, enumerator + `(1+2)` stripped, collision qualified by section parent (v0.5.0) |
 
 ## Cross-reference
 
