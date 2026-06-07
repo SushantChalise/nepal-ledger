@@ -8,6 +8,22 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-07 (round 9) — Wave 4: /growth macro page + migrant-workers by destination
+
+**What changed:** Rendered the headline macro series (first consumer of Wave 3's GDP/CPI data) and ingested migrant-worker departures by country — again catching a remittance-vs-headcount mislabel before it could lie.
+
+- **`/growth` render page** (Worker E, the **8th live page**): the first page to surface the Wave-3 macro series — KPI strip (nominal GDP, real growth, per-capita USD, inflation), a nominal-vs-real GDP trajectory chart (d3-shape adapter, ADR-0012), and an inflation table, ~50 fiscal years deep. One JOIN loads all six slugs; each series renders independently (a missing one never blanks the page); unit honesty enforced (npr_billion→NPR trillion, per-capita always USD, CPI labelled an index). Latest: **GDP NPR 6.1 tn, per-capita USD 1,496, inflation 5.44%**. (Worker E's first run died on a transient API socket error before writing anything; re-dispatched clean.)
+- **DNE migrant-workers by destination country** (parser nrb_dne v0.7.0, Worker D): `Migrant-Workers-Remittance.xlsx` is **headcounts, not remittance NPR** — verified before coding (sheet titles "Migrant workers by Country", Male/Female/Total triples, FY2021/22 = 630,686 workers / Qatar 185,023; no Rs/NPR). Emitted the honest `dne-migrant-workers` / `count`, NOT the `dne-remittance-inflow`/npr_million ADR-0015 tentatively named — the same mislabel trap caught on `/migration`. **10,910 `dne_facts`, 234 countries** (top corridors UAE 775K / Qatar 628K / Saudi 625K / Malaysia 468K / Kuwait 191K — correct), monthly, BS 2078/79–2082/83. District + sex-split + the single-series outflow sheet deferred (documented). Real remittance NPR is now flagged as an unfulfilled target in `docs/sources/nrb-db-external-sector.md` (it lives in a different DNE/BoP file). Tests 102→**117**.
+- **Latent env bug surfaced (not fixed here):** the *parent* checkout's `scrapers/_common/types.py` lacks `ParserError.to_json_dict()` (this branch's has it) — only bites a parser that emits errors when `PYTHONPATH` isn't pinned to the worktree. All ingest commands pin it; the real fix lands when this branch merges to main.
+
+**Live DB:** approved_indicator_values 874 · **dne_facts 49,533** (was 38,623; +10,910 migrant-workers) · fiscal 6,008 · banking 2,088 · census 531,618 · sources 68. **8 live pages.**
+
+**Next (Wave 5):** real remittance-NPR (correct DNE/BoP file), DNE migrant-workers district + sex dimensions, customs-monthly-trade (#7, download-gated), whitebook foreign-aid (#12, new fact table + migration), and a **shared site nav** (8 pages cross-link inline only).
+
+**Related:** ADR-0015 (dimensional model), ADR-0012 (viz adapter), ADR-0011 (units), DATA_BUILDOUT_PLAN.md §6 (the mislabel catch); HANDOFF_2026-06-07.
+
+---
+
 ## 2026-06-07 (round 8) — Wave 3: GDP/CPI real-sector, labour annex, SOE page + ingest resilience
 
 **What changed:** Ran Wave 3 as a 3-worker parallel batch (one DNE-parser slot + one new PDF parser + one render page), then root-caused and fixed a connection-resilience bug that was silently aborting chatty ingests. The mission's per-capita denominators (GDP, CPI) are now live.
