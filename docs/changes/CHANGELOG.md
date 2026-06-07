@@ -8,6 +8,44 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-07 — The data pipeline goes live: ingest, publish, document
+
+**What changed:** Mother + a rolling fleet of Sonnet workers took the dormant pipeline from "plumbing built, pipes dry" to live data ingested, rendered on two public pages, and documented. The Supabase project (paused, DNS dead) was resumed by the user; from an empty DB, migrations were applied and the full chain — storage → `source_documents` → deterministic Python parser → staging → validation → approved — ran for real for the first time.
+
+### Data now live in Supabase
+- `approved_indicator_values`: **85** (7 NRB CMEFs macro headline indicators + 78 NCPI inflation categories × overall/rural/urban).
+- `local_government_fiscal_transfers`: **6,008** (751 local levels × 8 grant types) — **NPR 321.01 arab** total, FY 2082/83.
+- `banking_sector_facts`: **1,836** (50 of 51 NRB BFI monthly XLSX files).
+- `census_facts`: **19,136** (8 NPHC 2021 tables incl. financial-inclusion: female asset ownership, small-scale business, absent households).
+- `source_registry`: **67** sources (15 newly discovered via NRB/MoF catalog audits + `nrb-bfi-monthly-xlsx` and `cbs-nphc-2021` which had profiles/parsers but were missing from the seed); `entities`: 753 local levels.
+
+### Pages (first public data rendering)
+- `/pulse` — Server Component, 85 indicators grouped Prices / Money In / Money Out.
+- `/money-map` — D3 Sankey of fiscal transfers (Federal → 8 grant types → 4 local-level tiers), NPR crore/arab formatting.
+
+### New ingest CLIs
+`ingest:cmefs`, `ingest:ncpi`, `ingest:fiscal-transfers`, `ingest:bfi-monthly`, `ingest:census-2021` (live); `ingest:dne` (wired, dry-run). New scraper `scrapers/nrb_dne` (28 tests).
+
+### Correctness fixes worth remembering
+- **Fiscal unit was wrong** (NPR_thousand → **NPR crore**); a data-unit verification protocol is now doctrine (ADR-0011).
+- **Fuzzy name resolution inflated the fiscal total ~65%** (NPR 530 → 321 arab) via duplicate-code collisions; the parser now reads the workbook's federal Code column directly (ADR-0011, parser v0.5.0).
+- Infra bugs fixed: Supabase storage probe (body-encoded 404), `PostgresError` import (RSC 500), `server-only` under tsx, N+1 entity lookups, a client-function-called-from-server 500 on /money-map.
+
+### Documentation pass (this session's second half)
+- **[DOCUMENTATION_STANDARD.md](../DOCUMENTATION_STANDARD.md)** added — the doc surface + feature-CLAUDE.md template + a per-change **Documentation Gate**, now a CI-style gate in root `CLAUDE.md`.
+- **[INGEST_RUNBOOK.md](../INGEST_RUNBOOK.md)** added (operational runbook, previously only in private agent memory).
+- First feature-local `CLAUDE.md` files (`src/features/pulse`, `src/features/money-map`).
+- ADRs **0010** (ingest CLI conventions), **0011** (fiscal units + identity), **0012** (viz adapter cast location).
+- 7 backfilled `docs/sources/` profile stubs; `scrapers/nrb_dne/README.md`; `docs/HANDOFF_2026-06-07.md`.
+
+**Plan section affected:** Advances BACKEND_PLAN Day 11–28 (ingestion pipeline) to live, and lands the first two Lenses (Pulse, Money Map) ahead of the visible-Pulse milestone. No scope change to the strategy.
+
+**Open gaps (carried in [HANDOFF_2026-06-07.md](../HANDOFF_2026-06-07.md)):** latest-data downloads not yet pulled from NRB/MoF; census Hhld18–20 (absent-population-by-country) blocked on a multi-row reader extension; DNE live ingest pending source-id reconciliation; source bytes not yet archived to Storage.
+
+**Related:** ADR-0009 through ADR-0012; DOCUMENTATION_STANDARD; INGEST_RUNBOOK.
+
+---
+
 ## 2026-05-14 (fifth pass) — Overnight backend burst: schema foundation + Day 11–28 staging
 
 **What changed:** Mother Opus operated autonomously through the night per a user-issued rescope ("complete the backend; wireframes for the front end come in the morning"). 10 squash-merged PRs landed via branch protection, advancing two milestones from `BACKEND_PLAN.md` substantially in one session.
