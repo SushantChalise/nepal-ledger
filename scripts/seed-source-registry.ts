@@ -107,11 +107,33 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     requiresTableExtraction: false,
     licenseStatus: 'gov_open',
     confidenceDefault: 'A',
-    status: 'paused',
+    status: 'active',
     ingestionMode: 'automated_cron',
     tier: 1,
     notes:
-      'Money Out Pulse + flagship #2 (border arbitrage). Format: HTML landing + XLSX downloads.',
+      'Money Out Pulse + flagship #2 (border arbitrage). Active: FTS XLSX → dne_facts via ingest:customs-trade (#7); ' +
+      'imports/exports × commodity(HS)/country/customs_office, npr_thousand, confidence A. Annual FY2081/82 imports NPR 1.80tn.',
+  },
+  {
+    sourceId: 'mof-whitebook-foreign-aid',
+    agency: 'Ministry of Finance',
+    agencyShort: 'MoF',
+    datasetName: 'Source Book for Projects Financed with Foreign Assistance (White Book)',
+    sourceUrl: 'https://mof.gov.np/',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    licenseStatus: 'gov_open',
+    confidenceDefault: 'B',
+    status: 'active',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    notes:
+      'Money In — foreign aid by donor + sector. In-repo corpus at Financial Data/mof_documents/whitebook/. ' +
+      'Active: donor + ministrywise summary tables → foreign_aid_facts via ingest:whitebook (ADR-0017); ' +
+      'foreign-aid-grant + foreign-aid-loan; unit varies by edition (npr_lakh FY2020/21, npr_thousand others). ' +
+      'Preeti + a mislabelled CID intergovernmental-transfer file deferred.',
   },
   {
     sourceId: 'noc-petroleum-monthly',

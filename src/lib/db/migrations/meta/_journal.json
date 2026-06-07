@@ -36,6 +36,13 @@
       "when": 1780829264855,
       "tag": "0004_0005_dne_facts",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1780855104135,
+      "tag": "0005_0006_foreign_aid_facts",
+      "breakpoints": true
     }
   ]
 }
