@@ -23,15 +23,16 @@
  */
 
 import { useId, useState } from 'react';
-import { sankey, sankeyJustify, sankeyLinkHorizontal } from 'd3-sankey';
-import type { SankeyGraph, SankeyLink, SankeyNode } from 'd3-sankey';
+
+import {
+  computeSankeyLayout,
+  sankeyLinkHorizontal,
+  type ResolvedLink,
+  type ResolvedNode,
+} from '@/lib/viz/adapters/d3-sankey';
 
 import type { SankeyData, SankeyNodeData } from '../server/queries';
 import { formatNprCrore } from '../format';
-
-// ---------------------------------------------------------------------------
-// D3 Sankey node/link extra properties (user-defined fields)
-// ---------------------------------------------------------------------------
 
 type SankeyN = {
   id: string;
@@ -42,21 +43,6 @@ type SankeyN = {
 
 type SankeyL = {
   valueNprCrore: number;
-};
-
-// Resolved node type after d3-sankey layout — x0/y0/x1/y1 are guaranteed.
-// Cast from SankeyNode<SankeyN, SankeyL> is a sanctioned D3-type bridge.
-type ResolvedNode = SankeyNode<SankeyN, SankeyL> & {
-  x0: number;
-  x1: number;
-  y0: number;
-  y1: number;
-};
-
-type ResolvedLink = SankeyLink<SankeyN, SankeyL> & {
-  width: number;
-  y0: number;
-  y1: number;
 };
 
 // Column colour palette — distinct, WCAG-AA contrast on white background.
@@ -147,30 +133,10 @@ function FullSankey({ data, width }: { data: SankeyData; width: number }) {
     valueNprCrore: l.valueNprCrore,
   }));
 
-  const layout = sankey<SankeyN, SankeyL>()
-    .nodeId((n) => n.id)
-    .nodeAlign(sankeyJustify)
-    .nodeWidth(NODE_WIDTH)
-    .nodePadding(NODE_PADDING)
-    .extent([
-      [1, 1],
-      [width - 1, SVG_HEIGHT - 6],
-    ]);
-
-  // d3-sankey mutates in place; the cast is a sanctioned D3-type bridge.
-  // sankeyGraph contains nodes + links with computed layout positions.
-  const graph = layout({
-    nodes: inputNodes,
-    links: inputLinks as unknown as Array<{
-      source: string;
-      target: string;
-      value: number;
-      valueNprCrore: number;
-    }>,
-  } as unknown as SankeyGraph<SankeyN, SankeyL>);
-
-  const resolvedNodes = graph.nodes as ResolvedNode[];
-  const resolvedLinks = graph.links as ResolvedLink[];
+  const { nodes: resolvedNodes, links: resolvedLinks } = computeSankeyLayout<SankeyN, SankeyL>(
+    { nodes: inputNodes, links: inputLinks },
+    { width, height: SVG_HEIGHT, nodeWidth: NODE_WIDTH, nodePadding: NODE_PADDING },
+  );
 
   const linkGen = sankeyLinkHorizontal();
 
@@ -193,11 +159,9 @@ function FullSankey({ data, width }: { data: SankeyData; width: number }) {
       {/* Links — rendered first so nodes appear on top */}
       <g aria-hidden="true">
         {resolvedLinks.map((link, i) => {
-          // Sanctioned D3-type bridge: source/target are resolved node objects
-          // after layout, but typed as string | number | SankeyNode<N,L>.
-          const srcNode = link.source as ResolvedNode;
-          const tgtNode = link.target as ResolvedNode;
-          const pathD = linkGen(link as unknown as Parameters<typeof linkGen>[0]);
+          const srcNode = link.source as ResolvedNode<SankeyN, SankeyL>;
+          const tgtNode = link.target as ResolvedNode<SankeyN, SankeyL>;
+          const pathD = linkGen(link as Parameters<typeof linkGen>[0]);
           const srcLabel = srcNode.label;
           const tgtLabel = tgtNode.label;
           const valLabel = formatNprCrore(link.valueNprCrore);
