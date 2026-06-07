@@ -46,7 +46,7 @@ def test_happy_status_success(happy_result: ParserResult) -> None:
 
 
 def test_happy_parser_version(happy_result: ParserResult) -> None:
-    assert happy_result.parser_version == PARSER_VERSION == "0.7.0"
+    assert happy_result.parser_version == PARSER_VERSION == "0.8.0"
 
 
 def test_happy_source_id() -> None:
@@ -1083,3 +1083,134 @@ def test_mw_json_serialisable(mw_result: DneParserResult) -> None:
     assert "dne-migrant-workers" in dumped
     assert "country" in dumped
     assert "staging_rows" in dumped  # present (empty) for the contract
+
+
+# ---------------------------------------------------------------------------
+# v0.8.0 — Balance of Payments (BPM6) → remittance-inflow single series
+#
+# DATA-HONESTY: this file HOLDS the real remittance NPR inflow (Personal transfers
+# Credit) that the headcount file (v0.7.0) lacks. The parser emits the headline annual
+# series `dne-remittance-inflow` / unit `npr_million` from the full-FY (July) cumulative
+# Credit column. These tests lock the magnitude (~NPR 1.2–1.7 trillion/yr), the
+# Credit-side read, the allowlist (no catalogue pollution), and the no-fabrication rule
+# for a partial trailing fiscal year.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def bop_result(bop_bpm6_xlsx: Path) -> ParserResult:
+    """Balance-of-Payments-BPM6 → remittance-inflow single series via parse() dispatch."""
+    return parse(str(bop_bpm6_xlsx), source_document_id="test-bop")
+
+
+def test_bop_status_success(bop_result: ParserResult) -> None:
+    assert bop_result.status == "success", f"errors={bop_result.errors}"
+
+
+def test_bop_no_errors(bop_result: ParserResult) -> None:
+    assert bop_result.errors == []
+
+
+def test_bop_only_remittance_slug(bop_result: ParserResult) -> None:
+    """ONLY the allowlisted remittance series is promoted — no catalogue pollution.
+
+    The generic detector would mis-promote ~100 BoP line items (Goods/Services, the
+    Secondary-income parent, the financial-account flows) as bogus single-series
+    "indicators" (ADR-0014). The dedicated route emits exactly one slug; the decoy
+    "1.A Goods and Services", the "1.C Secondary income" parent, and the
+    "1.C.2.1.1 O/W Workers' remittances" sub-line are all excluded.
+    """
+    assert {r.indicator_slug_raw for r in bop_result.staging_rows} == {
+        "dne-remittance-inflow"
+    }
+
+
+def test_bop_is_npr_remittance_not_headcount(bop_result: ParserResult) -> None:
+    """The crux data-honesty assertion: this IS remittance NPR, the right magnitude.
+
+    Complements the v0.7.0 headcount determination: the migrant-WORKER file is counts
+    (band 10^5–10^6 persons); THIS BoP file is the remittance MONEY (band ~NPR 1.2–1.7
+    TRILLION = 1.2–1.7M in npr_million). A recent full fiscal year must land in that
+    band and carry the NPR-million unit — never a headcount-scale value or a count unit.
+    """
+    assert {r.unit for r in bop_result.staging_rows} == {"npr_million"}
+    # Every full-FY remittance value is in the trillion-NPR band (≥ NPR 1.0 trillion =
+    # 1_000_000 in npr_million), not the headcount band (~10^5–10^6 persons).
+    assert all(r.value >= 1_000_000.0 for r in bop_result.staging_rows)
+    assert all(r.unit != "count" for r in bop_result.staging_rows)
+
+
+def test_bop_full_fy_magnitude(bop_result: ParserResult) -> None:
+    """Full-FY (July cumulative) Credit values match NRB's published remittance totals.
+
+    FY2079/80 (AD 2022/23) = 1,240,686 npr_million = NPR 1.24 trillion; FY2080/81
+    (AD 2023/24) = 1,445,315 = NPR 1.45 trillion (ADR-0011 magnitude check).
+    """
+    by_fy = {r.fiscal_year_bs: r.value for r in bop_result.staging_rows}
+    assert by_fy["2079/80"] == pytest.approx(1_240_686.4, abs=0.5)
+    assert by_fy["2080/81"] == pytest.approx(1_445_315.1, abs=0.5)
+
+
+def test_bop_reads_credit_not_debit_or_net(bop_result: ParserResult) -> None:
+    """The promoted value is the CREDIT (inflow) side, not Debit or Net.
+
+    Remittance INFLOW is the Credit side. In the fixture, Personal transfers FY2022/23
+    July carries Credit=1,240,686.4, Debit=500, Net=1,240,186.4 — distinct enough that a
+    wrong-side read is provable. The fact must equal the Credit value.
+    """
+    fy_2079 = next(r for r in bop_result.staging_rows if r.fiscal_year_bs == "2079/80")
+    assert fy_2079.value == pytest.approx(1_240_686.4, abs=0.5)
+    # Guard: not the Debit (500) and not the Net (1,240,186.4) side.
+    assert fy_2079.value != pytest.approx(500.0, abs=0.5)
+    assert fy_2079.value != pytest.approx(1_240_186.4, abs=0.5)
+
+
+def test_bop_partial_fy_excluded_no_fabrication(bop_result: ParserResult) -> None:
+    """A partial trailing fiscal year (no July column) yields NO annual row.
+
+    The fixture's third block (FY2024/25P / BS 2081/82) stops at September — its full-FY
+    cumulative total does not exist yet. The parser must NOT fabricate or forward a
+    partial cumulative; FY 2081/82 must be absent (the Data Continuity Protocol: never
+    fabricate forward).
+    """
+    fys = {r.fiscal_year_bs for r in bop_result.staging_rows}
+    assert fys == {"2079/80", "2080/81"}
+    assert "2081/82" not in fys
+
+
+def test_bop_all_annual_grade_b(bop_result: ParserResult) -> None:
+    assert all(r.reporting_period_type == "annual" for r in bop_result.staging_rows)
+    assert all(r.confidence_grade_proposed == "B" for r in bop_result.staging_rows)
+
+
+def test_bop_fiscal_year_ad_label_mapped(bop_result: ParserResult) -> None:
+    """AD fiscal-year labels are carried through alongside the BS canonical period."""
+    by_fy = {r.fiscal_year_bs: r.fiscal_year_ad_label for r in bop_result.staging_rows}
+    assert by_fy["2079/80"] == "2022/23"
+    assert by_fy["2080/81"] == "2023/24"
+
+
+def test_bop_annual_span_valid(bop_result: ParserResult) -> None:
+    """Each annual row has a one-year AD span (mid-July → mid-July)."""
+    for r in bop_result.staging_rows:
+        assert r.reporting_period_ad_start < r.reporting_period_ad_end
+        assert r.reporting_period_ad_end.year - r.reporting_period_ad_start.year == 1
+
+
+def test_bop_all_rows_are_staging_drafts(bop_result: ParserResult) -> None:
+    for row in bop_result.staging_rows:
+        assert isinstance(row, StagingRowDraft)
+
+
+def test_bop_no_dimensional_rows(bop_bpm6_xlsx: Path) -> None:
+    """BoP is a single-series file — parse_dne emits staging rows, NOT dimensional."""
+    res = parse_dne(str(bop_bpm6_xlsx), source_document_id="test-bop-dne")
+    assert res.dimensional_rows == []
+    assert len(res.staging_rows) == 2
+
+
+def test_bop_json_serialisable(bop_result: ParserResult) -> None:
+    """The result dict round-trips through json with the remittance slug + unit."""
+    dumped = json.dumps([asdict(r) for r in bop_result.staging_rows], default=str)
+    assert "dne-remittance-inflow" in dumped
+    assert "npr_million" in dumped

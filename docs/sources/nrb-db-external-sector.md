@@ -25,17 +25,29 @@ directly feed the Money In and Money Out pillars of Pulse v1.
 
 - `forex-reserves-monthly` — Gross foreign exchange reserve (NPR + USD)
 - `bop-bpm5-monthly` — Balance of Payments (BPM5 methodology)
-- `bop-bpm6-monthly` — Balance of Payments (BPM6 methodology)
+- `bop-bpm6-monthly` — Balance of Payments (BPM6 methodology). **As of 2026-06-07 this
+  is also the source of the fulfilled remittance-NPR series — see below.**
 - `exchange-rate-monthly` — NPR per major currencies (USD, INR, EUR, GBP)
 - `foreign-trade-monthly` — Exports + imports (NPR billion)
-- `remittance-inflows-monthly` — Migrant worker remittance inflows (NPR billion)
-  — **see the data-honesty note below: the `Migrant-Workers-Remittance.xlsx` file
-  currently on disk is migrant-worker HEADCOUNTS, not remittance NPR.**
+- `remittance-inflows-monthly` — Migrant worker remittance inflows (NPR). **FULFILLED
+  2026-06-07 (ADR-0011) — sourced from the BoP BPM6 file, NOT the headcount file. See
+  the two notes below.**
 - `tourist-arrivals-monthly` — Arrivals by nationality/mode
 
+> **Remittance-NPR FULFILLED (2026-06-07, ADR-0011) — from `Balance-of-Payments-BPM6.xlsx`.**
+> The real remittance NPR inflow lives in the BoP BPM6 file's secondary-income block, on
+> the **Personal transfers (`1.C.2.1`) Credit** line — NRB's headline remittance figure
+> (the inflow Nepal receives). The DNE parser (v0.8.0) promotes it as the annual single
+> series **`dne-remittance-inflow`** / unit **`npr_million`**, from the full-fiscal-year
+> (July) cumulative Credit column. Magnitude verified: FY2079/80 (AD 2022/23) =
+> **1,240,686 npr_million = NPR 1.24 trillion**; FY2080/81 = 1,445,315 (NPR 1.45 tn);
+> FY2081/82 = 1,731,270 (NPR 1.73 tn) — exactly NRB's ~NPR 1.2–1.7-trillion annual
+> remittance band, the single largest forex source. Confidence `B`, annual periods.
+> (A by-month cumulative series and the `O/W Workers' remittances` sub-line are
+> deferred; see the parser README v0.8.0 section.)
+
 > **Data-honesty note — `Migrant-Workers-Remittance.xlsx` is HEADCOUNTS, not NPR
-> (verified 2026-06-07, ADR-0011).** Despite its filename and the
-> `remittance-inflows-monthly` line above, the downloaded
+> (verified 2026-06-07, ADR-0011).** Despite its filename, the downloaded
 > `Migrant-Workers-Remittance.xlsx` workbook contains migrant-WORKER **headcounts**
 > (departures by country / by district / by month), with **zero remittance NPR** in
 > any sheet. Evidence: every value is a (Male, Female, Total) demographic triple; the
@@ -44,9 +56,8 @@ directly feed the Money In and Money Out pillars of Pulse v1.
 > 1.4-trillion annual inflow). The DNE parser (v0.7.0) therefore ingests its `Country`
 > sheet as dimensional facts under base measure **`dne-migrant-workers`** / unit
 > **`count`** (`dimension_kind='country'`), **NOT** `dne-remittance-inflow`/`npr_million`.
-> Remittance **NPR** must be sourced from a different DNE file (e.g. the BoP /
-> external-sector summary tables); `remittance-inflows-monthly` remains an
-> unfulfilled extraction target until that NPR series is located and registered.
+> Remittance **NPR** comes instead from the BoP BPM6 file (see the note above) — now
+> fulfilled.
 
 ## Provenance
 

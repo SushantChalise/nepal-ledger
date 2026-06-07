@@ -195,6 +195,17 @@ const DNE_INDICATORS: readonly SeedIndicator[] = [
     nativeFrequency: 'annual',
     sourceAgency: 'Nepal Rastra Bank',
   },
+  // Remittance inflow (BoP BPM6 Personal transfers, Credit) — the "Money In"
+  // cornerstone. parser nrb_dne v0.8.0. npr_million, annual (full-FY July
+  // cumulative). ADR-0011: FY2081/82 = 1,731,270 = NPR 1.73 trillion.
+  {
+    slug: 'dne-remittance-inflow',
+    nameEn: 'Remittance Inflow (personal transfers, BPM6)',
+    category: 'external_sector',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
 ];
 
 // ─── Controlled unit vocabulary ────────────────────────────────────────────

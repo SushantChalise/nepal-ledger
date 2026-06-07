@@ -62,6 +62,13 @@ agencies; figures revised across publications).
 ADR: ADR-0003 — no LLM / AI calls. Pure file-in → dataclass-out.
 
 Version history:
+    0.8.0 — Balance-of-Payments-BPM6 → `dne-remittance-inflow` annual single series.
+            VERIFIED remittance NPR (ADR-0011): Personal transfers (1.C.2.1) Credit,
+            full-FY (July) cumulative column; unit `npr_million`; FY2022/23 = 1,240,686
+            ≈ NPR 1.24 trillion. This is the real remittance money the headcount file
+            (v0.7.0) lacked. Dedicated allowlist route (not the generic detector, which
+            read only the August cumulative and polluted the catalogue with ~100 BoP
+            lines). Other BoP lines + the by-month cumulative series deferred.
     0.7.0 — Migrant-Workers-Remittance → dimensional_rows (`dimension_kind='country'`,
             ADR-0015). VERIFIED HEADCOUNT, not remittance NPR (ADR-0011): base measure
             `dne-migrant-workers`, unit `count`. Country sheet only; district + the
@@ -99,7 +106,7 @@ from _common.types import (
     StagingRowDraft,
 )
 
-PARSER_VERSION: Final[str] = "0.7.0"
+PARSER_VERSION: Final[str] = "0.8.0"
 SOURCE_ID: Final[str] = "nrb-dne-xlsx"
 
 # Filename stems (lowercased, no extension) routed to the dimensional fact path
@@ -121,6 +128,18 @@ _DIMENSIONAL_FILE_STEMS: Final[frozenset[str]] = frozenset(
 _REAL_SECTOR_FILE_STEMS: Final[frozenset[str]] = frozenset(
     {"national-accounts", "consumer-price-index"}
 )
+
+# Filename stems routed to the v0.8.0 Balance-of-Payments (BPM6) single-series path.
+# The BoP file is a CUMULATIVE year-to-date MONTHLY panel (a sparse fiscal-year banner
+# every 12 month-columns × 3 Credit/Debit/Net sub-columns), NOT the standard wide
+# layout. The generic detector mis-reads it: it locks onto the sparse FY banner row,
+# extracts only each block's FIRST (August) month-column, mislabels that ~1-month
+# cumulative value as the annual FY total (off by ~13x), and promotes all ~100 BoP
+# line items as bogus single-series "indicators" (catalogue pollution, ADR-0014). This
+# file routes to an EXPLICIT ALLOWLIST parser that promotes only the headline
+# remittance series (`dne-remittance-inflow`) from the correct full-fiscal-year
+# (July) cumulative Credit column; see `_BOP_SERIES_SPECS`.
+_BOP_FILE_STEMS: Final[frozenset[str]] = frozenset({"balance-of-payments-bpm6"})
 
 
 # ---------------------------------------------------------------------------
@@ -2453,6 +2472,239 @@ def _parse_migrant_workers(path: Path) -> tuple[list[DimensionalRowDraft], list[
     return _parse_migrant_workers_country_sheet(rows)
 
 
+# ---------------------------------------------------------------------------
+# Balance of Payments (BPM6) → remittance-inflow single series (v0.8.0)
+# ---------------------------------------------------------------------------
+#
+# DATA-HONESTY DETERMINATION (ADR-0011, ran 2026-06-07 on the real file):
+# Balance-of-Payments-BPM6.xlsx HOLDS the real remittance NPR inflow that
+# Migrant-Workers-Remittance.xlsx does NOT (the latter is headcounts — see the v0.7.0
+# note). The standard BPM6 secondary-income hierarchy is present:
+#   1.C       Secondary income
+#   1.C.2.1   Personal transfers (Current transfers between resident & nonresident
+#             households)            ← NRB's headline "remittances" line
+#   1.C.2.1.1 O/W Workers' remittances  (an "of which" sub-component of 1.C.2.1)
+# We promote **Personal transfers (1.C.2.1) Credit** as `dne-remittance-inflow` — the
+# inflow Nepal RECEIVES (Credit side), and the figure NRB reports as remittances (for
+# FY2022/23 the two lines are even identical). Evidence + magnitude check (Credit,
+# full fiscal year): FY2022/23 = 1,240,686 / FY2023/24 = 1,445,315 / FY2024/25 =
+# 1,731,270 (sheet header "(NPR in Million)") = NPR 1.24 / 1.45 / 1.73 TRILLION ✓ —
+# exactly NRB's ~NPR 1.2–1.7-trillion annual remittance band (the single largest forex
+# source). Unit `npr_million`, confidence `B`.
+#
+# LAYOUT (cumulative YTD monthly panel — NOT standard wide):
+#   row 0 : title "Summary of Balance of Payments as per BPM6"
+#   row 1 : unit "(NPR in Million)"
+#   row 2 : SPARSE fiscal-year banner — one AD-FY label at the head (Aug column) of
+#           each 12-month block: "2022/23R" @col2, "2023/24R" @col38, "2024/25R"
+#           @col74, "2025/26P" @col110. (forward-fill is implicit: a block = 36 cols.)
+#   row 3 : AD month name (Aug, Sep, … July) at each month-group's first sub-column.
+#   row 4 : Credit / Debit / Net repeating (3 sub-columns per month group).
+#   col 0 : outline code ("1.C.2.1"); col 1 : particulars label.
+#   Values are CUMULATIVE YEAR-TO-DATE: Aug = 1 month, Sep = 2 months, … July = full
+#   FY. We therefore promote the **annual total** = the **July (full-FY) Credit column**
+#   of each COMPLETE block, keyed to the block's fiscal year. A partial trailing block
+#   (e.g. 2025/26P, which stops at November — no July column) yields NO row: the annual
+#   total does not exist yet and we never fabricate / forward a partial cumulative.
+#
+# WHY A DEDICATED ROUTE (not the generic detector): the generic `_parse_sheet` locks
+# onto row 2 (the only row whose cells parse as periods) and reads only each block's
+# FIRST month-column (August), mislabelling that ~1-month cumulative as the annual FY
+# (off by ~13x: it emitted 94,498 for FY2079/80 instead of 1,240,686) AND promoting all
+# ~100 BoP line items as bogus single-series indicators (catalogue pollution). This
+# route promotes ONLY the allowlisted remittance series at the correct July column.
+# The full per-line BoP panel (other secondary-income lines, the by-month cumulative
+# series, the financial-account flows) is intentionally DEFERRED — see the README.
+
+
+@dataclass(frozen=True)
+class _BopSeriesSpec:
+    """One allowlisted BoP line: which outline code, which side, how to label it.
+
+    ``outline_code`` is the exact col-0 outline enumerator (e.g. ``"1.C.2.1"``);
+    ``side`` is the Credit/Debit/Net sub-column to read (remittance INFLOW = Credit).
+    ``slug``/``name``/``unit`` are the canonical, ADR-0011-verified outputs.
+    """
+
+    outline_code: str
+    side: str  # "Credit" | "Debit" | "Net"
+    slug: str
+    name: str
+    unit: str
+
+
+# The allowlist. ONLY the headline remittance inflow is promoted this round (ADR-0014:
+# no catalogue pollution). Personal transfers (1.C.2.1) Credit is NRB's headline
+# remittance figure; unit verified NPR million (sheet header "(NPR in Million)") by
+# magnitude (FY2022/23 full-FY = 1,240,686 ≈ NPR 1.24 trillion). The "O/W Workers'
+# remittances" sub-line (1.C.2.1.1) is a near-identical subset — deferred to avoid two
+# overlapping headline remittance series under one mission KPI.
+_BOP_SERIES_SPECS: Final[tuple[_BopSeriesSpec, ...]] = (
+    _BopSeriesSpec(
+        outline_code="1.C.2.1",
+        side="Credit",
+        slug="dne-remittance-inflow",
+        name="Remittance Inflow (personal transfers, BPM6)",
+        unit="npr_million",
+    ),
+)
+
+# The BoP BPM6 sheet name (single sheet in the file).
+_BOP_SHEET: Final[str] = "BOP BPM6"
+
+# Header row indices (0-based) for the cumulative-monthly BoP panel.
+_BOP_FY_BANNER_ROW: Final[int] = 2
+_BOP_MONTH_LABEL_ROW: Final[int] = 3
+_BOP_SIDE_ROW: Final[int] = 4
+_BOP_FIRST_DATA_ROW: Final[int] = 5
+
+# The AD month whose cumulative column carries the FULL fiscal-year total. The panel
+# orders months Aug → next Jul, so the July group's cumulative value is the annual sum.
+_BOP_FY_TOTAL_AD_MONTH: Final[int] = 7  # July
+
+# Offsets from a month-group's anchor (first/Credit sub-column) to each side column.
+_BOP_SIDE_OFFSETS: Final[dict[str, int]] = {"Credit": 0, "Debit": 1, "Net": 2}
+
+
+def _bop_full_year_columns(
+    rows: list[tuple[object, ...]],
+) -> dict[str, dict[str, int]]:
+    """Map each fiscal year → its {side: full-FY (July) sub-column index}.
+
+    Walks the month-label row (row 3) left→right, forward-filling the sparse FY banner
+    (row 2). For each month group whose label is "July" (``_BOP_FY_TOTAL_AD_MONTH``),
+    records the Credit/Debit/Net sub-column indices keyed to the carried fiscal year —
+    that group's cumulative value IS the full-FY total. A block with no July group (a
+    partial trailing year) contributes nothing, so its (non-existent) annual total is
+    never fabricated. Returns ``{fy_ad_label: {"Credit": col, "Debit": col, "Net": col}}``.
+    """
+    fy_row = rows[_BOP_FY_BANNER_ROW] if len(rows) > _BOP_FY_BANNER_ROW else ()
+    month_row = rows[_BOP_MONTH_LABEL_ROW] if len(rows) > _BOP_MONTH_LABEL_ROW else ()
+    side_row = rows[_BOP_SIDE_ROW] if len(rows) > _BOP_SIDE_ROW else ()
+    max_col = max((len(fy_row), len(month_row), len(side_row)))
+
+    out: dict[str, dict[str, int]] = {}
+    current_fy: str | None = None
+    for col in range(max_col):
+        banner = _norm_text(fy_row[col]) if col < len(fy_row) else ""
+        if banner:
+            parsed = _parse_annual_fy(banner)
+            if parsed is not None:
+                current_fy = parsed[1]  # AD "YYYY/YY" label
+        month_label = _norm_text(month_row[col]) if col < len(month_row) else ""
+        ad_month = _parse_ad_month_name(month_label)
+        if ad_month != _BOP_FY_TOTAL_AD_MONTH or current_fy is None:
+            continue
+        # Confirm this anchor column heads a Credit/Debit/Net group (row 4 == "Credit").
+        if (
+            col >= len(side_row)
+            or _norm_text(side_row[col]).strip().lower() != "credit"
+        ):
+            continue
+        out[current_fy] = {
+            side: col + offset for side, offset in _BOP_SIDE_OFFSETS.items()
+        }
+    return out
+
+
+def _parse_bop_sheet(
+    rows: list[tuple[object, ...]],
+) -> tuple[list[StagingRowDraft], list[ParserError]]:
+    """Emit annual remittance-inflow staging rows from the BoP cumulative panel.
+
+    For each allowlisted spec, find the col-0 row whose outline code matches, then emit
+    one annual ``StagingRowDraft`` per fiscal year whose full-FY (July) side column holds
+    a numeric value. Returns ``([], [])`` when the header/data shape is absent (the caller
+    turns an empty result into the standard NoDataExtracted partial)."""
+    if len(rows) <= _BOP_FIRST_DATA_ROW:
+        return [], []
+    fy_cols = _bop_full_year_columns(rows)
+    if not fy_cols:
+        return [], []
+
+    # Index data rows by their (stripped) outline code in col 0.
+    row_by_code: dict[str, tuple[object, ...]] = {}
+    for ri in range(_BOP_FIRST_DATA_ROW, len(rows)):
+        code = _norm_text(rows[ri][0]) if rows[ri] else ""
+        if code and code not in row_by_code:
+            row_by_code[code] = rows[ri]
+
+    staging: list[StagingRowDraft] = []
+    for spec in _BOP_SERIES_SPECS:
+        row = row_by_code.get(spec.outline_code)
+        if row is None:
+            continue
+        for fy_ad, side_cols in fy_cols.items():
+            col = side_cols.get(spec.side)
+            if col is None or col >= len(row):
+                continue
+            value = _safe_float(row[col])
+            if value is None:
+                continue
+            fy_bs = fiscal_year_label(int(fy_ad.split("/")[0]) + _BS_AD_FY_OFFSET)
+            staging.append(
+                _annual_fy_to_draft_fields(
+                    fy_bs=fy_bs, fy_ad=fy_ad, unit=spec.unit,
+                    slug=spec.slug, value=value,
+                )
+            )
+    return staging, []
+
+
+def _parse_bop(path: Path) -> tuple[list[StagingRowDraft], list[ParserError]]:
+    """Parse Balance-of-Payments-BPM6.xlsx → headline remittance-inflow single series.
+
+    Promotes the allowlisted remittance line (`dne-remittance-inflow`) as ANNUAL facts
+    from the full-fiscal-year (July) cumulative Credit column. Never raises: an
+    unreadable file yields a typed EncodingError; a missing sheet yields a typed Other
+    error; the caller turns an empty result into the standard NoDataExtracted partial.
+    """
+    try:
+        wb = openpyxl.load_workbook(filename=str(path), read_only=True, data_only=True)
+    except (OSError, KeyError, ValueError, Exception) as exc:  # noqa: BLE001
+        return [], [
+            ParserError(
+                error_class="EncodingError",
+                error_detail=f"openpyxl could not open {path.name}: {exc}",
+            )
+        ]
+    sheet = _BOP_SHEET if _BOP_SHEET in wb.sheetnames else wb.sheetnames[0]
+    rows = list(wb[sheet].iter_rows(values_only=True))
+    return _parse_bop_sheet(rows)
+
+
+def _bop_result(path: Path) -> ParserResult:
+    """Wrap ``_parse_bop`` into a ``ParserResult`` (single return site).
+
+    Mirrors ``_real_sector_result``: an empty result becomes a ``partial`` with a
+    NoDataExtracted note; otherwise ``success`` (no errors) or ``partial`` (flagged).
+    """
+    staging, errors = _parse_bop(path)
+    if not staging:
+        errors.append(
+            ParserError(
+                error_class="Other",
+                error_detail=(
+                    "NoDataExtracted: no BoP headline series produced from "
+                    f"{path.name} (no allowlisted outline code / full-FY column matched)"
+                ),
+            )
+        )
+        return ParserResult(
+            status="partial",
+            parser_version=PARSER_VERSION,
+            staging_rows=[],
+            errors=errors,
+        )
+    status: ParserStatus = "partial" if errors else "success"
+    return ParserResult(
+        status=status,
+        parser_version=PARSER_VERSION,
+        staging_rows=staging,
+        errors=errors,
+    )
+
+
 def _real_sector_result(path: Path) -> ParserResult:
     """Wrap ``_parse_real_sector`` into a ``ParserResult`` (single return site).
 
@@ -2537,12 +2789,9 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
             ],
         )
 
-    if _is_real_sector_path(path):
-        # Real-sector files (National-Accounts, CPI) use the annual column-series
-        # layout (FY down col 0, headline-indicator value columns). Route to the
-        # allowlist parser instead of the generic per-sheet detector — the generic
-        # one would mis-read the GVA-by-industry rows as indicators (ADR-0014).
-        return _real_sector_result(path)
+    specialized = _specialized_single_series_result(path)
+    if specialized is not None:
+        return specialized
 
     try:
         wb = openpyxl.load_workbook(
@@ -2608,6 +2857,40 @@ def _is_real_sector_path(path: Path) -> bool:
     → stem ``national-accounts`` ∈ ``_REAL_SECTOR_FILE_STEMS``.
     """
     return path.stem.strip().lower() in _REAL_SECTOR_FILE_STEMS
+
+
+def _is_bop_path(path: Path) -> bool:
+    """True if a file routes to the v0.8.0 Balance-of-Payments (BPM6) path.
+
+    Matched on the filename stem (case-insensitive), e.g.
+    ``Balance-of-Payments-BPM6.xlsx`` → stem ``balance-of-payments-bpm6`` ∈
+    ``_BOP_FILE_STEMS``.
+    """
+    return path.stem.strip().lower() in _BOP_FILE_STEMS
+
+
+def _specialized_single_series_result(path: Path) -> ParserResult | None:
+    """Route a file to its dedicated allowlist single-series parser, or None.
+
+    These files do NOT use the standard wide layout, and the generic per-sheet detector
+    mis-reads them into catalogue pollution (ADR-0014). Each routes (by filename stem)
+    to an explicit-allowlist parser instead:
+
+    - Real-sector (National-Accounts, CPI): annual column-series (FY down col 0,
+      headline-indicator value columns) — the generic detector would mis-read the
+      GVA-by-industry rows as ~14k bogus indicators.
+    - Balance-of-Payments-BPM6 (v0.8.0): a cumulative-YTD monthly panel — the generic
+      detector would read only each block's August cumulative (mislabelled as the
+      annual total, off by ~13x) and promote ~100 BoP line items as bogus indicators.
+
+    Returns the dedicated parser's ``ParserResult``, or None when no specialized route
+    matches (the caller then runs the generic per-sheet detector).
+    """
+    if _is_real_sector_path(path):
+        return _real_sector_result(path)
+    if _is_bop_path(path):
+        return _bop_result(path)
+    return None
 
 
 def _dispatch_dimensional(

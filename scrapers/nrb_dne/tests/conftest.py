@@ -837,3 +837,151 @@ def migrant_workers_xlsx() -> Path:
     if not p.exists():
         _build_migrant_workers(p)
     return p
+
+
+# ---------------------------------------------------------------------------
+# v0.8.0 fixture — Balance-of-Payments-BPM6 "BOP BPM6" sheet (remittance NPR)
+# ---------------------------------------------------------------------------
+
+
+def _build_bop_bpm6(path: Path) -> None:
+    """Fixture: the Balance-of-Payments-BPM6 cumulative-YTD monthly panel.
+
+    Mirrors the real "BOP BPM6" sheet EXACTLY in stride so the v0.8.0 allowlist parser
+    is exercised end-to-end (the file is named so parse()'s _BOP_FILE_STEMS dispatch
+    routes it here):
+
+      Row 1 (idx 0): title "Summary of Balance of Payments as per BPM6"
+      Row 2 (idx 1): unit "(NPR in Million)"
+      Row 3 (idx 2): SPARSE fiscal-year banner — one AD-FY label at each block's first
+                     (Aug) column. Three blocks: 2022/23R, 2023/24R, 2024/25P.
+      Row 4 (idx 3): AD month name (Aug, Sep, …, July) at each month group's anchor.
+      Row 5 (idx 4): Credit / Debit / Net repeating (3 sub-cols per month group).
+      Row 6+ (idx 5+): outline code (col 0), particulars label (col 1), cumulative
+                     monthly values across the Credit/Debit/Net sub-columns.
+
+    To keep the suite fast WITHOUT losing the load-bearing shape, this fixture uses a
+    SHORT month sequence per block — Aug, Sep, July — i.e. it includes the **July
+    full-FY column** (the only column the parser reads) and a couple of leading months
+    so the cumulative growth and the Aug-anchored block boundary are real. Each block =
+    3 month groups × 3 sub-cols = 9 columns; blocks start at cols 2, 11, 20.
+
+    THREE fiscal years, but the THIRD (2024/25P) is deliberately PARTIAL — it stops at
+    September (NO July group) — to lock in the no-fabrication rule: a partial trailing
+    block must yield NO annual row (its full-FY total does not exist yet).
+
+    Remittance rows mirror the real hierarchy: "1.C" Secondary income, "1.C.2.1"
+    Personal transfers (the allowlisted headline → dne-remittance-inflow), "1.C.2.1.1"
+    O/W Workers' remittances (a near-identical sub-line, NOT promoted this round), plus
+    a "1.A" Goods and Services decoy row that MUST NOT be promoted (only the allowlisted
+    outline code is). Credit values for Personal transfers at the July column are the
+    asserted full-FY totals (NPR-million scale): FY2022/23 = 1,240,686, FY2023/24 =
+    1,445,315. Debit/Net carry distinct values so a Credit-side read is provable.
+    """
+    _ensure_fixture_dir()
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = "BOP BPM6"
+    ws.cell(row=1, column=1, value="Summary of Balance of Payments as per BPM6")
+    ws.cell(row=2, column=2, value="(NPR in Million)")
+    ws.cell(row=3, column=1, value="S.N.")
+    ws.cell(row=3, column=2, value="Particulars")
+
+    # Short month sequence per block (includes the load-bearing July full-FY column).
+    months = ["Aug", "Sep", "July"]
+    # Block layout: openpyxl 1-indexed; first value column = 3 (col0=S.N., col1=label).
+    # Each block = 3 groups × 3 sub-cols = 9 cols. Block starts: 3, 12, 21.
+    blocks = [(3, "2022/23R", True), (12, "2023/24R", True), (21, "2024/25P", False)]
+    #   the 3rd block (2024/25P) is PARTIAL — built without its July group below.
+
+    for start, fy_label, _full in blocks:
+        # FY banner (row 3 == openpyxl row 3): only at the block's first (Aug) column.
+        ws.cell(row=3, column=start, value=fy_label)
+
+    def _group_cols(block_start: int, month_idx: int) -> int:
+        return block_start + month_idx * 3  # anchor (Credit) sub-column
+
+    # Month-label row (row 4) + side row (row 5).
+    for start, _fy, full in blocks:
+        present = months if full else months[:-1]  # partial block: drop July
+        for mi, m in enumerate(present):
+            anchor = _group_cols(start, mi)
+            ws.cell(row=4, column=anchor, value=m)
+            ws.cell(row=5, column=anchor, value="Credit ")  # trailing space, as real
+            ws.cell(row=5, column=anchor + 1, value="Debit")
+            ws.cell(row=5, column=anchor + 2, value="Net")
+
+    # Data rows (row 6+). For each (row, block) we set the Aug/Sep/July Credit values
+    # (cumulative-growing) plus distinct Debit/Net so a Credit read is provable.
+    # value tuples are (Credit, Debit, Net) per month group, Aug→Sep→July.
+    # Personal transfers July Credit = the asserted full-FY remittance totals.
+    body: list[tuple[str, str, dict[str, list[tuple[float, float, float]]]]] = [
+        (
+            "1.A", "Goods and Services",  # DECOY — must NOT be promoted
+            {
+                "2022/23R": [(30277.0, 149530.0, -119252.0), (60048.0, 308097.0, -248048.0),
+                             (400000.0, 1800000.0, -1400000.0)],
+                "2023/24R": [(32242.0, 160000.0, -127758.0), (64000.0, 320000.0, -256000.0),
+                             (420000.0, 1850000.0, -1430000.0)],
+                "2024/25P": [(34000.0, 170000.0, -136000.0), (68000.0, 340000.0, -272000.0)],
+            },
+        ),
+        (
+            "1.C", "Secondary income",  # parent — not allowlisted
+            {
+                "2022/23R": [(104639.0, 7000.0, 97639.0), (210000.0, 14000.0, 196000.0),
+                             (1377407.0, 90000.0, 1287407.0)],
+                "2023/24R": [(129124.0, 8000.0, 121124.0), (250000.0, 16000.0, 234000.0),
+                             (1577941.0, 95000.0, 1482941.0)],
+                "2024/25P": [(148642.0, 9000.0, 139642.0), (300000.0, 18000.0, 282000.0)],
+            },
+        ),
+        (
+            "1.C.2.1",
+            "Personal transfers (Current transfers between resident and nonresident households)",
+            {
+                # July Credit = the asserted full-FY remittance total (NPR million).
+                "2022/23R": [(94498.8, 100.0, 94398.8), (192356.6, 200.0, 192156.6),
+                             (1240686.4, 500.0, 1240186.4)],
+                "2023/24R": [(116019.1, 110.0, 115909.1), (230000.0, 220.0, 229780.0),
+                             (1445315.1, 600.0, 1444715.1)],
+                # Partial block: Aug, Sep only — NO July → NO annual row expected.
+                "2024/25P": [(137689.8, 120.0, 137569.8), (270000.0, 240.0, 269760.0)],
+            },
+        ),
+        (
+            "1.C.2.1.1", "O/W Workers' remittances",  # sub-line — NOT promoted this round
+            {
+                "2022/23R": [(94498.8, 0.0, 94498.8), (192356.6, 0.0, 192356.6),
+                             (1240686.4, 0.0, 1240686.4)],
+                "2023/24R": [(116019.1, 0.0, 116019.1), (230000.0, 0.0, 230000.0),
+                             (1445315.1, 0.0, 1445315.1)],
+                "2024/25P": [(136602.9, 0.0, 136602.9), (270000.0, 0.0, 270000.0)],
+            },
+        ),
+    ]
+    for r_off, (code, label, by_fy) in enumerate(body):
+        r = 6 + r_off
+        ws.cell(row=r, column=1, value=code)
+        ws.cell(row=r, column=2, value=label)
+        for start, fy, full in blocks:
+            triples = by_fy[fy]
+            present = months if full else months[:-1]
+            for mi, _m in enumerate(present):
+                anchor = _group_cols(start, mi)
+                credit, debit, net = triples[mi]
+                ws.cell(row=r, column=anchor, value=credit)
+                ws.cell(row=r, column=anchor + 1, value=debit)
+                ws.cell(row=r, column=anchor + 2, value=net)
+    wb.save(str(path))
+
+
+@pytest.fixture(scope="session")
+def bop_bpm6_xlsx() -> Path:
+    # Named "Balance-of-Payments-BPM6.xlsx" so parse()'s _BOP_FILE_STEMS dispatch
+    # routes it to the remittance-inflow single-series path end-to-end.
+    p = FIXTURE_DIR / "Balance-of-Payments-BPM6.xlsx"
+    if not p.exists():
+        _build_bop_bpm6(p)
+    return p

@@ -38,10 +38,67 @@ The parser handles all five pages identically.
 
 ## PARSER_VERSION
 
-`0.7.0`
+`0.8.0`
 
-Defined in `parser.py` as `PARSER_VERSION: Final[str] = "0.7.0"`. Bump on any
+Defined in `parser.py` as `PARSER_VERSION: Final[str] = "0.8.0"`. Bump on any
 behavior change (see [CONVENTIONS.md](../../docs/CONVENTIONS.md)).
+
+### v0.8.0 changes (2026-06-07)
+
+Balance-of-Payments-BPM6 → `dne-remittance-inflow` annual single series — the real
+**remittance NPR inflow** ("Money In" cornerstone, the single largest forex source).
+
+**DATA-HONESTY DETERMINATION — this file HOLDS the remittance NPR the headcount file
+(v0.7.0) lacked.** Verified (ADR-0011) on the real file before writing any code. The
+standard BPM6 secondary-income hierarchy is present, and the headline remittance figure
+is **Personal transfers (`1.C.2.1`) Credit** — the inflow Nepal *receives*:
+
+| BPM6 outline | Line | Promoted? |
+|---|---|---|
+| `1.C` | Secondary income | no (parent) |
+| `1.C.2.1` | Personal transfers (current transfers between resident & nonresident households) | **YES → `dne-remittance-inflow`** |
+| `1.C.2.1.1` | O/W Workers' remittances | no (near-identical sub-line; deferred) |
+
+**Magnitude check (Credit, full fiscal year):** FY2079/80 (AD 2022/23) = **1,240,686
+npr_million = NPR 1.24 trillion**; FY2080/81 = 1,445,315 (NPR 1.45 tn); FY2081/82 =
+1,731,270 (NPR 1.73 tn) ✓ — exactly NRB's published ~NPR 1.2–1.7-trillion annual
+remittance band. (For FY2022/23 the Personal-transfers and Workers'-remittances lines
+are even identical.)
+
+| Field | Value |
+|-------|-------|
+| Sheet promoted | `BOP BPM6` only |
+| `indicator_slug_raw` | `dne-remittance-inflow` |
+| name | `Remittance Inflow (personal transfers, BPM6)` |
+| `unit` | `npr_million` (sheet header "(NPR in Million)") |
+| period | **annual** (one fact per complete fiscal year) |
+| confidence | `B` |
+
+**Layout (cumulative-YTD monthly panel — NOT standard wide).** Row 2 is a sparse
+fiscal-year banner (`2022/23R`, `2023/24R`, `2024/25R`, `2025/26P`) at the head (Aug
+column) of each 12-month block; row 3 is an AD month name (Aug → next Jul) at each month
+group's anchor; row 4 is **Credit / Debit / Net** repeating. Values are **cumulative
+year-to-date** (Aug = 1 month, Sep = 2 months, … July = full FY). We therefore promote
+the **annual total = the July (full-FY) Credit column** of each COMPLETE block. A
+**partial trailing block** (`2025/26P`, which stops at November — no July column) yields
+**NO row**: the annual total does not exist yet and we never fabricate / forward a
+partial cumulative (Data Continuity Protocol).
+
+**Why a dedicated allowlist route (not the generic detector).** The generic
+`_parse_sheet` locks onto row 2 (the only row whose cells parse as periods) and reads
+only each block's **first month column (August)**, mislabelling that ~1-month
+cumulative as the annual FY total (**off by ~13×**: it emitted 94,498 for FY2079/80
+instead of 1,240,686) AND promoting **~100 BoP line items** as bogus single-series
+indicators (catalogue pollution, ADR-0014). This file now routes (by filename stem,
+`_BOP_FILE_STEMS`) to `_parse_bop`, which promotes ONLY the allowlisted remittance
+series (`_BOP_SERIES_SPECS`) from the correct July column.
+
+**Deferred (same file, next round):** the `O/W Workers' remittances` sub-line; the full
+per-line BoP panel (other secondary-income lines, the financial-account flows); and the
+**by-month cumulative** remittance series (a monthly YTD shape — would need an explicit
+"cumulative" period semantic before promotion, to avoid implying discrete-month values).
+A by-country NPR remittance breakdown (if/when a source file carries one) would be a
+future `dimension_kind='country'` dimensional follow-on.
 
 ### v0.7.0 changes (2026-06-07)
 
@@ -294,7 +351,7 @@ Other v0.4.0 notes:
 
 | File | Layout | Rows | Parser result |
 |------|--------|------|---------------|
-| `Balance-of-Payments-BPM6.xlsx` | standard wide, AD FY | 360 | `success` (annual, npr_million) — **v0.5.0: slugs cleaned, no `-rNN`** |
+| `Balance-of-Payments-BPM6.xlsx` | **cumulative-YTD monthly panel (v0.8.0)** | **3 `staging_rows`** | `success` — `dne-remittance-inflow` (annual, npr_million) from the full-FY (July) Credit column: FY2079/80 = 1,240,686 (NPR 1.24 tn), FY2080/81 = 1,445,315, FY2081/82 = 1,731,270. Partial 2025/26P block excluded (no July → no fabrication). Was a bogus 360 single-series rows pre-v0.8.0 (August-only cumulative mislabelled as annual + ~100 BoP lines promoted as indicators). |
 | `Foreign-Trade.xlsx` | **dimensional matrix (v0.5.0)** | **38490 `dimensional_rows`** | `success` — Major-Commodities by commodity × 6 partner-qualified base measures; `staging_rows` empty (ADR-0015). Was a bogus 11334 single-series rows pre-v0.5.0. |
 | `Foreign-exchange-reserves.xlsx` | two-row integer-year + monthly | 6716 | `partial` — `PeriodAmbiguous`×1 (repeated Oct 2025 column, both values kept + flagged); **v0.5.0: slugs cleaned, no enumerator prefix / `-rNN`** |
 | `Exchange-rate.xlsx` | long panel (FY col + month col) | 2172 | `partial` — `UnitAmbiguous`×3 (no vocab unit for FX rate; raw label carried) |
@@ -438,6 +495,7 @@ Test matrix:
 | `test_ft_*` | Foreign-Trade → `dimensional_rows` (ADR-0015): shape, partner-qualified base slugs, commodity dimension, `npr_million`, no over-stripped commodity slug, structural FY-advance / no unique-key collisions, JSON round-trip (v0.5.0) |
 | `test_fx_slug_*` | Single-series slug cleanup: no enumerator prefix, no `-rNN`, enumerator + `(1+2)` stripped, collision qualified by section parent (v0.5.0) |
 | `test_mw_*` | Migrant workers → `dimensional_rows` (ADR-0015): HEADCOUNT base measure + `count` unit (NOT remittance NPR), `dimension_kind='country'`, "Total"-column read, Aug-started FY split, aggregate/placeholder exclusion, duplicate-month-group `PeriodAmbiguous` (both values kept), JSON round-trip (v0.7.0) |
+| `test_bop_*` | Balance-of-Payments-BPM6 → `dne-remittance-inflow` annual single series (v0.8.0): IS remittance NPR (~NPR 1.2–1.7 tn magnitude, `npr_million` unit, not headcount), full-FY (July) **Credit**-side read (not Debit/Net), allowlist-only (decoy/parent/sub-line excluded — no catalogue pollution), partial trailing FY excluded (no fabrication), annual grade-B, AD↔BS FY mapping, JSON round-trip |
 
 ## Cross-reference
 
