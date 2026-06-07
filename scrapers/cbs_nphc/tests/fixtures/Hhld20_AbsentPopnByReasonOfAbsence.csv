@@ -1,0 +1,10 @@
+prov,dist,gapa,sex,agegrp,provname,dname,gapaname,sexname,agegrpname,rowtotal,a_salary,b_trade,c_study,d_jobseek,e_dependnt,f_others,g_notstd
+0,0,0,0,0,NEPAL,NEPAL,NEPAL,Total,All Ages,2190592,1450538,13126,209377,242384,227072,23994,24101
+1,1,1,0,0,Province-1,Taplejung,Phaktanlung Gaunpalika,Total,All Ages,477,310,5,42,60,40,12,8
+1,1,1,0,1,Province-1,Taplejung,Phaktanlung Gaunpalika,Total,00 - 14,59,2,0,12,3,39,2,1
+1,1,1,1,0,Province-1,Taplejung,Phaktanlung Gaunpalika,Male,All Ages,383,260,4,25,58,20,10,6
+1,1,1,2,0,Province-1,Taplejung,Phaktanlung Gaunpalika,Female,All Ages,94,50,1,17,2,20,2,2
+4,40,4,0,0,Gandaki,Kaski,Pokhara Metropolitian City,Total,All Ages,42000,28000,500,5000,5500,1800,700,500
+4,40,4,0,2,Gandaki,Kaski,Pokhara Metropolitian City,Total,15 - 24,20000,14000,250,3000,2500,100,100,50
+4,40,4,1,0,Gandaki,Kaski,Pokhara Metropolitian City,Male,All Ages,35000,24000,420,2500,5200,1500,900,480
+4,40,4,2,0,Gandaki,Kaski,Pokhara Metropolitian City,Female,All Ages,7000,4000,80,2500,300,300,500,320

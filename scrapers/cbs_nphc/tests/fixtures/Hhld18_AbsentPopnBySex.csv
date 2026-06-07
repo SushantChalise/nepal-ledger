@@ -1,0 +1,8 @@
+prov,dist,gapa,sex,provname,dname,gapaname,sexname,rowtotal,a_00to04,b_05to09,c_10to14,d_15to19,e_20to24,f_25to29,g_30to34,h_35to39,i_40to44,j_45to49,k_50to54,l_55to59,m_60to64,n_65plus,o_notstd
+0,0,0,0,NEPAL,NEPAL,NEPAL,Total,2190592,70958,36074,58832,319596,655716,426925,259178,167325,86593,40073,18846,8932,4969,4690,31885
+1,1,1,0,Province-1,Taplejung,Phaktanlung Gaunpalika,Total,477,15,23,21,54,179,113,38,24,3,4,0,0,0,0,3
+1,1,1,1,Province-1,Taplejung,Phaktanlung Gaunpalika,Male,383,11,14,16,47,149,88,30,19,3,4,0,0,0,0,2
+1,1,1,2,Province-1,Taplejung,Phaktanlung Gaunpalika,Female,94,4,9,5,7,30,25,8,5,0,0,0,0,0,0,1
+4,40,4,0,Gandaki,Kaski,Pokhara Metropolitian City,Total,42000,1400,960,1200,5800,14000,9000,4500,2800,1200,600,200,120,80,60,80
+4,40,4,1,Gandaki,Kaski,Pokhara Metropolitian City,Male,35000,800,550,900,5000,11500,7500,3800,2400,1050,520,170,90,50,40,630
+4,40,4,2,Gandaki,Kaski,Pokhara Metropolitian City,Female,7000,600,410,300,800,2500,1500,700,400,150,80,30,30,30,20,450

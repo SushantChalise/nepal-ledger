@@ -263,27 +263,109 @@ def test_hhld11_female_ownership_values() -> None:
     assert by_slug["hhld11-femaleownershipoffixedasset-d-noownership"] == 2547.0
 
 
-def test_hhld19_not_yet_supported_returns_table_unknown(tmp_path: Path) -> None:
-    """Hhld19 (multi-row-per-palika: sex × age-group) is a known blocker.
+# ---------------------------------------------------------------------------
+# Absent-population batch — multi-row-per-palika (Hhld18 / Hhld19 / Hhld20)
+# ---------------------------------------------------------------------------
 
-    The parser currently returns TableUnknown for Hhld18/19/20 because those
-    tables have multiple sub-rows per palika (sex × age-group dimensions) that
-    would cause duplicate (entity, indicator_slug) collisions under the current
-    single-row-per-palika model. Support requires a slug-dimension extension —
-    tracked in worker-P3-followup-census-batches.md §"Multi-dim tables".
-
-    We write a minimal stub CSV under tmp_path so the file-existence check
-    passes and the parser reaches the registry lookup (the code path we test).
-    """
-    stub = tmp_path / "Hhld19_AbsentPopnByCountry.csv"
-    stub.write_text(
-        "prov,dist,gapa,sex,agegrp,provname,dname,gapaname,sexname,agegrpname,"
-        "rowtotal,a_india,b_saarc\n"
-        "0,0,0,0,0,NEPAL,NEPAL,NEPAL,Total,All Ages,100,50,10\n",
-        encoding="utf-8",
+@pytest.mark.parametrize(
+    ("stem", "expected_mode", "expected_sub_rows", "expected_value_cols", "expected_family"),
+    [
+        # Hhld18: 3 sex sub-rows × 2 palikas × 16 value cols
+        ("Hhld18_AbsentPopnBySex", "B", 3, 16, "individual_migration"),
+        # Hhld19: fixture has 5 sub-rows for Phaktanlung + 4 for Pokhara = 9 total.
+        ("Hhld19_AbsentPopnByCountry", "B", None, 13, "individual_migration"),
+        # Hhld20: fixture has 4 sub-rows for Phaktanlung + 4 for Pokhara = 8 total.
+        ("Hhld20_AbsentPopnByReasonOfAbsence", "B", None, 8, "individual_migration"),
+    ],
+)
+def test_absent_population_batch_parses(
+    stem: str,
+    expected_mode: str,
+    expected_sub_rows: int | None,
+    expected_value_cols: int,
+    expected_family: str,
+) -> None:
+    """Happy-path for all three absent-population tables."""
+    result = parse(
+        str(FIXTURES / f"{stem}.csv"),
+        "doc-id-test",
+        resolver_for_tests=_stub_resolver,
     )
-    result = parse(str(stub), "doc-id", resolver_for_tests=_stub_resolver)
-    assert result.status == "failure"
-    assert len(result.errors) == 1
-    assert result.errors[0].error_class == "TableUnknown"
-    assert "Hhld19_AbsentPopnByCountry" in result.errors[0].error_detail
+    assert result.status == "success", f"errors: {result.errors}"
+    assert result.mode == expected_mode
+    families = {f.indicator_family for f in result.facts}
+    assert families == {expected_family}
+    # Validate no duplicate (entity_slug, indicator_slug) pairs.
+    pairs = [(f.entity_slug, f.indicator_slug) for f in result.facts]
+    assert len(pairs) == len(set(pairs)), "duplicate (entity, slug) pairs emitted"
+    # For tables where sub-row count is fixed across palikas, assert exact count.
+    if expected_sub_rows is not None:
+        assert len(result.facts) == 2 * expected_sub_rows * expected_value_cols, (
+            f"got {len(result.facts)} facts; expected 2×{expected_sub_rows}×{expected_value_cols}"
+        )
+
+
+def test_hhld19_slug_encodes_sex_and_agegrp() -> None:
+    """Indicator slugs for Hhld19 must include both sexname and agegrpname so
+    slugs from different sub-rows of the same palika do not collide.
+    """
+    result = parse(
+        str(FIXTURES / "Hhld19_AbsentPopnByCountry.csv"),
+        "doc-id",
+        resolver_for_tests=_stub_resolver,
+    )
+    slugs = {f.indicator_slug for f in result.facts}
+    # Total × All Ages row.
+    assert "hhld19-absentpopnbycountry-total-all-ages-a-india" in slugs
+    # Male × All Ages row — must be distinct from Total × All Ages.
+    assert "hhld19-absentpopnbycountry-male-all-ages-a-india" in slugs
+    # Total × 15-24 row.
+    assert "hhld19-absentpopnbycountry-total-15-24-a-india" in slugs
+    # The three slugs above are distinct (no collision).
+    slug_list = [
+        "hhld19-absentpopnbycountry-total-all-ages-a-india",
+        "hhld19-absentpopnbycountry-male-all-ages-a-india",
+        "hhld19-absentpopnbycountry-total-15-24-a-india",
+    ]
+    assert len(set(slug_list)) == 3
+
+
+def test_hhld19_no_duplicate_entity_slug_pairs() -> None:
+    """Every (entity_slug, indicator_slug) pair must be unique within one parse."""
+    result = parse(
+        str(FIXTURES / "Hhld19_AbsentPopnByCountry.csv"),
+        "doc-id",
+        resolver_for_tests=_stub_resolver,
+    )
+    pairs = [(f.entity_slug, f.indicator_slug) for f in result.facts]
+    assert len(pairs) == len(set(pairs)), "duplicate (entity, slug) pairs found"
+
+
+def test_hhld19_spot_check_value() -> None:
+    """Phaktanlung × Total × All Ages × a_india should be 83."""
+    result = parse(
+        str(FIXTURES / "Hhld19_AbsentPopnByCountry.csv"),
+        "doc-id",
+        resolver_for_tests=_stub_resolver,
+    )
+    target = [
+        f for f in result.facts
+        if f.entity_slug == "01010101"
+        and f.indicator_slug == "hhld19-absentpopnbycountry-total-all-ages-a-india"
+    ]
+    assert len(target) == 1
+    assert target[0].value == 83.0
+    assert target[0].unit == "persons"
+
+
+def test_hhld18_slug_encodes_sex_only() -> None:
+    """Hhld18 has one dimension (sexname); slug must encode it, not agegrpname."""
+    result = parse(
+        str(FIXTURES / "Hhld18_AbsentPopnBySex.csv"),
+        "doc-id",
+        resolver_for_tests=_stub_resolver,
+    )
+    slugs = {f.indicator_slug for f in result.facts}
+    assert "hhld18-absentpopnbysex-total-rowtotal" in slugs
+    assert "hhld18-absentpopnbysex-male-a-00to04" in slugs
+    assert "hhld18-absentpopnbysex-female-n-65plus" in slugs

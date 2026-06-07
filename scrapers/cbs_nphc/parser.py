@@ -1,4 +1,4 @@
-"""CBS NPHC 2021 parser — deterministic Python (first batch of 5 CSVs).
+"""CBS NPHC 2021 parser — deterministic Python (first batch of 5 CSVs + absent-population batch).
 
 Source: CBS National Population & Housing Census 2021 (BS 2078). The corpus
 is the 89 palika-grain CSVs at
@@ -6,8 +6,10 @@ is the 89 palika-grain CSVs at
 
 This parser ships the **infrastructure** (two-mode reader + per-row resolver
 + column-explode → :class:`CensusFactDraft`) plus a curated **first batch of
-5 CSVs** chosen to exercise both header modes and three indicator families.
-The remaining 84 CSVs are scheduled in
+5 CSVs** chosen to exercise both header modes and three indicator families,
+and the **absent-population batch (Hhld18/19/20)** which require per-row
+dimension columns (sex, age-group) folded into the indicator slug.
+The remaining CSVs are scheduled in
 ``docs/tasks/worker-P3-followup-census-batches.md``.
 
 First-batch CSV selection
@@ -22,6 +24,34 @@ Hhld05_FloorOfHouse.csv           B      household_housing  Clean-header proof; 
 Hhld10_HouseholdFacility.csv      B      household_facility Mode B with a far wider value-column block (17 cols), and the ``x_NoFacility`` + ``atleastOne`` "aggregate" columns that need explicit handling.
 Indv01_PopulationBySex.csv        B      individual_demographic  Mode B with a completely different schema (no ``rowtotal`` / ``a_*`` cols; instead ``nHhld,total,male,female,avg_hhsize,...``) — proves the parser does NOT assume the ``Hhld*`` shape.
 ================================ ====== ====== ========================
+
+Multi-row-per-palika tables (absent-population batch)
+-----------------------------------------------------
+
+Hhld18/19/20 each have multiple sub-rows per palika keyed on sex (Hhld18) or
+sex × age-group (Hhld19/20).  The parser folds those dimension labels into
+the indicator slug so every (entity_slug, indicator_slug) pair is unique::
+
+    hhld18-absentpopnbysex-<sexname>-<col>
+        e.g. hhld18-absentpopnbysex-male-a-00to04
+
+    hhld19-absentpopnbycountry-<sexname>-<agegrpname>-<col>
+        e.g. hhld19-absentpopnbycountry-total-all-ages-a-india
+
+    hhld20-absentpopnbyreasonofabsence-<sexname>-<agegrpname>-<col>
+        e.g. hhld20-absentpopnbyreasonofabsence-male-15-24-a-salary
+
+Dimension values (``sexname``, ``agegrpname``) are taken verbatim from the
+CSV text column (e.g. "Total", "Male", "Female", "All Ages", "15 - 24") and
+slugified through :func:`_slugify_indicator` (lower-case, non-alphanumeric →
+hyphen).  The ``sex`` / ``agegrp`` *numeric* codes are intentionally NOT used
+in the slug so the human-readable label is preserved (and ``agegrp=9`` maps
+to "not-stated" rather than a cryptic "9").
+
+The dimension columns are registered in ``_TABLE_DIMENSION_COLUMNS``.
+Tables absent from that dict are treated as single-row-per-palika (legacy
+behaviour, unchanged).
+
 
 Output contract
 ---------------
@@ -98,11 +128,16 @@ _TABLE_REGISTRY: Final[dict[str, tuple[CensusIndicatorFamily, str]]] = {
     "Hhld12_SmallScaleBusiness": ("household_economic", "households"),
     # Hhld17: households with absent members — migration driver.
     "Hhld17_AbsentHousehold": ("household_demographic", "households"),
-    # BLOCKER — Hhld18/19/20 are multi-row-per-palika (sex × age-group sub-rows).
-    # The current parser assumes exactly one data row per palika; ingesting these
-    # tables requires a slug-dimension extension (encode sex/agegrp into the
-    # indicator_slug) to avoid duplicate (entity, indicator) collisions.
-    # Tracking issue: worker-P3-followup-census-batches.md §"Multi-dim tables".
+    # --- Absent-population batch (multi-row-per-palika) ---
+    # Hhld18: absent population by sex × age bin (3 sex sub-rows per palika).
+    "Hhld18_AbsentPopnBySex": ("individual_migration", "persons"),
+    # Hhld19: absent population by sex × age-group × destination country
+    #   (27 sub-rows per palika: 3 sex × 9 age groups).
+    #   HIGH VALUE — remittance-source geography.
+    "Hhld19_AbsentPopnByCountry": ("individual_migration", "persons"),
+    # Hhld20: absent population by sex × age-group × reason of absence
+    #   (27 sub-rows per palika, same structure as Hhld19).
+    "Hhld20_AbsentPopnByReasonOfAbsence": ("individual_migration", "persons"),
 }
 
 # Columns common to every Hhld*/Indv* CSV. The parser refuses to run if any
@@ -205,6 +240,71 @@ _TABLE_VALUE_COLUMNS: Final[dict[str, tuple[str, ...]]] = {
         "female",
         "AbsntHhldnotstd",
     ),
+    # --- Absent-population batch ---
+    # Hhld18: value cols = age bins (sex is a per-row dimension, not a value col).
+    "Hhld18_AbsentPopnBySex": (
+        "rowtotal",
+        "a_00to04",
+        "b_05to09",
+        "c_10to14",
+        "d_15to19",
+        "e_20to24",
+        "f_25to29",
+        "g_30to34",
+        "h_35to39",
+        "i_40to44",
+        "j_45to49",
+        "k_50to54",
+        "l_55to59",
+        "m_60to64",
+        "n_65plus",
+        "o_notstd",
+    ),
+    # Hhld19: value cols = destination countries.
+    "Hhld19_AbsentPopnByCountry": (
+        "rowtotal",
+        "a_india",
+        "b_saarc",
+        "c_asean",
+        "d_midleast",
+        "e_othrasian",
+        "f_eucntry",
+        "g_othreuropn",
+        "h_northamericn",
+        "i_southamericn",
+        "j_african",
+        "k_pacific",
+        "l_other",
+        "m_notstd",
+    ),
+    # Hhld20: value cols = reasons of absence.
+    "Hhld20_AbsentPopnByReasonOfAbsence": (
+        "rowtotal",
+        "a_salary",
+        "b_trade",
+        "c_study",
+        "d_jobseek",
+        "e_dependnt",
+        "f_others",
+        "g_notstd",
+    ),
+}
+
+# Per-table dimension columns whose *text* values (not numeric codes) must be
+# folded into the indicator slug to disambiguate multiple sub-rows per palika.
+# Only tables listed here are treated as multi-row-per-palika; all other tables
+# default to the legacy single-row-per-palika path (unchanged behaviour).
+#
+# Slug convention:  <table-stem-kebab>-<dim1>-...-<dimN>-<col-kebab>
+# Dimension values are slugified (lowercase, non-alnum → hyphen) using the
+# human-readable label columns (sexname, agegrpname) so the slug is readable.
+_TABLE_DIMENSION_COLUMNS: Final[dict[str, tuple[str, ...]]] = {
+    # Hhld18 has one dimension: sex (3 values: Total / Male / Female).
+    "Hhld18_AbsentPopnBySex": ("sexname",),
+    # Hhld19 has two dimensions: sex × age-group (27 combinations).
+    "Hhld19_AbsentPopnByCountry": ("sexname", "agegrpname"),
+    # Hhld20 has the same two dimensions as Hhld19.
+    "Hhld20_AbsentPopnByReasonOfAbsence": ("sexname", "agegrpname"),
 }
 
 # Audit Appendix A — 27 CBS gapaname → canonical-MoF name_en spelling fixes.
@@ -331,6 +431,94 @@ def _slugify_indicator(table_stem: str, column: str) -> str:
     return f"{stem}-{col}"
 
 
+def _slugify_indicator_with_dims(
+    table_stem: str, dim_values: tuple[str, ...], column: str
+) -> str:
+    """Produce a slug that encodes per-row dimension labels between stem and column.
+
+    Used for multi-row-per-palika tables where the same value-column name
+    appears in multiple sub-rows (e.g. sex='Male' vs sex='Total').
+
+    Example::
+
+        _slugify_indicator_with_dims(
+            "Hhld19_AbsentPopnByCountry",
+            ("Male", "15 - 24"),
+            "a_india",
+        )
+        # → "hhld19-absentpopnbycountry-male-15-24-a-india"
+    """
+    stem = re.sub(r"[^a-z0-9]+", "-", table_stem.lower()).strip("-")
+    dims = "-".join(
+        re.sub(r"[^a-z0-9]+", "-", dv.lower()).strip("-") for dv in dim_values
+    )
+    col = re.sub(r"[^a-z0-9]+", "-", column.lower()).strip("-")
+    return f"{stem}-{dims}-{col}"
+
+
+def _expand_value_columns(
+    row: list[str],
+    header_index: dict[str, int],
+    value_columns: tuple[str, ...],
+    dim_values: tuple[str, ...],
+    table_stem: str,
+    federal_code: str,
+    gapaname: str,
+    family: CensusIndicatorFamily,
+    unit: str,
+    raw_idx: int,
+    seen: set[tuple[str, str]],
+    facts: list[CensusFactDraft],
+    errors: list[CensusParserError],
+) -> None:
+    """Expand all value columns from one CSV row into :class:`CensusFactDraft` records.
+
+    Encapsulated to keep :func:`parse` branch-count within the linter limit.
+    Mutates ``facts``, ``errors``, and ``seen`` in-place.
+    """
+    for col in value_columns:
+        value = _parse_value(row[header_index[col]])
+        if value is None:
+            errors.append(
+                CensusParserError(
+                    "ValueUnparseable",
+                    f"row {raw_idx} ({gapaname}/{col}): unparseable value "
+                    f"'{row[header_index[col]]!r}'",
+                    source_excerpt=gapaname,
+                )
+            )
+            continue
+        if dim_values:
+            slug = _slugify_indicator_with_dims(table_stem, dim_values, col)
+        else:
+            slug = _slugify_indicator(table_stem, col)
+        key = (federal_code, slug)
+        if key in seen:
+            # Duplicate (entity, indicator) within one file would violate
+            # the census_facts unique index — surface it loudly rather
+            # than emit a row Postgres will reject anyway.
+            errors.append(
+                CensusParserError(
+                    "Other",
+                    f"duplicate (entity={federal_code}, indicator={slug}) "
+                    f"within {table_stem}; row {raw_idx}",
+                    source_excerpt=gapaname,
+                )
+            )
+            continue
+        seen.add(key)
+        facts.append(
+            CensusFactDraft(
+                entity_slug=federal_code,
+                source_table_id=table_stem,
+                indicator_family=family,
+                indicator_slug=slug,
+                value=value,
+                unit=unit,
+            )
+        )
+
+
 def _parse_value(raw: str) -> float | None:
     """Best-effort float parse. Returns None for blank / non-numeric / NaN."""
     text = raw.strip()
@@ -396,12 +584,13 @@ def parse(
 ) -> CensusParserResult:
     """Parse a single CBS NPHC 2021 CSV → :class:`CensusParserResult`.
 
-    The CSV must be a key in ``_TABLE_REGISTRY`` (currently 8 tables);
+    The CSV must be a key in ``_TABLE_REGISTRY`` (currently 11 tables);
     other filenames return ``TableUnknown``. Adding a new table means
     extending ``_TABLE_REGISTRY``, ``_TABLE_VALUE_COLUMNS``, and the
-    fixture set. Multi-row-per-palika tables (Hhld18/19/20) require a
-    slug-dimension extension before they can be added — see the blocker
-    note in ``_TABLE_REGISTRY``.
+    fixture set.  Multi-row-per-palika tables (Hhld18/19/20) additionally
+    need an entry in ``_TABLE_DIMENSION_COLUMNS`` listing the per-row label
+    columns (e.g. ``sexname``, ``agegrpname``) whose values are folded into
+    the indicator slug to prevent ``(entity, slug)`` collisions.
     """
     _ = source_document_id  # threaded for symmetry with the NCPI parser
 
@@ -429,6 +618,8 @@ def parse(
         )
     family, unit = table_meta
     value_columns = _TABLE_VALUE_COLUMNS[table_stem]
+    # Dimension columns for multi-row-per-palika tables; empty tuple for legacy tables.
+    dim_col_names: tuple[str, ...] = _TABLE_DIMENSION_COLUMNS.get(table_stem, ())
 
     try:
         read = read_census_csv(path)
@@ -442,7 +633,8 @@ def parse(
     header_index = {col: i for i, col in enumerate(read.header)}
     missing_geo = [c for c in _REQUIRED_GEO_COLUMNS if c not in header_index]
     missing_val = [c for c in value_columns if c not in header_index]
-    if missing_geo or missing_val:
+    missing_dim = [c for c in dim_col_names if c not in header_index]
+    if missing_geo or missing_val or missing_dim:
         # Drain the iterator so the file handle closes promptly.
         for _row in read.rows:
             pass
@@ -453,7 +645,8 @@ def parse(
             errors=[
                 CensusParserError(
                     "ColumnMissing",
-                    f"missing required columns; geo={missing_geo}; value={missing_val}",
+                    "missing required columns; "
+                    f"geo={missing_geo}; value={missing_val}; dim={missing_dim}",
                 )
             ],
         )
@@ -487,44 +680,27 @@ def parse(
             )
             continue
 
-        for col in value_columns:
-            value = _parse_value(row[header_index[col]])
-            if value is None:
-                errors.append(
-                    CensusParserError(
-                        "ValueUnparseable",
-                        f"row {raw_idx} ({gapaname}/{col}): unparseable value "
-                        f"'{row[header_index[col]]!r}'",
-                        source_excerpt=gapaname,
-                    )
-                )
-                continue
-            slug = _slugify_indicator(table_stem, col)
-            key = (federal_code, slug)
-            if key in seen:
-                # Duplicate (entity, indicator) within one file would violate
-                # the census_facts unique index — surface it loudly rather
-                # than emit a row Postgres will reject anyway.
-                errors.append(
-                    CensusParserError(
-                        "Other",
-                        f"duplicate (entity={federal_code}, indicator={slug}) "
-                        f"within {table_stem}; row {raw_idx}",
-                        source_excerpt=gapaname,
-                    )
-                )
-                continue
-            seen.add(key)
-            facts.append(
-                CensusFactDraft(
-                    entity_slug=federal_code,
-                    source_table_id=table_stem,
-                    indicator_family=family,
-                    indicator_slug=slug,
-                    value=value,
-                    unit=unit,
-                )
-            )
+        # For multi-row-per-palika tables, read dimension label values (e.g.
+        # sexname="Male", agegrpname="15 - 24") from the row once per palika
+        # sub-row.  These are folded into the slug so (entity, slug) is unique.
+        dim_values: tuple[str, ...] = tuple(
+            row[header_index[c]].strip().strip('"') for c in dim_col_names
+        )
+        _expand_value_columns(
+            row,
+            header_index,
+            value_columns,
+            dim_values,
+            table_stem,
+            federal_code,
+            gapaname,
+            family,
+            unit,
+            raw_idx,
+            seen,
+            facts,
+            errors,
+        )
 
     if not facts:
         return CensusParserResult(

@@ -40,23 +40,33 @@ export async function insertOne(input: NewCensusFactRow): Promise<Result<CensusF
  * that were actually inserted — callers compute `input.length - returned`
  * to learn the dedup count.
  *
- * No-op (returns ok([])) when given zero rows — symmetric with the
- * staging-indicator-values bulk insert convention.
+ * Chunked: Postgres caps a statement at 65,535 bind parameters. A census fact
+ * has ~12 columns, so we insert in batches of CHUNK_ROWS to stay well under
+ * the limit. The multi-row tables (e.g. Hhld19 absent-population-by-country)
+ * emit >100k rows. No-op (returns ok([])) when given zero rows.
  */
+const CHUNK_ROWS = 2000;
+
 export async function bulkInsert(
   rows: readonly NewCensusFactRow[],
 ): Promise<Result<CensusFactRow[]>> {
   if (rows.length === 0) return ok([]);
-  const values: NewCensusFactRow[] = [...rows];
-  return safeQuery(() =>
-    db()
-      .insert(censusFacts)
-      .values(values)
-      .onConflictDoNothing({
-        target: [censusFacts.entityId, censusFacts.indicatorSlug, censusFacts.censusYearAd],
-      })
-      .returning(),
-  );
+  const inserted: CensusFactRow[] = [];
+  for (let i = 0; i < rows.length; i += CHUNK_ROWS) {
+    const chunk = rows.slice(i, i + CHUNK_ROWS);
+    const result = await safeQuery(() =>
+      db()
+        .insert(censusFacts)
+        .values([...chunk])
+        .onConflictDoNothing({
+          target: [censusFacts.entityId, censusFacts.indicatorSlug, censusFacts.censusYearAd],
+        })
+        .returning(),
+    );
+    if (!result.ok) return result;
+    inserted.push(...result.value);
+  }
+  return ok(inserted);
 }
 
 /**

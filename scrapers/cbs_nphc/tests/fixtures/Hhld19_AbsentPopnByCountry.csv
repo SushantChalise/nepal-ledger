@@ -1,0 +1,11 @@
+prov,dist,gapa,sex,agegrp,provname,dname,gapaname,sexname,agegrpname,rowtotal,a_india,b_saarc,c_asean,d_midleast,e_othrasian,f_eucntry,g_othreuropn,h_northamericn,i_southamericn,j_african,k_pacific,l_other,m_notstd
+0,0,0,0,0,NEPAL,NEPAL,NEPAL,Total,All Ages,2190592,744855,6476,198545,804614,125310,67005,44992,88488,810,5503,94533,4209,5252
+1,1,1,0,0,Province-1,Taplejung,Phaktanlung Gaunpalika,Total,All Ages,477,83,2,25,220,40,12,8,15,0,1,65,3,3
+1,1,1,0,1,Province-1,Taplejung,Phaktanlung Gaunpalika,Total,00 - 14,59,45,0,1,5,3,1,1,2,0,0,1,0,0
+1,1,1,0,2,Province-1,Taplejung,Phaktanlung Gaunpalika,Total,15 - 24,233,31,1,15,105,20,4,3,5,0,0,47,1,1
+1,1,1,1,0,Province-1,Taplejung,Phaktanlung Gaunpalika,Male,All Ages,383,60,1,24,208,32,10,7,13,0,1,22,2,3
+1,1,1,2,0,Province-1,Taplejung,Phaktanlung Gaunpalika,Female,All Ages,94,23,1,1,12,8,2,1,2,0,0,43,1,0
+4,40,4,0,0,Gandaki,Kaski,Pokhara Metropolitian City,Total,All Ages,42000,5500,300,4200,18000,3000,2000,1500,4000,30,200,2500,400,370
+4,40,4,0,2,Gandaki,Kaski,Pokhara Metropolitian City,Total,15 - 24,20000,2800,150,2000,8000,1400,900,700,1800,15,90,1000,80,65
+4,40,4,1,0,Gandaki,Kaski,Pokhara Metropolitian City,Male,All Ages,35000,4200,250,3900,16000,2200,1500,1100,3000,25,180,1900,330,315
+4,40,4,2,0,Gandaki,Kaski,Pokhara Metropolitian City,Female,All Ages,7000,1300,50,300,2000,800,500,400,1000,5,20,600,70,55
