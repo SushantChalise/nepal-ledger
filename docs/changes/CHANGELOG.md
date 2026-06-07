@@ -8,6 +8,24 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-07 (round 10) — Wave 5: site nav, remittance NPR, customs trade, foreign aid
+
+**What changed:** A 4-worker batch closed the biggest remaining "Money In/Out" gaps and finally made the site navigable. Notably, three of the four involved a data-honesty or infrastructure judgment, not just extraction.
+
+- **Shared site nav** (Worker F): a single `<SiteNav/>` in the root layout gives all **8 pages** a primary nav (they were islands). `'use client'` only for `usePathname`→`aria-current`; build-confirmed all routes still prerender static. Skip-link + landmark + 360px disclosure (WCAG AA).
+- **Real remittance inflow (NPR)** (parser nrb_dne v0.8.0, Worker G): the "Money In" cornerstone — Nepal's largest forex source — from BoP BPM6 "Personal transfers" Credit. **FY2079/80 NPR 1.24tn · 2080/81 1.45tn · 2081/82 1.73tn** (`dne-remittance-inflow`, npr_million → `approved`). The Wave-4 migrant-workers file was *headcounts*; this is the actual money. Caught + fixed a detector bug that was reading the August-cumulative column as the annual total (~13× low) and dumping ~100 BoP lines as catalogue pollution → added a `_BOP_FILE_STEMS` allowlist route.
+- **Customs trade detail** (`scrapers/customs_trade`, Worker I → `dne_facts`): **downloaded** the Dept. of Customs FTS XLSX (cleanest source in the repo) via sandbox bypass. Annual FY2081/82 → **6,886 facts**: imports/exports × {HS-commodity, country, customs_office}, npr_thousand, confidence A (imports NPR 1.80tn / exports NPR 277bn — the structural deficit).
+- **White Book foreign aid** (`scrapers/mof_whitebook`, Worker H, **new `foreign_aid_facts` table**, [ADR-0017](../decisions/0017-foreign-aid-fact-model.md)): aid by donor + sector. **FY2020/21 134 facts (NPR 360bn COVID surge, npr_lakh) + FY2015/16 144 facts (NPR 205.9bn, npr_thousand)**, donor sums reconcile to published totals. Preeti editions + a mislabelled CID intergovernmental file deferred (ADR-0003); FY2013/14+2014/15 (Devanagari-named) a follow-up. Migration `0005_0006` generated + applied live (Mother); barrel wired; `drizzle-kit check` clean.
+- **Process notes:** two workers (E earlier, G) hit transient API socket errors mid-run and recovered cleanly on re-dispatch. The whitebook repo file (referencing the un-barrelled table) made the project typecheck fail mid-batch — reaffirmed that render/data commits must wait until Mother wires the schema barrel + applies the migration; commits were held and sequenced accordingly.
+
+**Live DB:** approved_indicator_values **877** · **dne_facts 56,419** (+6,886 customs) · **foreign_aid_facts 278 (new table)** · fiscal 6,008 · banking 2,088 · census 531,618 · source_registry **69**. **8 live pages, now navigable.** pytest grows by +58 (customs 27 + whitebook 31).
+
+**Next (Wave 6):** whitebook FY2013/14+2014/15 editions; customs monthly/cumulative editions + the commodity×partner cross-tab (2-dimension model); remittance-by-country NPR if a source surfaces; a `/foreign-aid` or `/trade` render page on the new facts.
+
+**Related:** ADR-0017 (foreign_aid_facts); ADR-0015 (dimensional precedent); ADR-0011 (units); ADR-0003 (no OCR); DATA_BUILDOUT_PLAN.md; HANDOFF_2026-06-07.
+
+---
+
 ## 2026-06-07 (round 9) — Wave 4: /growth macro page + migrant-workers by destination
 
 **What changed:** Rendered the headline macro series (first consumer of Wave 3's GDP/CPI data) and ingested migrant-worker departures by country — again catching a remittance-vs-headcount mislabel before it could lie.
