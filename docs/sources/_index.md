@@ -6,7 +6,7 @@ Generated from `scripts/seed-source-registry.ts` (the canonical seed).
 For schema + workflow, see [`../SOURCE_REGISTRY.md`](../SOURCE_REGISTRY.md).
 For the lifetime contract, see [ADR-0009](../decisions/0009-source-registry-single-source-of-truth.md).
 
-Total registered sources: 65
+Total registered sources: 67
 
 | Tier | Source ID | Agency | Dataset | Frequency | Mode | Status |
 |---|---|---|---|---|---|---|
@@ -19,6 +19,7 @@ Total registered sources: 65
 | Tier 1 | [local-fiscal-transfers-cleaned](local-fiscal-transfers-cleaned.md) | MoF | Federal fiscal transfers to 753 local levels, FY 2082/83 (pre-cleaned XLSX) | annual | manual_upload | active |
 | Tier 1 | [nepse-eod](nepse-eod.md) | NEPSE | End-of-day quotes + market cap by stock | daily | automated_cron | paused |
 | Tier 1 | [noc-petroleum-monthly](noc-petroleum-monthly.md) | NOC | Petroleum imports + price-revision notices | monthly | manual_upload | paused |
+| Tier 1 | [nrb-bfi-monthly-xlsx](nrb-bfi-monthly-xlsx.md) | NRB | Banking & Financial Statistics — Monthly (BFI XLSX) | monthly | manual_upload | active |
 | Tier 1 | [nrb-db-external-sector](nrb-db-external-sector.md) | NRB | Database on Nepalese Economy — External Sector (BoP, Forex, Trade, Remittance, Tourism) | monthly | manual_upload | paused |
 | Tier 1 | [nrb-db-fiscal-sector](nrb-db-fiscal-sector.md) | NRB | Database on Nepalese Economy — Fiscal Sector (Government Revenue, Expenditure, Debt) | monthly | manual_upload | paused |
 | Tier 1 | [nrb-reserves-daily](nrb-reserves-daily.md) | NRB | Daily foreign exchange reserve disclosure | daily | automated_cron | paused |
@@ -52,6 +53,7 @@ Total registered sources: 65
 | Tier 3 | [nrb-financial-corporations-survey](nrb-financial-corporations-survey.md) | NRB | Financial Corporations Survey (FCS) | annual | manual_upload | paused |
 | Tier 3 | [oag-audit-reports](oag-audit-reports.md) | OAG | Annual audit reports (federal + sectoral) | annual | manual_upload | paused |
 | Tier 3 | [pdmo-annual-debt-report](pdmo-annual-debt-report.md) | PDMO | Annual Report on Public Debt and Share Investment (वार्षिक प्रतिवेदन) | annual | manual_upload | paused |
+| Tier 4 | [cbs-nphc-2021](cbs-nphc-2021.md) | NSO | National Population & Housing Census 2021 (2078 BS) — palika tables | ad_hoc | manual_upload | active |
 | Tier 4 | [cehrd-emis](cehrd-emis.md) | CEHRD | Education Management Information System (EMIS) | annual | manual_upload | paused |
 | Tier 4 | [census-2078-district](census-2078-district.md) | NSO | Census 2078 district-level disaggregated data | ad_hoc | manual_upload | paused |
 | Tier 4 | [customs-exemptions](customs-exemptions.md) | Customs | Customs duty exemption list (budget annex) | annual | manual_upload | paused |
