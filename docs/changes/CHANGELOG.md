@@ -8,6 +8,24 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-07 (round 6) — Build-out workflow + Wave 1 (3 pages, FCGO, roadmap)
+
+**What changed:** Ran a 41-agent build-out workflow, then executed its Wave 1 as a parallel worker batch. Two pages and a new audited source landed; the workflow's conflict-aware roadmap (`docs/research/DATA_BUILDOUT_PLAN.md`) now drives the remaining waves.
+
+- **`data-buildout-plan` workflow** (4 domain-inventory agents → 35 per-item spec agents → synthesis): ranked all 35 remaining work items, mapped the shared-file chokepoints (10 tasks serialize on `nrb_dne/parser.py`; seed files centralize at Mother), clustered into parallel waves of ≤8 conflict-free workers. It also caught real traps pre-emptively (district join is by name not federal_code; tourist plot on ad_end; #32/#34 are migrant headcounts not remittance NPR; budget-speech acquisition-blocked; GeoJSON gates).
+- **Wave 1 — 3 render pages (live data):** `/districts` (District MRI, 5 launch districts, palika→district via `metadata->>'district_en'`), `/tourism-rupee` (34-yr arrivals chart, 407 pts), `/fact-ledger` (all 498 approved facts by category + coverage strip). Site now has 5 live pages.
+- **Wave 1 — FCGO audited gov-finance:** first worker correctly STOPPED (no PDF — refused to fabricate); Mother acquired the real FY2022/23 CFS via the sandbox bypass + re-dispatched. 6 aggregates now in `approved_indicator_values` (Grade A): revenue 1,506,321.46 / expenditure 1,672,128.84 / recurrent 1,356,150.86 / capital 527,447.04 / provincial 204,678.62 / local-level 453,817.73 npr_million (FY 2079/80). `approved` 492→498.
+- **CI hole closed:** `nrb_dne` + `fcgo_consolidated` were missing from `pyproject.toml` testpaths — the full suite silently skipped 98 tests. Added; full suite now 297 (was 199).
+- **Deferred (findings):** #16 FX-reserve promotion — the file mixes percent/months/npr_million units the parser flattens; needs per-row unit detection before promotion (would corrupt the truth layer otherwise).
+
+**Live DB:** approved_indicator_values 498 · dne_facts 38,490 · fiscal 6,008 · banking 2,088 · census 531,618.
+
+**Next (Wave 2, from the roadmap):** customs-trade, MoF economic-survey annex parser, whitebook foreign-aid (new fact table), central-bank-daily, kalimati, DNE real-sector (quarterly GDP), census choropleth (GeoJSON-gated), migration-source-map.
+
+**Related:** ADR-0010–0015; DATA_BUILDOUT_PLAN.md; HANDOFF_2026-06-07.
+
+---
+
 ## 2026-06-07 (round 5) — DNE dimensional model live (trade by commodity) + MoF downloads
 
 **What changed:** Built the DNE dimensional fact model end-to-end and landed the first dimensional data; downloaded the MoF Economic Surveys (sandbox-TLS blocker removed).
