@@ -3,7 +3,8 @@ import Link from 'next/link';
 
 import { formatAppError } from '@/lib/errors';
 import { getFiscalTransferSankeyData } from '@/features/money-map/server/queries';
-import { SankeyDiagram, formatNprThousand } from '@/features/money-map/components/SankeyDiagram';
+import { SankeyDiagram } from '@/features/money-map/components/SankeyDiagram';
+import { formatNprThousand } from '@/features/money-map/format';
 
 export const metadata: Metadata = {
   title: 'Money Map — Nepal Ledger',

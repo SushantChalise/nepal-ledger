@@ -27,27 +27,7 @@ import { sankey, sankeyJustify, sankeyLinkHorizontal } from 'd3-sankey';
 import type { SankeyGraph, SankeyLink, SankeyNode } from 'd3-sankey';
 
 import type { SankeyData, SankeyNodeData } from '../server/queries';
-
-// ---------------------------------------------------------------------------
-// NPR formatting
-// ---------------------------------------------------------------------------
-
-/**
- * Format NPR thousands into a compact, consistent display.
- * Convention: always "NPR X,XXX K" (thousands) — keeps consistency at this
- * fiscal-transfer scale where values range from a few hundred K to millions K.
- * At > 100,000 K we switch to "NPR X.XX Cr" (crore) for readability.
- * 1 Cr = 10,000,000 NPR = 10,000 K.
- */
-export function formatNprThousand(nprThousand: number): string {
-  if (!isFinite(nprThousand)) return 'NPR —';
-  // In crore: 1 Cr = 10,000 K (NPR_thousand)
-  const inCrore = nprThousand / 10_000;
-  if (inCrore >= 1) {
-    return `NPR ${inCrore.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Cr`;
-  }
-  return `NPR ${nprThousand.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} K`;
-}
+import { formatNprThousand } from '../format';
 
 // ---------------------------------------------------------------------------
 // D3 Sankey node/link extra properties (user-defined fields)
