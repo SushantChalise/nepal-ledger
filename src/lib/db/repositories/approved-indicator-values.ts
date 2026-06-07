@@ -16,6 +16,10 @@ import {
   type ApprovedIndicatorValueRow,
   type NewApprovedIndicatorValueRow,
 } from '@/lib/db/schema/indicator-values';
+import type { IndicatorRow } from '@/lib/db/schema/indicators';
+import { indicators } from '@/lib/db/schema/indicators';
+import type { SourceDocumentRow } from '@/lib/db/schema/source-documents';
+import { sourceDocuments } from '@/lib/db/schema/source-documents';
 import { err, ok, type Result } from '@/lib/errors';
 
 export async function insertApprovedIndicatorValue(
@@ -78,4 +82,40 @@ export async function listApprovedTrailingForIndicator(
       orderBy: [desc(approvedIndicatorValues.reportingPeriodAdEnd)],
     }),
   );
+}
+
+/**
+ * Shape returned by listApprovedWithIndicator — one row per approved value
+ * with the joined indicator metadata and source document metadata.
+ */
+export type ApprovedIndicatorWithMeta = {
+  value: ApprovedIndicatorValueRow;
+  indicator: IndicatorRow;
+  sourceDocument: SourceDocumentRow;
+};
+
+/**
+ * Read all approved indicator values joined to their indicator and source
+ * document. Intended for the Pulse page; ordered by indicator category then
+ * indicator slug for stable presentation.
+ *
+ * Returns ok([]) when the table is empty — callers render an empty state.
+ * Only queries approved_indicator_values and indicators; does not touch
+ * staging.
+ */
+export async function listApprovedWithIndicator(): Promise<Result<ApprovedIndicatorWithMeta[]>> {
+  const queried = await safeQuery(() =>
+    db()
+      .select({
+        value: approvedIndicatorValues,
+        indicator: indicators,
+        sourceDocument: sourceDocuments,
+      })
+      .from(approvedIndicatorValues)
+      .innerJoin(indicators, eq(approvedIndicatorValues.indicatorId, indicators.id))
+      .innerJoin(sourceDocuments, eq(approvedIndicatorValues.sourceDocumentId, sourceDocuments.id))
+      .orderBy(indicators.category, indicators.slug),
+  );
+  if (!queried.ok) return queried;
+  return ok(queried.value);
 }
