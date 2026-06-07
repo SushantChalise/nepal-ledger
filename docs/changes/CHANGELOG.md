@@ -8,6 +8,23 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-07 (round 7) — Wave 2: migration map + Yellow Book SOE balance-sheet
+
+**What changed:** Executed Wave 2 of the build-out roadmap — a render page on already-ingested census data, plus a new audited gov-finance source (public enterprises). Both workers held the line on the project's data-honesty rules: one correctly relabelled its own output, the other deliberately narrowed scope rather than ship a fragile parser.
+
+- **`/migration` render page** (Worker #28A): absent-population by destination region from `census_facts` (`getMigrationByCountrySeries`, top 15). **Caught the roadmap's own mislabel** — items #32/#34 are migrant *headcounts*, not remittance NPR — and labelled the page accordingly. Total absent population **2,190,592** (sex=total, all-ages, country≠rowtotal), validated three ways against the published census figure. Top destinations: Middle East 804,614 (36.7%), India 744,855 (34%). Site now has **6 live pages**.
+- **Yellow Book SOE parser** (`scrapers/mof_yellowbook/`, Worker #24, [ADR-0020](../decisions/0020-yellowbook-soe-annex1-scope.md)): the Annual Performance Review of Public Enterprises is mixed-encoding Devanagari (CID-broken bodies, Preeti-font annexes, ragged per-sector tables). The worker **scoped to the one deterministically parseable matrix** — Annex-1 (FY 2080/81), Unicode 10-column — and **deferred** the un-parseable per-sector revenue/profit/capital tables (documented, not silently dropped; ADR-0003 forbids OCR/transliteration). Reuses `dne_facts` (`dimension_kind=public_enterprise`).
+- **84 `dne_facts` ingested** via new `ingest:dne-yellowbook`: 42 enterprises × {`soe-government-share`, `soe-loan-principal`}, unit `npr_thousand` (header "रु. हजारमा"; ADR-0011 magnitude check: NEA equity = 181,330,245 thousand = NPR 181.33 bn ✓). `dpm-public-enterprises-annual` flipped `paused→active`.
+- **CI completeness:** `mof_yellowbook` added to `pyproject.toml` `include` + `testpaths`; full suite **319** (was 297, +22).
+
+**Live DB:** approved_indicator_values 498 · **dne_facts 38,574** (+84) · fiscal 6,008 · banking 2,088 · census 531,618 · source_registry 68.
+
+**Next (Wave 2 remaining → Wave 3):** MoF economic-survey annex parser (#8, CID-broken fonts — hardest item), customs-trade (#7), whitebook foreign-aid (#12), DNE real-sector quarterly-GDP (#9/10, files pre-staged), DNE SITC/Direction-of-Trade/Remittance dimensional sheets.
+
+**Related:** ADR-0020; ADR-0015 (dne_facts reuse); ADR-0011; DATA_BUILDOUT_PLAN.md; HANDOFF_2026-06-07.
+
+---
+
 ## 2026-06-07 (round 6) — Build-out workflow + Wave 1 (3 pages, FCGO, roadmap)
 
 **What changed:** Ran a 41-agent build-out workflow, then executed its Wave 1 as a parallel worker batch. Two pages and a new audited source landed; the workflow's conflict-aware roadmap (`docs/research/DATA_BUILDOUT_PLAN.md`) now drives the remaining waves.

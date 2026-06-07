@@ -373,11 +373,13 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     requiresTableExtraction: true,
     licenseStatus: 'gov_open',
     confidenceDefault: 'A',
-    status: 'paused',
+    status: 'active',
     ingestionMode: 'manual_upload',
     tier: 3,
     notes:
-      'Public Enterprise X-Ray. In-repo corpus at Financial Data/mof_documents/yellowbook/ (6 PDFs).',
+      'Public Enterprise X-Ray. In-repo corpus at Financial Data/mof_documents/yellowbook/ (6 PDFs). ' +
+      'Active: Annex-1 (FY2080/81) → dne_facts via ingest:dne-yellowbook (ADR-0020); ' +
+      'soe-government-share + soe-loan-principal, npr_thousand. Per-sector revenue/profit tables deferred.',
   },
   {
     sourceId: 'moald-crop-production',
