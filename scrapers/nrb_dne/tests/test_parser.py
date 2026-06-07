@@ -39,7 +39,7 @@ def test_happy_status_success(happy_result: ParserResult) -> None:
 
 
 def test_happy_parser_version(happy_result: ParserResult) -> None:
-    assert happy_result.parser_version == PARSER_VERSION == "0.3.0"
+    assert happy_result.parser_version == PARSER_VERSION == "0.4.0"
 
 
 def test_happy_source_id() -> None:
@@ -346,3 +346,202 @@ def test_ad_year_sheet_converts_ad_fy_to_bs(ad_year_result: ParserResult) -> Non
 def test_ad_year_sheet_no_period_error(ad_year_result: ParserResult) -> None:
     """No PeriodUnparseable now that AD fiscal years are accepted."""
     assert "PeriodUnparseable" not in [e.error_class for e in ad_year_result.errors]
+
+
+# ---------------------------------------------------------------------------
+# v0.4.0 — integer-year + monthly two-row header (Foreign-exchange-reserves)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def ym_result(year_month_header_xlsx: Path) -> ParserResult:
+    """Two-row header: integer AD years over AD month names (forward-filled)."""
+    return parse(str(year_month_header_xlsx), source_document_id="test-doc-ym")
+
+
+def test_ym_status_success(ym_result: ParserResult) -> None:
+    assert ym_result.status == "success", f"errors={ym_result.errors}"
+
+
+def test_ym_row_count(ym_result: ParserResult) -> None:
+    # 2 indicators × 8 monthly columns = 16 rows.
+    assert len(ym_result.staging_rows) == 16
+
+
+def test_ym_all_monthly(ym_result: ParserResult) -> None:
+    assert all(r.reporting_period_type == "monthly" for r in ym_result.staging_rows)
+
+
+def test_ym_unit_npr_million(ym_result: ParserResult) -> None:
+    assert all(r.unit == "npr_million" for r in ym_result.staging_rows)
+
+
+def test_ym_year_forward_filled(ym_result: ParserResult) -> None:
+    """The sparse year row must forward-fill: Aug-Dec → AD 2001, Jan-Mar → 2002."""
+    by_label = {
+        (r.indicator_slug_raw, r.reporting_period_bs): r
+        for r in ym_result.staging_rows
+    }
+    # Aug 2001 → Bhadra (AD month 8), BS year 2001+57 = 2058.
+    aug = by_label[("dne-a-nepal-rastra-bank", "Bhadra 2058")]
+    assert aug.value == pytest.approx(100.0)
+    assert aug.fiscal_year_ad_label == "2001/02"
+    # Jan 2002 → Magh (AD month 1, < July), BS year 2002+56 = 2058.
+    jan = by_label[("dne-a-nepal-rastra-bank", "Magh 2058")]
+    assert jan.value == pytest.approx(150.0)
+    # Jan belongs to FY that began the prior July (AD 2001/02).
+    assert jan.fiscal_year_ad_label == "2001/02"
+
+
+def test_ym_ad_month_span_is_exact_gregorian(ym_result: ParserResult) -> None:
+    """AD monthly span is the real Gregorian month, not a BS-derived guess."""
+    aug = next(
+        r for r in ym_result.staging_rows
+        if r.indicator_slug_raw == "dne-a-nepal-rastra-bank"
+        and r.reporting_period_bs == "Bhadra 2058"
+    )
+    assert aug.reporting_period_ad_start.year == 2001
+    assert aug.reporting_period_ad_start.month == 8
+    assert aug.reporting_period_ad_end.month == 8
+
+
+def test_ym_approximation_flagged(ym_result: ParserResult) -> None:
+    """Every AD-monthly row records the mid-month BS approximation in notes."""
+    assert all(
+        r.parser_notes and "mid-month" in r.parser_notes
+        for r in ym_result.staging_rows
+    )
+
+
+# ---------------------------------------------------------------------------
+# v0.4.0 — repeated (year, month) column → both values kept, flagged
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def ym_dup_result(year_month_dup_xlsx: Path) -> ParserResult:
+    return parse(str(year_month_dup_xlsx), source_document_id="test-doc-ym-dup")
+
+
+def test_ym_dup_both_values_kept(ym_dup_result: ParserResult) -> None:
+    """A repeated Oct column must NOT drop data — both Kartik 2082 values emitted."""
+    kartik = [
+        r for r in ym_dup_result.staging_rows if r.reporting_period_bs == "Kartik 2082"
+    ]
+    assert len(kartik) == 2
+    assert sorted(r.value for r in kartik) == pytest.approx([300.0, 999.0])
+
+
+def test_ym_dup_emits_period_ambiguous(ym_dup_result: ParserResult) -> None:
+    assert "PeriodAmbiguous" in [e.error_class for e in ym_dup_result.errors]
+
+
+def test_ym_dup_flagged_in_notes(ym_dup_result: ParserResult) -> None:
+    flagged = [
+        r for r in ym_dup_result.staging_rows
+        if r.parser_notes and "repeated column" in r.parser_notes
+    ]
+    assert len(flagged) == 1  # only the second occurrence is flagged
+
+
+# ---------------------------------------------------------------------------
+# v0.4.0 — long panel (Exchange-rate): FY col + month col + value cols
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def long_panel_result(long_panel_xlsx: Path) -> ParserResult:
+    return parse(str(long_panel_xlsx), source_document_id="test-doc-long-panel")
+
+
+def test_long_panel_has_rows(long_panel_result: ParserResult) -> None:
+    # 3 real month rows (Annual Average skipped) × 3 value columns = 9 rows.
+    assert len(long_panel_result.staging_rows) == 9
+
+
+def test_long_panel_all_monthly(long_panel_result: ParserResult) -> None:
+    assert all(
+        r.reporting_period_type == "monthly" for r in long_panel_result.staging_rows
+    )
+
+
+def test_long_panel_fy_forward_filled(long_panel_result: ParserResult) -> None:
+    """The sparse FY label fills across its months. July 2022 → Shrawan 2079."""
+    july = [r for r in long_panel_result.staging_rows if r.reporting_period_bs == "Shrawan 2079"]
+    assert len(july) == 3  # three value columns
+    assert all(r.fiscal_year_ad_label == "2022/23" for r in july)
+
+
+def test_long_panel_jan_uses_trailing_calendar_year(long_panel_result: ParserResult) -> None:
+    """FY 2023/24 January is AD 2024 (Jan), BS Magh 2080, but FY stays 2023/24."""
+    jan = [r for r in long_panel_result.staging_rows if r.reporting_period_bs == "Magh 2080"]
+    assert len(jan) == 3
+    assert all(r.fiscal_year_ad_label == "2023/24" for r in jan)
+    assert all(r.reporting_period_ad_start.year == 2024 for r in jan)
+
+
+def test_long_panel_skips_aggregate_rows(long_panel_result: ParserResult) -> None:
+    """The 'Annual Average' row must not produce any monthly fact."""
+    # If it leaked, we'd have 4 month rows × 3 cols = 12, not 9.
+    assert len(long_panel_result.staging_rows) == 9
+
+
+def test_long_panel_unit_ambiguous(long_panel_result: ParserResult) -> None:
+    """No controlled-vocab unit exists for FX rates → honest UnitAmbiguous."""
+    assert "UnitAmbiguous" in [e.error_class for e in long_panel_result.errors]
+    # Raw column sub-label carried as the unit (validator flags it).
+    assert all(r.unit for r in long_panel_result.staging_rows)
+
+
+# ---------------------------------------------------------------------------
+# v0.4.0 — transposed layout (Tourist-arrivals): years-as-rows, months-as-cols
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def transposed_result(transposed_xlsx: Path) -> ParserResult:
+    return parse(str(transposed_xlsx), source_document_id="test-doc-transposed")
+
+
+def test_transposed_status_success(transposed_result: ParserResult) -> None:
+    assert transposed_result.status == "success", f"errors={transposed_result.errors}"
+
+
+def test_transposed_row_count(transposed_result: ParserResult) -> None:
+    # 2 year rows × 12 months = 24 (the annual Total column is ignored).
+    assert len(transposed_result.staging_rows) == 24
+
+
+def test_transposed_all_monthly(transposed_result: ParserResult) -> None:
+    assert all(
+        r.reporting_period_type == "monthly" for r in transposed_result.staging_rows
+    )
+
+
+def test_transposed_total_column_ignored(transposed_result: ParserResult) -> None:
+    """The 'Total' column is not a month → no value equals an annual total (1860)."""
+    assert all(r.value not in (1860.0, 1872.0) for r in transposed_result.staging_rows)
+
+
+def test_transposed_jan_1992_maps_to_magh_2048(transposed_result: ParserResult) -> None:
+    """Jan 1992 → Magh (AD month 1, < July) BS year 1992+56 = 2048."""
+    jan = next(
+        r for r in transposed_result.staging_rows
+        if r.reporting_period_bs == "Magh 2048"
+    )
+    assert jan.value == pytest.approx(100.0)
+    assert jan.fiscal_year_ad_label == "1991/92"
+    assert jan.reporting_period_ad_start.year == 1992
+    assert jan.reporting_period_ad_start.month == 1
+
+
+def test_transposed_unit_count(transposed_result: ParserResult) -> None:
+    """The sheet title carries 'Number' → count."""
+    assert all(r.unit == "count" for r in transposed_result.staging_rows)
+
+
+def test_transposed_single_indicator_slug(transposed_result: ParserResult) -> None:
+    """A transposed sheet is a single indicator surface; slug from the sheet name."""
+    assert {r.indicator_slug_raw for r in transposed_result.staging_rows} == {
+        "dne-tourist-arrival"
+    }

@@ -24,11 +24,30 @@ Unit detection:
     continues — the raw unit string is used as the ``unit`` field so the
     validator can flag it rather than dropping data.
 
-Period detection:
-    Annual FY patterns: "2079/80", "2079-80".  Both treated as annual FY.
-    Monthly patterns: "<bs_month_name> <bs_year>", e.g. "Shrawan 2082".
-    Unparseable period column headers → ``PeriodUnparseable`` error; the
-    column is skipped.
+Period detection (four layouts, tried in priority order):
+    1. Long panel — FY label in col 0 (sparse, forward-filled) + AD month name in
+       col 1 + numeric value columns to the right (Exchange-rate).  Detected FIRST
+       because the standard header detector would otherwise mis-claim it.
+    2. Standard wide — indicators as rows, fiscal-period labels as column headers.
+       Annual FY: "2079/80", "2079-80" (BS) or "2022/23" (AD, converted via the
+       +57 offset, ADR-0013).  Monthly BS: "<bs_month_name> <bs_year>", e.g.
+       "Shrawan 2082".
+    3. Two-row monthly header — a row of integer AD YEARS over a row of AD MONTH
+       names (Foreign-exchange-reserves).  Each (year, month) column is a monthly
+       period; the sparse year row is forward-filled.  A repeated (year, month)
+       column (source mislabel) keeps both values, flags them, and emits one
+       ``PeriodAmbiguous``.
+    4. Transposed — AD MONTH names as column headers with integer AD YEARS as row
+       labels down col 0 (Tourist-arrivals); long-formatted to one row per
+       year×month.
+
+    AD calendar months are mapped to the BS month containing their 15th (a
+    documented mid-month approximation, the exact inverse of
+    ``_common.periods._BS_MONTH_TO_AD_MONTH``); every such row is flagged in
+    ``parser_notes`` and the AD month span stored is the exact Gregorian month.
+    Unparseable period column headers → ``PeriodUnparseable`` error; the column is
+    skipped.  Sheets matching no layout fail loud with ``PeriodUnparseable`` when
+    year-like tokens are present (never a silent drop).
 
 Confidence: ``B`` default for all DNE rows (NRB compiles from multiple
 agencies; figures revised across publications).
@@ -62,7 +81,7 @@ from _common.types import (
     StagingRowDraft,
 )
 
-PARSER_VERSION: Final[str] = "0.3.0"
+PARSER_VERSION: Final[str] = "0.4.0"
 SOURCE_ID: Final[str] = "nrb-dne-xlsx"
 
 # ---------------------------------------------------------------------------
@@ -174,6 +193,84 @@ _BS_YEAR_MIN: Final[int] = 2040
 # Maximum AD fiscal-year start accepted for AD→BS conversion (exclusive upper
 # bound = _BS_YEAR_MIN - 1). Any lead year ≥ _BS_YEAR_MIN is treated as BS.
 _AD_YEAR_FY_MAX: Final[int] = _BS_YEAR_MIN - 1  # 2039
+
+# AD Gregorian month-name → month-number (1-12). NRB month-header rows mix
+# abbreviated and full English names ("Aug" vs "August", "Sept" vs "September",
+# "March", "April", "June", "July"), so every common variant is mapped. Keys are
+# lowercased before lookup.  Used by the integer-year+monthly, long-panel, and
+# transposed AD layouts (ADR-0013 follow-up; the wide BS layout uses BS months).
+_AD_MONTH_NAME_TO_NUM: Final[dict[str, int]] = {
+    "jan": 1, "january": 1,
+    "feb": 2, "february": 2,
+    "mar": 3, "march": 3,
+    "apr": 4, "april": 4,
+    "may": 5,
+    "jun": 6, "june": 6,
+    "jul": 7, "july": 7,
+    "aug": 8, "august": 8,
+    "sep": 9, "sept": 9, "september": 9,
+    "oct": 10, "october": 10,
+    "nov": 11, "november": 11,
+    "dec": 12, "december": 12,
+}
+
+# AD Gregorian month-number → BS month name. This is the exact inverse of
+# `_common.periods._BS_MONTH_TO_AD_MONTH` and round-trips with `mid_month_ad`:
+# the BS month listed for AD month M is the one whose mid-point (the 15th of M)
+# falls inside it. This is a DOCUMENTED MID-MONTH APPROXIMATION — an AD calendar
+# month overlaps two BS months (e.g. AD January spans the tail of Poush and the
+# head of Magh); we attribute the whole AD month to the BS month containing its
+# 15th. The TS validation layer refines to exact BS-calendar boundaries. We never
+# fabricate a period: the BS label stored is a real, defensible monthly period,
+# explicitly flagged via `parser_notes`. Kept local (not in _common) per the
+# scope fence; mirrors the same mid-July break-month rule as `mid_month_ad`.
+_AD_MONTH_NUM_TO_BS_MONTH: Final[dict[int, BsMonth]] = {
+    1: "Magh",
+    2: "Falgun",
+    3: "Chait",
+    4: "Baisakh",
+    5: "Jestha",
+    6: "Ashadh",
+    7: "Shrawan",
+    8: "Bhadra",
+    9: "Ashwin",
+    10: "Kartik",
+    11: "Mangsir",
+    12: "Poush",
+}
+
+# Mirror of `_common.periods._AD_YEAR_BREAK_MONTH`: AD months ≥ July belong to BS
+# year (ad_year + 57); months < July belong to BS year (ad_year + 56).
+_AD_YEAR_BREAK_MONTH: Final[int] = 7
+
+# Fiscal-year offset between BS and AD lead years (ADR-0013): BS = AD + 57.
+_BS_AD_FY_OFFSET: Final[int] = 57
+
+# Note appended to every monthly draft built from an AD calendar month, recording
+# the mid-month BS approximation so the validator (and any auditor) sees it.
+_AD_MONTHLY_APPROX_NOTE: Final[str] = (
+    "AD calendar month mapped to BS month containing its 15th (mid-month "
+    "approximation per ADR-0013 follow-up); validator refines exact BS boundaries"
+)
+
+# Minimum number of integer-year cells a row must contain to be considered the
+# "years" row of a two-row (year-over-month) monthly header.
+_MIN_YEAR_HEADER_CELLS: Final[int] = 3
+
+# Minimum number of AD-month-name cells a row must contain to be considered the
+# "months" row of a two-row monthly header, OR the column header of a transposed
+# (years-as-rows) sheet.
+_MIN_MONTH_HEADER_CELLS: Final[int] = 6
+
+# Labels that mark a non-period column in transposed/long layouts (annual totals,
+# the row-label header itself). Lowercased before comparison.
+_NON_MONTH_COL_LABELS: Final[frozenset[str]] = frozenset(
+    {"total", "annual", "annual total", "year total", "sum", "year"}
+)
+
+# Month-1-of-fiscal-year (Shrawan = AD July) — used to derive the FY a monthly
+# AD period belongs to when no explicit FY column is present.
+_FY_FIRST_AD_MONTH: Final[int] = 7
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -373,6 +470,83 @@ def _monthly_bs_to_draft_fields(
     )
 
 
+def _parse_ad_month_name(label: str) -> int | None:
+    """Parse an AD Gregorian month name → month number (1-12), or None.
+
+    Accepts NRB's mixed abbreviated/full English month names (case-insensitive,
+    surrounding whitespace stripped): "Aug", "August", "Sept", "March", "June".
+    """
+    key = label.strip().lower()
+    return _AD_MONTH_NAME_TO_NUM.get(key)
+
+
+def _ad_month_to_bs(ad_year: int, ad_month: int) -> tuple[BsMonth, int]:
+    """Map an AD (year, month) to its (BS month, BS year) — mid-month approximation.
+
+    The BS month is the one containing the 15th of the AD month (the exact inverse
+    of `_common.periods._BS_MONTH_TO_AD_MONTH`); the BS year follows the same
+    mid-July break rule as `mid_month_ad`. Documented approximation per ADR-0013
+    follow-up — see ``_AD_MONTH_NUM_TO_BS_MONTH``. Never fabricates: the result is
+    a real BS month/year pair, and callers flag the approximation in parser_notes.
+    """
+    bs_month = _AD_MONTH_NUM_TO_BS_MONTH[ad_month]
+    bs_year = (
+        ad_year + _BS_AD_FY_OFFSET
+        if ad_month >= _AD_YEAR_BREAK_MONTH
+        else ad_year + _BS_AD_FY_OFFSET - 1
+    )
+    return bs_month, bs_year
+
+
+def _ad_monthly_to_draft_fields(
+    ad_year: int,
+    ad_month: int,
+    unit: str,
+    slug: str,
+    value: float,
+    extra_note: str | None = None,
+) -> StagingRowDraft:
+    """Build a monthly StagingRowDraft from an AD (Gregorian) year+month cell.
+
+    The AD month span is exact (1st → 28th of the Gregorian month — a safe lower
+    bound the validator widens). Only the BS *label* is the mid-month
+    approximation, flagged in ``parser_notes`` via ``_AD_MONTHLY_APPROX_NOTE``.
+    The fiscal year is derived from the AD month: AD July (Shrawan) begins FY
+    ``ad_year/ad_year+1``; AD Jan–Jun belong to the FY that began the prior July.
+
+    ``extra_note`` is appended to ``parser_notes`` (used to flag source-level
+    quirks such as a repeated (year, month) column in the header).
+    """
+    bs_month, bs_year = _ad_month_to_bs(ad_year, ad_month)
+    ad_start = datetime(ad_year, ad_month, 1, tzinfo=UTC)
+    ad_end = datetime(ad_year, ad_month, 28, tzinfo=UTC)
+    # FY lead (AD): months Jul..Dec → this AD year; Jan..Jun → previous AD year.
+    fy_ad_start = ad_year if ad_month >= _FY_FIRST_AD_MONTH else ad_year - 1
+    fy_ad = f"{fy_ad_start}/{(fy_ad_start + 1) % 100:02d}"
+    bs_fy_start = fy_ad_start + _BS_AD_FY_OFFSET
+    fy_bs = fiscal_year_label(bs_fy_start)
+    notes = (
+        _AD_MONTHLY_APPROX_NOTE
+        if extra_note is None
+        else f"{_AD_MONTHLY_APPROX_NOTE}; {extra_note}"
+    )
+    return StagingRowDraft(
+        indicator_slug_raw=slug,
+        value=value,
+        unit=unit,
+        reporting_period_type="monthly",
+        reporting_period_bs=f"{bs_month} {bs_year}",
+        reporting_period_ad_start=ad_start,
+        reporting_period_ad_end=ad_end,
+        publication_date_ad=_PUB_DATE_SENTINEL,
+        publication_date_bs=_PUB_DATE_BS_SENTINEL,
+        fiscal_year_bs=fy_bs,
+        fiscal_year_ad_label=fy_ad,
+        confidence_grade_proposed=_CONFIDENCE,
+        parser_notes=notes,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Sheet-level parser — broken into focused sub-functions to satisfy ruff
 # PLR0912 (branches ≤ 12) and PLR0915 (statements ≤ 50).
@@ -565,59 +739,493 @@ def _parse_data_rows(
     return staging, errors
 
 
+def _as_year_int(cell: object) -> int | None:
+    """Return the AD year an integer-ish cell encodes, or None.
+
+    Accepts ints/floats (2001, 2001.0) and digit strings ("2001"). Bounded to the
+    AD calendar-year window so stray numeric data is never mistaken for a year.
+    """
+    if isinstance(cell, bool):  # bool is an int subclass — exclude explicitly
+        return None
+    if isinstance(cell, int | float):
+        if cell != int(cell):
+            return None
+        n = int(cell)
+    else:
+        s = _norm_text(cell)
+        if not s.isdigit():
+            return None
+        n = int(s)
+    if _AD_YEAR_INT_MIN <= n <= _AD_YEAR_INT_MAX:
+        return n
+    return None
+
+
+def _row_year_cols(row: tuple[object, ...]) -> dict[int, int]:
+    """Map column index → AD year for every integer-AD-year cell in a row."""
+    return {ci: y for ci, cell in enumerate(row) if (y := _as_year_int(cell)) is not None}
+
+
+def _row_month_cols(row: tuple[object, ...]) -> dict[int, int]:
+    """Map column index → AD month number for every AD-month-name cell in a row."""
+    out: dict[int, int] = {}
+    for ci, cell in enumerate(row):
+        if cell is None:
+            continue
+        m = _parse_ad_month_name(_norm_text(cell))
+        if m is not None:
+            out[ci] = m
+    return out
+
+
+def _detect_year_month_header(
+    rows: list[tuple[object, ...]],
+) -> tuple[int, dict[int, tuple[int, int]]] | None:
+    """Detect a two-row header: a row of integer AD YEARS directly above a row of
+    AD MONTH names (the Foreign-exchange-reserves layout).
+
+    Returns ``(month_row_idx, {col_idx: (ad_year, ad_month)})`` or None.
+
+    Strategy: scan for an adjacent (year_row, month_row) pair within the preamble.
+    The year row is sparse — a year value typically appears only in the first
+    column of each year's month-block (e.g. 2001 over "Aug", blanks over the rest)
+    OR repeats per month. We forward-fill the year across the month columns so each
+    monthly column gets the most recent year seen at or before it.
+    """
+    scan = min(len(rows) - 1, _PREAMBLE_SCAN_ROWS)
+    for ri in range(scan):
+        year_cols = _row_year_cols(rows[ri])
+        if len(year_cols) < _MIN_YEAR_HEADER_CELLS:
+            continue
+        month_cols = _row_month_cols(rows[ri + 1])
+        if len(month_cols) < _MIN_MONTH_HEADER_CELLS:
+            continue
+        # Forward-fill the year across month columns. Walk columns left→right;
+        # carry the last year seen in the year row at or before this column.
+        first_year_col = min(year_cols)
+        paired: dict[int, tuple[int, int]] = {}
+        current_year: int | None = None
+        max_col = max(*year_cols, *month_cols)
+        for ci in range(first_year_col, max_col + 1):
+            if ci in year_cols:
+                current_year = year_cols[ci]
+            if ci in month_cols and current_year is not None:
+                paired[ci] = (current_year, month_cols[ci])
+        if len(paired) >= _MIN_MONTH_HEADER_CELLS:
+            return ri + 1, paired
+    return None
+
+
+def _parse_year_month_layout(
+    rows: list[tuple[object, ...]],
+    month_row_idx: int,
+    paired: dict[int, tuple[int, int]],
+    unit_hint: str | None,
+    sheet_name: str,
+) -> tuple[list[StagingRowDraft], list[ParserError]]:
+    """Emit one monthly draft per (indicator-row × paired year/month column).
+
+    NRB occasionally ships a repeated (year, month) column in the header (e.g.
+    two "Oct 2025" columns with *different* values — a source-side mislabel we
+    cannot disambiguate without fabricating). We never drop either value: both
+    rows are emitted, the duplicate-period columns are flagged in ``parser_notes``,
+    and a single ``PeriodAmbiguous`` error surfaces the issue for the validator.
+    """
+    staging: list[StagingRowDraft] = []
+    errors: list[ParserError] = []
+    seen_slugs: set[str] = set()
+    first_period_col = min(paired)
+
+    # Identify columns whose (year, month) repeats an earlier column (left→right).
+    dup_cols: set[int] = set()
+    seen_periods: set[tuple[int, int]] = set()
+    for col_idx in sorted(paired):
+        ym = paired[col_idx]
+        if ym in seen_periods:
+            dup_cols.add(col_idx)
+        else:
+            seen_periods.add(ym)
+    if dup_cols:
+        dup_sample = ", ".join(
+            dict.fromkeys(
+                f"{_AD_MONTH_NUM_TO_BS_MONTH[paired[c][1]]} (AD {paired[c][0]}-{paired[c][1]:02d})"
+                for c in sorted(dup_cols)
+            )
+        )
+        errors.append(
+            ParserError(
+                error_class="PeriodAmbiguous",
+                error_detail=(
+                    f"sheet={sheet_name!r}: header has repeated (year, month) "
+                    f"columns ({dup_sample}); both values emitted and flagged — "
+                    f"validator must adjudicate the source-side duplicate"
+                ),
+                source_excerpt=dup_sample,
+            )
+        )
+
+    for row_idx in range(month_row_idx + 1, len(rows)):
+        row = rows[row_idx]
+        # Label may sit in col 0 or, for indented sub-items, col 1. Join the
+        # non-empty label cells that precede the first period column.
+        label_parts = [
+            _norm_text(row[c])
+            for c in range(min(first_period_col, len(row)))
+            if c < len(row) and _norm_text(row[c])
+        ]
+        label_raw = " ".join(label_parts)
+        if not label_raw or label_raw.lower() in _SKIP_LABELS:
+            continue
+
+        slug = _slugify(label_raw)
+        if slug in seen_slugs:
+            slug = f"{slug}-r{row_idx}"
+        seen_slugs.add(slug)
+
+        row_unit, unit_err = _resolve_unit(unit_hint, label_raw, row_idx, slug, sheet_name)
+        if unit_err:
+            errors.append(unit_err)
+
+        for col_idx, (ad_year, ad_month) in paired.items():
+            if col_idx >= len(row):
+                continue
+            value = _safe_float(row[col_idx])
+            if value is None:
+                continue
+            dup_note = (
+                f"source header had a repeated column for this (year, month) at "
+                f"col {col_idx}; value not dropped"
+                if col_idx in dup_cols
+                else None
+            )
+            staging.append(
+                _ad_monthly_to_draft_fields(
+                    ad_year, ad_month, row_unit, slug, value, extra_note=dup_note
+                )
+            )
+    return staging, errors
+
+
+def _detect_long_panel(
+    rows: list[tuple[object, ...]],
+) -> tuple[int, int, int, list[int]] | None:
+    """Detect the long-panel layout (Exchange-rate): an AD fiscal-year label in
+    col 0 (sparse — present only on the first month of each FY, forward-filled),
+    an AD month name in col 1, and numeric value columns to the right.
+
+    Returns ``(first_data_row, fy_col, month_col, value_cols)`` or None.
+    """
+    fy_col, month_col = 0, 1
+    # Find the first data row: col0 parses as an annual FY (AD or BS) and col1 is
+    # an AD month name. Scan a generous window past any multi-row header.
+    scan = min(len(rows), _PREAMBLE_SCAN_ROWS * 2)
+    for ri in range(scan):
+        row = rows[ri]
+        if len(row) <= month_col:
+            continue
+        if _parse_annual_fy(_norm_text(row[fy_col])) is None:
+            continue
+        if _parse_ad_month_name(_norm_text(row[month_col])) is None:
+            continue
+        # Value columns: every column ≥ 2 that holds a float somewhere in the
+        # next few rows. Use this row plus a couple after it as the probe.
+        value_cols: list[int] = []
+        probe = rows[ri : ri + 4]
+        max_col = max(len(r) for r in probe)
+        for c in range(month_col + 1, max_col):
+            if any(c < len(r) and _safe_float(r[c]) is not None for r in probe):
+                value_cols.append(c)
+        if value_cols:
+            return ri, fy_col, month_col, value_cols
+    return None
+
+
+def _value_col_label(rows: list[tuple[object, ...]], header_rows: int, col: int) -> str:
+    """Build a value-column sub-label by joining header cells above a value column.
+
+    The long-panel sheet has a 3-4 row header naming each numeric column
+    (e.g. "Month End Buying", "Monthly Average Middle Rate"). We concatenate the
+    non-empty header cells in this column to disambiguate the indicator slug.
+    """
+    parts = [
+        _norm_text(rows[r][col])
+        for r in range(header_rows)
+        if col < len(rows[r]) and _norm_text(rows[r][col])
+    ]
+    return " ".join(parts)
+
+
+def _parse_long_panel_layout(
+    rows: list[tuple[object, ...]],
+    first_data_row: int,
+    fy_col: int,
+    month_col: int,
+    value_cols: list[int],
+    unit_hint: str | None,
+    sheet_name: str,
+) -> tuple[list[StagingRowDraft], list[ParserError]]:
+    """Long-format the Exchange-rate panel: one monthly draft per (row × value col).
+
+    The FY label in col 0 is forward-filled. Each value column carries its own
+    sub-label (from the multi-row header) so distinct series get distinct slugs.
+    Rows whose month cell is an aggregate ("Annual Average") are skipped — they
+    are not a single calendar month and would corrupt the monthly period.
+    """
+    staging: list[StagingRowDraft] = []
+    errors: list[ParserError] = []
+    col_labels = {c: _value_col_label(rows, first_data_row, c) for c in value_cols}
+    current_fy_ad: str | None = None
+    # Resolve each value column's unit ONCE, and only from a positively-known
+    # sheet-level hint. We deliberately do NOT keyword-match the column sub-labels
+    # ("Month End Buying", etc.): those contain noise words ("month") that the
+    # substring matcher would mis-resolve to a wrong vocab unit. When no hint is
+    # known (e.g. an FX-rate panel — there is no controlled-vocab "NPR per USD"
+    # unit), we emit one UnitAmbiguous per column and carry the raw sub-label so
+    # the validator flags it for human unit assignment — never a silent wrong unit.
+    col_units: dict[int, str] = {}
+    for col in value_cols:
+        sub = col_labels.get(col) or f"col{col}"
+        if unit_hint is not None:
+            col_units[col] = unit_hint
+            continue
+        col_units[col] = sub
+        errors.append(
+            ParserError(
+                error_class="UnitAmbiguous",
+                error_detail=(
+                    f"sheet={sheet_name!r} col={col}: unit not resolved for the "
+                    f"long-panel value column; raw column label used as unit"
+                ),
+                source_excerpt=sub,
+            )
+        )
+
+    for row_idx in range(first_data_row, len(rows)):
+        row = rows[row_idx]
+        if fy_col < len(row):
+            fy_parsed = _parse_annual_fy(_norm_text(row[fy_col]))
+            if fy_parsed is not None:
+                current_fy_ad = fy_parsed[1]  # AD label "YYYY/YY"
+        if month_col >= len(row):
+            continue
+        month_text = _norm_text(row[month_col])
+        if month_text.lower() in _NON_MONTH_COL_LABELS or "average" in month_text.lower():
+            # "Annual Average" / "Monthly Average" aggregate rows — not a month.
+            continue
+        ad_month = _parse_ad_month_name(month_text)
+        if ad_month is None or current_fy_ad is None:
+            continue
+        ad_year = _fy_label_to_calendar_year(current_fy_ad, ad_month)
+        if ad_year is None:
+            continue
+        for col in value_cols:
+            if col >= len(row):
+                continue
+            value = _safe_float(row[col])
+            if value is None:
+                continue
+            sub = col_labels.get(col) or f"col{col}"
+            slug = _slugify(f"{sheet_name} {sub}")
+            staging.append(
+                _ad_monthly_to_draft_fields(
+                    ad_year, ad_month, col_units[col], slug, value
+                )
+            )
+    return staging, errors
+
+
+def _fy_label_to_calendar_year(fy_ad_label: str, ad_month: int) -> int | None:
+    """Resolve the AD calendar year of ``ad_month`` within an AD FY label.
+
+    NRB fiscal year runs mid-July→mid-July. For AD FY "2022/23": months Jul–Dec
+    fall in the lead calendar year (2022); months Jan–Jun fall in the trailing
+    year (2023). Returns None on a malformed label.
+    """
+    m = re.match(r"^\s*(\d{4})\s*/\s*(\d{2,4})\s*$", fy_ad_label)
+    if not m:
+        return None
+    lead = int(m.group(1))
+    return lead if ad_month >= _FY_FIRST_AD_MONTH else lead + 1
+
+
+def _detect_transposed(
+    rows: list[tuple[object, ...]],
+) -> tuple[int, int, dict[int, int]] | None:
+    """Detect the transposed layout (Tourist-arrivals): a header row of AD MONTH
+    names across columns, with integer AD YEARS as row labels down col 0.
+
+    Returns ``(header_row_idx, year_col, {col_idx: ad_month})`` or None.
+
+    Requires both signals to avoid false positives: (a) ≥6 month-name column
+    headers, and (b) the rows beneath carry integer AD years in the label column.
+    """
+    year_col = 0
+    scan = min(len(rows), _PREAMBLE_SCAN_ROWS)
+    for ri in range(scan):
+        month_cols = _row_month_cols(rows[ri])
+        if len(month_cols) < _MIN_MONTH_HEADER_CELLS:
+            continue
+        # Confirm: at least two data rows below carry an AD year in col 0.
+        year_rows = sum(
+            1
+            for r in rows[ri + 1 : ri + 6]
+            if year_col < len(r) and _as_year_int(r[year_col]) is not None
+        )
+        if year_rows >= 2:  # noqa: PLR2004 — need ≥2 year rows to confirm orientation
+            return ri, year_col, month_cols
+    return None
+
+
+def _parse_transposed_layout(
+    rows: list[tuple[object, ...]],
+    header_row_idx: int,
+    year_col: int,
+    month_cols: dict[int, int],
+    unit_hint: str | None,
+    sheet_name: str,
+) -> tuple[list[StagingRowDraft], list[ParserError]]:
+    """Long-format a transposed (years-as-rows, months-as-columns) sheet.
+
+    One monthly draft per (year row × month column). Non-month columns (e.g. an
+    annual "Total") are ignored because they are not in ``month_cols``. The
+    indicator slug is the sheet name (the sheet is a single indicator surface,
+    e.g. "Tourist Arrival"), since the row label is the year, not an indicator.
+    """
+    staging: list[StagingRowDraft] = []
+    errors: list[ParserError] = []
+    slug = _slugify(sheet_name)
+    row_unit, unit_err = _resolve_unit(unit_hint, sheet_name, header_row_idx, slug, sheet_name)
+    if unit_err:
+        errors.append(unit_err)
+
+    for row_idx in range(header_row_idx + 1, len(rows)):
+        row = rows[row_idx]
+        if year_col >= len(row):
+            continue
+        ad_year = _as_year_int(row[year_col])
+        if ad_year is None:
+            continue
+        for col_idx, ad_month in month_cols.items():
+            if col_idx >= len(row):
+                continue
+            value = _safe_float(row[col_idx])
+            if value is None:
+                continue
+            staging.append(
+                _ad_monthly_to_draft_fields(ad_year, ad_month, row_unit, slug, value)
+            )
+    return staging, errors
+
+
+def _try_alternate_layouts(
+    rows: list[tuple[object, ...]],
+    unit_hint: str | None,
+    sheet_name: str,
+) -> tuple[list[StagingRowDraft], list[ParserError]] | None:
+    """Try the non-standard AD layouts that only apply once the standard wide
+    header detection has already failed:
+
+    1. Two-row integer-year + month header (Foreign-exchange-reserves).
+    2. Transposed: years-as-rows, months-as-columns (Tourist-arrivals).
+
+    (The long-panel layout is detected earlier in ``_parse_sheet`` because its
+    signature would otherwise be mis-claimed by the standard header detector.)
+
+    Returns the first layout that yields ≥1 staging row, else None (so the caller
+    falls through to the fail-loud deferral diagnostic).
+    """
+    ym = _detect_year_month_header(rows)
+    if ym is not None:
+        staging, errs = _parse_year_month_layout(rows, ym[0], ym[1], unit_hint, sheet_name)
+        if staging:
+            return staging, errs
+
+    tp = _detect_transposed(rows)
+    if tp is not None:
+        staging, errs = _parse_transposed_layout(
+            rows, tp[0], tp[1], tp[2], unit_hint, sheet_name
+        )
+        if staging:
+            return staging, errs
+
+    return None
+
+
+def _defer_unparseable_sheet(
+    rows: list[tuple[object, ...]],
+    sheet_name: str,
+) -> tuple[list[StagingRowDraft], list[ParserError]]:
+    """Fail-loud diagnostic for a sheet no layout matched.
+
+    Emits a ``PeriodUnparseable`` error if AD-year-like tokens are present (so an
+    unhandled real shape is visible, never silently dropped); otherwise returns
+    empty (a genuinely blank sheet → NoDataExtracted at the top level).
+    """
+    ad_year_tokens: list[str] = []
+    for row in rows[:_PREAMBLE_SCAN_ROWS]:
+        for cell in row:
+            if cell is None:
+                continue
+            text = _norm_text(cell)
+            yint = _as_year_int(cell)
+            if yint is not None or re.search(
+                r"\b(20\d{2}|19\d{2})\s*[/\-]\s*\d{2}[RPEQrpeq]?\b", text
+            ):
+                ad_year_tokens.append(text if text else str(cell))
+    if ad_year_tokens:
+        sample = ", ".join(dict.fromkeys(ad_year_tokens[:3]))
+        return [], [
+            ParserError(
+                error_class="PeriodUnparseable",
+                error_detail=(
+                    f"sheet={sheet_name!r}: no parseable period header found; "
+                    f"year-like tokens detected (e.g. {sample!r}) but the layout "
+                    f"matched no known shape (standard wide, two-row monthly, "
+                    f"long panel, or transposed) — deferred per ADR-0013"
+                ),
+                source_excerpt=sample,
+            )
+        ]
+    return [], []
+
+
 def _parse_sheet(
     ws: object,
     sheet_name: str,
 ) -> tuple[list[StagingRowDraft], list[ParserError]]:
-    """Parse one DNE worksheet (wide format) into staging rows + errors."""
+    """Parse one DNE worksheet into staging rows + errors.
+
+    Tries the standard wide BS/AD fiscal-year layout first, then the three
+    non-standard AD layouts (two-row monthly, long panel, transposed), then a
+    fail-loud deferral diagnostic. Never silently drops year-bearing data.
+    """
     rows: list[tuple[object, ...]] = list(ws.iter_rows(values_only=True))  # type: ignore[attr-defined]
     if not rows:
         return [], []
 
     unit_hint = _scan_unit_hint(rows, sheet_name)
+
+    # Long panel FIRST: its signature (FY label in col 0 + AD month name in col 1
+    # + value columns to the right) would otherwise be mis-claimed by the standard
+    # wide-header detector, which sees the col-0 FY label as a single period column.
+    lp = _detect_long_panel(rows)
+    if lp is not None:
+        # Pass unit_hint=None: the long panel's preamble is dominated by month-name
+        # and column-header noise, so the blob-derived hint is unreliable here.
+        # The panel parser resolves units per value column and fails loud
+        # (UnitAmbiguous) rather than risk a wrong substring match.
+        staging, errs = _parse_long_panel_layout(
+            rows, lp[0], lp[1], lp[2], lp[3], None, sheet_name
+        )
+        if staging:
+            return staging, errs
+
     header_row_idx, period_cols = _detect_header(rows)
     if header_row_idx is None or not period_cols:
-        # Emit diagnostic if there are AD-year-like FY tokens in preamble rows
-        # (e.g. "2021/22" or "2022/23R") — these are AD-fiscal-year files that
-        # the parser does not yet handle. This makes the incompatibility explicit
-        # rather than silently producing NoDataExtracted.
-        ad_year_tokens: list[str] = []
-        for row in rows[:_PREAMBLE_SCAN_ROWS]:
-            for cell in row:
-                if cell is None:
-                    continue
-                text = _norm_text(cell)
-                # Match AD-year FY labels ("2022/23R"), bare AD year integers
-                # (2001, 2002...), or integer AD years in cell numeric values.
-                cell_int = (
-                    int(cell)  # type: ignore[call-overload]
-                    if isinstance(cell, int | float) and cell == int(cell)  # type: ignore[call-overload]
-                    else None
-                )
-                is_ad_int = (
-                    cell_int is not None
-                    and _AD_YEAR_INT_MIN <= cell_int <= _AD_YEAR_INT_MAX
-                )
-                if is_ad_int or re.search(
-                    r"\b(20\d{2}|19\d{2})\s*[/\-]\s*\d{2}[RPEQrpeq]?\b", text
-                ):
-                    ad_year_tokens.append(text if text else str(cell))
-        if ad_year_tokens:
-            sample = ", ".join(dict.fromkeys(ad_year_tokens[:3]))
-            return [], [
-                ParserError(
-                    error_class="PeriodUnparseable",
-                    error_detail=(
-                        f"sheet={sheet_name!r}: no parseable period header found; "
-                        f"year-like tokens detected (e.g. {sample!r}) but the layout "
-                        f"is not a standard wide annual/monthly format — "
-                        f"likely transposed (years-as-rows) or datetime-period column; "
-                        f"deferred per ADR-0013"
-                    ),
-                    source_excerpt=sample,
-                )
-            ]
-        return [], []
+        alt = _try_alternate_layouts(rows, unit_hint, sheet_name)
+        if alt is not None:
+            return alt
+        return _defer_unparseable_sheet(rows, sheet_name)
 
     first_period_col = min(period_cols.keys())
     header_row = rows[header_row_idx]
