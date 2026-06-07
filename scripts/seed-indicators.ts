@@ -33,6 +33,23 @@ import type { NewIndicatorUnitRow } from '@/lib/db/schema/indicators';
 
 const CMEFS_SOURCE_ID = 'nrb-cmefs-monthly';
 const NCPI_SOURCE_ID = 'nrb-ncpi-table';
+const DNE_SOURCE_ID = 'nrb-dne-xlsx';
+
+// DNE single-series indicators (ADR-0014): ONLY genuinely single-dimensional
+// DNE series are registered here. The DNE dimensional matrices (Foreign Trade
+// by commodity, Remittance by country/district) and the messy auto-prefixed
+// reserve components are NOT registered — they await a dimensional model. The
+// tourist-arrival series is one clean indicator (monthly total arrivals).
+const DNE_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'dne-tourist-arrival',
+    nameEn: 'Tourist Arrivals (monthly)',
+    category: 'tourism',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+];
 
 // ─── Controlled unit vocabulary ────────────────────────────────────────────
 const UNITS: readonly NewIndicatorUnitRow[] = [
@@ -848,6 +865,35 @@ async function persist(): Promise<void> {
     ncpiLinked += 1;
   }
   log(`indicator_source_map: ${ncpiLinked} links ensured → ${NCPI_SOURCE_ID}`);
+
+  // 6. DNE single-series indicators (ADR-0014: clean single series only).
+  const dneInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...DNE_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!dneInsertResult.ok)
+    throw new Error(`DNE indicators insert failed: ${JSON.stringify(dneInsertResult.error)}`);
+  log(
+    `indicators (DNE): ${dneInsertResult.value.length} inserted (of ${DNE_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 7. DNE source map links.
+  let dneLinked = 0;
+  for (const ind of DNE_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      DNE_SOURCE_ID,
+      'DNE single-series (ADR-0014)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    dneLinked += 1;
+  }
+  log(`indicator_source_map: ${dneLinked} links ensured → ${DNE_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
