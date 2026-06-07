@@ -8,6 +8,28 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-07 (continued) — Gap-closing: latest data, remittance geography, two data-integrity fixes
+
+**What changed:** A second Mother + worker round closed the gaps carried in the morning handoff, and caught two more data-integrity bugs in the process.
+
+### Two data-integrity fixes (both made the data materially wrong)
+- **BFI reporting period was hardcoded.** `scrapers/nrb_bfi/parser.py` emitted `"Bhadra 2082"` for *every* monthly file — the whole banking series collapsed onto one period (and duplicated, because NULL `bank_entity_id` dodges the unique index). Parser v0.2.0 now derives the BS month+year from the filename. After clear + full re-ingest: **2,088 rows across 58 distinct months, Shrawan 2078 → Ashadh 2082** (4-year series).
+- (The fiscal NPR-crore + federal-code fix from the first 2026-06-07 entry was the other.)
+
+### New data ingested
+- **Census absent-population (remittance-source geography):** `cbs_nphc` extended for the three multi-row-per-palika tables (dimensions folded into the slug). **Hhld19 = 113,022** facts (palika × sex × age × destination country), Hhld18 = 14,352, Hhld20 = 64,584. `census_facts` now **211,094** rows (191,958 migration). Added chunked `bulkInsert` (Postgres 65k-param cap) to handle the volume.
+- **7 latest BFI months downloaded** from NRB (Asoj→Chaitra 2082, mid-Oct 2025 → mid-Apr 2026) and ingested; CMEFs confirmed current (Nine-Months is the latest NRB issue).
+
+### Other
+- **`nrb-dne-xlsx` registered** as the umbrella DNE ingest source (ADR-0010 reconciliation) — FK-unblocks live DNE ingest. Registry now 68 sources.
+- Worktree data junctions extended to `NRB Current/` + `Stastical Information/` (full scraper suite now green: 194 Python tests).
+
+**Gaps now closed:** latest-data download (NRB), census Hhld18–20, BFI per-file period, DNE source registration, Saun-2082. **Still open:** DNE/MoF *real-file* downloads (NRB SSL OK, MoF SSL was blocked); source-byte archival to Storage; census fuzzy-resolver ~collisions on shared romanized palika names (Hhld19 surfaced 378).
+
+**Related:** ADR-0010, ADR-0011; HANDOFF_2026-06-07.
+
+---
+
 ## 2026-06-07 — The data pipeline goes live: ingest, publish, document
 
 **What changed:** Mother + a rolling fleet of Sonnet workers took the dormant pipeline from "plumbing built, pipes dry" to live data ingested, rendered on two public pages, and documented. The Supabase project (paused, DNS dead) was resumed by the user; from an empty DB, migrations were applied and the full chain — storage → `source_documents` → deterministic Python parser → staging → validation → approved — ran for real for the first time.
