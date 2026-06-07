@@ -144,9 +144,10 @@ pnpm ingest:bfi-monthly --dry-run
 pnpm ingest:bfi-monthly --input "C:\Users\ACER\Projects\Economy\Financial Data\nrb_monthly_statistics\Bhadau_2082_Publish.xlsx"
 ```
 
-Note: the BFI CLI self-creates its `source_documents` row internally. It does
-NOT go through the general `ingestSource()` orchestrator. The parser is spawned
-as a module (`python -m scrapers.nrb_bfi.parser`) so relative imports resolve.
+Note: the BFI CLI self-archives its file bytes to Supabase Storage and creates
+its own `source_documents` row via `scripts/_lib/archive-source-document.ts`.
+It does NOT go through the general `ingestSource()` orchestrator. The parser is
+spawned as a module (`python -m scrapers.nrb_bfi.parser`) so relative imports resolve.
 
 ### Fiscal Transfers
 
@@ -178,8 +179,9 @@ pnpm ingest:census-2021 -- --csv "C:\Users\ACER\Projects\Economy\Financial Data\
 
 Requires `Financial Data/` junction and local-level entities seed. The census
 CLI accepts one CSV per invocation; loop externally for batch ingestion.
-Self-creates `source_documents` row (mirrors BFI pattern). Parser is spawned as
-a module (`python -m scrapers.cbs_nphc.parser`) for relative imports.
+Self-archives bytes to Supabase Storage and inserts `source_documents` row via
+`scripts/_lib/archive-source-document.ts` (mirrors BFI pattern). Parser is
+spawned as a module (`python -m scrapers.cbs_nphc.parser`) for relative imports.
 
 ### DNE XLSX (NRB Database on Nepalese Economy)
 
@@ -211,12 +213,14 @@ source has a profile under `docs/sources/` but has NOT been seeded via
 `seed-source-registry.ts`, any ingest attempt will fail at the DB insert
 with a foreign-key violation. Seed first, then ingest.
 
-### BFI and census CLIs self-create source_documents
+### BFI, census, and fiscal-transfers CLIs self-archive to Supabase Storage
 
-The BFI and census ingest CLIs create their own `source_documents` row internally
-(using `insertSourceDocument` directly). They do NOT use the `ingestSource()`
-orchestrator. This means the Storage upload step is deferred — the archival path
-is recorded but bytes are not yet uploaded to Supabase Storage.
+The BFI, census, and fiscal-transfers ingest CLIs create their own
+`source_documents` row via the shared `scripts/_lib/archive-source-document.ts`
+helper. They do NOT use the `ingestSource()` orchestrator. They upload file bytes
+to Supabase Storage first (content-addressed; idempotent), then insert the
+`source_documents` row using the real `storageKey`/`fileHashSha256`/`fileSizeBytes`
+returned by the upload — no synthetic keys.
 
 ### Subprocess module flag for BFI and census parsers
 

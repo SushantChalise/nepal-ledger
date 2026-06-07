@@ -24,9 +24,7 @@
  * dry-run path works without DATABASE_URL.
  */
 
-import { createHash } from 'node:crypto';
-import { readFile, stat } from 'node:fs/promises';
-import { basename, resolve } from 'node:path';
+import { resolve } from 'node:path';
 
 import { z } from 'zod';
 
@@ -34,31 +32,18 @@ const PLACEHOLDER_SOURCE_DOC_ID = '00000000-0000-0000-0000-000000000000';
 const CENSUS_SOURCE_ID = 'cbs-nphc-2021';
 
 /**
- * Ensure a `source_documents` row exists for the input CSV and return its id.
- * Mirrors the BFI / fiscal-transfers pattern: provenance row with content hash
- * + deterministic storage key (bytes not uploaded to Storage here — shared
- * archival follow-up).
+ * Upload file bytes to Supabase Storage and insert a `source_documents` row.
+ * Delegates to the shared `archiveAndInsertSourceDocument` helper so the
+ * real storageKey/hash/size from the upload are written to the DB row.
  */
 async function ensureSourceDocument(csvPath: string): Promise<string> {
-  const { insertSourceDocument } = await import('@/lib/db/repositories/source-documents');
-  const buf = await readFile(csvPath);
-  const hash = createHash('sha256').update(buf).digest('hex');
-  const st = await stat(csvPath);
-  const today = new Date().toISOString().slice(0, 10);
-  const result = await insertSourceDocument({
+  const { archiveAndInsertSourceDocument } = await import('./_lib/archive-source-document');
+  return archiveAndInsertSourceDocument({
+    filePath: csvPath,
     sourceId: CENSUS_SOURCE_ID,
-    originalUrl: `file://${csvPath}`,
-    storageProvider: 'supabase',
-    storageKey: `${CENSUS_SOURCE_ID}/${today}/${basename(csvPath)}`,
-    fileHashSha256: hash,
-    fileSizeBytes: st.size,
     contentType: 'text/csv',
     reportingPeriodLabel: 'Census 2021 (2078 BS)',
   });
-  if (!result.ok) {
-    throw new Error(`insertSourceDocument failed: ${JSON.stringify(result.error)}`);
-  }
-  return result.value.id;
 }
 
 const CENSUS_FACT_DRAFT_SCHEMA = z.object({
