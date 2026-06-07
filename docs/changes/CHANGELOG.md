@@ -8,6 +8,21 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-07 (round 4) — DNE all-layouts parse, first DNE→approved series, BFI idempotency
+
+**What changed:** Closed the three blockers from round 3 (DNE→approved, DNE complex layouts, BFI NULL-entity index) — two as concrete fixes, one as a deliberate architectural decision that avoided polluting the truth layer.
+
+- **DNE all 6 External Sector layouts now parse** (parser v0.4.0, Worker P): + integer-year+month (FX reserves 6,716), long-panel (exchange rate 2,172), transposed years-as-rows (tourist arrivals 407). AD month→BS via the inverse of `_BS_MONTH_TO_AD_MONTH`; honest `PeriodAmbiguous`/`UnitAmbiguous` flags, never a silent wrong value.
+- **First DNE data in `approved_indicator_values`** ([ADR-0014](../decisions/0014-dne-promotion-and-dimensional-model.md)): `dne-tourist-arrival` — 407 monthly points, Ashadh 2048 (1991) → Shrawan 2082 (2025), peak 147,859 in Mangsir 2075 (2018/19, pre-COVID). `approved_indicator_values` 85 → 492.
+- **ADR-0014 — DNE promotion policy.** DNE files split into single-dimensional series (promotable) and dimensional matrices (Foreign Trade by commodity ~745, Remittance by country/district ~314). The matrices must NOT be registered as indicators (would dump ~1,000 commodity/country slugs into the catalogue) — they await a future dimensional fact model. Only clean single series promote. FX-reserve components (auto-prefix/`-rNN` slug artifacts) + BoP detail deferred pending slug cleanup.
+- **BFI re-ingest now idempotent** (Worker Q, migration `0003_0004_banking_facts_null_dedup`, applied live): unique index over `COALESCE(bank_entity_id, sentinel)` so NULL-entity aggregate rows collide. Verified — double re-ingest inserts 0.
+
+**Open follow-ups:** the DNE dimensional fact model (unlocks trade-by-commodity / remittance-by-country for Money-Map composition) — its own ADR; FX-reserve/BoP slug cleanup for promotion; the one DNE Remittance datetime-period sheet; MoF real-file downloads (TLS).
+
+**Related:** ADR-0013, ADR-0014; HANDOFF_2026-06-07.
+
+---
+
 ## 2026-06-07 (round 3) — DNE External Sector parsing, census 753/753, provenance archival
 
 **What changed:** Five parallel workers (J/K/L/M/N) + Mother integration pushed on the deeper data-quality gaps. Two were real parser/data fixes with big payoffs; two are well-characterized blockers now documented for a decision rather than rushed.
