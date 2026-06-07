@@ -69,6 +69,20 @@ describe('safeQuery', () => {
     }
   });
 
+  it('unwraps a non-Drizzle wrapper Error.cause (the live ECONNRESET case)', async () => {
+    // The real failure observed against Supabase's pooler: postgres-js/drizzle
+    // throw a wrapper whose message is "Failed query: …" that is NOT a
+    // DrizzleError instance, with the socket error (ECONNRESET) on `.cause`.
+    // The generic-Error branch must inspect `.cause`, else this misclassifies
+    // as QueryFailed and the ingest's transient-retry loop never engages.
+    const wrapped = Object.assign(new Error('Failed query: select id from indicators'), {
+      cause: Object.assign(new Error('read ECONNRESET'), { code: 'ECONNRESET' }),
+    });
+    const result = await safeQuery(() => Promise.reject(wrapped));
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.kind).toBe('DatabaseUnavailable');
+  });
+
   it('classifies bare connection-failure error codes as DatabaseUnavailable', async () => {
     const e = Object.assign(new Error('connect ECONNREFUSED'), { code: 'ECONNREFUSED' });
     const result = await safeQuery(() => Promise.reject(e));

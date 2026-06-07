@@ -73,18 +73,47 @@ function toAppError(e: unknown): AppError {
   }
   if (e instanceof Error) {
     const code = (e as Error & { code?: string }).code;
-    if (
-      code === 'EAI_AGAIN' ||
-      code === 'ENOTFOUND' ||
-      code === 'ECONNREFUSED' ||
-      code === 'ETIMEDOUT' ||
-      code === 'ECONNRESET'
-    ) {
+    if (isConnectionErrorCode(code)) {
       return { kind: 'DatabaseUnavailable', detail: `${code}: ${e.message}` };
+    }
+    // postgres-js / drizzle wrap the underlying socket failure: the thrown
+    // error's message is "Failed query: …" and the real connection code
+    // (ECONNRESET, EPIPE, …) lives on `.cause`, NOT the top level. That wrapper
+    // is not always a DrizzleError instance, so the cause-recursion in the
+    // DrizzleError branch above can miss it and the error lands here. Inspect
+    // `.cause` so a mid-pipeline connection reset surfaces as the (retryable)
+    // DatabaseUnavailable rather than an opaque QueryFailed. Observed live: a
+    // ~0.1%/query ECONNRESET over Supabase's pooler, which over a multi-hundred
+    // round-trip ingest reliably aborted the whole run.
+    const cause = (e as Error & { cause?: unknown }).cause;
+    if (cause !== undefined && cause !== e) {
+      const causeCode = (cause as { code?: string }).code;
+      if (isConnectionErrorCode(causeCode)) {
+        return { kind: 'DatabaseUnavailable', detail: `${causeCode}: ${e.message}` };
+      }
     }
     return { kind: 'QueryFailed', detail: e.message };
   }
   return { kind: 'QueryFailed', detail: String(e) };
+}
+
+/**
+ * Node/libuv socket-level error codes that mean "the connection failed", as
+ * opposed to "the query was rejected". These map to `DatabaseUnavailable`
+ * (transient, safe to retry) rather than `QueryFailed` (the SQL itself is at
+ * fault). 08xxx SQLSTATEs are handled separately on `PostgresError`.
+ */
+const CONNECTION_ERROR_CODES: ReadonlySet<string> = new Set([
+  'EAI_AGAIN',
+  'ENOTFOUND',
+  'ECONNREFUSED',
+  'ETIMEDOUT',
+  'ECONNRESET',
+  'EPIPE',
+]);
+
+function isConnectionErrorCode(code: string | undefined): boolean {
+  return code !== undefined && CONNECTION_ERROR_CODES.has(code);
 }
 
 function detailOf(e: PostgresError): string {

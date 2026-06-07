@@ -228,6 +228,51 @@ async function processRow(
   return ok(undefined);
 }
 
+/**
+ * Bounded retry wrapper around `processRow` for transient connection failures.
+ *
+ * Live observation: Supabase's pooler resets the socket on roughly 0.1% of
+ * queries (ECONNRESET). The validation loop does several hundred sequential
+ * round-trips per file, so an un-retried run hit at least one reset ~70% of
+ * the time and aborted wholesale. We retry ONLY `DatabaseUnavailable` (the
+ * connection-class AppError) with exponential backoff; any other error (bad
+ * SQL, constraint violation, validation block) returns immediately and is
+ * never retried.
+ *
+ * Retry safety: `processRow`'s context loads are idempotent reads, and the
+ * promote is a single transaction (no partial state). The one at-least-once
+ * hazard — a reset AFTER a promote commit — causes the retry to write a higher
+ * revision of identical data; read queries take `revision_number DESC LIMIT 1`,
+ * so it is read-harmless and retained as a revision (Data Continuity Protocol).
+ */
+const MAX_TRANSIENT_RETRIES = 5;
+const RETRY_BASE_DELAY_MS = 150;
+
+async function processRowWithRetry(
+  row: StagingIndicatorValueRow,
+  knownUnits: ReadonlySet<string>,
+  summary: {
+    promoted: number;
+    promotedWithWarnings: number;
+    blocked: number;
+    blockingFlags: BlockingFlag[];
+  },
+): Promise<Result<void>> {
+  let last = await processRow(row, knownUnits, summary);
+  for (let attempt = 1; attempt <= MAX_TRANSIENT_RETRIES; attempt += 1) {
+    if (last.ok || last.error.kind !== 'DatabaseUnavailable') return last;
+    await delay(RETRY_BASE_DELAY_MS * 2 ** (attempt - 1));
+    last = await processRow(row, knownUnits, summary);
+  }
+  return last;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 export async function validateParserRun(parserRunId: string): Promise<Result<ValidationSummary>> {
   const stagingResult = await listStagingRowsForParserRun(parserRunId);
   if (!stagingResult.ok) return stagingResult;
@@ -249,7 +294,7 @@ export async function validateParserRun(parserRunId: string): Promise<Result<Val
   };
 
   for (const row of stagingRows) {
-    const result = await processRow(row, knownUnits, summary);
+    const result = await processRowWithRetry(row, knownUnits, summary);
     if (!result.ok) return result;
   }
 
