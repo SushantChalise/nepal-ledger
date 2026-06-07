@@ -8,6 +8,31 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-07 (round 3) — DNE External Sector parsing, census 753/753, provenance archival
+
+**What changed:** Five parallel workers (J/K/L/M/N) + Mother integration pushed on the deeper data-quality gaps. Two were real parser/data fixes with big payoffs; two are well-characterized blockers now documented for a decision rather than rushed.
+
+### Census: complete, correctly-attributed geography (the headline win)
+- Built a deterministic **`(prov,dist,gapa)→federal_code` crosswalk** (`scrapers/cbs_nphc/palika_code_crosswalk.csv`, 753 rows / 753 distinct codes) — census CSVs carry only CBS triples, no federal code, and the 8-digit HLCIT code isn't derivable. Name-matched *within district* (3-rung ladder: exact → fuzzy≥85 → 19-row curated drift map), codes sourced from the same MoF Sheet2 as the entity seed so they join `entities.slug` by construction.
+- The parser now resolves **753/753 palikas** (was ~299); `MunicipalityUnresolved` **12,231→0** on Hhld19.
+- **Re-ingested all 11 census tables**: `census_facts` **211,094 → 531,618** rows, distinct palikas **299 → 753**, 0 skipped. Every fact now attributes to its local level — unblocks District MRI and per-palika analysis. (Worker K first fixed a parser-level false-collision drop; Worker N built the crosswalk that fixes attribution at the root.)
+
+### DNE External Sector now parses (ADR-0013)
+- Downloaded 6 real NRB *Database on Nepalese Economy* External Sector files. They label periods by **AD** fiscal year, not BS. Per [ADR-0013](../decisions/0013-dne-ad-fiscal-year-periods.md) the parser now converts AD→BS (`+57`, deterministic by magnitude) and **fails loud** on genuinely unparseable layouts (it previously mislabeled 2021/22 data as 1964/65). Parser v0.3.0.
+- Unlocks ~13K rows at the parser level: Balance of Payments (360), Foreign Trade (11,334), Remittance (1,407 partial). Verified correct: `dne-current-account` = NPR 139,114 million, AD 2022/23 → BS 2079/80.
+
+### Provenance
+- The three direct-fact CLIs (BFI, census, fiscal) now **archive source bytes to Supabase Storage** (shared `scripts/_lib/archive-source-document.ts`), closing the ADR-0010 deferral. Verified: real storage key + sha256 + size.
+
+**Open blockers (documented, not silently skipped):**
+1. **DNE → approved** needs indicator-registration-at-scale — DNE emits hundreds of `dne-*` slugs; the CMEFs/NCPI hand-seed doesn't scale. Decision needed (register-on-ingest vs curated headline subset) before DNE rows promote past staging.
+2. **DNE complex layouts** — forex reserves / exchange rate (integer-year+monthly) and tourist arrivals (transposed) remain `PeriodUnparseable` pending per-layout handling.
+3. **BFI NULL-`bank_entity_id` idempotency** — aggregate rows (NULL entity) dodge the unique index, so re-ingesting a BFI file duplicates them (cleaned a 36-row instance this round). A partial/`COALESCE` index is the real fix.
+
+**Related:** ADR-0010, ADR-0011, ADR-0013; HANDOFF_2026-06-07.
+
+---
+
 ## 2026-06-07 (continued) — Gap-closing: latest data, remittance geography, two data-integrity fixes
 
 **What changed:** A second Mother + worker round closed the gaps carried in the morning handoff, and caught two more data-integrity bugs in the process.
