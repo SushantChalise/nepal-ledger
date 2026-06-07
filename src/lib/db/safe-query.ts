@@ -11,7 +11,16 @@
  */
 
 import { DrizzleError } from 'drizzle-orm';
-import { PostgresError } from 'postgres';
+import postgres from 'postgres';
+
+// `postgres` (v3) attaches its error class to the default export rather than
+// exposing a named `PostgresError` export. The named-import form happens to
+// work under Vitest's CJS interop but Turbopack's strict ESM analysis rejects
+// it ("export PostgresError doesn't exist"), which 500s every RSC page that
+// touches a repository. Destructure the value from the default; derive the
+// instance type from it (no separate named type export exists either).
+const { PostgresError } = postgres;
+type PostgresError = InstanceType<typeof PostgresError>;
 
 import { err, ok, type AppError, type Result } from '@/lib/errors';
 
