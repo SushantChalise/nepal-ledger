@@ -1,10 +1,10 @@
 # Source: Ministry of Finance — White Book (Source Book for Projects Financed with Foreign Assistance)
 
 **source_id:** `mof-whitebook-foreign-aid`
-**Status:** PROPOSED — registry row pending Mother (see "FOR MOTHER" / the parser docstring). Parser v0.1.0 built + run against 4 clean English editions.
+**Status:** PROPOSED — registry row pending Mother (see "FOR MOTHER" / the parser docstring). Parser v0.2.1 built + run against the clean English + Preeti/Siddhi editions.
 **Tier:** 1 (Money In — external financing spine)
 **Registered at:** _pending Mother seeds the row_
-**Last verified:** 2026-06-07 (parser built; FY2015/16, FY2020/21, FY2013/14, FY2014/15 parse with `status=success`, 0 errors)
+**Last verified:** 2026-06-08 (FY2070/71 donor==sector reconciliation fixed in v0.2.1 — wrapped-name row recovery; see "Known breakage modes")
 
 ## What this is
 
@@ -95,6 +95,18 @@ value.
 - `donor-caption-varies` — newer editions caption the donor table "Development
   Partnerwise Summary"; older ones use a bare "Donor Summary". The parser matches
   both.
+- `wrapped-name-row-dumped-into-col0` (fixed v0.2.1) — when a member name wraps to a
+  second visual line, pdfplumber sometimes fails to split that row into the column
+  grid and dumps the whole row into col 0 as one space-joined blob (other cells
+  empty), silently dropping it. The parser (`_expand_merged_row`) detects this exact
+  artifact and reconstructs `[code, name, *values]` deterministically (the value
+  columns are the contiguous money-token run of length `cols − 2`). This was the
+  **FY2070/71 donor≠sector** flag (DATA_AUDIT §5 G3): two ministry rows (codes 331
+  *Science Technology and Environment* and 365 *Federal Affairs and Local
+  Development*) were dropped, so the sector total read 95,934,658 instead of the
+  printed **113,240,000** npr_thousand (= the donor total). The source is internally
+  consistent — both the donor and sector printed Totals are 113,240,000 — so this
+  was a parse bug, not a source-level difference.
 - `preeti-and-cid-editions-unparseable` — pre-2013 editions render in Preeti/CID;
   deferred (ADR-0003).
 
@@ -109,7 +121,7 @@ revised edition's facts coexist with the prior edition's.
 
 - Path: `scrapers/mof_whitebook/parser.py` (underscore dir — Python-importable; the
   on-disk folder is NOT the hyphenated profile name)
-- Version: 0.1.0
+- Version: 0.2.1
 - Owner: Mother Opus (built by Sonnet worker, batch #12, 2026-06-07)
 - Output: ADR-0017 dimensional facts → `foreign_aid_facts` (emits `dimensional_rows`)
 - Tested against: 4 clean English editions in

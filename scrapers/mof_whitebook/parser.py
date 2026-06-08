@@ -79,6 +79,15 @@ AD start/end bound the BS-fiscal-year span (mid-Shrawan..mid-Ashadh) via the
 canonical period helpers. A LOCAL helper does AD-FY→BS-FY so ``_common/periods``
 stays untouched (same pattern as ``fcgo_consolidated`` / ``mof_economic_survey``).
 
+Wrapped-name row recovery (v0.2.1): when a member name wraps to a second visual
+line, pdfplumber occasionally fails to split that row into the table grid and dumps
+the WHOLE row into col 0 as one space-joined blob (other cells empty). The value
+columns are the maximal contiguous money-token run in that blob, so the row is
+reconstructed deterministically into ``[code, name, *values]`` (see
+``_expand_merged_row``) — no AI, no OCR. This recovered two ministry rows silently
+dropped from the FY2070/71 sector table (its total read 95,934,658 instead of the
+printed 113,240,000 = the donor total), the DATA_AUDIT §5 G3 reconciliation flag.
+
 Confidence: ``B`` — MoF "unofficial translation" budget source book; the figures
 are budgeted/disbursement allocations that are revised across editions.
 
@@ -106,7 +115,7 @@ from _common.periods import (
 from _common.preeti import legacy_font_for, to_unicode
 from _common.types import ParserError, ParserStatus, ReportingPeriodType
 
-PARSER_VERSION: Final[str] = "0.2.0"
+PARSER_VERSION: Final[str] = "0.2.1"
 # Registered source id. PROPOSED this batch — Mother seeds the registry row
 # (`mof-whitebook-foreign-aid`); not yet present in seed-source-registry.ts.
 SOURCE_ID: Final[str] = "mof-whitebook-foreign-aid"
@@ -291,6 +300,11 @@ _SECTOR_MIN_COLS: Final[int] = 13
 # A member CODE cell is a pure digit run (donor codes like "2101001"; budget heads
 # like "305"). Used to reject header / caption / total rows.
 _CODE_RE: Final = re.compile(r"^\d{2,8}$")
+
+# A money token inside a merged-row blob: an Arabic-digit run with optional
+# thousands commas and optional decimal/sign. Anchored so a name word never
+# matches. Used ONLY by the merged-row recovery (`_expand_merged_row`).
+_MONEY_TOKEN_RE: Final = re.compile(r"^-?\d[\d,]*(?:\.\d+)?$")
 
 # Total / footer row markers (first cell). The grand-total row's first cell is
 # "Total"; we skip it (its split sub-cells are a pdfplumber merge artifact anyway).
@@ -481,6 +495,86 @@ def _make_row(
 
 
 # ---------------------------------------------------------------------------
+# Wrapped-row recovery — a pdfplumber column-merge artifact (no AI, deterministic).
+#
+# When a member's NAME wraps to a second visual line (e.g. "Ministry of Science
+# Technology and / Environment"), pdfplumber occasionally fails to assign that
+# row's cells to the table grid and instead dumps the WHOLE row into col 0 as a
+# single space-joined blob, leaving the remaining cells empty:
+#
+#   ["331 Ministry of Science Technology and 2,559,691 0 711,218 2,063,869 0
+#     2,775,087 0 306,180 0 306,180 5,640,958 Environment", "", "", ... ]
+#
+# The numeric VALUE columns are the maximal contiguous run of money tokens in that
+# blob (the leading code is one isolated number, broken from the run by the name
+# words; the wrapped name fragment trails after the numbers). Because the run has
+# exactly ``spec.min_cols - 2`` values (the two non-value columns are code + name)
+# in the SAME order as a normal row, we reconstruct ``[code, name, *values]`` — a
+# faithful, spec-agnostic recovery that the normal row logic then reads via the
+# spec's grant/loan column offsets. This was the FY2070/71 sector-table data loss
+# (two ministry rows dropped → donor≠sector by ~15%); see README "Known breakage".
+# ---------------------------------------------------------------------------
+
+
+def _longest_numeric_run(tokens: list[str]) -> tuple[int, int]:
+    """Return (start, length) of the longest contiguous money-token run, or (-1, 0).
+
+    A money token is ``_MONEY_TOKEN_RE`` (digit run, optional commas/decimal/sign).
+    The leading member code is a single isolated number separated from the value
+    block by the name words, so it is never the longest run; the contiguous value
+    block (length == column count − 2) wins.
+    """
+    best_start, best_len = -1, 0
+    i, n = 0, len(tokens)
+    while i < n:
+        if _MONEY_TOKEN_RE.match(tokens[i]):
+            j = i
+            while j < n and _MONEY_TOKEN_RE.match(tokens[j]):
+                j += 1
+            if (j - i) > best_len:
+                best_start, best_len = i, j - i
+            i = j
+        else:
+            i += 1
+    return best_start, best_len
+
+
+def _expand_merged_row(raw: list[object], spec: _TableSpec) -> list[object] | None:
+    """Reconstruct a merged-blob row → ``[code, name, *values]``, or None.
+
+    Recognises the pdfplumber wrapped-name merge artifact: col 0 is a blob string
+    whose first token is a member code, whose remaining table cells are all empty
+    (so it is NOT a normally-split row), and which contains a contiguous money-token
+    run of EXACTLY ``spec.min_cols - 2`` values (the full value block). Returns a
+    reconstructed row of width ``spec.min_cols`` so the caller reads it identically
+    to a clean row; returns None for anything that is not this exact artifact (so a
+    real Total row, a header, or a normally-split row is untouched).
+    """
+    if not raw:
+        return None
+    blob = _norm(raw[0])
+    # The artifact crams the whole row into col 0; every other cell must be empty.
+    if any(_norm(c) for c in raw[1:]):
+        return None
+    tokens = blob.split()
+    expected_min_tokens = 3  # code + ≥1 name word + ≥1 value
+    if len(tokens) < expected_min_tokens or not _is_code(tokens[0]):
+        return None
+    expected_values = spec.min_cols - 2  # columns minus code + name
+    start, length = _longest_numeric_run(tokens)
+    if length != expected_values or start <= 0:
+        return None
+    code = tokens[0]
+    values = tokens[start : start + length]
+    # Name = the non-value tokens (between code and the run, plus any wrapped tail).
+    name_tokens = tokens[1:start] + tokens[start + length :]
+    name = " ".join(name_tokens)
+    if not name:
+        return None
+    return [code, name, *values]
+
+
+# ---------------------------------------------------------------------------
 # Deterministic core — exercised against synthesized table fixtures.
 # ---------------------------------------------------------------------------
 
@@ -510,7 +604,12 @@ def extract_dimensional_rows(
     errors: list[ParserError] = []
     seen: set[tuple[str, str]] = set()
 
-    for raw in table_rows:
+    for original in table_rows:
+        # Recover a pdfplumber wrapped-name merge artifact (whole row dumped into
+        # col 0, other cells empty) into a faithful [code, name, *values] row;
+        # leaves a normally-split row untouched (returns None). Deterministic — no
+        # AI. See `_expand_merged_row` and the README "Known breakage modes".
+        raw = _expand_merged_row(original, spec) or original
         if len(raw) < spec.min_cols:
             continue
         code = _norm(raw[0])

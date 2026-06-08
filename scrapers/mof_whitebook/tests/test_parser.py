@@ -31,6 +31,8 @@ from mof_whitebook.parser import (
     _DONOR_SPEC,
     _SECTOR_SPEC,
     DimensionalRowDraft,
+    _expand_merged_row,
+    _parse_value,
     detect_ad_fiscal_year,
     detect_unit,
     extract_dimensional_rows,
@@ -42,12 +44,18 @@ AD_FY_2020_LEAD = 2020
 BS_FY_2077_START = 2077
 
 # Real PDF, if Mother has the corpus in the worktree. Optional integration only.
-REAL_PDF = (
+_WHITEBOOK_DIR = (
     Path(__file__).resolve().parents[3]
     / "Financial Data"
     / "mof_documents"
     / "whitebook"
-    / "Source Book White Book FY 2020-21_dkjqgrt.pdf"
+)
+REAL_PDF = _WHITEBOOK_DIR / "Source Book White Book FY 2020-21_dkjqgrt.pdf"
+# FY2070/71 (AD2013/14) edition — Devanagari filename, English body. Its sector
+# table has two wrapped-name rows pdfplumber merges; the recovery makes donor==sector.
+REAL_PDF_2070 = (
+    _WHITEBOOK_DIR
+    / "आर्थिक बर्ष २०७० - ७१ को वैदेशिक सहायता आयोजनाहरुको स्रोत पुस्तिका_hlihgjf.pdf"
 )
 
 
@@ -210,6 +218,80 @@ def test_sector_does_not_read_gon_budget_as_grant(sector_rows: list[DimensionalR
 
 
 # ---------------------------------------------------------------------------
+# Wrapped-name merge-artifact recovery (the FY2070/71 sector data-loss bug).
+#
+# When a member name wraps to a second visual line, pdfplumber sometimes dumps the
+# whole row into col 0 as one blob with the other cells empty. These two strings
+# are the VERBATIM merged rows from the FY2070/71 ministrywise table (codes 331 and
+# 365) that were silently dropped, making the sector total 95,934,658 instead of
+# the printed 113,240,000 (= the donor total). The recovery re-splits the blob.
+# ---------------------------------------------------------------------------
+
+# 13-col sector blob: code + wrapped name + 11 value tokens + trailing name word.
+_SECTOR_MERGED_331: list[object] = [
+    "331 Ministry of Science Technology and 2,559,691 0 711,218 2,063,869 0 "
+    "2,775,087 0 306,180 0 306,180 5,640,958 Environment",
+    "", "", "", "", "", "", "", "", "", "", "", "",
+]
+_SECTOR_MERGED_365: list[object] = [
+    "365 Ministry of Federal Affairs and Local 32,318,736 6,093,249 1,329,527 "
+    "3,254,258 0 10,677,034 0 2,647,041 900,000 3,547,041 46,542,811 Development",
+    "", "", "", "", "", "", "", "", "", "", "", "",
+]
+
+
+def test_expand_merged_sector_row_recovers_code_name_and_values() -> None:
+    """A wrapped-name blob splits back into [code, name, *11 values] with the name
+    reassembled across the wrap and Total-Grant/Total-Loan at the spec columns."""
+    row = _expand_merged_row(_SECTOR_MERGED_331, _SECTOR_SPEC)
+    assert row is not None
+    assert len(row) == _SECTOR_SPEC.min_cols  # 13
+    assert row[0] == "331"
+    assert row[1] == "Ministry of Science Technology and Environment"
+    # Total Grant (col 7) and Total Loan (col 11) — the only two we emit.
+    assert _parse_value(str(row[_SECTOR_SPEC.grant_col])) == pytest.approx(2_775_087.0)
+    assert _parse_value(str(row[_SECTOR_SPEC.loan_col])) == pytest.approx(306_180.0)
+
+
+def test_expand_merged_sector_row_emits_facts() -> None:
+    """The recovered rows flow through extract_dimensional_rows as real facts
+    (previously dropped → the ~15% donor-vs-sector gap)."""
+    out, errors = extract_dimensional_rows(
+        [_SECTOR_MERGED_331, _SECTOR_MERGED_365], _SECTOR_SPEC,
+        "npr_thousand", BS_FY_2077_START,
+    )
+    assert errors == []
+    grants = _facts_for(out, "foreign-aid-grant")
+    loans = _facts_for(out, "foreign-aid-loan")
+    science = "Ministry of Science Technology and Environment"
+    federal = "Ministry of Federal Affairs and Local Development"
+    assert grants[science] == pytest.approx(2_775_087.0)
+    assert grants[federal] == pytest.approx(10_677_034.0)
+    assert loans[science] == pytest.approx(306_180.0)
+    assert loans[federal] == pytest.approx(3_547_041.0)
+
+
+def test_expand_merged_row_ignores_normal_split_row() -> None:
+    """A normally-split row (col 1 populated) is NOT a merge artifact → None."""
+    normal = _SECTOR_TABLE[1]  # ["305", "Ministry of Finance", ...] — fully split
+    assert _expand_merged_row(normal, _SECTOR_SPEC) is None
+
+
+def test_expand_merged_row_ignores_total_and_header_blobs() -> None:
+    """A Total/footer blob (no leading member code) is not a recoverable member
+    row; wrong-length numeric runs (donor spec wants 10 values, this has 11) → None."""
+    total_blob: list[object] = [
+        "Total 254,137,101 12,018,861 37,050,244 18,762,961 1,704,037 69,536,103 "
+        "25,922,354 14,881,543 2,900,000 43,703,897 367,377,101",
+        "", "", "", "", "", "", "", "", "", "", "", "",
+    ]
+    assert _expand_merged_row(total_blob, _SECTOR_SPEC) is None  # no leading code
+    # Right blob, wrong spec: a 13-col sector blob (11 values) is not a 12-col
+    # donor row (which needs exactly 10 values) → refused, never mis-mapped.
+    assert _expand_merged_row(_SECTOR_MERGED_331, _DONOR_SPEC) is None
+
+
+# ---------------------------------------------------------------------------
 # Period dating (ADR-0013).
 # ---------------------------------------------------------------------------
 
@@ -331,7 +413,7 @@ def test_idempotent() -> None:
 
 
 def test_parser_version() -> None:
-    assert PARSER_VERSION == "0.2.0"
+    assert PARSER_VERSION == "0.2.1"
 
 
 def test_missing_file_returns_failure() -> None:
@@ -422,3 +504,29 @@ def test_cli_emits_valid_json_on_real_pdf() -> None:
     assert payload["status"] in ("success", "partial")
     assert payload["parser_version"] == PARSER_VERSION
     assert len(payload["dimensional_rows"]) > 0
+
+
+@pytest.mark.skipif(not REAL_PDF_2070.exists(), reason="FY2070/71 White Book PDF not on disk")
+def test_real_pdf_2070_donor_equals_sector() -> None:
+    """FY2070/71 donor-total must equal sector-total (both = the printed 113,240,000
+    npr_thousand). Before the wrapped-name recovery, two ministry rows were dropped
+    and the sector total was 95,934,658 (~15% short) — DATA_AUDIT §5 G3 flag."""
+    result = parse_whitebook(str(REAL_PDF_2070), "real-doc-2070")
+    assert result.status in ("success", "partial"), f"errors={result.errors}"
+
+    def _total(kind: str) -> float:
+        return sum(r.value for r in result.dimensional_rows if r.dimension_kind == kind)
+
+    donor_total = _total("donor")
+    sector_total = _total("sector")
+    assert donor_total == pytest.approx(113_240_000.0)
+    assert sector_total == pytest.approx(donor_total)
+    # The two recovered ministries are present (the bug dropped exactly these).
+    sector_labels = {
+        r.dimension_label for r in result.dimensional_rows if r.dimension_kind == "sector"
+    }
+    assert "Ministry of Science Technology and Environment" in sector_labels
+    assert "Ministry of Federal Affairs and Local Development" in sector_labels
+    for r in result.dimensional_rows:
+        assert r.unit == "npr_thousand"  # FY2013/14 annotation = "(NRs'000s)"
+        assert r.fiscal_year_bs == "2070/71"

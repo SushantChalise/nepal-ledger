@@ -47,11 +47,14 @@ Real-PDF runs (`status=success`, 0 errors):
 |---------|------:|-----------|------------|------|-------|-------------|
 | FY 2020/21 | 134 | 44 / 44 | 23 / 23 | npr_lakh     | 2077/78 | NPR 360.0 bn |
 | FY 2015/16 | 144 | 46 / 46 | 26 / 26 | npr_thousand | 2072/73 | NPR 205.9 bn |
-| FY 2013/14 | 154 | 54 / 54 | 23 / 23 | npr_thousand | 2070/71 | NPR 113 bn |
+| FY 2013/14 | 154 | 54 / 54 | 25 / 25 | npr_thousand | 2070/71 | NPR 113 bn |
 | FY 2014/15 | 174 | 62 / 62 | 25 / 25 | npr_thousand | 2071/72 | NPR 123 bn |
 
 The summed per-donor grant + loan reconciles to the published **Total** row in
-each edition (a correctness anchor; asserted by an integration test).
+each edition, and the **donor total equals the sector total** in each edition (the
+two summary tables are two views of the same aid). Both anchors are asserted by
+integration tests. (FY2013/14 sector member count rose 23→25 in v0.2.1 — see the
+wrapped-row note below.)
 
 ## Why these tables / known breakage modes
 
@@ -62,6 +65,18 @@ each edition (a correctness anchor; asserted by an integration test).
 - **Grant/loan sub-components** (cash / reimbursable / direct-payment / commodity)
   are present and clean but **deferred** — the two Total columns are the headline
   story (ADR-0017). Project-level detail tables are deferred too.
+- **Wrapped-name row merge** (`wrapped-name-row-dumped-into-col0`, fixed v0.2.1):
+  when a member name wraps to a second visual line, pdfplumber sometimes fails to
+  split that row into the column grid and dumps the WHOLE row into col 0 as one
+  space-joined blob with the other cells empty. The parser (`_expand_merged_row`)
+  detects this exact artifact (col 0 a code-led blob, other cells empty, a
+  contiguous money-token run of length `cols − 2`) and reconstructs
+  `[code, name, *values]` deterministically. This was the **FY2070/71 donor≠sector**
+  flag (DATA_AUDIT §5 G3): two ministry rows — *Ministry of Science Technology and
+  Environment* (331) and *Ministry of Federal Affairs and Local Development* (365) —
+  were silently dropped, so the sector total read 95,934,658 instead of the printed
+  **113,240,000** npr_thousand (= the donor total). The source itself is internally
+  consistent (both printed Totals equal 113,240,000); this was purely a parse bug.
 - **Preeti editions** (FY 2062/63, 2064/65, 2065/66, 2067/68): text layer is a
   legacy Preeti byte-map (e.g. `dGqfnout`), not Unicode. We do **not** transliterate
   Preeti (reverse-engineering a font byte-map — effectively the OCR ADR-0003 forbids).
@@ -78,18 +93,20 @@ each edition (a correctness anchor; asserted by an integration test).
 `tests/test_parser.py` exercises the deterministic core
 (`extract_dimensional_rows`) against **synthesized** tiny donor (12-col) and sector
 (13-col) tables — covering the GoN-Budget column offset, a preserved zero, a
-dropped dash, Total-row exclusion, unit detection, FY detection, and a
-`ValueUnparseable` for an all-garbage row. The real multi-MB PDFs are **not
-committed** (ADR-0003 / source profile); three optional integration tests run
-against the FY 2020/21 PDF when present (including a donor-Total reconciliation)
-and are skipped otherwise.
+dropped dash, Total-row exclusion, unit detection, FY detection, a
+`ValueUnparseable` for an all-garbage row, and the **wrapped-name row recovery**
+(`_expand_merged_row`) on the verbatim FY2070/71 sector blobs. The real multi-MB
+PDFs are **not committed** (ADR-0003 / source profile); optional integration tests
+run against the FY 2020/21 and FY 2070/71 PDFs when present (donor-Total
+reconciliation + donor==sector reconciliation) and are skipped otherwise.
 
 ```
 cd scrapers
 PYTHONPATH=<worktree>/scrapers <venv>/python -m pytest mof_whitebook/tests -q
 ```
 
-31 tests; green (28 unit + 3 real-PDF integration when the FY2020/21 PDF is on disk).
+36 tests; green (32 unit + 4 real-PDF integration when the FY2020/21 and FY2070/71
+PDFs are on disk).
 
 ## Pending Mother (RETURN items — not edited here per scope fence)
 
