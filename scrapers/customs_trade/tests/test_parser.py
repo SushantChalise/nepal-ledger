@@ -512,7 +512,7 @@ def test_empty_sheets_yield_nothing() -> None:
 
 
 def test_parser_version() -> None:
-    assert PARSER_VERSION == "0.2.0"
+    assert PARSER_VERSION == "0.3.0"
 
 
 def test_missing_file_returns_failure() -> None:

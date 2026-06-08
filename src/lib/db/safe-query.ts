@@ -37,6 +37,34 @@ export async function safeQuery<T>(op: () => Promise<T>): Promise<Result<T>> {
   }
 }
 
+/**
+ * `safeQuery` with bounded retry on TRANSIENT connection failures only
+ * (`DatabaseUnavailable` — e.g. an ECONNRESET on Supabase's pooler, observed at
+ * ~0.1%/query). Any other AppError (bad SQL, constraint violation) returns
+ * immediately and is never retried. Use for chatty/large operations — bulk
+ * inserts over many chunks, multi-hundred round-trip pipelines — where a single
+ * transient reset would otherwise abort the whole run.
+ *
+ * Safety: `op` must be idempotent OR conflict-guarded (e.g. an
+ * `onConflictDoNothing` insert), since a reset AFTER a server-side commit will
+ * cause the retry to re-run it. Reads are inherently idempotent.
+ */
+export async function safeQueryWithRetry<T>(
+  op: () => Promise<T>,
+  maxRetries = 5,
+  baseDelayMs = 150,
+): Promise<Result<T>> {
+  let last = await safeQuery(op);
+  for (let attempt = 1; attempt <= maxRetries; attempt += 1) {
+    if (last.ok || last.error.kind !== 'DatabaseUnavailable') return last;
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, baseDelayMs * 2 ** (attempt - 1));
+    });
+    last = await safeQuery(op);
+  }
+  return last;
+}
+
 function toAppError(e: unknown): AppError {
   if (e instanceof PostgresError) {
     // Postgres SQLSTATE classification — codes are stable across Postgres

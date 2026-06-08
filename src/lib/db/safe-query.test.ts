@@ -1,7 +1,7 @@
 import { DrizzleError } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 
-import { safeQuery } from './safe-query';
+import { safeQuery, safeQueryWithRetry } from './safe-query';
 
 // We exercise the error-translation paths without booting Postgres.
 // PostgresError instances are constructed via the postgres-js module — but
@@ -96,5 +96,34 @@ describe('safeQuery', () => {
         throw new Error('sync throw inside async');
       }),
     ).resolves.toMatchObject({ ok: false });
+  });
+});
+
+describe('safeQueryWithRetry', () => {
+  it('retries a transient DatabaseUnavailable op until it succeeds', async () => {
+    let calls = 0;
+    const op = (): Promise<string> => {
+      calls += 1;
+      if (calls < 3) {
+        return Promise.reject(Object.assign(new Error('read ECONNRESET'), { code: 'ECONNRESET' }));
+      }
+      return Promise.resolve('ok');
+    };
+    const result = await safeQueryWithRetry(op, 5, 1); // 1ms backoff in test
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.value).toBe('ok');
+    expect(calls).toBe(3); // failed twice (transient), succeeded on the third
+  });
+
+  it('does NOT retry a non-transient QueryFailed', async () => {
+    let calls = 0;
+    const op = (): Promise<string> => {
+      calls += 1;
+      return Promise.reject(new Error('syntax error at or near')); // → QueryFailed
+    };
+    const result = await safeQueryWithRetry(op, 5, 1);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.kind).toBe('QueryFailed');
+    expect(calls).toBe(1); // tried once, never retried
   });
 });

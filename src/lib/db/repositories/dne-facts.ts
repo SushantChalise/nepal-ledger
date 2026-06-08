@@ -16,7 +16,7 @@
 import { and, eq, sql } from 'drizzle-orm';
 
 import { db } from '@/lib/db/client';
-import { safeQuery } from '@/lib/db/safe-query';
+import { safeQuery, safeQueryWithRetry } from '@/lib/db/safe-query';
 import { dneFacts, type DneFactRow, type NewDneFactRow } from '@/lib/db/schema/dne-facts';
 import { err, ok, type Result } from '@/lib/errors';
 
@@ -56,7 +56,10 @@ export async function bulkInsertDneFacts(
   const inserted: DneFactRow[] = [];
   for (let i = 0; i < inputs.length; i += CHUNK_ROWS) {
     const chunk = inputs.slice(i, i + CHUNK_ROWS);
-    const result = await safeQuery(() =>
+    // safeQueryWithRetry: a transient ECONNRESET on one chunk of a large
+    // multi-chunk insert would otherwise abort the whole ingest. The insert is
+    // onConflictDoNothing (conflict-guarded), so retrying a chunk is safe.
+    const result = await safeQueryWithRetry(() =>
       db()
         .insert(dneFacts)
         .values([...chunk])

@@ -122,7 +122,7 @@ import openpyxl
 from _common.periods import BS_MONTHS, BsMonth, fiscal_year_ad_label, fiscal_year_label
 from _common.types import ParserError, ParserStatus, ReportingPeriodType
 
-PARSER_VERSION: Final[str] = "0.2.0"
+PARSER_VERSION: Final[str] = "0.3.0"
 SOURCE_ID: Final[str] = "customs-monthly-trade"
 
 # Confidence default — see module docstring (source registry = 'A').
@@ -646,6 +646,13 @@ def extract_commodity_rows(
                 )
             )
             continue
+        if not label:
+            # Older FTS editions (e.g. FY2076/77–2079/80) occasionally carry a
+            # valid HS-coded row with a BLANK description cell. The value is real;
+            # fall back to the HS code as the label so we never emit an empty
+            # dimension_label (the HS code is itself a stable identifier). Never
+            # drop the row — that would silently lose a real trade fact.
+            label = code
         value = _parse_value(row[value_col])
         if value is None:
             errors.append(
