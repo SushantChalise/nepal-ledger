@@ -78,4 +78,11 @@
 
 | When | Stream | Result | Audit re-run? | Commit |
 |---|---|---|---|---|
-| _pending_ | | | | |
+| 2026-06-08 | **1 — aid FY2070/71** | ✅ root-caused (wrapped-name rows dropped from sector table = exact gap); fixed deterministically (mof_whitebook v0.2.1, no AI); re-ingested 154→158; **all 7 aid FYs reconcile** | ✅ G3 donor==sector | `8d482c7` |
+| 2026-06-08 | **3 — deepen thin** | ✅ customs **1→7 periods** (5 annual FYs 2076/77–2081/82; +164,612 dne_facts); blank-description fix (v0.3.0) + `safeQueryWithRetry` (ECONNRESET resilience for all bulk inserts). ⚠️ CMEFs-monthly + remittance-NPR PARSER-blocked (acquired, documented in DATA_AUDIT §8) | ✅ customs 7 periods | `74c08ee` |
+| _running_ | **2 — Tier-2 OCR** | intergovernmental fiscal-transfer history (GPU Surya) | — | — |
+
+### Follow-ups surfaced (new scoped tasks, documented in DATA_AUDIT §8)
+- **CMEFs period-aware parser fix** — `nrb_cmefs` hardcodes `_BS_FY_START=2082`; the whole monthly history is acquirable once it reads the FY+month-count from the PDF.
+- **Remittance BPM5 route + discontinuity** — `Trade-and-Balance-of-Payments.xlsx` has Workers'-remittances from FY2000/01 (BPM5); needs a new route + a labelled methodology discontinuity vs the BPM6 series.
+- **Live DB after Streams 1+3:** dne_facts **271,601** · foreign_aid_facts **1,024** · approved 877.

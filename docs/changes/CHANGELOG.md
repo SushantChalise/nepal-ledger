@@ -8,6 +8,22 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-08 (round 13) — Data audit + 3-stream recovery (accuracy fix, customs depth, resilience)
+
+**What changed:** Built the accuracy/completeness backbone (`pnpm audit:data` + `DATA_AUDIT.md`), then ran a tracked 3-stream parallel recovery program (`docs/research/RECOVERY_PROGRAM.md`) — closing the one accuracy flag the audit found, deepening customs history, and hardening ingest resilience. Mission emphasis: this DB's value IS completeness + accuracy, so the audit is the regression gate for everything.
+
+- **Data audit** (`scripts/data-audit.ts`): exhaustive live-DB inventory — per-series temporal coverage, source-registry gaps, provenance, and machine-checked reconciliation. Wired into CLAUDE.md as the mandatory anti-hallucination reference; re-run after every ingest.
+- **Stream 1 — accuracy fix (`8d482c7`):** the audit caught foreign-aid FY2070/71 donor≠sector (~15% gap). Root cause: 2 ministry rows whose names wrap to a 2nd line were dropped from the sector table (pdfplumber merge artifact) — their totals = exactly the gap. Fixed by deterministic wrapped-name recovery (mof_whitebook v0.2.1, no AI/OCR), re-ingested 154→158; **all 7 aid FYs now reconcile donor==sector exactly**. No value fabricated.
+- **Stream 3 — customs depth + resilience (`74c08ee`):** customs trade **1 → 7 periods** (5 annual FYs 2076/77–2081/82 + monthly + cumulative; **+164,612 dne_facts**). Two fixes: (a) blank-description fallback (older editions have HS-coded rows with empty description → label falls back to the HS code, v0.3.0); (b) **`safeQueryWithRetry`** — bounded retry on transient ECONNRESET, adopted by `bulkInsertDneFacts` (a 42k-row ingest had failed mid-stream on the pooler; now resilient). This hardens ALL large dimensional ingests.
+- **Stream 3 findings (parser-blocked, documented):** CMEFs monthly history is fully acquirable but the parser hardcodes the period (needs a period-aware fix); remittance-NPR history exists in BPM5 but needs a new route + a labelled methodology discontinuity vs BPM6. Both recorded in DATA_AUDIT §8.
+- **Stream 2 — Tier-2 Surya OCR** (intergovernmental fiscal-transfer history) building on the GPU (in progress).
+
+**Live DB:** approved 877 · **dne_facts 271,601** · **foreign_aid_facts 1,024** (all reconciled) · census 531,618 · banking 2,088. Accuracy flags open: **0**.
+
+**Related:** DATA_AUDIT.md, RECOVERY_PROGRAM.md; mof_whitebook v0.2.1; customs_trade v0.3.0; ADR-0011/0021.
+
+---
+
 ## 2026-06-08 (round 12) — PDF recovery Tier-1: deferred data was recoverable
 
 **What changed:** A robust PDF-recovery program replaced the policy of deferring "hard" PDFs. The user challenged the over-deferral; the diagnosis confirmed it: workers had collapsed three distinct techniques under "ADR-0003 = no AI" and refused all three, when only generative-LLM-extraction is actually banned.

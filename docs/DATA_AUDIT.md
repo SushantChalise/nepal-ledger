@@ -53,7 +53,7 @@
 | | `dne-gdp-real-growth` | 49 FY (2032/33→2081/82) | B | ✅ |
 | | `dne-cpi` / `dne-inflation-rate` | 52 / 51 FY (2029/30→2080/81) | B | ✅ deep |
 | **Trade (DNE)** | `dne-merchandise-{exports,imports}-{india,china,other}` × commodity | monthly, Ashadh 2069→Shrawan 2082 (~160 mo) | B | ✅ deep |
-| **Trade (customs)** | `customs-merchandise-{imports,exports}` × {commodity, country, office, composite} | **3 periods only** (annual 2081/82 + Shrawan 2081 + YTD Jestha 2082) | A | ⚠️ shallow history |
+| **Trade (customs)** | `customs-merchandise-{imports,exports}` × {commodity, country, office, composite} | **7 periods** — annual FY2076/77–2081/82 (5 yrs) + Shrawan 2081 + YTD Jestha 2082 | A | ✅ deepened 2026-06-08 |
 | **Migrant workers** | `dne-migrant-workers` × country | 234 countries, 51 months (Ashadh 2078→Shrawan 2082) | B | ✅ (headcounts, NOT remittance NPR) |
 | **Remittance (NPR)** | `dne-remittance-inflow` | **only 3 FY (2079/80→2081/82)** | B | ⚠️ short — needs historical BoP |
 | **Tourism** | `dne-tourist-arrival` | 407 months (Ashadh 2048→Shrawan 2082) | B | ✅ deep |
@@ -95,13 +95,14 @@ These are the cross-checks that prove a number is trustworthy. **All pass except
 | Provincial GDP Σ vs national nominal GDP (FY2081/82) | 6,107,221 npr_M vs 6,107 npr_B | ✅ exact |
 | Customs cross-tab (composite) Σ vs single-dim total (imports 2081/82) | 1,804,122,731.4 vs .5 | ✅ exact (rounding) |
 | Redbook recurrent+capital = stated total (per head) | matches every head | ✅ exact |
-| Foreign-aid donor-total = sector-total (per FY) | 6 of 7 FYs match exactly | ⚠️ **see flag** |
+| Foreign-aid donor-total = sector-total (per FY) | **all 7 FYs match exactly** | ✅ |
 
-> **🚩 ACCURACY FLAG — foreign-aid FY2070/71 (2013/14):** donor-total **113,240,000** ≠
-> sector-total **95,934,658** npr_thousand (~15% gap). Every other edition reconciles
-> exactly, so one of this edition's two tables (donor vs sector) was mis-parsed (likely
-> a Preeti-decode or row-capture issue). **Do not use FY2070/71 aid figures in reporting
-> until re-parsed + reconciled.** All other aid FYs are reconciled and safe.
+> **✅ RESOLVED (2026-06-08) — foreign-aid FY2070/71:** the earlier donor≠sector gap
+> (113,240,000 vs 95,934,658) was a pdfplumber row-merge artifact — 2 ministries whose
+> names wrap to a 2nd line were dropped from the sector table (their totals = 17,305,342
+> = exactly the gap). Fixed by deterministic wrapped-name recovery (mof_whitebook v0.2.1,
+> no AI/OCR); re-ingested (154→158 rows); donor==sector==113,240,000 now. All 14 White
+> Book editions reconcile; no value was fabricated.
 
 ---
 
@@ -141,15 +142,26 @@ re-run `pnpm audit:data` after any OCR ingest; a new mismatch means the OCR is w
 
 ---
 
-## 8. Bottom line
+## 8. Bottom line (updated 2026-06-08 after the 3-stream recovery program)
 
 - **Strong, deep, reconciled:** real-sector (GDP/CPI 50yr), DNE trade-by-commodity, tourism,
-  census, banking, customs (current year), the macro money-flow.
-- **Thin / single-period (priority to deepen):** customs history, remittance-NPR history,
-  SOE financials, federal budget, fiscal-transfer history, CMEFs monthly.
-- **One accuracy flag to fix:** foreign-aid FY2070/71 donor≠sector.
-- **The path is proven:** Tier-1 deterministic recovery is done; Tier-2 GPU Surya OCR is
-  validated and scoped (task #50) to close the historical PDF gaps.
+  census, banking, **customs (now 5 annual FYs + monthly + cumulative)**, the macro money-flow,
+  **foreign aid (7 FYs, all reconciled)**.
+- **Accuracy flags:** ✅ none open — the FY2070/71 aid flag is RESOLVED (§5).
+- **Resilience hardened:** `safeQueryWithRetry` now protects all large bulk ingests from the
+  pooler's transient ECONNRESETs (a 42k-row customs ingest had failed mid-stream; now retries).
+- **Still thin (deepen next):** SOE financials (1 FY), federal budget (1 FY), fiscal-transfer
+  history (1 FY → Stream-2 OCR in progress), and two PARSER-blocked (not data-blocked) gaps
+  surfaced by Stream 3:
+  - **CMEFs monthly history** — fully acquirable (NRB sitemap→direct-PDF), but `nrb_cmefs`
+    parser HARDCODES the period (`_BS_FY_START=2082`) → would mis-date every non-current
+    edition. **Needs a period-aware parser fix** before the monthly back-history can ingest.
+  - **Remittance-NPR history** — BPM6 only goes back to FY2022/23 (3 FY); a longer series
+    exists in `Trade-and-Balance-of-Payments.xlsx` (`BOP 2000-`, Workers' remittances from
+    FY2000/01) but it is **BPM5 (different definition)** → needs a new parser route + a
+    labelled methodology discontinuity (Data Continuity), not a silent splice.
+- **The path is proven:** Tier-1 deterministic recovery done; Tier-2 GPU Surya OCR validated;
+  intergovernmental fiscal-transfer history (Stream 2) building on the GPU.
 
 Data currently spans **AD 2005 → 2025**. The mission's bar is completeness + accuracy;
 this audit makes both measurable and keeps the agents honest.
