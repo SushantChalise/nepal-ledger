@@ -28,6 +28,7 @@ from customs_trade import PARSER_VERSION, parse_customs_fts
 from customs_trade.parser import (
     DimensionalRowDraft,
     _Period,
+    extract_commodity_partner_rows,
     extract_commodity_rows,
     extract_country_rows,
     extract_customs_rows,
@@ -238,6 +239,154 @@ def test_commodity_exports_value_column() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Commodity×partner cross-tab core (long form: HS, Desc, Partner, Unit, Qty, Value)
+# → composite "<hs>__<country-slug>" dimension (ADR-0018).
+# ---------------------------------------------------------------------------
+
+# Synthesized imports cross-tab: [HSCode, Description, Partner, Unit, Qty, Imports_Value, Revenue].
+# Two commodities; the first spread across two partners — its partner-sum (24 + 76
+# = 100) must equal a single-dimension commodity total of 100 (reconciliation).
+_IMPORTS_XTAB: list[tuple[object, ...]] = [
+    ("Table 4:Imports by Commodity and Partner", None, None, None, None, None, None),  # r0
+    (None, None, None, None, "(Import Value ... Rs. Thousand)", None, None),  # r1
+    (
+        "HSCode",
+        "Description",
+        "Partner Countries",
+        "Unit",
+        "Quantity",
+        "Imports_Value",
+        "Rev",
+    ),  # r2
+    ("27101930", "Diesel", "India", "Ltr", "1000", "24.0", "2.4"),
+    ("27101930", "Diesel", "United Arab Emirates", "Ltr", "3000", "76.0", "7.6"),
+    ("85171300", "Smartphones", "China", "PCS", "0", "0", "0"),  # genuine zero kept
+    ("", "Total", "", "", None, "100.0", "10.0"),  # grand total → excluded
+]
+
+
+def test_commodity_partner_composite_dimension_value_and_label() -> None:
+    rows, errors = extract_commodity_partner_rows(
+        _IMPORTS_XTAB,
+        "customs-merchandise-imports",
+        "Merchandise imports (customs)",
+        "customs-import-source",
+        _PERIOD_ANNUAL,
+        value_col=5,
+    )
+    assert errors == []
+    by_dim = {r.dimension_value: r for r in rows}
+    # Composite value = "<hs>__<country-slug>"; label = "<description> → <country>".
+    assert set(by_dim) == {
+        "27101930__india",
+        "27101930__united-arab-emirates",
+        "85171300__china",
+    }
+    diesel_in = by_dim["27101930__india"]
+    assert diesel_in.dimension_label == "Diesel → India"
+    assert diesel_in.value == pytest.approx(24.0)
+    assert by_dim["27101930__united-arab-emirates"].value == pytest.approx(76.0)
+    assert by_dim["85171300__china"].value == pytest.approx(0.0)  # zero preserved
+    for r in rows:
+        assert r.dimension_kind == "customs-import-source"
+        assert r.base_indicator_slug == "customs-merchandise-imports"
+        assert r.unit == "npr_thousand"
+        assert r.confidence_grade == "A"
+        # Separator is unambiguous: country slug part contains no "__".
+        assert r.dimension_value.count("__") == 1
+
+
+def test_commodity_partner_reconciles_to_commodity_total() -> None:
+    """ADR-0011: summing a commodity's partner cells == its commodity total."""
+    rows, _ = extract_commodity_partner_rows(
+        _IMPORTS_XTAB,
+        "customs-merchandise-imports",
+        "x",
+        "customs-import-source",
+        _PERIOD_ANNUAL,
+        5,
+    )
+    diesel_partner_sum = sum(r.value for r in rows if r.dimension_value.startswith("27101930__"))
+    assert diesel_partner_sum == pytest.approx(100.0)  # 24 + 76 == commodity total
+
+
+def test_commodity_partner_grand_total_excluded() -> None:
+    rows, _ = extract_commodity_partner_rows(
+        _IMPORTS_XTAB,
+        "customs-merchandise-imports",
+        "x",
+        "customs-import-source",
+        _PERIOD_ANNUAL,
+        5,
+    )
+    assert "Total" not in {r.dimension_label for r in rows}
+    assert len(rows) == 3  # 2 diesel partners + 1 smartphone partner
+
+
+def test_commodity_partner_exports_value_column_and_kind() -> None:
+    # Exports cross-tab: [HSCode, Description, Partner, Unit, Qty, Exports_Value].
+    table = [
+        ("Table 6:Exports by Commodity and Partner", None, None, None, None, None),
+        (None, None, None, None, "(Exports Value are in Rs. Thousand)", None),
+        ("HSCode", "Description", "Partner Countries", "Unit", "Quantity", "Exports_Value"),
+        ("09042110", "Dried ginger", "United States", "Kg", "5000", "987.65"),
+        ("", "Total", "", "", None, "987.65"),
+    ]
+    rows, errors = extract_commodity_partner_rows(
+        table,
+        "customs-merchandise-exports",
+        "Merchandise exports (customs)",
+        "customs-export-destination",
+        _PERIOD_ANNUAL,
+        value_col=5,
+    )
+    assert errors == []
+    assert len(rows) == 1
+    assert rows[0].dimension_value == "09042110__united-states"
+    assert rows[0].dimension_label == "Dried ginger → United States"
+    assert rows[0].value == pytest.approx(987.65)
+    assert rows[0].dimension_kind == "customs-export-destination"
+    assert rows[0].base_indicator_slug == "customs-merchandise-exports"
+
+
+def test_commodity_partner_blank_partner_surfaces_error_not_silent() -> None:
+    table = [
+        ("t", None, None, None, None, None),
+        (None, None, None, None, None, None),
+        ("HSCode", "Description", "Partner Countries", "Unit", "Quantity", "Imports_Value"),
+        ("27101930", "Diesel", "", "Ltr", "1000", "24.0"),  # blank partner (not a total)
+    ]
+    rows, errors = extract_commodity_partner_rows(
+        table, "customs-merchandise-imports", "x", "customs-import-source", _PERIOD_ANNUAL, 5
+    )
+    assert rows == []
+    assert len(errors) == 1
+    assert errors[0].error_class == "ValueUnparseable"
+    assert isinstance(errors[0], ParserError)
+
+
+def test_commodity_partner_bad_hs_surfaces_error() -> None:
+    table = [
+        ("t", None, None, None, None, None),
+        (None, None, None, None, None, None),
+        ("HSCode", "Description", "Partner Countries", "Unit", "Quantity", "Imports_Value"),
+        ("ABC123", "Bogus", "India", "PCS", "1", "100.0"),  # not 6/8 digits
+    ]
+    rows, errors = extract_commodity_partner_rows(
+        table, "customs-merchandise-imports", "x", "customs-import-source", _PERIOD_ANNUAL, 5
+    )
+    assert rows == []
+    assert len(errors) == 1
+    assert errors[0].error_class == "ValueUnparseable"
+
+
+def test_commodity_partner_empty_sheet_yields_nothing() -> None:
+    assert extract_commodity_partner_rows(
+        [], "s", "n", "customs-import-source", _PERIOD_ANNUAL, 5
+    ) == ([], [])
+
+
+# ---------------------------------------------------------------------------
 # Country sheet core (SN, Partner, Imports_Value, Exports_Value, Trade_Balance).
 # ---------------------------------------------------------------------------
 
@@ -363,7 +512,7 @@ def test_empty_sheets_yield_nothing() -> None:
 
 
 def test_parser_version() -> None:
-    assert PARSER_VERSION == "0.1.0"
+    assert PARSER_VERSION == "0.2.0"
 
 
 def test_missing_file_returns_failure() -> None:
@@ -437,8 +586,55 @@ def test_real_annual_magnitude_and_unit() -> None:
         assert r.unit == "npr_thousand"
         assert r.confidence_grade == "A"
     kinds = {r.dimension_kind for r in res.dimensional_rows}
-    assert kinds == {"commodity", "country", "customs_office"}
+    assert kinds == {
+        "commodity",
+        "country",
+        "customs_office",
+        "customs-import-source",
+        "customs-export-destination",
+    }
     assert res.dimensional_rows[0].reporting_period_type == "annual"
+
+
+@pytest.mark.skipif(not REAL_ANNUAL.exists(), reason="real annual FTS workbook not on disk")
+def test_real_annual_crosstab_reconciles_to_commodity_totals() -> None:
+    """ADR-0011: a commodity's cross-tab partner cells sum to its commodity total.
+
+    The composite-dimension cross-tab (sheets 4 & 6) is a strict disaggregation of
+    the single-dimension commodity facts (sheets 5 & 7) under the SAME base measure
+    slug, so for every commodity HS code the partner-sum must equal the commodity
+    total. Verified across every commodity (worst relative diff must be ~0).
+    """
+    res = parse_customs_fts(str(REAL_ANNUAL), "real-annual")
+    assert res.status in ("success", "partial")
+
+    for base_slug, xtab_kind in (
+        (_IMP, "customs-import-source"),
+        (_EXP, "customs-export-destination"),
+    ):
+        # Single-dimension commodity totals: {hs_code: value}.
+        commodity_total: dict[str, float] = {
+            r.dimension_value: r.value
+            for r in res.dimensional_rows
+            if r.base_indicator_slug == base_slug and r.dimension_kind == "commodity"
+        }
+        # Cross-tab partner-sum per commodity: split "<hs>__<country>" on "__".
+        partner_sum: dict[str, float] = {}
+        for r in res.dimensional_rows:
+            if r.base_indicator_slug != base_slug or r.dimension_kind != xtab_kind:
+                continue
+            hs_code = r.dimension_value.split("__", 1)[0]
+            partner_sum[hs_code] = partner_sum.get(hs_code, 0.0) + r.value
+
+        assert partner_sum, f"no cross-tab facts for {xtab_kind}"
+        # Same commodity set on both sides (no commodity gained/lost in the cross-tab).
+        assert set(partner_sum) == set(commodity_total)
+        worst = max(
+            abs(partner_sum[hs] - commodity_total[hs]) / abs(commodity_total[hs])
+            for hs in commodity_total
+            if commodity_total[hs] != 0
+        )
+        assert worst < 1e-6, f"{base_slug}: cross-tab partner-sum diverges from commodity total"
 
 
 @pytest.mark.skipif(not REAL_SHRAWAN.exists(), reason="real Shrawan FTS workbook not on disk")

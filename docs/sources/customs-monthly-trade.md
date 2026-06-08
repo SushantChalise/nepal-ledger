@@ -4,11 +4,12 @@
 **Status:** paused (parser landed; flip to `active` on first live ingest — pending Mother)  
 **Tier:** Tier 1  
 **Registered at:** 2026-05-14  
-**Last verified:** 2026-06-07 (parser PR — Foreign Trade Statistics FY 2081/82 XLSX)
+**Last verified:** 2026-06-08 (parser v0.2.0 — added commodity×partner cross-tabs, sheets 4 & 6)
 
-> Parser PR landed: `scrapers/customs_trade/` emits ADR-0015 dimensional facts
-> (dimension = commodity HS-code / country / customs office) from the Foreign
-> Trade Statistics (FTS) XLSX workbooks. Ingest via
+> Parser landed (v0.2.0): `scrapers/customs_trade/` emits ADR-0015 dimensional
+> facts (dimension = commodity HS-code / country / customs office, plus the
+> commodity×partner cross-tabs via a composite `<hs>__<country>` dimension —
+> ADR-0018) from the Foreign Trade Statistics (FTS) XLSX workbooks. Ingest via
 > `scripts/ingest-customs-trade.ts` → `dne_facts`.
 
 ## Publication
@@ -49,17 +50,26 @@ is on row index 2 (0-based), data from row 3.
 
 | base_indicator_slug             | dimensions (kind)                       | source sheets         | unit          | confidence |
 |---------------------------------|-----------------------------------------|-----------------------|---------------|:----------:|
-| `customs-merchandise-imports`   | `commodity` (HS), `country`, `customs_office` | 5, 3, 9         | `npr_thousand`| A          |
-| `customs-merchandise-exports`   | `commodity` (HS), `country`, `customs_office` | 7, 3, 9         | `npr_thousand`| A          |
+| `customs-merchandise-imports`   | `commodity` (HS), `country`, `customs_office`, `customs-import-source` (composite) | 5, 3, 9, **4** | `npr_thousand`| A          |
+| `customs-merchandise-exports`   | `commodity` (HS), `country`, `customs_office`, `customs-export-destination` (composite) | 7, 3, 9, **6** | `npr_thousand`| A          |
 
 - Commodity `dimension_value` = the **HS code** (6/8-digit, verbatim);
   `dimension_label` = description. Country / customs office `dimension_value` =
   kebab slug of the name; `dimension_label` = raw name.
-- The single trailing "Total" row of each sheet (blank code/SN) is **excluded**
-  (ADR-0015 aggregate rule). Genuine `0` values are preserved; only blank/dash is
-  dropped (never fabricated/zero-filled).
-- Real-file dry-run (FY 2081/82 annual): **6,886 facts** — imports 5,264 commodity
-  + 164 country + 29 customs; exports 1,236 + 164 + 29. `status=success`, 0 errors.
+- **Composite dimension (ADR-0018)** — the commodity×partner cross-tabs (sheets 4
+  & 6, long form) encode TWO dimensions into the one-dimension `dne_facts`
+  contract: `dimension_kind` = `customs-import-source` / `customs-export-destination`;
+  `dimension_value` = `<hs-code>__<country-slug>` (joined by `__`, separator-stable);
+  `dimension_label` = `<description> → <country>`. The base measure slug is the
+  SAME single-dimension slug, so the cross-tab is a strict disaggregation that
+  reconciles to the commodity totals (verified: worst relative diff 0.0% across
+  all 5,264 import + 1,236 export commodities).
+- The single trailing "Total" row of each sheet (blank code/SN, or blank HS for
+  the cross-tabs) is **excluded** (ADR-0015 aggregate rule). Genuine `0` values
+  are preserved; only blank/dash is dropped (never fabricated/zero-filled).
+- Real-file dry-run (FY 2081/82 annual): **45,770 facts** — imports 5,264
+  commodity + 164 country + 29 customs + 33,887 import-source; exports 1,236 + 164
+  + 29 + 4,997 export-destination. `status=success`, 0 errors.
 
 **Unit (ADR-0011):** every value sheet states "(figures are in Rs. Thousands)" /
 "(... in Rs. Thousand)" and the headline writes "Imports (Rs.in \`000)" → NPR
@@ -78,8 +88,6 @@ inferred from the AD edge — the AD bounds are mid-month edges.
 
 ### Deferred (not fabricated)
 
-- **Commodity × partner cross-tabs** (sheets 4 & 6, ~34k rows): two dimensions per
-  fact (HS code AND partner) — does not fit the ADR-0015 one-dimension contract.
 - **`Imports_Revenue`** (duty collected) and derived **`Trade_Balance`** / share
   columns — separate measures, promotable later with their own base slugs.
 - sheet 2 (chapter balance, redundant), sheet 8 (ID value comparison), sheet 1
