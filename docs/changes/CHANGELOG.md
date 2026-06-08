@@ -8,6 +8,23 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-07 (round 11) — Wave 6: /trade + /foreign-aid pages + edition backfill
+
+**What changed:** Rendered the two Wave-5 data sources into pages (the customs and foreign-aid facts had no UI), backfilled the remaining clean editions, and wired both into the nav — **10 live pages** now.
+
+- **`/trade` render page** (Worker K): Nepal's customs merchandise trade + structural deficit from `dne_facts`. Imports **NPR 1.80tn** vs exports **NPR 277bn** → **deficit NPR 1.53tn, coverage 15.4%, imports 6.5×** exports; top imports diesel/soya-oil/petrol/LPG; partners India 59.4% + China 18.9%. Top-N honesty enforced ("top 15 of 5,264 — X% of total; remainder not shown"). The worker caught + root-caused **two real SQL bugs** via live DB verification (a `SELECT DISTINCT`+`ORDER BY CASE` rejection, and an alias-shadowing bug sorting by the text slug instead of the amount) — fixed, not papered over.
+- **`/foreign-aid` render page** (Worker J): aid by donor + sector (grant vs loan) from `foreign_aid_facts`. **Unit-aware conversion** is the crux — the two editions use different units (npr_lakh FY2020/21 ÷10,000, npr_thousand FY2015/16 ÷1,000,000 → NPR bn), applied per-row before any sum; verified 360.0bn (loan-heavy COVID surge) / 205.9bn (grant-heavy), donor-total == sector-total.
+- **Edition backfill** (Mother ingests, no new code): customs **cumulative (6,809) + monthly (4,706)** editions → `dne_facts` (now 3 periods); White Book **FY2013/14 (154) + FY2014/15 (174)** → `foreign_aid_facts` (now 4 fiscal years 2070/71→2077/78).
+- **Nav:** `/trade` + `/foreign-aid` added to `SiteNav` (11 routes). Both render workers correctly left the nav edit to Mother (no SiteNav contention).
+
+**Live DB:** approved_indicator_values 877 · **dne_facts 67,934** (+11,515 customs editions) · **foreign_aid_facts 606** (+328, 4 FYs) · fiscal 6,008 · banking 2,088 · census 531,618 · sources 69. **10 live pages, all navigable.**
+
+**Next (Wave 7):** customs commodity×partner cross-tab (needs a 2-dimension ADR); remittance-by-country NPR (no source yet); redbook/budget-execution; a money-flow synthesis (Sankey enrichment from the new trade + aid facts).
+
+**Related:** ADR-0017 (foreign_aid_facts); ADR-0015 (dne_facts dimensional); ADR-0011 (units); HANDOFF_2026-06-07.
+
+---
+
 ## 2026-06-07 (round 10) — Wave 5: site nav, remittance NPR, customs trade, foreign aid
 
 **What changed:** A 4-worker batch closed the biggest remaining "Money In/Out" gaps and finally made the site navigable. Notably, three of the four involved a data-honesty or infrastructure judgment, not just extraction.
