@@ -12,6 +12,7 @@
 2. [docs/BACKEND_PLAN.md](docs/BACKEND_PLAN.md) — engineering umbrella + 90-day sequence
 3. [docs/AGENT_OPS.md](docs/AGENT_OPS.md) — Mother + worker orchestration; worktrees; plan mode
 4. [docs/CONTEXT_RULES.md](docs/CONTEXT_RULES.md) — anti-hallucination + anti-scope-drift (**mandatory**)
+   - **[docs/DATA_AUDIT.md](docs/DATA_AUDIT.md) — authoritative live truth-layer inventory: what data exists, temporal coverage, gaps, and the reconciliation/accuracy baseline. Before asserting any data exists, its coverage, or a value, CHECK here or the live DB (`pnpm audit:data`) — never from memory. Always report confidence grade + provenance; never present OCR/Tier-B data as audited primary data. (mandatory for any data/reporting work)**
 5. [docs/CONVENTIONS.md](docs/CONVENTIONS.md) — code conventions; sanctioned cast escape hatches; `safeQuery`
 6. [docs/SOURCE_REGISTRY.md](docs/SOURCE_REGISTRY.md) — every external data feed must be registered before scraping
 7. [docs/DATA_PIPELINE.md](docs/DATA_PIPELINE.md) — staging → validation → approved quarantine

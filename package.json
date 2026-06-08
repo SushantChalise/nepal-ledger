@@ -22,6 +22,7 @@
     "test:e2e": "playwright test",
     "format": "prettier --write .",
     "gen:source-index": "tsx scripts/gen-source-index.ts",
+    "audit:data": "node --env-file=.env.local --conditions=react-server --import tsx scripts/data-audit.ts",
     "check:source-registry": "tsx scripts/check-source-registry.ts",
     "ingest:cmefs": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-cmefs.ts",
     "ingest:ncpi": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-ncpi.ts",
