@@ -8,6 +8,22 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-08 (round 14) — Stream 2 integrated: Tier-2 Surya OCR harness + intergovernmental fiscal-transfer history
+
+**What changed:** Completed the 3rd recovery stream. The reusable Tier-2 Surya OCR harness (`scrapers/surya_ocr/`) is banked, and the **intergovernmental fiscal-transfer history** is extended from 1 FY to 3 — the federal→local money flow (753 local levels × 8 grant types), per ADR-0022's dual-channel design.
+
+- **ADR-0022 — Surya OCR pipeline + dual-channel design.** Reusable harness: render (`fitz.Matrix(3,3)`) → OpenCV preprocess → tile → Surya recognition → stitch (IoU de-dup of tile-seam overlaps) → `ocr_tracking` trio → reconstruct. The dual-channel principle: for books with a clean numeric **text layer**, take the VALUES from the text layer (deterministic, exact, self-reconciling) and use Surya as an **independent cross-check + Devanagari-label recovery + provenance** channel — maximizing completeness (no rows lost to OCR digit error) AND accuracy (reconciliation). Surya is the SOLE route only for genuinely scanned pages.
+- **Data — 2 FYs ingested (text-layer).** `scrapers/surya_ocr/parsers/intergovernmental.py` + `scripts/ingest-intergovernmental.ts` → **FY2078/79 + FY2079/80** into `local_government_fiscal_transfers` (6,008 → **18,056** rows, 3 FYs). Both reconcile to the rupee: each book's 753 local-level grand totals sum to the printed `स्थानीय तह` document total (FY2078/79 NPR 283.0bn, FY2079/80 NPR 300.4bn). 9→8-digit code crosswalk verified 753/753, 0 unresolved. `npr_crore`, confidence B. New `mof-intergovernmental` source (registry 69→70, active); CLI enforces the ADR-0021 reconciliation gate (exit 1 on any non-reconciling/scanned FY).
+- **Provenance-honesty fix.** The parser hardcoded `extraction_method=surya-ocr+textlayer-xcheck` on every row even when Surya never ran. Made it honest + conditional: `textlayer` by default, the xcheck label only when `--surya` actually runs (`parse(..., surya_xcheck=run_surya)`). The 2 ingested FYs carry `extraction_method=textlayer` — true, since values are text-layer-derived. +1 test. (Mission guardrail: never claim a cross-check that didn't happen.)
+- **Deferred, documented honestly:** (a) the **6 scanned transfer FYs** (no text layer) await the Surya-OCR-only path — harness ready, ship per-FY only when OCR reconciles; (b) the **Surya GPU `ocr_tracking` cross-check pass** for the 2 ingested FYs needs a small CLI fix first — the parser is invoked as a bare script, under which its lazy `from ..` relative import doesn't resolve (needs absolute import + `sys.path` bootstrap), then a ~5–15 min/FY GPU run. The DATA does not depend on it (text-layer values already reconcile + shipped). Both tracked in DATA_AUDIT §6 + RECOVERY_PROGRAM follow-ups.
+- **Gates:** `typecheck` 0 · `eslint` 0 errors · `vitest` 148 · `ruff` clean · `mypy` 17 files clean (new `fitz`/`cv2`/`surya`/`PIL`/`numpy` overrides) · **`pytest` 604 passed** · `pnpm audit:data` re-run — F3 shows 3 FYs, every reconciliation check (G1–G4) still passes, **no new mismatch**.
+
+**Live DB:** approved 877 · dne_facts 271,601 · foreign_aid_facts 1,024 · **`local_government_fiscal_transfers` 18,056 (3 FYs)** · census 531,618 · banking 2,088 · source_registry 70 (17 active). Accuracy flags open: **0**.
+
+**Related:** ADR-0022, ADR-0021 (gate), ADR-0003 (Surya = recognition, not generative extraction); DATA_AUDIT.md §1/§2/§4/§5/§6/§8; RECOVERY_PROGRAM.md; `docs/sources/mof-intergovernmental.md`.
+
+---
+
 ## 2026-06-08 (round 13) — Data audit + 3-stream recovery (accuracy fix, customs depth, resilience)
 
 **What changed:** Built the accuracy/completeness backbone (`pnpm audit:data` + `DATA_AUDIT.md`), then ran a tracked 3-stream parallel recovery program (`docs/research/RECOVERY_PROGRAM.md`) — closing the one accuracy flag the audit found, deepening customs history, and hardening ingest resilience. Mission emphasis: this DB's value IS completeness + accuracy, so the audit is the regression gate for everything.

@@ -52,10 +52,39 @@
 - **Env:** base py312 GPU (above). **Gate:** per-FY transfer total reconciles to the
   published figure; populate `ocr_tile_manifests`/`ocr_cell_extractions`/
   `ocr_stitch_disagreements`; confidence B; `extraction_method='surya-ocr'`.
-- **Migration:** likely none (reuse `local_government_fiscal_transfers`); if a schema
-  change is needed, worker writes it + Mother applies.
-- **Worker:** (pending dispatch) · **Status:** in progress. This is the largest stream;
-  if the full harness+ingest doesn't land in one run, bank the harness first.
+- **Migration:** NONE — reuses `local_government_fiscal_transfers` unchanged. OCR
+  provenance lives in the `ocr_tracking` trio + row `notes`
+  (`extraction_method=surya-ocr+textlayer-xcheck`).
+- **Worker:** loving-wing-7bdcb4 · **Status:** ✅ INTEGRATED 2026-06-08 (harness banked; 2 FYs ingested text-layer; Surya GPU cross-check pass deferred — see below).
+  - Harness `scrapers/surya_ocr/` (render→preprocess→tile→Surya→stitch→reconstruct
+    + `ocr_tracking` trio). 57 pytest pass; ruff + mypy clean (mypy needs pyproject
+    `fitz`/`cv2`/`surya` overrides — RETURNED to Mother). README + ADR-0022 written.
+  - Parser `scrapers/surya_ocr/parsers/intergovernmental.py`; CLI
+    `scripts/ingest-intergovernmental.ts`; repo `src/lib/db/repositories/ocr-tracking.ts`.
+  - **Corpus reality (probed, not assumed):** only **FY2078/79 + FY2079/80** have a
+    usable numeric text layer — both 753/753 rows reconcile AND the 753 grand totals
+    sum to the printed `स्थानीय तह` document total TO THE RUPEE. The other 6 FYs are
+    scanned / non-reconciling → **DEFERRED** (Surya-OCR-only; gate not yet met). Code
+    crosswalk 9→8 digit verified 753/753. **Dual-channel:** values from the reconciling
+    text layer; Surya as cross-check + label recovery + `ocr_tracking` provenance (ADR-0022).
+  - **✅ INGESTED (text-layer)** — Mother applied pyproject overrides (`surya_ocr*` include +
+    testpaths + `fitz`/`cv2`/`surya`/`PIL`/`numpy` mypy ignores), seeded `mof-intergovernmental`
+    (registry 69→70, active), added `ingest:intergovernmental` to package.json, dry-ran both
+    FYs (gate passed), then live-ingested: **FY2078/79 + FY2079/80 = 12,048 rows**
+    (`local_government_fiscal_transfers` 6,008→**18,056**, 3 FYs), 0 unresolved, both reconcile.
+    `pnpm audit:data` re-run: F3 shows 3 FYs, all G-checks still pass (no new mismatch).
+  - **Provenance honesty fix (Mother):** the parser hardcoded `extraction_method=`
+    `surya-ocr+textlayer-xcheck` on every row even in text-only mode. Changed to honest
+    conditional: `textlayer` by default, `surya-ocr+textlayer-xcheck` only when `--surya`
+    actually runs (`parse(..., surya_xcheck=run_surya)`). +1 test. The 2 ingested FYs carry
+    `extraction_method=textlayer` (true — values are text-layer-derived, not OCR).
+  - **DEFERRED — Surya GPU cross-check pass** (populate `ocr_tracking` for the 2 ingested FYs):
+    the CLI invokes the parser as a **bare script** (`python .../intergovernmental.py …`), under
+    which the lazy `from .. import HarnessConfig, …` in `cross_validate_with_surya` does NOT
+    resolve (no parent package in `__main__`). Needs a small fix (absolute import +
+    `sys.path` bootstrap of the `scrapers/` dir) before `--surya` runs end-to-end via the CLI,
+    then a ~5–15 min/FY GPU run (31 detail pages each). **The DATA does not depend on it** —
+    text-layer values already reconcile + shipped. Tracked as a follow-up below.
 
 ## Stream 3 (#53) — Deepen thin single-period domains (acquisition + ingest, no OCR)
 
@@ -80,9 +109,10 @@
 |---|---|---|---|---|
 | 2026-06-08 | **1 — aid FY2070/71** | ✅ root-caused (wrapped-name rows dropped from sector table = exact gap); fixed deterministically (mof_whitebook v0.2.1, no AI); re-ingested 154→158; **all 7 aid FYs reconcile** | ✅ G3 donor==sector | `8d482c7` |
 | 2026-06-08 | **3 — deepen thin** | ✅ customs **1→7 periods** (5 annual FYs 2076/77–2081/82; +164,612 dne_facts); blank-description fix (v0.3.0) + `safeQueryWithRetry` (ECONNRESET resilience for all bulk inserts). ⚠️ CMEFs-monthly + remittance-NPR PARSER-blocked (acquired, documented in DATA_AUDIT §8) | ✅ customs 7 periods | `74c08ee` |
-| _running_ | **2 — Tier-2 OCR** | intergovernmental fiscal-transfer history (GPU Surya) | — | — |
+| 2026-06-08 | **2 — Tier-2 OCR** | ✅ harness `scrapers/surya_ocr/` BANKED (58 pytest, ruff+mypy clean) + ADR-0022. Intergovernmental **FY2078/79 + FY2079/80 INGESTED** (text-layer): `local_government_fiscal_transfers` 6,008→**18,056** (3 FYs), 12,048 rows, 753/753 reconcile to printed doc-total exactly, npr_crore, conf B, `extraction_method=textlayer` (honest). Registry 69→70 (`mof-intergovernmental` active). Provenance-honesty fix to parser (+1 test). Gates: typecheck 0, eslint 0-err, vitest 148, ruff clean, mypy 17 files, **pytest 604**. 6 scanned FYs + the `ocr_tracking` Surya GPU pass DEFERRED (CLI `--surya` invocation fix needed). | ✅ F3 3 FYs; all G-checks pass | _see commit below_ |
 
 ### Follow-ups surfaced (new scoped tasks, documented in DATA_AUDIT §8)
 - **CMEFs period-aware parser fix** — `nrb_cmefs` hardcodes `_BS_FY_START=2082`; the whole monthly history is acquirable once it reads the FY+month-count from the PDF.
 - **Remittance BPM5 route + discontinuity** — `Trade-and-Balance-of-Payments.xlsx` has Workers'-remittances from FY2000/01 (BPM5); needs a new route + a labelled methodology discontinuity vs the BPM6 series.
-- **Live DB after Streams 1+3:** dne_facts **271,601** · foreign_aid_facts **1,024** · approved 877.
+- **Surya GPU cross-check pass (Stream 2)** — fix the `--surya` CLI invocation (parser bare-script relative import → absolute import + `sys.path` bootstrap), then run the GPU OCR over the 2 ingested FYs' detail pages to populate `ocr_tracking` (tiles/cells/disagreements). Independently, run the harness over the **6 scanned transfer FYs** (2074/75, 2075/76, 2077/78, 2080/81, 2081/82, 2082/83-pdf) — Surya is the ONLY route there (no text layer); ship per-FY only when OCR reconciles (ADR-0021 gate).
+- **Live DB after Streams 1+2+3:** dne_facts **271,601** · foreign_aid_facts **1,024** · `local_government_fiscal_transfers` **18,056** (3 FYs) · source_registry 70 (17 active) · approved 877.

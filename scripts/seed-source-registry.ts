@@ -136,6 +136,29 @@ const ROWS: readonly NewSourceRegistryRow[] = [
       'Preeti + a mislabelled CID intergovernmental-transfer file deferred.',
   },
   {
+    sourceId: 'mof-intergovernmental',
+    agency: 'Ministry of Finance',
+    agencyShort: 'MoF',
+    datasetName: 'Intergovernmental Fiscal Transfer details (per local level, by grant type)',
+    sourceUrl: 'https://mof.gov.np/',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    licenseStatus: 'gov_open',
+    confidenceDefault: 'B',
+    status: 'active',
+    ingestionMode: 'manual_upload',
+    tier: 4,
+    notes:
+      'Money Out — federal→local fiscal transfers per local level (753 palikas × 8 grant types). ' +
+      'In-repo corpus at Financial Data/mof_documents/intergovernmental/. Tier-2 Surya OCR pipeline ' +
+      '(ADR-0022): dual-channel — values from reconciling text layer, Surya cross-check + label recovery + ' +
+      'ocr_tracking provenance. Active: FY2078/79 + FY2079/80 → local_government_fiscal_transfers via ' +
+      'ingest:intergovernmental (753/753 reconcile to printed स्थानीय तह document total, npr_crore, confidence B). ' +
+      '6 scanned FYs (2074/75–2077/78, 2080/81–2081/82) deferred (no reconciling text layer; OCR-only gate unmet).',
+  },
+  {
     sourceId: 'noc-petroleum-monthly',
     agency: 'Nepal Oil Corporation',
     agencyShort: 'NOC',
