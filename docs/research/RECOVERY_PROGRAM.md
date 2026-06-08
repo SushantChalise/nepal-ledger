@@ -78,13 +78,22 @@
     conditional: `textlayer` by default, `surya-ocr+textlayer-xcheck` only when `--surya`
     actually runs (`parse(..., surya_xcheck=run_surya)`). +1 test. The 2 ingested FYs carry
     `extraction_method=textlayer` (true — values are text-layer-derived, not OCR).
-  - **DEFERRED — Surya GPU cross-check pass** (populate `ocr_tracking` for the 2 ingested FYs):
-    the CLI invokes the parser as a **bare script** (`python .../intergovernmental.py …`), under
-    which the lazy `from .. import HarnessConfig, …` in `cross_validate_with_surya` does NOT
-    resolve (no parent package in `__main__`). Needs a small fix (absolute import +
-    `sys.path` bootstrap of the `scrapers/` dir) before `--surya` runs end-to-end via the CLI,
-    then a ~5–15 min/FY GPU run (31 detail pages each). **The DATA does not depend on it** —
-    text-layer values already reconcile + shipped. Tracked as a follow-up below.
+  - **✅ Surya GPU path VALIDATED end-to-end on real data** (commit after `86a9d96`): two
+    enablement fixes landed in the parser — (1) the bare-script relative-import (`from ..` →
+    absolute `from surya_ocr import …` + idempotent `sys.path` bootstrap of the `scrapers/` dir;
+    the Node CLI runs the parser as a bare script with no parent package, so `from ..` raised
+    "attempted relative import"); (2) UTF-8 stdout reconfigure (the `--surya` JSON carries
+    Devanagari `text_raw` with `ensure_ascii=False` → crashed Windows cp1252 stdout mid-dump);
+    plus a `--max-pages N` bound for smoke/incremental runs. Proof: the bare-script
+    `--surya --max-pages 1` on FY2079/80 exits 0 with a valid 2.36 MB UTF-8 JSON — 2 tiles,
+    533 cells, 14 stitch disagreements, mean line-confidence 0.836; the Devanagari re-parses
+    cleanly. ~30s for 1 page incl. model load. ruff/mypy clean, 58 pytest.
+  - **DEFERRED (optional, GPU-time + DB-surgery cost):** (a) the live `ocr_tracking` ingest run
+    for the 2 text-layer FYs (`--surya`, ~10–15 min/FY; would create a 2nd `source_document`
+    per FY unless the text-layer rows are first deleted + re-ingested with `--surya`); (b) wiring
+    `value_cells_agreeing` (currently 0 — the Node-side cell-vs-text-layer agreement count); (c)
+    the **6 scanned FYs** — the real missing data, needs scanned-book OCR→rows→reconcile (no
+    text-layer crutch). **The shipped DATA depends on none of these.**
 
 ## Stream 3 (#53) — Deepen thin single-period domains (acquisition + ingest, no OCR)
 
@@ -109,10 +118,10 @@
 |---|---|---|---|---|
 | 2026-06-08 | **1 — aid FY2070/71** | ✅ root-caused (wrapped-name rows dropped from sector table = exact gap); fixed deterministically (mof_whitebook v0.2.1, no AI); re-ingested 154→158; **all 7 aid FYs reconcile** | ✅ G3 donor==sector | `8d482c7` |
 | 2026-06-08 | **3 — deepen thin** | ✅ customs **1→7 periods** (5 annual FYs 2076/77–2081/82; +164,612 dne_facts); blank-description fix (v0.3.0) + `safeQueryWithRetry` (ECONNRESET resilience for all bulk inserts). ⚠️ CMEFs-monthly + remittance-NPR PARSER-blocked (acquired, documented in DATA_AUDIT §8) | ✅ customs 7 periods | `74c08ee` |
-| 2026-06-08 | **2 — Tier-2 OCR** | ✅ harness `scrapers/surya_ocr/` BANKED (58 pytest, ruff+mypy clean) + ADR-0022. Intergovernmental **FY2078/79 + FY2079/80 INGESTED** (text-layer): `local_government_fiscal_transfers` 6,008→**18,056** (3 FYs), 12,048 rows, 753/753 reconcile to printed doc-total exactly, npr_crore, conf B, `extraction_method=textlayer` (honest). Registry 69→70 (`mof-intergovernmental` active). Provenance-honesty fix to parser (+1 test). Gates: typecheck 0, eslint 0-err, vitest 148, ruff clean, mypy 17 files, **pytest 604**. 6 scanned FYs + the `ocr_tracking` Surya GPU pass DEFERRED (CLI `--surya` invocation fix needed). | ✅ F3 3 FYs; all G-checks pass | _see commit below_ |
+| 2026-06-08 | **2 — Tier-2 OCR** | ✅ harness `scrapers/surya_ocr/` BANKED (58 pytest, ruff+mypy clean) + ADR-0022. Intergovernmental **FY2078/79 + FY2079/80 INGESTED** (text-layer): `local_government_fiscal_transfers` 6,008→**18,056** (3 FYs), 12,048 rows, 753/753 reconcile to printed doc-total exactly, npr_crore, conf B, `extraction_method=textlayer` (honest). Registry 69→70 (`mof-intergovernmental` active). Provenance-honesty fix to parser (+1 test). Gates: typecheck 0, eslint 0-err, vitest 148, ruff clean, mypy 17 files, **pytest 604**. Follow-up: `--surya` CLI enablement (bare-script import + UTF-8 stdout + `--max-pages`) — **Surya GPU path now validated end-to-end on real data** (533 cells/page, conf 0.836). 6 scanned FYs + live `ocr_tracking` ingest still deferred (optional). | ✅ F3 3 FYs; all G-checks pass | `86a9d96` + surya-enablement |
 
 ### Follow-ups surfaced (new scoped tasks, documented in DATA_AUDIT §8)
 - **CMEFs period-aware parser fix** — `nrb_cmefs` hardcodes `_BS_FY_START=2082`; the whole monthly history is acquirable once it reads the FY+month-count from the PDF.
 - **Remittance BPM5 route + discontinuity** — `Trade-and-Balance-of-Payments.xlsx` has Workers'-remittances from FY2000/01 (BPM5); needs a new route + a labelled methodology discontinuity vs the BPM6 series.
-- **Surya GPU cross-check pass (Stream 2)** — fix the `--surya` CLI invocation (parser bare-script relative import → absolute import + `sys.path` bootstrap), then run the GPU OCR over the 2 ingested FYs' detail pages to populate `ocr_tracking` (tiles/cells/disagreements). Independently, run the harness over the **6 scanned transfer FYs** (2074/75, 2075/76, 2077/78, 2080/81, 2081/82, 2082/83-pdf) — Surya is the ONLY route there (no text layer); ship per-FY only when OCR reconciles (ADR-0021 gate).
+- **Surya GPU cross-check pass (Stream 2)** — the `--surya` CLI is now functional + validated end-to-end (see integration log). Remaining (optional): (a) run `--surya` over the 2 ingested FYs to populate `ocr_tracking` live (~10–15 min/FY; delete + re-ingest the text-layer rows first to avoid a 2nd `source_document` per FY); (b) wire `value_cells_agreeing` (Node-side cell-vs-text-layer agreement count, currently 0). The bigger prize is the **6 scanned transfer FYs** (2074/75, 2075/76, 2077/78, 2080/81, 2081/82, 2082/83-pdf) — Surya is the ONLY route there (no text layer); needs scanned-book OCR→rows→reconcile; ship per-FY only when OCR reconciles (ADR-0021 gate).
 - **Live DB after Streams 1+2+3:** dne_facts **271,601** · foreign_aid_facts **1,024** · `local_government_fiscal_transfers` **18,056** (3 FYs) · source_registry 70 (17 active) · approved 877.

@@ -511,8 +511,19 @@ def cross_validate_with_surya(
     rows). Imports the harness lazily so non-GPU callers of this module pay
     nothing.
     """
-    from .. import HarnessConfig, kept_cells, ocr_page
-    from ..cleanup import split_numeric_tokens
+    # This module is invoked BOTH as an importable package member (pytest) and
+    # as a bare script by the Node CLI (`python .../intergovernmental.py …`).
+    # Under the bare-script entry point there is no parent package, so a
+    # relative `from .. import` raises "attempted relative import with no known
+    # parent package". Bootstrap the `scrapers/` dir onto sys.path (idempotent)
+    # and use absolute imports, which resolve under both entry points.
+    import sys
+
+    scrapers_dir = str(Path(__file__).resolve().parents[2])
+    if scrapers_dir not in sys.path:
+        sys.path.insert(0, scrapers_dir)
+    from surya_ocr import HarnessConfig, kept_cells, ocr_page
+    from surya_ocr.cleanup import split_numeric_tokens
 
     path = Path(source_document_path)
     fy = FY_BY_STEM.get(path.stem, path.stem)
@@ -584,28 +595,59 @@ def cross_validate_with_surya(
 
 
 def _main() -> None:
-    """CLI: ``intergovernmental.py <pdf_path> <source_document_id> [--surya]``.
+    """CLI: ``intergovernmental.py <pdf> <source_document_id> [--surya] [--max-pages N]``.
 
     Without ``--surya``: text-layer extraction + reconciliation only (fast, no
     GPU). With ``--surya``: also runs the Surya cross-validation channel and
     attaches ``ocr_pages`` + ``cross_validation`` to the JSON (GPU-bound).
+    ``--max-pages N`` bounds the Surya channel to the first N detail pages
+    (smoke-testing / incremental runs); omit it to OCR every detail page.
     """
+    import io
     import json
     import sys
 
-    args = sys.argv[1:]
-    run_surya = "--surya" in args
-    args = [a for a in args if a != "--surya"]
+    # The Surya channel emits Devanagari ``text_raw`` in the JSON
+    # (``ensure_ascii=False``). On Windows the default stdout codec is cp1252,
+    # which cannot encode Devanagari → UnicodeEncodeError mid-dump. Force UTF-8
+    # so the JSON contract holds on every platform.
+    if isinstance(sys.stdout, io.TextIOWrapper):
+        sys.stdout.reconfigure(encoding="utf-8")
+    if isinstance(sys.stderr, io.TextIOWrapper):
+        sys.stderr.reconfigure(encoding="utf-8")
+
+    run_surya = "--surya" in sys.argv[1:]
+    max_pages: int | None = None
+    positional: list[str] = []
+    argv = sys.argv[1:]
+    i = 0
+    while i < len(argv):
+        arg = argv[i]
+        if arg == "--surya":
+            i += 1
+        elif arg == "--max-pages":
+            if i + 1 >= len(argv):
+                sys.stderr.write("--max-pages requires an integer value\n")
+                sys.exit(2)
+            max_pages = int(argv[i + 1])
+            i += 2
+        elif arg.startswith("--max-pages="):
+            max_pages = int(arg.split("=", 1)[1])
+            i += 1
+        else:
+            positional.append(arg)
+            i += 1
+
     expected_argc = 2
-    if len(args) != expected_argc:
+    if len(positional) != expected_argc:
         sys.stderr.write(
             "usage: intergovernmental.py <source_document_path> "
-            "<source_document_id> [--surya]\n",
+            "<source_document_id> [--surya] [--max-pages N]\n",
         )
         sys.exit(2)
-    result = parse(args[0], args[1], surya_xcheck=run_surya)
+    result = parse(positional[0], positional[1], surya_xcheck=run_surya)
     if run_surya and result["status"] in {"success", "partial"}:
-        result["surya"] = cross_validate_with_surya(args[0])
+        result["surya"] = cross_validate_with_surya(positional[0], max_pages=max_pages)
     json.dump(result, sys.stdout, ensure_ascii=False)
 
 
