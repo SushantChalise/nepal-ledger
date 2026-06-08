@@ -8,6 +8,24 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-08 (round 12) — PDF recovery Tier-1: deferred data was recoverable
+
+**What changed:** A robust PDF-recovery program replaced the policy of deferring "hard" PDFs. The user challenged the over-deferral; the diagnosis confirmed it: workers had collapsed three distinct techniques under "ADR-0003 = no AI" and refused all three, when only generative-LLM-extraction is actually banned.
+
+- **ADR-0021 — PDF recovery tiers + verification gate** (clarifies ADR-0003): Tier 1 deterministic (1a font transliteration, 1b geometry un-mirror — both ADR-0003-clean), Tier 2 Surya tile-OCR, AI permitted only as dev/QA assistant. Trust boundary: reconcile to printed totals + sample-verify against the rendered PDF page + `extraction_method` provenance + method-based confidence. No unreconciled data ships.
+- **Tier-1a Preeti → 2008–2011 foreign-aid history.** The pre-2012 White Books are Preeti legacy-font (Latin bytes → Devanagari), NOT CID-broken — a fixed byte-map recovers them, zero OCR/AI. New `scrapers/_common/preeti.py` (deterministic converter, 38 tests; `j}b]lzs`→वैदेशिक verified live), wired into the whitebook parser. Recovered **FY2065/66 (144) + 2066/67 (142) + 2067/68 (128) = 414 `foreign_aid_facts`**. Verified per ADR-0021: reconciliation tests pass, values are exact ASCII digits (not OCR), and the rendered FY2065/66 page was read + confirmed as the ministrywise aid summary. `foreign_aid_facts` 606 → **1,020**.
+- **Red Book federal budget (FY2074/75) → 171 `dne_facts`** (57 budget-heads × total/recurrent/capital, npr_thousand). Σ total = **NPR 1,195.4 billion** (correct budget magnitude); per-head recurrent+capital = total. **Parser perf fix** (v0.2.0): was scanning all ~650 pages (>5min, timed out) — capped to the front-matter appropriation summary (80 pages) → 1m34s.
+- **Tier-1b Economic Survey un-mirror → routed to Tier-2 Surya** (not shipped): the deterministic un-mirror failed reconciliation twice (fragile wrapped-label/column-reversal geometry); the headline GDP/CPI is already live from the DNE ingest; and since the mirror is a text-layer-only artifact (visual page correct), OCR-reading the rendered page is the right tool. Deferred honestly, not faked.
+- **Operational note:** long-running background agents did not survive idle/suspend gaps (several killed mid-flight); their code was recovered + finished/verified by Mother directly. Future heavy work favors direct execution + immediately-integrated small steps.
+
+**Live DB:** approved 877 · **dne_facts 106,989** · **foreign_aid_facts 1,020** (now spanning AD 2008–2024) · census 531,618 · sources 69. Data now reaches **2005 → 2025**.
+
+**Next — Tier-2 Surya:** install the OCR stack (surya-ocr v0.17.1 pinned, `--detect_boxes`, OpenCV preprocess; pymupdf already installed); recover intergovernmental fiscal-transfer history (8 FYs), full Yellow Book SOE financials (revenue/profit/capital), the Preeti/CID redbook + whitebook editions, and the Economic Survey macro annex via OCR-of-visual-page — all through the ADR-0021 verification gate + the live `ocr_tracking` schema.
+
+**Related:** ADR-0021; ADR-0003 (clarified); ADR-0011 (reconcile); FINANCIAL_DATA_STRATEGY §Phase B; surya-ocr-findings.md.
+
+---
+
 ## 2026-06-07 (round 11) — Wave 6: /trade + /foreign-aid pages + edition backfill
 
 **What changed:** Rendered the two Wave-5 data sources into pages (the customs and foreign-aid facts had no UI), backfilled the remaining clean editions, and wired both into the nav — **10 live pages** now.
