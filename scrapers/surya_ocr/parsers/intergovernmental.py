@@ -79,13 +79,26 @@ FY_BY_STEM: Final[dict[str, str]] = {
     "208283": "2082/83",
 }
 
-# Books whose text layer reconciles end-to-end (ship now).
-RECONCILABLE_FYS: Final[frozenset[str]] = frozenset({"2078/79", "2079/80"})
-# Books with no usable numeric text layer (Surya-OCR-only; deferred until OCR
-# reconciles per ADR-0021).
-SCANNED_FYS: Final[frozenset[str]] = frozenset(
-    {"2074/75", "2075/76", "2077/78", "2080/81", "2081/82", "2082/83"},
+# Books whose text layer reconciles end-to-end with the 14-column detail model
+# (8- OR 9-digit leading codes). Each verified 753/753 rows AND the 753 grand
+# totals summing to the printed ``स्थानीय तह`` document total to the rupee.
+# (FY2082/83 also lives here via the XLSX feed; the PDF is a redundant copy and
+# is not re-ingested — running the CLI on it would only skip-dup.)
+RECONCILABLE_FYS: Final[frozenset[str]] = frozenset(
+    {"2078/79", "2079/80", "2080/81", "2081/82", "2082/83"},
 )
+# Books with a text layer but a DIFFERENT detail layout (not the 14-column
+# model) — recovery pending a per-edition adapter. parse() refuses them rather
+# than risk mis-mapping columns (honest failure; never ship mis-parsed data):
+#   * 2074/75, 2075/76 — early fiscal-federalism format: 7-digit code + ~5
+#     value columns (fewer grant types existed then), larger unit.
+#   * 2076/77 — richer text layer with a different code/column geometry.
+DEFERRED_LAYOUT_FYS: Final[frozenset[str]] = frozenset(
+    {"2074/75", "2075/76", "2076/77"},
+)
+# Genuinely image-only scans (no usable numeric text layer) — Surya-OCR-only,
+# deferred until OCR output reconciles per ADR-0021.
+SCANNED_FYS: Final[frozenset[str]] = frozenset({"2077/78"})
 
 # ── Column model ──────────────────────────────────────────────────────────
 # The detail tables have 14 numeric columns. Index → meaning:
@@ -208,26 +221,38 @@ def _nearest_column(x: float) -> int:
     return best
 
 
-def _crosswalk_code(code9: str) -> str | None:
-    """9-digit PDF code -> 8-digit federal code (strip trailing '3').
+def _crosswalk_code(code: str) -> str | None:
+    """PDF local-level code -> 8-digit federal code (== entities.slug).
 
-    Returns None when the code doesn't fit the verified pattern (9 digits,
-    starts '80', trailing '3').
+    Two edition formats, both verified 753/753 against the seeded slugs:
+      * 9-digit (FY2078/79, 2079/80): 8-digit federal code + trailing '3' →
+        strip the trailing '3'.
+      * 8-digit (FY2080/81, 2081/82, 2082/83): already the federal code →
+        identity.
+    Returns None when the code fits neither verified pattern.
     """
-    if len(code9) != _PDF_CODE_LEN or not code9.startswith("80") or code9[-1] != "3":
+    if not code.isdigit() or not code.startswith("80"):
         return None
-    return code9[:-1]
+    if len(code) == _PDF_CODE_LEN and code[-1] == "3":
+        return code[:-1]
+    if len(code) == _FEDERAL_CODE_LEN:
+        return code
+    return None
 
 
 @dataclass
 class _RawRow:
-    code9: str
+    code: str  # 8- or 9-digit leading local-level code (edition-dependent)
     col_vals: dict[int, str]
     page_number: int
 
 
 def _extract_text_layer_rows(doc: FitzDocument) -> list[_RawRow]:
-    """Pull every local-level row from the PDF text layer, by x-position."""
+    """Pull every local-level row from the PDF text layer, by x-position.
+
+    The leading row code is 8 digits (FY2080/81+) or 9 digits (FY2078/79,
+    2079/80); both start ``80`` and sit in the left ``_CODE_MAX_X`` band.
+    """
     rows: list[_RawRow] = []
     for pno in range(doc.page_count):
         by_y: dict[int, list[tuple[float, str]]] = {}
@@ -236,25 +261,25 @@ def _extract_text_layer_rows(doc: FitzDocument) -> list[_RawRow]:
             by_y.setdefault(round(y0 / _Y_BUCKET) * _Y_BUCKET, []).append((x0, text))
         for y in sorted(by_y):
             items = sorted(by_y[y])
-            code9: str | None = None
+            code: str | None = None
             for x, t in items:
                 if (
                     x < _CODE_MAX_X
                     and t.isdigit()
-                    and len(t) == _PDF_CODE_LEN
+                    and len(t) in (_FEDERAL_CODE_LEN, _PDF_CODE_LEN)
                     and t.startswith("80")
                 ):
-                    code9 = t
+                    code = t
                     break
-            if code9 is None:
+            if code is None:
                 continue
             col_vals: dict[int, str] = {}
             for x, t in items:
-                if t == code9:
+                if t == code:
                     continue
                 if _is_value_token(t):
                     col_vals[_nearest_column(x)] = t
-            rows.append(_RawRow(code9=code9, col_vals=col_vals, page_number=pno))
+            rows.append(_RawRow(code=code, col_vals=col_vals, page_number=pno))
     return rows
 
 
@@ -352,6 +377,17 @@ def parse(
         })
         return _result("failure", [], errors, None)
 
+    if fy in DEFERRED_LAYOUT_FYS:
+        errors.append({
+            "error_class": "PageLayoutChanged",
+            "error_detail": (
+                f"FY{fy} has a text layer but a different detail layout (not the 14-column "
+                "model) — recovery pending a per-edition adapter. Refusing to mis-map columns."
+            ),
+            "source_excerpt": None,
+        })
+        return _result("failure", [], errors, None)
+
     doc = fitz.open(str(path))
     try:
         raw_rows = _extract_text_layer_rows(doc)
@@ -368,12 +404,12 @@ def parse(
     method = "surya-ocr+textlayer-xcheck" if surya_xcheck else "textlayer"
 
     for raw in raw_rows:
-        code8 = _crosswalk_code(raw.code9)
+        code8 = _crosswalk_code(raw.code)
         if code8 is None:
             failed += 1
             errors.append({
                 "error_class": "RegexMismatch",
-                "error_detail": f"code {raw.code9!r} does not fit the 9->8 crosswalk",
+                "error_detail": f"code {raw.code!r} does not fit the 8/9-digit crosswalk",
                 "source_excerpt": None,
             })
             continue

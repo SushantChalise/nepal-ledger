@@ -29,7 +29,7 @@
 |---|--:|---|
 | `census_facts` | 531,618 | 753 palikas (full federal coverage; NPHC 2021) |
 | `dne_facts` | 106,989 | dimensional facts (trade, customs, migrant, provincial GDP, SOE, budget) |
-| `local_government_fiscal_transfers` | 18,056 | **3 FYs** (2078/79, 2079/80, 2082/83) — 6 scanned FYs still deferred (OCR) |
+| `local_government_fiscal_transfers` | 30,104 | **5 FYs** (2078/79–2082/83) — 3 text-layer FYs pending layout adapters + 1 scanned (2077/78) pending OCR |
 | `banking_sector_facts` | 2,088 | 58 months (Ashadh 2078 → Shrawan 2082) |
 | `foreign_aid_facts` | 1,020 | 7 fiscal years (gaps — see §3) |
 | `approved_indicator_values` | 877 | 103 single-series indicators |
@@ -60,7 +60,7 @@
 | **Foreign aid** | `foreign_aid_facts` (donor + sector) | **7 FY w/ gaps** (see §3) | B | ⚠️ gaps |
 | **Public enterprises** | `soe-government-share`, `soe-loan-principal` | **1 FY (2080/81)**, equity+loan only | B | ⚠️ revenue/profit deferred |
 | **Federal budget** | `budget-allocation-{total,recurrent,capital}` × budget-head | **1 FY (2074/75)**, 57 heads | B | ⚠️ single year |
-| **Fiscal transfers** | `local_government_fiscal_transfers` | **3 FY (2078/79, 2079/80, 2082/83)**, 18,056 rows | A/B | ✅ deepened 2026-06-08 (Stream 2); 6 scanned FYs deferred (OCR) |
+| **Fiscal transfers** | `local_government_fiscal_transfers` | **5 FY (2078/79–2082/83)**, 30,104 rows | A/B | ✅ deepened 2026-06-08 (Stream 2 + deterministic multi-edition recovery); 3 text-layer FYs pending adapters + 1 scanned FY pending OCR |
 | **Census** | `census_facts` | 531,618 rows, 753 palikas (NPHC 2021) | A | ✅ full |
 | **Banking** | `banking_sector_facts` | 58 months (2078→2082) | A | ✅ |
 | **CMEFs (NRB monthly)** | 78 NCPI categories + 7 headline | **1 snapshot only** (FY2082/83 9-month) | A | ⚠️ single period — monthly history not ingested |
@@ -110,7 +110,13 @@ These are the cross-checks that prove a number is trustworthy. **All pass except
 ## 6. Known gaps & deferred corpus (what is NOT yet in the truth layer)
 
 **Deferred PDFs (Tier-2 Surya OCR, ADR-0021/0022 — harness built + banked):**
-- **Historical intergovernmental fiscal transfers** — ✅ FY2078/79 + FY2079/80 RECOVERED 2026-06-08 (Stream 2): text-layer values, 753/753 reconcile to the printed `स्थानीय तह` document total to the rupee, 6,024 rows each, `npr_crore`, confidence B, `extraction_method=textlayer`. ⚠️ The remaining **6 FYs (2074/75, 2075/76, 2077/78, 2080/81, 2081/82, 2082/83-pdf) are scanned** (no usable numeric text layer) → genuine Surya-OCR territory, deferred until OCR output reconciles per the ADR-0021 gate (the harness is ready). **The Surya GPU path is now VALIDATED end-to-end on real data** (2026-06-08): the `--surya` CLI runs the full render→tile→detect→recognize→stitch→reconstruct pipeline on a real intergovernmental page in ~30s (incl. model load), emitting a valid UTF-8 JSON `ocr_tracking` payload (e.g. FY2079/80 p.1: 2 tiles, 533 cells, 14 stitch disagreements, mean line-confidence 0.836). Two enablement fixes landed: the bare-script relative-import (`from ..` → absolute + `sys.path` bootstrap) and UTF-8 stdout (Devanagari `text_raw` would otherwise crash cp1252 on Windows); plus a `--max-pages` bound for smoke/incremental runs. **Remaining (deferred, optional):** (a) the live `ocr_tracking` ingest run for the 2 text-layer FYs (~10–15 min/FY GPU + would create a 2nd `source_document` per FY unless the text-layer rows are deleted + re-ingested with `--surya`); (b) wiring `value_cells_agreeing` (the cell-vs-text-layer value-agreement count is currently 0 — a documented Node-side enhancement); (c) the 6 scanned FYs (the real missing data — needs scanned-book OCR→rows→reconcile, no text-layer crutch). The shipped DATA does not depend on any of these (text-layer values already reconcile + ship).
+- **Historical intergovernmental fiscal transfers** — ✅ **5 of the 8 historical FYs RECOVERED** (2026-06-08), all deterministic text-layer + reconciled to the rupee, 6,024 rows each, `npr_crore`, confidence B, `extraction_method=textlayer`:
+  - FY2078/79 + FY2079/80 (Stream 2, 9-digit codes); FY2080/81 + FY2081/82 (8-digit codes, same 14-column model). (FY2082/83 already present via the XLSX feed; its PDF is a redundant copy, not re-ingested.)
+  - **Correction to the earlier "6 scanned" claim** (a do-not-assume lesson): re-inspecting the bytes, **only FY2077/78 is genuinely scanned** (0 numeric tokens/page). The others all have rich text layers — the earlier worker mis-attributed "the template parser failed" as "scanned" without checking. Still pending:
+    - **FY2074/75 + FY2075/76** — text layer present but an *early* layout (7-digit code + ~5 value columns; fewer grant types existed; larger unit) → needs a per-edition adapter (Tier-0/1 deterministic, NOT OCR).
+    - **FY2076/77** — text layer present but a different code/column geometry → needs an adapter.
+    - **FY2077/78** — genuinely scanned → Surya OCR (the harness is built + validated end-to-end on real data; see below).
+- **Surya GPU path VALIDATED end-to-end** (2026-06-08): the `--surya` CLI runs the full render→tile→detect→recognize→stitch→reconstruct pipeline on a real intergovernmental page in ~30s (incl. model load), emitting valid UTF-8 JSON `ocr_tracking` (e.g. FY2079/80 p.1: 2 tiles, 533 cells, 14 stitch disagreements, mean line-confidence 0.836). Enablement fixes landed (bare-script absolute import + `sys.path` bootstrap; UTF-8 stdout for Devanagari; `--max-pages` bound). Reserved for the one genuinely-scanned FY (2077/78) + optional `ocr_tracking` provenance passes; the 5 recovered FYs use exact text-layer values, not OCR.
 - **Full Yellow Book SOE financials** — revenue, profit/loss, paid-up capital (we have only equity + loan, 1 FY).
 - **Economic Survey macro annex** — GDP-levels / GVA-by-sector / fiscal detail (RTL-mirror; OCR-of-visual-page is the route — headline GDP/CPI already covered by DNE).
 - **Preeti/CID redbook + remaining whitebook editions** — more budget years + the aid-year gaps.

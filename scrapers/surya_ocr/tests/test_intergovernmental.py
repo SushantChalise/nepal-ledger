@@ -18,20 +18,30 @@ from surya_ocr.parsers import intergovernmental as ig
 # ── Crosswalk + helpers ─────────────────────────────────────────────────────
 
 def test_crosswalk_strips_trailing_three() -> None:
+    # 9-digit editions (FY2078/79, 2079/80): strip the trailing '3'.
     assert ig._crosswalk_code("801011013") == "80101101"
     assert ig._crosswalk_code("801013093") == "80101309"
 
 
-def test_crosswalk_rejects_8_digit() -> None:
-    assert ig._crosswalk_code("80101101") is None
+def test_crosswalk_8_digit_is_identity() -> None:
+    # 8-digit editions (FY2080/81, 2081/82, 2082/83): already the federal code.
+    assert ig._crosswalk_code("80101101") == "80101101"
+    assert ig._crosswalk_code("80101309") == "80101309"
 
 
-def test_crosswalk_rejects_wrong_trailing() -> None:
+def test_crosswalk_rejects_9_digit_wrong_trailing() -> None:
+    # 9 digits not ending in '3' fits neither pattern.
     assert ig._crosswalk_code("801011011") is None
 
 
 def test_crosswalk_rejects_wrong_prefix() -> None:
     assert ig._crosswalk_code("701000113") is None
+    assert ig._crosswalk_code("70100011") is None  # 8-digit, wrong prefix
+
+
+def test_crosswalk_rejects_bad_length() -> None:
+    assert ig._crosswalk_code("8010110") is None  # 7 digits
+    assert ig._crosswalk_code("8010110133") is None  # 10 digits
 
 
 def test_num_parses_nepali_grouping() -> None:
@@ -203,8 +213,12 @@ _CORPUS = Path(
 @pytest.mark.parametrize(
     ("stem", "fy", "expected_total_lakh"),
     [
+        # 9-digit-code editions.
         ("207879", "2078/79", 2830147.0),
         ("207980", "2079/80", 3003716.0),
+        # 8-digit-code editions (same 14-column model; verified 753/753).
+        ("208081", "2080/81", 2950202.0),
+        ("208182", "2081/82", 3124261.0),
     ],
 )
 def test_real_pdf_document_total_reconciles(
@@ -226,8 +240,18 @@ def test_real_pdf_document_total_reconciles(
     assert len(res["rows"]) == 753 * 8
 
 
-@pytest.mark.parametrize("stem", ["207475", "208283"])
-def test_real_pdf_scanned_fy_deferred(stem: str) -> None:
+@pytest.mark.parametrize(
+    "stem",
+    [
+        "207475",  # deferred layout (early 7-digit / ~5-col format)
+        "207576",  # deferred layout
+        "207677",  # deferred layout (different code/column geometry)
+        "207778",  # genuinely scanned (no numeric text layer)
+    ],
+)
+def test_real_pdf_unsupported_fy_refused(stem: str) -> None:
+    """Both genuinely-scanned and different-layout text-layer FYs are refused
+    (status=failure, no rows) — the parser never mis-maps columns."""
     pdf = _CORPUS / f"{stem}.pdf"
     if not pdf.exists():
         pytest.skip(f"corpus PDF absent: {pdf}")
