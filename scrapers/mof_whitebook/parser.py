@@ -28,10 +28,20 @@ indices):
          Payment | Commodity | TOTAL GRANT | Direct Payment | Reimbursable | Cash
          | TOTAL LOAN | Total``. This parser extracts the two headline measures —
          **Total Grant** and **Total Loan** — per dimension member.
-      2. LEGACY PREETI editions (FY 2062/63, 2064/65, 2065/66, 2067/68): the text
-         layer is a Preeti font byte-map (e.g. ``dGqfnout`` = "मन्त्रालयगत"), not
-         Unicode. Un-mapping it is reverse-engineering a font (the OCR/translit
-         ADR-0003 forbids). **Deferred.**
+      2. LEGACY PREETI/SIDDHI editions (FY 2062/63, 2064/65, 2065/66, 2066/67,
+         2067/68 = AD 2005/06–2010/11): the text layer is a legacy 8-bit Nepali
+         font byte-map. The COVER is Preeti (``dGqfnout`` = "मन्त्रालयगत"); the two
+         SUMMARY TABLES are typeset in **SiddhiNormal** (a Preeti-family face that
+         shares Preeti's consonant/vowel layout but paints Arabic digits on the
+         ASCII digit row and relocates a few retroflex glyphs). This is
+         **deterministically recoverable** (ADR-0021 Tier 1a) by the byte-map +
+         reordering in ``_common/preeti.py`` — NOT OCR, NOT AI. The summary-table
+         GEOMETRY is identical to the clean editions (same 12-/13-column block),
+         so only the LABEL cells need transliteration; the VALUE cells are already
+         ASCII Arabic digits. Recovered with confidence ``B`` (see
+         ``_parse_legacy_edition``). The unit is stamped in Devanagari
+         (``(रू.हजारमा)`` = Rs in thousand → ``npr_thousand``) and the BS fiscal
+         year is printed as ASCII digits in the caption (``2065/66``).
       3. A MISLABELLED file ("...White Book FY 2021-22_azz4yjf.pdf") whose content
          is actually the **Intergovernmental Fiscal Transfer** book (Devanagari)
          and is **CID-broken** (``(cid:N)`` glyphs, no ToUnicode). Not a White
@@ -87,14 +97,16 @@ from typing import Any, Final
 
 import pdfplumber
 
+from _common.devanagari_normalization import normalize_devanagari_text
 from _common.periods import (
     fiscal_year_ad_label,
     fiscal_year_label,
     mid_month_ad,
 )
+from _common.preeti import legacy_font_for, to_unicode
 from _common.types import ParserError, ParserStatus, ReportingPeriodType
 
-PARSER_VERSION: Final[str] = "0.1.0"
+PARSER_VERSION: Final[str] = "0.2.0"
 # Registered source id. PROPOSED this batch — Mother seeds the registry row
 # (`mof-whitebook-foreign-aid`); not yet present in seed-source-registry.ts.
 SOURCE_ID: Final[str] = "mof-whitebook-foreign-aid"
@@ -138,6 +150,14 @@ _UNIT_THOUSAND_RE: Final = re.compile(
 )
 
 
+# Devanagari unit annotation (legacy editions stamp "(रू.हजारमा)" = Rs in
+# thousand, or "(रू.लाखमा)" = Rs in lakh) — matched on the TRANSLITERATED page
+# text. हजार = thousand, लाख = lakh. Kept separate from the English forms above so
+# the clean-edition path is untouched.
+_UNIT_DEV_LAKH_RE: Final = re.compile(r"लाख")
+_UNIT_DEV_THOUSAND_RE: Final = re.compile(r"हजार")
+
+
 def detect_unit(page_text: str) -> str | None:
     """Return the emitted unit string for a summary-table page, or None.
 
@@ -148,6 +168,20 @@ def detect_unit(page_text: str) -> str | None:
     if _UNIT_LAKH_RE.search(page_text):
         return _UNIT_NPR_LAKH
     if _UNIT_THOUSAND_RE.search(page_text):
+        return _UNIT_NPR_THOUSAND
+    return None
+
+
+def detect_unit_devanagari(decoded_text: str) -> str | None:
+    """Return the unit for a legacy edition from its TRANSLITERATED page text.
+
+    The Preeti/Siddhi editions stamp the unit in Devanagari (``(रू.हजारमा)`` /
+    ``(रू.लाखमा)``). Lakh (लाख) is checked first by symmetry with ``detect_unit``.
+    Returns None when neither marker is present.
+    """
+    if _UNIT_DEV_LAKH_RE.search(decoded_text):
+        return _UNIT_NPR_LAKH
+    if _UNIT_DEV_THOUSAND_RE.search(decoded_text):
         return _UNIT_NPR_THOUSAND
     return None
 
@@ -182,6 +216,34 @@ def detect_ad_fiscal_year(text: str) -> int | None:
     return _full_year_lead(int(m.group(1)), int(m.group(2)))
 
 
+# Legacy editions print the BS fiscal year as plain ASCII digits in the caption
+# (the summary-table caption decodes to "आर्थिक वर्ष 2065/66" with 2065/66 already
+# ASCII). BS lead years are 20xx (2062..2067 in-corpus). The tail is validated ==
+# (lead+1) mod 100, same discipline as the AD detector.
+_BS_FY_RE: Final = re.compile(r"\b(20\d{2})\s*[/-]\s*(\d{2})\b")
+# Plausible BS fiscal-year window for the White-Book corpus (BS 2060..2090 ≈ AD
+# 2003..2033). Excludes a stray AD year like 2015 that would also match \b20\d\d.
+_BS_FY_MIN: Final[int] = 2060
+_BS_FY_MAX: Final[int] = 2090
+
+
+def detect_bs_fiscal_year(text: str) -> int | None:
+    """Return the BS fiscal-year lead year from a legacy edition's ASCII caption.
+
+    Scans for a ``20YY/YY`` pair, validates the tail == (lead+1) mod 100, and
+    requires the lead to fall inside the BS White-Book window so an AD year
+    (e.g. a publication "2015") is not misread as a BS fiscal year. Returns the
+    first plausible BS lead year, or None.
+    """
+    for m in _BS_FY_RE.finditer(text):
+        lead = int(m.group(1))
+        if lead < _BS_FY_MIN or lead > _BS_FY_MAX:
+            continue
+        if _full_year_lead(lead, int(m.group(2))) is not None:
+            return lead
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Table-caption anchors. The REAL summary tables co-occur with the unit
 # annotation on the page; the Table-of-Contents page carries the captions but no
@@ -197,6 +259,13 @@ _PARTNERWISE_RE: Final = re.compile(
     r"(?:Development\s+Partner\w*\s*(?:\(?DPs\)?\s*)?Summary|\bDonor\s+Summary\b)",
     re.IGNORECASE,
 )
+
+# Devanagari caption anchors for the legacy editions (matched on TRANSLITERATED
+# page text). मन्त्रालयगत = "Ministrywise" (sector table); दातृ = "donor" (दातृगत
+# सारांश / दातृ राष्ट्र-संस्था — both head the per-donor table). Verified across
+# the in-corpus FY2062/63..2067/68 editions.
+_MINISTRYWISE_DEV_RE: Final = re.compile(r"मन्त्रालयगत")
+_PARTNERWISE_DEV_RE: Final = re.compile(r"दातृ")
 
 # Dimension kinds.
 _KIND_DONOR: Final[str] = "donor"
@@ -508,6 +577,94 @@ def _largest_table(page: object) -> list[list[object]] | None:
     return max(tables, key=len)
 
 
+# ---------------------------------------------------------------------------
+# Legacy-font (Preeti/Siddhi) recovery — ADR-0021 Tier 1a.
+# ---------------------------------------------------------------------------
+
+# Minimum share of legacy-font glyphs on a page to treat it as a legacy edition.
+# The summary-table pages are ~95% Siddhi (a few Latin column-rule glyphs); 0.5
+# is a safe floor that still excludes the clean English editions (0% legacy).
+_LEGACY_DOMINANCE_THRESHOLD: Final[float] = 0.5
+# Only the LABEL columns (member name + total-row marker) are legacy text; the
+# value cells are ASCII Arabic digits. Transliterating cols 0–1 leaves the
+# numeric value columns untouched (digits pass straight through every map).
+_LEGACY_LABEL_COLS: Final[tuple[int, ...]] = (0, 1)
+
+
+def _summary_table_for_spec(
+    page: object, spec: _TableSpec
+) -> list[list[object]] | None:
+    """Return the legacy page's summary table for ``spec``, or None.
+
+    The legacy summary table has the SAME stable geometry as the clean editions:
+    the donor table is exactly 12 columns and the ministrywise table 13. Late
+    project-detail / annex pages in the legacy books also carry the donor caption
+    and unit, but pdfplumber fragments them into wide (18–20 col) tables with no
+    coherent code-led data rows. Selecting the largest-by-rows table **whose max
+    width equals the spec's column count** picks the true summary and rejects the
+    fragmented project pages deterministically (no heuristics, no page-order
+    assumptions). Falls back to None when the page has no spec-width table.
+    """
+    tables: list[list[list[object]]] = page.extract_tables()  # type: ignore[attr-defined]
+    qualifying = [
+        t for t in tables if t and max(len(r) for r in t) == spec.min_cols
+    ]
+    if not qualifying:
+        return None
+    return max(qualifying, key=len)
+
+
+def _dominant_legacy_font(page: object) -> str | None:
+    """Return the legacy char-map name if a page is >50% legacy-font glyphs.
+
+    Counts ``page.chars`` by ``fontname`` class (``_common.preeti.legacy_font_for``)
+    and returns the dominant legacy map name when legacy glyphs clear the
+    threshold, else None (a clean-Unicode/Latin page). Used to route a page to the
+    Tier-1a transliteration branch.
+    """
+    chars: list[dict[str, object]] = getattr(page, "chars", [])  # type: ignore[assignment]
+    if not chars:
+        return None
+    legacy = 0
+    counts: dict[str, int] = {}
+    for ch in chars:
+        font = ch.get("fontname")
+        map_name = legacy_font_for(font if isinstance(font, str) else None)
+        if map_name is not None:
+            legacy += 1
+            counts[map_name] = counts.get(map_name, 0) + 1
+    if not counts or legacy / len(chars) < _LEGACY_DOMINANCE_THRESHOLD:
+        return None
+    return max(counts, key=lambda k: counts[k])
+
+
+def _decode_legacy(text: str, font: str) -> str:
+    """Transliterate legacy-font text to Unicode, then apply the Devanagari
+    OCR-substitution normalization pass (ADR-0021 sequencing: translit → normalize).
+    """
+    return normalize_devanagari_text(to_unicode(text, font))
+
+
+def _transliterate_label_columns(
+    table: list[list[object]], font: str
+) -> list[list[object]]:
+    """Return a copy of ``table`` with the label columns (0,1) transliterated.
+
+    Only the member-name / total-marker columns carry legacy text; the value
+    columns are ASCII digits and are copied verbatim (numbers must NOT be touched
+    — ADR-0021 prioritizes value-correctness). The decoded label keeps its raw
+    form's information so ``_slugify_member`` / ``dimension_label`` stay meaningful.
+    """
+    out: list[list[object]] = []
+    for row in table:
+        new_row = list(row)
+        for col in _LEGACY_LABEL_COLS:
+            if col < len(new_row) and isinstance(new_row[col], str):
+                new_row[col] = _decode_legacy(new_row[col], font)
+        out.append(new_row)
+    return out
+
+
 def parse_whitebook(source_document_path: str, source_document_id: str) -> WhitebookResult:
     """Parse one White Book PDF → foreign-aid dimensional facts (ADR-0017).
 
@@ -515,10 +672,19 @@ def parse_whitebook(source_document_path: str, source_document_id: str) -> White
     detected unit annotation (which the Table-of-Contents page lacks), extracts
     that table and emits per-member ``foreign-aid-grant`` / ``foreign-aid-loan``
     facts. The donor table → ``dimension_kind='donor'``; the ministrywise table →
-    ``dimension_kind='sector'``. The AD fiscal year is read from the cover / table
-    caption and converted to BS via +57. Never raises on bad data: an
-    unreadable / Preeti / CID / mislabelled edition yields typed errors and
-    ``status='failure'``.
+    ``dimension_kind='sector'``.
+
+    Two encodings are handled (ADR-0021):
+      * CLEAN editions — English captions; AD fiscal year ("Fiscal Year YYYY/YY")
+        → BS via +57; unit from the English annotation.
+      * LEGACY Preeti/Siddhi editions (Tier 1a) — a page that is >50% legacy-font
+        glyphs is transliterated via ``_common.preeti``; captions/unit are matched
+        on the Devanagari decode, the BS fiscal year is read from the ASCII digits
+        in the decoded caption (already BS — no offset), and only the LABEL columns
+        are transliterated (value cells are ASCII and copied verbatim).
+
+    Never raises on bad data: an unreadable / CID-broken / mislabelled edition
+    yields typed errors and ``status='failure'``.
     """
     _ = source_document_id  # threaded for orchestrator-contract symmetry
 
@@ -543,53 +709,100 @@ def parse_whitebook(source_document_path: str, source_document_id: str) -> White
     try:
         with pdfplumber.open(str(path)) as pdf:
             page_texts = [page.extract_text() or "" for page in pdf.pages]
+            # Per-page legacy-font map name (None for clean-Unicode pages). A whole
+            # legacy summary page is one font class, so we transliterate its
+            # extract_text() with that map for caption/unit/FY detection (ADR-0021).
+            page_fonts = [_dominant_legacy_font(page) for page in pdf.pages]
+            page_decoded = [
+                _decode_legacy(text, font) if font else text
+                for text, font in zip(page_texts, page_fonts, strict=True)
+            ]
 
-            # First pass: detect the AD fiscal year ANYWHERE in the document. The
-            # ministrywise page can lack the English "Fiscal Year YYYY/YY" label
-            # while the donor pages carry it (older editions), so we read the whole
-            # document before dating any fact (ADR-0011 "read the document").
-            ad_fy_start: int | None = None
+            # First pass: date the document ONCE (ADR-0011 "read the document").
+            # Clean editions carry an English "Fiscal Year YYYY/YY" (AD → +57 to
+            # BS); legacy editions carry the BS fiscal year as ASCII digits in the
+            # decoded caption (already BS — no offset). Prefer the AD label when
+            # present so a clean edition's behaviour is unchanged.
+            bs_fy_start_doc: int | None = None
             for text in page_texts:
-                detected_fy = detect_ad_fiscal_year(text)
-                if detected_fy is not None:
-                    ad_fy_start = detected_fy
+                ad_fy = detect_ad_fiscal_year(text)
+                if ad_fy is not None:
+                    bs_fy_start_doc = _ad_fy_to_bs_start(ad_fy)
                     break
+            if bs_fy_start_doc is None:
+                # Read the BS year from the RAW text: the legacy caption prints the
+                # year as ASCII Arabic digits ("...jif{{2065/66"), so the year +
+                # "/" survive verbatim. (Transliteration would turn "/" into र.)
+                for text, font in zip(page_texts, page_fonts, strict=True):
+                    if font is None:
+                        continue
+                    bs_fy = detect_bs_fiscal_year(text)
+                    if bs_fy is not None:
+                        bs_fy_start_doc = bs_fy
+                        break
 
-            # Second pass: extract the summary tables.
-            for page, text in zip(pdf.pages, page_texts, strict=True):
-                has_ministrywise = bool(_MINISTRYWISE_RE.search(text))
-                has_partnerwise = bool(_PARTNERWISE_RE.search(text))
+            # Second pass: extract the summary tables (clean and legacy paths).
+            for page, raw, decoded, font in zip(
+                pdf.pages, page_texts, page_decoded, page_fonts, strict=True
+            ):
+                is_legacy = font is not None
+                caption_text = decoded if is_legacy else raw
+                has_ministrywise = bool(
+                    (_MINISTRYWISE_DEV_RE if is_legacy else _MINISTRYWISE_RE).search(
+                        caption_text
+                    )
+                )
+                has_partnerwise = bool(
+                    (_PARTNERWISE_DEV_RE if is_legacy else _PARTNERWISE_RE).search(
+                        caption_text
+                    )
+                )
                 if not (has_ministrywise or has_partnerwise):
                     continue
-                unit = detect_unit(text)
+                unit = (
+                    detect_unit_devanagari(decoded) if is_legacy else detect_unit(raw)
+                )
                 if unit is None:
                     # Caption but no unit annotation → Table-of-Contents page.
                     continue
-
-                table = _largest_table(page)
-                if table is None:
-                    continue
-
-                # The fiscal year must be known to date the facts.
-                page_fy = ad_fy_start if ad_fy_start is not None else detect_ad_fiscal_year(text)
-                if page_fy is None:
-                    all_errors.append(
-                        ParserError(
-                            error_class="PeriodAmbiguous",
-                            error_detail=(
-                                "summary table found but no 'Fiscal Year YYYY/YY' "
-                                "label located anywhere in the document — cannot "
-                                "date the facts"
-                            ),
-                        )
-                    )
-                    continue
-                bs_fy_start = _ad_fy_to_bs_start(page_fy)
 
                 # A page may legitimately carry both captions (the donor table can
                 # follow the ministrywise summary on one page); prefer the donor
                 # spec when partnerwise is present so its narrower geometry wins.
                 spec = _DONOR_SPEC if has_partnerwise else _SECTOR_SPEC
+
+                # Clean editions: largest table (status quo). Legacy editions: the
+                # spec-WIDTH table, which rejects the wide fragmented project-detail
+                # pages that also carry the caption+unit (ADR-0021 geometry guard).
+                table = (
+                    _summary_table_for_spec(page, spec)
+                    if is_legacy
+                    else _largest_table(page)
+                )
+                if table is None:
+                    continue
+                if is_legacy and font is not None:
+                    # Transliterate ONLY the label columns; values stay ASCII.
+                    table = _transliterate_label_columns(table, font)
+
+                # The fiscal year must be known to date the facts. Legacy pages may
+                # also carry the BS year (ASCII) in their own raw caption.
+                page_fy = bs_fy_start_doc
+                if page_fy is None and is_legacy:
+                    page_fy = detect_bs_fiscal_year(raw)
+                if page_fy is None:
+                    all_errors.append(
+                        ParserError(
+                            error_class="PeriodAmbiguous",
+                            error_detail=(
+                                "summary table found but no fiscal-year label located "
+                                "anywhere in the document — cannot date the facts"
+                            ),
+                        )
+                    )
+                    continue
+                bs_fy_start = page_fy
+
                 summary_pages += 1
                 page_rows, page_errors = extract_dimensional_rows(
                     table, spec, unit, bs_fy_start
@@ -614,11 +827,11 @@ def parse_whitebook(source_document_path: str, source_document_id: str) -> White
             ParserError(
                 error_class="PageLayoutChanged",
                 error_detail=(
-                    "No clean English summary table (with a unit annotation) found "
-                    "on any page — this edition is likely Preeti-encoded, CID-broken,"
-                    " or a mislabelled non-White-Book document. Documented "
-                    "infeasibility per ADR-0017; no values fabricated. See "
-                    "scrapers/mof_whitebook/parser.py STEP-0 assessment."
+                    "No summary table (with a unit annotation) found on any page — "
+                    "neither a clean English nor a legacy Preeti/Siddhi edition. This "
+                    "edition is likely CID-broken or a mislabelled non-White-Book "
+                    "document. Documented infeasibility per ADR-0017/0021; no values "
+                    "fabricated. See scrapers/mof_whitebook/parser.py STEP-0 assessment."
                 ),
             )
         )
