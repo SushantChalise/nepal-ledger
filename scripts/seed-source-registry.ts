@@ -712,11 +712,13 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     requiresTableExtraction: true,
     licenseStatus: 'gov_open',
     confidenceDefault: 'A',
-    status: 'paused',
+    status: 'active',
     ingestionMode: 'manual_upload',
     tier: 4,
     notes:
-      'Budget Watch. In-repo corpus at Financial Data/mof_documents/redbook/. Heavy OCR target (mostly Nepali).',
+      'Budget Watch. In-repo corpus at Financial Data/mof_documents/redbook/. ' +
+      'Active: the clean Unicode edition (Central FY2074/75 appropriation summary) → dne_facts ' +
+      'budget-allocation by budget-head via ingest:redbook. Preeti/CID editions deferred (Tier-1a Preeti / Tier-2 Surya, ADR-0021).',
   },
   {
     sourceId: 'fepb-manpower-companies',

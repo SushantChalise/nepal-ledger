@@ -32,6 +32,7 @@
     "ingest:economic-survey": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-economic-survey.ts",
     "ingest:customs-trade": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-customs-trade.ts",
     "ingest:whitebook": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-whitebook.ts",
+    "ingest:redbook": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-redbook.ts",
     "ingest:census-2021": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-census-2021.ts",
     "probe:nrb-bfi": "python -m scrapers.nrb_bfi.schema_probe",
     "ingest:bfi-monthly": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-bfi-monthly.ts",
