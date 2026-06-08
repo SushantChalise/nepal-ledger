@@ -8,6 +8,24 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-08 (round 15) — Intergovernmental fiscal transfers: 5 FYs (deterministic multi-edition recovery)
+
+**What changed:** Asked to "tackle the 6 scanned FYs" via OCR, the investigation overturned the premise — **most weren't scanned**. Re-inspecting the bytes (the do-not-assume rule), of the 6 deferred FYs only **FY2077/78 is genuinely image-only**; the rest have exact text layers the template parser simply couldn't read. So they were recovered **deterministically** (text-layer, exact, reconciled) — strictly better than OCR (no digit-error risk).
+
+- **+2 FYs ingested: FY2080/81 + FY2081/82** → `local_government_fiscal_transfers` (18,056 → **30,104 rows; 5 FYs**, 2078/79–2082/83). Each: 753/753 rows reconcile AND the 753 grand totals sum to the printed `स्थानीय तह` document total to the rupee (NPR 295.0bn, 312.4bn); 0 unresolved. (FY2082/83 was already present via the XLSX feed; its PDF is redundant, not re-ingested.)
+- **Edition-aware parser** (minimal): these editions print the bare **8-digit** federal code; FY2078/79+2079/80 print a 9-digit code (federal + trailing '3'). `_crosswalk_code` is now length-aware; the 14-column model + x-anchors fit all four exactly. Honest three-way FY classification: `RECONCILABLE_FYS` (2078/79–2082/83), `DEFERRED_LAYOUT_FYS` (2074/75, 2075/76, 2076/77 — text layer, non-template layout; parse() refuses rather than mis-map), `SCANNED_FYS` (2077/78 only).
+- **3 FYs precisely characterized + deferred (honest blockers, documented in DATA_AUDIT §6):**
+  - **FY2074/75 + FY2075/76 — schema-granularity blocker.** Visually verified: the early books carry 4 **aggregate** grant columns (equalization / conditional / complementary / special + total), NOT the schema's 8 *atomic* sub-types; unit is thousands (not lakh); 7-digit codes need an old→federal crosswalk. Recovering them honestly needs a schema extension (aggregate grant types) + an ADR — never fabricate the atomic split.
+  - **FY2076/77 — complex layout** (landscape, glyphs overprinted 4×, transposed matrix) — deterministic but needs geometry reverse-engineering.
+  - **FY2077/78 — genuinely scanned** → Surya OCR (harness validated; reconciliation of OCR digits is the open risk).
+- **Gates:** 63 surya_ocr pytest, ruff + mypy clean; `pnpm audit:data` F3 = 5 FYs, all reconciliation checks (G1–G4) still pass.
+
+**Live DB:** approved 877 · dne_facts 271,601 · foreign_aid_facts 1,024 · **`local_government_fiscal_transfers` 30,104 (5 FYs)** · census 531,618. Accuracy flags open: **0**.
+
+**Related:** commit `5075478`; DATA_AUDIT §1/§2/§6; ADR-0021/0022. Next decision: schema extension for early aggregate grant years (2074/75–2075/76).
+
+---
+
 ## 2026-06-08 (round 14) — Stream 2 integrated: Tier-2 Surya OCR harness + intergovernmental fiscal-transfer history
 
 **What changed:** Completed the 3rd recovery stream. The reusable Tier-2 Surya OCR harness (`scrapers/surya_ocr/`) is banked, and the **intergovernmental fiscal-transfer history** is extended from 1 FY to 3 — the federal→local money flow (753 local levels × 8 grant types), per ADR-0022's dual-channel design.
