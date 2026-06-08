@@ -40,8 +40,15 @@ $py = 'C:\Users\ACER\AppData\Local\Programs\Python\Python312\python.exe'
 $scr = 'C:\Users\ACER\Projects\Economy\.claude\worktrees\loving-wing-7bdcb4\scrapers'
 $env:PYTHONUTF8=1; $env:PYTHONPATH=$scr; Set-Location $scr
 
-# progress (done / total / errors / per-tier)
+# progress (done / total / errors / per-tier) — one-shot JSON
 & $py -m surya_ocr.batch_ocr status
+
+# LIVE dashboard — auto-refreshing window (pages, rate, ETA, per-tier bars).
+# READ-ONLY (only tails _state files); Ctrl-C closes it, OCR keeps running.
+Start-Process powershell -ArgumentList '-NoExit','-NoProfile','-ExecutionPolicy','Bypass','-File', `
+  "$scr\surya_ocr\watch_dashboard.ps1"
+# ...or inline in the current terminal:
+& $py -m surya_ocr.batch_ocr watch          # --interval 5  --once
 
 # (RE)LAUNCH the supervisor if it ever dies (detached; resumes from checkpoints):
 Start-Process powershell -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File', `

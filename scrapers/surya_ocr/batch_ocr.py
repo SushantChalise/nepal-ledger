@@ -38,6 +38,7 @@ import json
 import os
 import re
 import sys
+import time
 import traceback
 from pathlib import Path
 from typing import Any
@@ -368,6 +369,121 @@ def status() -> dict[str, Any]:
     }
 
 
+# ── Live dashboard (read-only viewer; safe to run alongside the runner) ───
+_STALE_SEC: int = 720  # heartbeat older than this → flag the run as stalled
+_DAYS_CUTOFF_H: int = 48  # show ETA in days beyond this many hours
+_RATE_WINDOW: int = 80  # OK-lines used for the "recent" rate estimate
+_MIN_RATE_SAMPLES: int = 2  # need >=2 timestamps to compute a rate
+
+
+def _parse_progress_rate() -> tuple[float, float, int]:
+    """Return (recent_pps, session_pps, ok_count) from progress.log OK lines."""
+    if not PROGRESS_LOG.exists():
+        return (0.0, 0.0, 0)
+    stamps: list[_dt.datetime] = []
+    for line in PROGRESS_LOG.read_text(encoding="utf-8", errors="ignore").splitlines():
+        if " OK " not in line:
+            continue
+        try:
+            stamps.append(_dt.datetime.fromisoformat(line.split(" ", 1)[0]))
+        except ValueError:
+            continue
+    if len(stamps) < _MIN_RATE_SAMPLES:
+        return (0.0, 0.0, len(stamps))
+
+    def pps(seq: list[_dt.datetime]) -> float:
+        span = (seq[-1] - seq[0]).total_seconds()
+        return (len(seq) - 1) / span if span > 0 else 0.0
+
+    return (pps(stamps[-_RATE_WINDOW:]), pps(stamps), len(stamps))
+
+
+def _fmt_dur(seconds: float | None) -> str:
+    if seconds is None or seconds <= 0:
+        return "—"
+    h, rem = divmod(int(seconds), 3600)
+    m = rem // 60
+    if h >= _DAYS_CUTOFF_H:
+        return f"{h // 24}d {h % 24}h"
+    return f"{h}h {m:02d}m" if h else f"{m}m"
+
+
+def _bar(done: int, total: int, width: int = 28) -> str:
+    filled = int(round((done / total if total else 0.0) * width))
+    return "█" * filled + "░" * (width - filled)
+
+
+def render_dashboard() -> str:
+    st = status()
+    recent_pps, session_pps, _ = _parse_progress_rate()
+    done, total, err = st["pages_done"], st["pages_total"], st["pages_error"]
+    remaining = max(0, total - done - err)
+    hb = st.get("heartbeat") or {}
+    fresh = "?"
+    if hb.get("ts"):
+        try:
+            now = _dt.datetime.now(tz=_dt.UTC)
+            age = (now - _dt.datetime.fromisoformat(hb["ts"])).total_seconds()
+            fresh = f"{int(age)}s ago" + ("  STALE!" if age > _STALE_SEC else "")
+        except ValueError:
+            fresh = str(hb["ts"])
+    cur = hb.get("last_path", "—")
+    if isinstance(cur, str) and "/" in cur:
+        cur = cur.rsplit("/", 1)[-1]
+    done_flag = (STATE_DIR / "DONE").exists()
+    eta_recent = _fmt_dur(remaining / recent_pps if recent_pps else None)
+    eta_avg = _fmt_dur(remaining / session_pps if session_pps else None)
+    rows = [
+        "  NEPAL LEDGER — overnight Surya OCR" + ("   *** COMPLETE ***" if done_flag else ""),
+        "  " + "-" * 58,
+        f"  pages  {_bar(done, total)} {done:>5}/{total}  {st['pct']}%",
+        f"  docs   {st['docs_complete']}/{st['docs_total']} complete    errors {err}",
+        f"  rate   {recent_pps * 60:5.1f} pg/min recent  ·  {session_pps * 60:4.1f} avg",
+        f"  ETA    {eta_recent} recent  ·  {eta_avg} avg   ({remaining} left)",
+        "  " + "-" * 58,
+    ]
+    for tier, v in st["by_tier"].items():
+        tbar = _bar(v["done"], v["pages"], 18)
+        rows.append(f"  {tier} {tbar} {v['done']:>5}/{v['pages']:<5} {v['docs']:>2} docs")
+    rows.extend([
+        "  " + "-" * 58,
+        f"  now    {cur}  p{hb.get('last_page', '?')}  (runner pid {hb.get('pid', '?')})",
+        f"  health heartbeat {fresh}",
+        f"  {_dt.datetime.now(tz=_dt.UTC).isoformat(timespec='seconds')}Z   Ctrl-C to close",
+    ])
+    return "\n".join(rows)
+
+
+def _enable_vt() -> None:
+    """Enable ANSI/VT escape processing on Windows consoles (no-op elsewhere).
+
+    Uses the Win32 SetConsoleMode API directly via ctypes — deliberately NOT
+    ``os.system("")`` (a shell / command-injection sink).
+    """
+    if os.name != "nt":
+        return
+    try:
+        import ctypes  # noqa: PLC0415
+
+        kernel32 = ctypes.windll.kernel32
+        handle = kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
+        mode = ctypes.c_uint()
+        if kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
+            # 0x0004 = ENABLE_VIRTUAL_TERMINAL_PROCESSING
+            kernel32.SetConsoleMode(handle, mode.value | 0x0004)
+    except Exception:  # noqa: BLE001 — cosmetic; the dashboard still works without it
+        pass
+
+
+def watch(interval: int = 5, *, once: bool = False) -> None:
+    _enable_vt()
+    while True:
+        print("\033[H\033[J" + render_dashboard(), flush=True)
+        if once or (STATE_DIR / "DONE").exists():
+            return
+        time.sleep(interval)
+
+
 def _main() -> None:
     if isinstance(sys.stdout, io.TextIOWrapper):
         sys.stdout.reconfigure(encoding="utf-8")
@@ -379,6 +495,9 @@ def _main() -> None:
     runp = sub.add_parser("run", help="drain the queue (model-warm, resumable)")
     runp.add_argument("--max-pages", type=int, default=None, help="stop after N pages (smoke)")
     sub.add_parser("status", help="done/total/errors report (JSON)")
+    watchp = sub.add_parser("watch", help="live dashboard: rate + ETA (read-only)")
+    watchp.add_argument("--interval", type=int, default=5, help="refresh seconds")
+    watchp.add_argument("--once", action="store_true", help="render one frame + exit")
     args = ap.parse_args()
 
     if args.cmd == "manifest":
@@ -399,6 +518,8 @@ def _main() -> None:
             raise
     elif args.cmd == "status":
         print(json.dumps(status(), ensure_ascii=False, indent=2))
+    elif args.cmd == "watch":
+        watch(interval=args.interval, once=args.once)
 
 
 if __name__ == "__main__":
