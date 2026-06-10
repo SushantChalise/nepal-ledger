@@ -16,8 +16,8 @@
       "kind": "income",
       "fy_2078_79_lakh": 5746355,
       "fy_2079_80_lakh": 6610929,
-      "fy_2078_79_crore": 574635.5,
-      "fy_2079_80_crore": 661092.9
+      "fy_2078_79_crore": 57463.55,
+      "fy_2079_80_crore": 66109.29
     },
     {
       "slug": "investment_income",
@@ -25,8 +25,8 @@
       "kind": "income",
       "fy_2078_79_lakh": 339726,
       "fy_2079_80_lakh": 484964,
-      "fy_2078_79_crore": 33972.6,
-      "fy_2079_80_crore": 48496.4
+      "fy_2078_79_crore": 3397.26,
+      "fy_2079_80_crore": 4849.64
     },
     {
       "slug": "other_income",
@@ -34,8 +34,8 @@
       "kind": "income",
       "fy_2078_79_lakh": 244428,
       "fy_2079_80_lakh": 346555,
-      "fy_2078_79_crore": 24442.8,
-      "fy_2079_80_crore": 34655.5
+      "fy_2078_79_crore": 2444.28,
+      "fy_2079_80_crore": 3465.55
     },
     {
       "slug": "total_income",
@@ -43,8 +43,8 @@
       "kind": "total_income",
       "fy_2078_79_lakh": 6330509,
       "fy_2079_80_lakh": 7441747,
-      "fy_2078_79_crore": 633050.9,
-      "fy_2079_80_crore": 744174.7
+      "fy_2078_79_crore": 63305.09,
+      "fy_2079_80_crore": 74417.47
     },
     {
       "slug": "direct_trading_expense",
@@ -52,8 +52,8 @@
       "kind": "expense",
       "fy_2078_79_lakh": 4986655,
       "fy_2079_80_lakh": 5057599,
-      "fy_2078_79_crore": 498665.5,
-      "fy_2079_80_crore": 505759.9
+      "fy_2078_79_crore": 49866.55,
+      "fy_2079_80_crore": 50575.99
     },
     {
       "slug": "staff_expense",
@@ -61,8 +61,8 @@
       "kind": "expense",
       "fy_2078_79_lakh": 264740,
       "fy_2079_80_lakh": 317961,
-      "fy_2078_79_crore": 26474.0,
-      "fy_2079_80_crore": 31796.1
+      "fy_2078_79_crore": 2647.4,
+      "fy_2079_80_crore": 3179.61
     },
     {
       "slug": "admin_expense",
@@ -70,8 +70,8 @@
       "kind": "expense",
       "fy_2078_79_lakh": 89908,
       "fy_2079_80_lakh": 121057,
-      "fy_2078_79_crore": 8990.8,
-      "fy_2079_80_crore": 12105.7
+      "fy_2078_79_crore": 899.08,
+      "fy_2079_80_crore": 1210.57
     },
     {
       "slug": "interest_expense",
@@ -79,8 +79,8 @@
       "kind": "expense",
       "fy_2078_79_lakh": 539089,
       "fy_2079_80_lakh": 789347,
-      "fy_2078_79_crore": 53908.9,
-      "fy_2079_80_crore": 78934.7
+      "fy_2078_79_crore": 5390.89,
+      "fy_2079_80_crore": 7893.47
     },
     {
       "slug": "depreciation_amortization",
@@ -88,8 +88,8 @@
       "kind": "expense",
       "fy_2078_79_lakh": 205828,
       "fy_2079_80_lakh": 237876,
-      "fy_2078_79_crore": 20582.8,
-      "fy_2079_80_crore": 23787.6
+      "fy_2078_79_crore": 2058.28,
+      "fy_2079_80_crore": 2378.76
     },
     {
       "slug": "risk_impairment_expense",
@@ -97,8 +97,8 @@
       "kind": "expense",
       "fy_2078_79_lakh": 34633,
       "fy_2079_80_lakh": 59810,
-      "fy_2078_79_crore": 3463.3,
-      "fy_2079_80_crore": 5981.0
+      "fy_2078_79_crore": 346.33,
+      "fy_2079_80_crore": 598.1
     },
     {
       "slug": "other_expense",
@@ -106,8 +106,8 @@
       "kind": "expense",
       "fy_2078_79_lakh": 122963,
       "fy_2079_80_lakh": 114725,
-      "fy_2078_79_crore": 12296.3,
-      "fy_2079_80_crore": 11472.5
+      "fy_2078_79_crore": 1229.63,
+      "fy_2079_80_crore": 1147.25
     },
     {
       "slug": "other_provision",
@@ -115,8 +115,8 @@
       "kind": "expense",
       "fy_2078_79_lakh": 22259,
       "fy_2079_80_lakh": 29173,
-      "fy_2078_79_crore": 2225.9,
-      "fy_2079_80_crore": 2917.3
+      "fy_2078_79_crore": 222.59,
+      "fy_2079_80_crore": 291.73
     },
     {
       "slug": "current_tax_expense",
@@ -124,8 +124,8 @@
       "kind": "expense",
       "fy_2078_79_lakh": 133494,
       "fy_2079_80_lakh": 135426,
-      "fy_2078_79_crore": 13349.4,
-      "fy_2079_80_crore": 13542.6
+      "fy_2078_79_crore": 1334.94,
+      "fy_2079_80_crore": 1354.26
     },
     {
       "slug": "deferred_tax_expense",
@@ -133,8 +133,8 @@
       "kind": "expense",
       "fy_2078_79_lakh": -105294,
       "fy_2079_80_lakh": 72951,
-      "fy_2078_79_crore": -10529.4,
-      "fy_2079_80_crore": 7295.1
+      "fy_2078_79_crore": -1052.94,
+      "fy_2079_80_crore": 729.51
     },
     {
       "slug": "staff_bonus_provision",
@@ -142,8 +142,8 @@
       "kind": "expense",
       "fy_2078_79_lakh": 20795,
       "fy_2079_80_lakh": 20317,
-      "fy_2078_79_crore": 2079.5,
-      "fy_2079_80_crore": 2031.7
+      "fy_2078_79_crore": 207.95,
+      "fy_2079_80_crore": 203.17
     },
     {
       "slug": "total_expense",
@@ -151,8 +151,8 @@
       "kind": "total_expense",
       "fy_2078_79_lakh": 6315059,
       "fy_2079_80_lakh": 6956572,
-      "fy_2078_79_crore": 631505.9,
-      "fy_2079_80_crore": 695657.2
+      "fy_2078_79_crore": 63150.59,
+      "fy_2079_80_crore": 69565.72
     },
     {
       "slug": "net_profit",
@@ -160,8 +160,8 @@
       "kind": "net_profit",
       "fy_2078_79_lakh": 15420,
       "fy_2079_80_lakh": 485175,
-      "fy_2078_79_crore": 1542.0,
-      "fy_2079_80_crore": 48517.5
+      "fy_2078_79_crore": 154.2,
+      "fy_2079_80_crore": 4851.75
     }
   ],
   "reconciliation": {

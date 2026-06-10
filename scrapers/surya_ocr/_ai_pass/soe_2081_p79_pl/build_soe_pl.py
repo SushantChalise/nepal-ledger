@@ -46,7 +46,7 @@ out={
  "scope":"ALL public enterprises consolidated (not per-enterprise)","unit_source":"npr_lakh","unit_canonical":"npr_crore (=lakh/10)",
  "years":YEARS,"extraction_method":"surya-ocr","verification":"Mother render-verified (Matrix 8-20), reconciled","confidence_grade":"B",
  "rows":[{"slug":s,"label_ne":ne,"kind":k,"fy_2078_79_lakh":a,"fy_2079_80_lakh":b,
-          "fy_2078_79_crore":round(a/10,1),"fy_2079_80_crore":round(b/10,1)} for s,ne,k,a,b in ROWS],
+          "fy_2078_79_crore":round(a/100,2),"fy_2079_80_crore":round(b/100,2)} for s,ne,k,a,b in ROWS],
  "reconciliation":{"income_lines_eq_total_income":True,"expense_lines_eq_total_expense":True,
                    "total_income_minus_total_expense_eq_net_profit":True,"worst_residual_lakh":worst,
                    "note":"FY2078/79 income exact; FY2079/80 profit identity exact; line-item sums within rounding (worst on FY2079/80 income components, +701 lakh vs the profit-identity-confirmed कुल आय)"},
