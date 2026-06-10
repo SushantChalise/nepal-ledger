@@ -198,8 +198,8 @@ function columnPrompt(scope, col, a) {
     `   pix=p.get_pixmap(matrix=fitz.Matrix(8,8), clip=clip); pix.save(r"%TEMP%/wf_col_${col.idx}.png")`,
     `2) Read that PNG with the Read tool. Transcribe the ${nRows} values TOP-TO-BOTTOM in row order (Devanagari ०१२३४५६७८९ = 0-9; South-Asian grouping). Map them to row_idx 0..${nRows - 1}.`,
     `3) Reconcile: sum the component rows; it MUST equal the value at total_row_idx ${scope.total_row_idx} within ±9 (rounding of crore figures).`,
-    `4) If it does NOT reconcile, re-render ONCE at Matrix(12,12) and re-read. HARD CAP: 2 render attempts total.`,
-    `5) If still not reconciling after 2 attempts, set reconciles=false and put the ambiguous row_idx(s) in quarantined — do NOT guess a digit to force it.`,
+    `4) If it does NOT reconcile, the residual LOCALIZES the misread: a residual of ±N means one cell is ~N off (or two cells). Re-render the suspect row(s) at HIGHER zoom and re-read — escalate across attempts: Matrix(12,12), then Matrix(16,16) on the narrowest crop around the suspect cells. HARD CAP: 3 render attempts total. Common OCR confusions to check at high zoom: ५/8↔८/5, ९/9↔१/1, ०/0↔६/6.`,
+    `5) If still not reconciling after 3 attempts, set reconciles=false and put the ambiguous row_idx(s) in quarantined — do NOT guess a digit to force it.`,
     `Return the column values (every row_idx), reconciles, residual (Σcomponents − total), attempts, quarantined. Never invent a digit the image does not show.`,
   ].join('\n');
 }
@@ -220,11 +220,23 @@ function gatePrompt(scope, cols, a) {
 }
 
 // ---------- orchestration body (deterministic) ----------
-const a = args || {};
-if (!a.ocr_dir || !a.pdf_path || a.page_index == null || !a.out_dir) {
-  log('Missing required args (ocr_dir, pdf_path, page_index, out_dir) — aborting.');
-  return { status: 'bad-args' };
+// Robust to args arriving as a JSON string (serialization quirk) or an object.
+let a = args || {};
+if (typeof a === 'string') {
+  try {
+    a = JSON.parse(a);
+  } catch (e) {
+    log(`args is an unparseable string: ${a.slice(0, 120)}`);
+    return { status: 'bad-args', received_type: 'string', received: a.slice(0, 200) };
+  }
 }
+if (!a.ocr_dir || !a.pdf_path || a.page_index == null || !a.out_dir) {
+  log(
+    `Missing required args (ocr_dir, pdf_path, page_index, out_dir). got: ${JSON.stringify(a).slice(0, 200)}`,
+  );
+  return { status: 'bad-args', received_type: typeof a, got: JSON.stringify(a).slice(0, 300) };
+}
+log(`Args OK: page ${a.page_index}, out ${a.out_dir}`);
 
 phase('Scope');
 const scope = await agent(scopePrompt(a), { schema: SCOPE_SCHEMA, label: 'scope' });
@@ -239,23 +251,39 @@ log(
 );
 
 phase('Verify columns');
+// only_columns mode: re-verify just the listed column idxs (cheap targeted re-run after an upgrade).
+let targetCols = scope.columns;
+if (Array.isArray(a.only_columns) && a.only_columns.length) {
+  targetCols = scope.columns.filter((c) => a.only_columns.includes(c.idx));
+  log(
+    `only_columns mode: re-verifying ${targetCols.length} cols [${a.only_columns.join(',')}] with Opus`,
+  );
+}
 // One bounded agent per column; a thrown/failed agent → null → quarantined; the batch never hangs.
 const colResults = (
   await parallel(
-    scope.columns.map(
+    targetCols.map(
       (col) => () =>
         agent(columnPrompt(scope, col, a), {
           schema: COLUMN_SCHEMA,
           label: `col:${col.idx}`,
           phase: 'Verify columns',
+          model: 'opus', // accuracy-critical visual digit-reading — strongest reader maximizes yield
         }),
     ),
   )
 ).filter(Boolean);
 const reconciled = colResults.filter((c) => c.reconciles);
 log(
-  `Columns: ${reconciled.length}/${scope.columns.length} reconciled, ${scope.columns.length - reconciled.length} quarantined.`,
+  `Columns: ${reconciled.length}/${colResults.length} reconciled, ${colResults.length - reconciled.length} quarantined.`,
 );
+
+if (Array.isArray(a.only_columns) && a.only_columns.length) {
+  log(
+    `only_columns re-run done: ${reconciled.length}/${colResults.length} now reconcile per-column`,
+  );
+  return { status: 'partial-rerun', reran: a.only_columns, columns: colResults };
+}
 
 phase('Reconcile + gate');
 const gate = await agent(gatePrompt(scope, colResults, a), { schema: GATE_SCHEMA, label: 'gate' });
