@@ -8,6 +8,20 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-10 (round 17) — Overnight AI-pass build step 1: Master Recovery Ledger over the whole OCR corpus
+
+**What changed:** Built the methodical backbone for the overnight AI-pass (plan: [`docs/OVERNIGHT_AI_PASS_PLAN.md`](../OVERNIGHT_AI_PASS_PLAN.md)): a deterministic, re-runnable **table-locator scan** over the entire Surya-OCR corpus that emits the **Master Recovery Ledger** — every `(document → table-region)`, value-ordered, deduped against the documented truth layer, with the OCR-in-progress state recorded. **Recover + stage only**; the human promotes in the morning (no unattended DB writes). Build step 1 of 5.
+
+- **Scope.** 50 OCR'd documents, **11,061 / 13,297 pages present** (Surya OCR still running — 3 redbooks + 1 P5 not yet started, 1 redbook partial). The locator reads the *current* OCR state and is idempotent + resumable: ids are stable (`doc + first page`), and a re-run **preserves** any loop/human-set status (`--no-merge` forces a clean rebuild).
+- **Output.** **1,339 table candidates** (1,337 pending) → `RECOVERY_LEDGER.json` (the nightly loop's source of truth) + generated `RECOVERY_LEDGER.md` (morning dashboard). Detection = numeric-density + annex/title grep (`अनुसूची`/`तालिका`/section numbers / English `Table`/`Statement`/`Details of`) + printed-unit header (`रु. लाखमा`, `Rs. in '00000'`). Section splitting is **category-aware**: annex/section docs (economic survey, yellowbook, intergovernmental) split per section; a redbook is one dataset (budget-head × {total,recurrent,capital}) so only explicit title words split it (this dropped the oldest redbook from 410 spurious "tables" to 7).
+- **Dedup model.** Baseline = [`docs/DATA_AUDIT.md`](../DATA_AUDIT.md) + recovered `_ai_pass` artifacts. (A *live* DB query is unreliable from this worktree — `.env.local` still points at the retired online Supabase and the local-Postgres migration (ADR-0006) is on a later branch; the nightly loop / morning promotion re-checks live via `pnpm audit:data`.) Classes: `partly-in-db` 817, `new` 491, `owned-deterministic` 22 (whitebooks → `mof_whitebook` owns foreign aid; OCR = cross-check only), `unknown` 6, `needs-decision` 3. The 2 already-recovered tables (GVA annex 13.1 promoted; SOE p79 P&L staged) are detected, deduped, and excluded from the worklist.
+- **Render-verified.** The #1 value-ranked target — intergovernmental **FY2077/78** (P0, 4,941 numeric lines) — was render-verified against the source page: the local-level fiscal-transfer table with **4 aggregate grant columns** (समानीकरण / सशर्त / विशेष / समपूरक + जम्मा), 9-digit codes, province subtotals — confirming the `needs-decision` 4-aggregate-grant schema block (DATA_AUDIT §6). Flagged for escalation, **not** auto-decided.
+- **Gates:** read-only scan — **no DB writes, no schema changes, nothing promoted**. `py_compile` clean on both scripts.
+
+**Related:** `docs/OVERNIGHT_AI_PASS_PLAN.md`; ADR-0003 (AI = QA, not the source of digits); ADR-0021/0022 (OCR tiers + reconciliation gate). Artifacts: `scrapers/surya_ocr/_ai_pass/{locate_tables.py, render_ledger.py, RECOVERY_LEDGER.json, RECOVERY_LEDGER.md, README.md}`. **Next:** build step 2 — extend `ocr-table-recovery` for nested-subtotal + multi-page tables and validate the cross-column repair phase live.
+
+---
+
 ## 2026-06-10 (round 16) — Economic Survey macro annex: GVA-by-sector recovered (Tier-2 OCR, FY2081/82)
 
 **What changed:** First recovery from the previously-deferred Economic Survey **macro annex** (ADR-0016 deferred it as RTL-mirrored / CID-broken; ADR-0021 designated OCR-of-the-rendered-page as the route, and the overnight Surya run OCR'd both Nepali editions). Recovered **annex 13.1 — प्रदेशगत कुल मूल्य अभिवृद्धि (provincial GVA by industrial classification)** for **FY2081/82**: national 18 industries + 7 provinces × 18 = **144 facts** → `dne_facts` (`economic-survey-gva-current`) — the GVA-by-sector gap (DATA_AUDIT §6).
