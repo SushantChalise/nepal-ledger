@@ -107,11 +107,56 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     requiresTableExtraction: false,
     licenseStatus: 'gov_open',
     confidenceDefault: 'A',
-    status: 'paused',
+    status: 'active',
     ingestionMode: 'automated_cron',
     tier: 1,
     notes:
-      'Money Out Pulse + flagship #2 (border arbitrage). Format: HTML landing + XLSX downloads.',
+      'Money Out Pulse + flagship #2 (border arbitrage). Active: FTS XLSX → dne_facts via ingest:customs-trade (#7); ' +
+      'imports/exports × commodity(HS)/country/customs_office, npr_thousand, confidence A. Annual FY2081/82 imports NPR 1.80tn.',
+  },
+  {
+    sourceId: 'mof-whitebook-foreign-aid',
+    agency: 'Ministry of Finance',
+    agencyShort: 'MoF',
+    datasetName: 'Source Book for Projects Financed with Foreign Assistance (White Book)',
+    sourceUrl: 'https://mof.gov.np/',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    licenseStatus: 'gov_open',
+    confidenceDefault: 'B',
+    status: 'active',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    notes:
+      'Money In — foreign aid by donor + sector. In-repo corpus at Financial Data/mof_documents/whitebook/. ' +
+      'Active: donor + ministrywise summary tables → foreign_aid_facts via ingest:whitebook (ADR-0017); ' +
+      'foreign-aid-grant + foreign-aid-loan; unit varies by edition (npr_lakh FY2020/21, npr_thousand others). ' +
+      'Preeti + a mislabelled CID intergovernmental-transfer file deferred.',
+  },
+  {
+    sourceId: 'mof-intergovernmental',
+    agency: 'Ministry of Finance',
+    agencyShort: 'MoF',
+    datasetName: 'Intergovernmental Fiscal Transfer details (per local level, by grant type)',
+    sourceUrl: 'https://mof.gov.np/',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    licenseStatus: 'gov_open',
+    confidenceDefault: 'B',
+    status: 'active',
+    ingestionMode: 'manual_upload',
+    tier: 4,
+    notes:
+      'Money Out — federal→local fiscal transfers per local level (753 palikas × 8 grant types). ' +
+      'In-repo corpus at Financial Data/mof_documents/intergovernmental/. Tier-2 Surya OCR pipeline ' +
+      '(ADR-0022): dual-channel — values from reconciling text layer, Surya cross-check + label recovery + ' +
+      'ocr_tracking provenance. Active: FY2078/79 + FY2079/80 → local_government_fiscal_transfers via ' +
+      'ingest:intergovernmental (753/753 reconcile to printed स्थानीय तह document total, npr_crore, confidence B). ' +
+      '6 scanned FYs (2074/75–2077/78, 2080/81–2081/82) deferred (no reconciling text layer; OCR-only gate unmet).',
   },
   {
     sourceId: 'noc-petroleum-monthly',
@@ -220,6 +265,24 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     tier: 2,
     notes:
       'Money Captured + Collateral State. May be reconcilable with the monthly XLSX corpus (nrb-bfi-monthly-xlsx) — confirm before separate parser.',
+  },
+  {
+    sourceId: 'nrb-bfi-monthly-xlsx',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName: 'Banking & Financial Statistics — Monthly (BFI XLSX)',
+    sourceUrl: 'https://www.nrb.org.np/category/monthly-statistics/',
+    publicationFrequency: 'monthly',
+    reportingPeriodType: 'monthly',
+    fileFormat: 'xlsx',
+    requiresTableExtraction: false,
+    licenseStatus: 'gov_open',
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    notes:
+      'Monthly BFI snapshot XLSX (≈25 C-sheets/file), Aug 2021 → present. Parser scrapers/nrb_bfi; ingest:bfi-monthly → banking_sector_facts. Had a markdown profile but was missing from this seed (added 2026-06).',
   },
   {
     sourceId: 'nrb-loans-by-sector',
@@ -355,11 +418,13 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     requiresTableExtraction: true,
     licenseStatus: 'gov_open',
     confidenceDefault: 'A',
-    status: 'paused',
+    status: 'active',
     ingestionMode: 'manual_upload',
     tier: 3,
     notes:
-      'Public Enterprise X-Ray. In-repo corpus at Financial Data/mof_documents/yellowbook/ (6 PDFs).',
+      'Public Enterprise X-Ray. In-repo corpus at Financial Data/mof_documents/yellowbook/ (6 PDFs). ' +
+      'Active: Annex-1 (FY2080/81) → dne_facts via ingest:dne-yellowbook (ADR-0020); ' +
+      'soe-government-share + soe-loan-principal, npr_thousand. Per-sector revenue/profit tables deferred.',
   },
   {
     sourceId: 'moald-crop-production',
@@ -555,6 +620,25 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     notes: 'District MRI launch input. One-time ingest from in-repo Financial Data/Census/.',
   },
   {
+    sourceId: 'cbs-nphc-2021',
+    agency: 'National Statistics Office',
+    agencyShort: 'NSO',
+    datasetName: 'National Population & Housing Census 2021 (2078 BS) — palika tables',
+    sourceUrl: 'https://censusnepal.cbs.gov.np/results',
+    publicationFrequency: 'ad_hoc',
+    reportingPeriodType: 'annual',
+    fileFormat: 'csv',
+    requiresTableExtraction: false,
+    historicalCoverage: 'Decennial (2078 BS / 2021 AD)',
+    licenseStatus: 'gov_open',
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'manual_upload',
+    tier: 4,
+    notes:
+      'Per-palika census tables (Hhld*/Indv*). Parser scrapers/cbs_nphc; ingest:census-2021 → census_facts. Had a markdown profile but was missing from this seed (added 2026-06). Parser currently supports a subset of demographic tables; financial-inclusion tables (bank accounts, loans, female asset ownership, absent population) need parser extension.',
+  },
+  {
     sourceId: 'moe-noc-student-outflow',
     agency: 'Ministry of Education',
     agencyShort: 'MoE',
@@ -651,11 +735,13 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     requiresTableExtraction: true,
     licenseStatus: 'gov_open',
     confidenceDefault: 'A',
-    status: 'paused',
+    status: 'active',
     ingestionMode: 'manual_upload',
     tier: 4,
     notes:
-      'Budget Watch. In-repo corpus at Financial Data/mof_documents/redbook/. Heavy OCR target (mostly Nepali).',
+      'Budget Watch. In-repo corpus at Financial Data/mof_documents/redbook/. ' +
+      'Active: the clean Unicode edition (Central FY2074/75 appropriation summary) → dne_facts ' +
+      'budget-allocation by budget-head via ingest:redbook. Preeti/CID editions deferred (Tier-1a Preeti / Tier-2 Surya, ADR-0021).',
   },
   {
     sourceId: 'fepb-manpower-companies',
@@ -916,6 +1002,483 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     ingestionMode: 'reference_only',
     tier: null,
     notes: 'International benchmark.',
+  },
+
+  // ─── Added from 2026-05 NRB/MoF catalog audits (Worker A + Worker B) ───
+
+  // ─── NRB Database on Nepalese Economy (4 sector sources) ─────────────────
+
+  {
+    // Umbrella ingest source for the Database on Nepalese Economy XLSX corpus.
+    // The scrapers/nrb_dne parser declares SOURCE_ID 'nrb-dne-xlsx'; this row is
+    // its source_documents FK target (ADR-0010: a parser's SOURCE_ID must exist
+    // in the seed). The per-sector nrb-db-* rows below are the finer-grained
+    // catalog entries (one per sectoral page); a DNE ingest is tagged with this
+    // umbrella id and the sector is captured in the indicator slug / parser_notes.
+    sourceId: 'nrb-dne-xlsx',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName: 'Database on Nepalese Economy — structured time-series XLSX (all sectors)',
+    sourceUrl: 'https://www.nrb.org.np/database-on-nepalese-economy/',
+    publicationFrequency: 'monthly',
+    reportingPeriodType: 'monthly',
+    fileFormat: 'xlsx',
+    requiresTableExtraction: false,
+    historicalCoverage: 'Varies by series; Real/External/Fiscal/Monetary/Financial sectors',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb_dne/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Files updated in-place each cycle; download URL embeds upload date (scrape sector page for current link).',
+    knownBreakageModes: ['upload-url-embeds-date-not-hardcodeable', 'sector-page-layout-shift'],
+    confidenceDefault: 'B',
+    status: 'active',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    notes:
+      'Ingest source for scrapers/nrb_dne (ingest:dne). Long-formats wide period-column XLSX into staging. No real files downloaded yet (2026-06). Subsumes nrb-db-external/fiscal/real/financial-sector catalog rows.',
+  },
+  {
+    // NRB audit #1 — highest-priority NRB gap: BoP, forex, remittance, trade
+    // all in structured XLSX — no PDF extraction needed. Feeds Pulse v1 directly.
+    sourceId: 'nrb-db-external-sector',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName:
+      'Database on Nepalese Economy — External Sector (BoP, Forex, Trade, Remittance, Tourism)',
+    sourceUrl: 'https://www.nrb.org.np/database-on-nepalese-economy/external-sector/',
+    publicationFrequency: 'monthly',
+    reportingPeriodType: 'monthly',
+    fileFormat: 'xlsx',
+    requiresTableExtraction: false,
+    historicalCoverage: 'Estimated FY 2065/66 onward (~2008); individual series may vary',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb-db-external-sector/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy:
+      'Files updated in-place at each release cycle; parser must fetch sector page to resolve current download URL',
+    knownBreakageModes: [
+      'upload-url-embeds-date-not-hardcodeable',
+      'sector-page-must-be-scraped-for-current-link',
+    ],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    notes:
+      'Money In + Money Out Pulse v1. Seven monthly XLSX series: BoP BPM5/BPM6, exchange rate, forex reserves, foreign trade, migrant workers/remittance, tourist arrivals. Most parse-friendly files in NRB catalog — no PDF extraction.',
+  },
+  {
+    // NRB audit #2 — government revenue/expenditure (daily) + budgetary operation
+    // (monthly) + outstanding debt (monthly). Feeds Money Out + Money Wasted pillars.
+    sourceId: 'nrb-db-fiscal-sector',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName:
+      'Database on Nepalese Economy — Fiscal Sector (Government Revenue, Expenditure, Debt)',
+    sourceUrl: 'https://www.nrb.org.np/database-on-nepalese-economy/fiscal-sector/',
+    publicationFrequency: 'monthly',
+    reportingPeriodType: 'monthly',
+    fileFormat: 'xlsx',
+    requiresTableExtraction: false,
+    historicalCoverage: 'Estimated FY 2065/66 onward; coverage varies by dataset',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb-db-fiscal-sector/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy: 'NRB compiles from MoF; preliminary figures revised monthly',
+    knownBreakageModes: [
+      'upload-url-embeds-date-not-hardcodeable',
+      'nrb-compiles-from-mof-preliminary-figures-revised',
+    ],
+    confidenceDefault: 'B',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    notes:
+      'Money Out + Money Wasted pillars. Key datasets: Government Revenue and Expenditure (daily XLSX), Government Budgetary Operation (monthly), Outstanding Government Debt (monthly). Confidence B because NRB compiles from MoF; preliminary values revised.',
+  },
+  {
+    // NRB audit #3 — BFI assets/deposits/loans, monetary survey, interest rates,
+    // NEPSE. Feeds Money Captured pillar and validates nrb-bfi-monthly-xlsx.
+    sourceId: 'nrb-db-financial-sector',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName:
+      'Database on Nepalese Economy — Financial Sector (BFI Assets, Deposits, Loans, Monetary Survey, Interest Rates, NEPSE)',
+    sourceUrl: 'https://www.nrb.org.np/database-on-nepalese-economy/financial-sector/',
+    publicationFrequency: 'monthly',
+    reportingPeriodType: 'monthly',
+    fileFormat: 'xlsx',
+    requiresTableExtraction: false,
+    historicalCoverage: 'Estimated FY 2065/66 onward; ~40 individual datasets',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb-db-financial-sector/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy: 'Files updated in-place; parser must enumerate all datasets, not hardcode URLs',
+    knownBreakageModes: [
+      'upload-url-embeds-date-not-hardcodeable',
+      'approx-40-datasets-parser-must-enumerate-all',
+      'electronic-payment-transactions-structural-break-when-new-payment-rails-introduced',
+    ],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 2,
+    notes:
+      'Money Captured pillar. Sector-wise loan data here is a clean XLSX alternative to the complex multi-block BFI monthly XLSX. Reconcile with nrb-bfi-monthly-xlsx before separate parser.',
+  },
+  {
+    // NRB audit #4 — GDP (quarterly old + new series), CPI monthly, agriculture,
+    // industry, energy, provincial GDP. Foundational for "Where Money Becomes Wealth".
+    sourceId: 'nrb-db-real-sector',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName:
+      'Database on Nepalese Economy — Real Sector (GDP, CPI, Agriculture, Industry, Tourism, Energy)',
+    sourceUrl: 'https://www.nrb.org.np/database-on-nepalese-economy/real-sector/',
+    publicationFrequency: 'quarterly',
+    reportingPeriodType: 'quarterly',
+    fileFormat: 'xlsx',
+    requiresTableExtraction: false,
+    historicalCoverage:
+      'National Accounts from ~FY 2060/61; quarterly GDP from ~2072; agriculture yearly',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb-db-real-sector/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy:
+      'NRB compiles from CBS/MoALD; preliminary; base-year revisions affect GDP series',
+    knownBreakageModes: [
+      'upload-url-embeds-date-not-hardcodeable',
+      'quarterly-gdp-old-and-new-series-incompatible-base-year-revision',
+      'provincial-gdp-separate-file',
+    ],
+    confidenceDefault: 'B',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 2,
+    notes:
+      'Where Money Becomes Wealth pillar + Household Ledger Calculator per-capita baseline. NOTE: "Quarterly GDP (Old)" and "Quarterly GDP (New)" reflect a base-year revision — parsers must handle two incompatible series. Confidence B because NRB compiles from CBS/MoALD.',
+  },
+
+  // ─── NRB standalone publications ─────────────────────────────────────────
+
+  {
+    // NRB audit #5 — systemic risk, NPL ratios, capital adequacy. 16 issues,
+    // FY 2012–FY 2023/24. Definitive Money Captured quality signal.
+    sourceId: 'nrb-financial-stability-report',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName: 'Financial Stability Report',
+    sourceUrl: 'https://www.nrb.org.np/category/financial-stability-report/',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    historicalCoverage: 'Issue No. 1 (July 2012) → Issue No. 16 (FY 2023/24); 16 issues',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb-financial-stability-report/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy: 'Annual; one issue per FY; no mid-year revisions',
+    knownBreakageModes: [
+      'url-slug-format-changed-older-issues-at-red-newer-at-bfr',
+      'no-issue-yet-for-fy-2024-25',
+    ],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 2,
+    notes:
+      'Money Captured quality signal for Fact Ledger. High editorial value for Monthly Verdict (systemic risk, NPL, capital adequacy). URL slugs split across /red/ (older) and /bfr/ (newer issues).',
+  },
+  {
+    // NRB audit #6 — directed credit subsidies mechanism: ~75 monthly XLSX releases
+    // from Jeth 2078 → present. Essential for Money Captured + Borrowed Time.
+    sourceId: 'nrb-concessional-loan',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName: 'Interest-Subsidized / Concessional Loan Monthly Statistics',
+    sourceUrl: 'https://www.nrb.org.np/category/concessional-loan/',
+    publicationFrequency: 'monthly',
+    reportingPeriodType: 'monthly',
+    fileFormat: 'xlsx',
+    requiresTableExtraction: false,
+    historicalCoverage: 'Jeth 2078 (May/June 2021) → present; ~75 months',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb-concessional-loan/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy:
+      'Monthly; no revision cycle documented; treat each release as final for that month',
+    knownBreakageModes: [
+      'filename-uses-nepali-month-names-inconsistent-transliteration',
+      'older-entries-pre-xlsx-transition-are-pdf-only',
+    ],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 2,
+    notes:
+      'Money Captured + Borrowed Time lens. Directed credit subsidies shape where private capital flows. XLSX from Jeth 2078; pre-XLSX entries are PDF-only. Filename transliteration varies (e.g., "Badau" vs "Bhadau").',
+  },
+  {
+    // NRB audit #7 — quarterly Economic Bulletin, richest single-PDF compilation
+    // ~200 time-series tables, deeper historical than CMEFs. ~35 issues back to 2003.
+    sourceId: 'nrb-economic-bulletin',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName: 'Economic Bulletin & Indicators (Quarterly)',
+    sourceUrl: 'https://www.nrb.org.np/category/quarterly-economic-bulletin/',
+    publicationFrequency: 'quarterly',
+    reportingPeriodType: 'quarterly',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    historicalCoverage:
+      'Mid-April 2003 → Mid-January 2026; ~35 issues (quarterly: Jan/Apr/Jul/Oct)',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb-economic-bulletin/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy: 'Quarterly; each issue is a compilation snapshot; no revisions to prior issues',
+    knownBreakageModes: [
+      'pdf-size-approx-8mb-dense-tables',
+      'url-slug-format-year-month-mid-month-name',
+    ],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 3,
+    notes:
+      'Richest single-PDF compilation of ~200 time-series tables across all economic sectors. Partially overlaps CMEFs but has deeper historical tables. No XLSX companion. Useful for gap-filling between CMEFs releases.',
+  },
+  {
+    // NRB audit #8 — official audited macro tables by FY. 22 years back to 2003/04.
+    // Required for back-filling Pulse indicators before monthly XLSX coverage (pre-2078).
+    sourceId: 'nrb-annual-report',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName: 'NRB Annual Report (English + Nepali)',
+    sourceUrl: 'https://www.nrb.org.np/category/annual-reports',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    historicalCoverage: 'FY 2003/04 → FY 2024/25 (22 years)',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb-annual-report/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy: 'Annual; each report carries the final audited figures for that FY',
+    knownBreakageModes: [
+      'category-slug-annual-reports-plural-no-trailing-slash',
+      'fiu-bsd-nbfisd-mlpsd-sub-reports-mixed-into-same-archive-category',
+    ],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 3,
+    notes:
+      'Gold standard for historical baseline: official audited macro-economic tables for each FY. Required for back-filling Pulse indicators before monthly XLSX coverage begins (pre-2078). Note: FIU, bank supervision, and non-bank FI supervision reports are mixed into the same archive category under different department slugs.',
+  },
+  {
+    // NRB audit #10 — daily NRB balance sheet: monetary operations, OMO,
+    // sterilization, reserve money. Replaces/extends vague nrb-reserves-daily stub.
+    // Confirmed daily (not weekly as stub speculated).
+    sourceId: 'nrb-central-bank-balance-sheet-daily',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName: 'NRB Summarized Balance Sheet (Daily)',
+    sourceUrl:
+      'https://www.nrb.org.np/category/central-bank-survey-and-liquidity-position/?department=red',
+    publicationFrequency: 'daily',
+    reportingPeriodType: 'daily',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    historicalCoverage: 'FY 2080/81 onward confirmed; possibly earlier via month filter',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb-central-bank-balance-sheet-daily/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy: 'Daily; preliminary; no revision cycle documented for individual day sheets',
+    knownBreakageModes: [
+      'page-uses-month-fy-filter-navigation-no-direct-archive-list',
+      'url-pattern-consistent-red-yyyy-mm-dd-nrb-summarized-balance-sheet',
+    ],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'Liquidity position / Pulse interbank-rate tile. Corrects and supersedes the vague nrb-reserves-daily stub (confirmed daily, not weekly). Small PDF ~38 KB, simple table. Validates Database on Nepalese Economy daily liquidity XLSX.',
+  },
+  {
+    // NRB audit #11 — IMF MFSM-aligned view of Nepal financial system.
+    // FY 2076/77–2079/80 confirmed. FY filter pages return "No posts" — must use
+    // un-filtered category or direct slug.
+    sourceId: 'nrb-financial-corporations-survey',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName: 'Financial Corporations Survey (FCS)',
+    sourceUrl: 'https://www.nrb.org.np/category/financial-corporations-survey/',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    historicalCoverage: 'FY 2076/77–2079/80 confirmed; likely FY 2080/81+ when published',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb-financial-corporations-survey/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy: 'Annual; groupings of multiple FYs in one release (e.g., "2076/77-2079/80")',
+    knownBreakageModes: [
+      'fy-filtered-category-pages-return-no-posts-use-unfiltered-category',
+      'multi-fy-groupings-in-single-release',
+    ],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 3,
+    notes:
+      'IMF MFSM-aligned standard-compliant view of Nepali financial system. Complements nrb-bfi-monthly-xlsx (NRB own format). Used in IMF Article IV reviews. FY filter pages return "No posts" even when data exists — use un-filtered category or search by post slug.',
+  },
+
+  // ─── MoF / FCGO / PDMO publications ──────────────────────────────────────
+
+  {
+    // MoF audit #2 — annual Finance Minister budget speech: headline revenue/
+    // expenditure targets, policy priorities, sector allocations. Jestha 15 each year.
+    sourceId: 'mof-budget-speech',
+    agency: 'Ministry of Finance',
+    agencyShort: 'MoF',
+    datasetName: 'Budget Speech (बजेट वक्तव्य)',
+    sourceUrl: 'https://mof.gov.np/en/publication/budget-speech-315',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    historicalCoverage:
+      'Estimated FY 2060 onward (~23+ editions); English translation ~1 week after Nepali release',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/mof-budget-speech/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy:
+      'Annual; no revision after presentation; supplementary appropriations are separate documents',
+    knownBreakageModes: [
+      'mof-gov-np-ssl-cert-chain-incomplete-add-mof-ca-to-trust-store',
+      'url-structure-changes-each-fy',
+      'english-translation-released-approx-1-week-after-nepali',
+    ],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 2,
+    notes:
+      'Budget Watch vertical + policy tagging. Annual headline fiscal targets: revenue, expenditure, capital, deficit. mof.gov.np SSL cert chain is incomplete — add the MoF CA certificate to the scraper trust store (do NOT disable TLS verification). PDF files are actually served from giwmscdnone.gov.np CDN (valid cert). Coverage estimate uncertain; verify on site once trust store is fixed.',
+  },
+  {
+    // MoF audit #3 — FCGO audited all-of-government outturn data.
+    // English CFS available FY 2018/19 onward; Nepali FY 2074/75 onward.
+    // Highest-confidence fiscal outturn (audited).
+    sourceId: 'fcgo-consolidated-financial-statements',
+    agency: 'Financial Comptroller General Office',
+    agencyShort: 'FCGO',
+    datasetName: 'Consolidated Financial Statements (CFS) — Nepali + English',
+    sourceUrl: 'https://fcgo.gov.np/category/consolidated-us',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    historicalCoverage: 'English: FY 2018/19 (2075/76) onward; Nepali: FY 2074/75 onward',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/fcgo-consolidated-financial-statements/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy:
+      'Annual; published Chaitra of following FY; audited outturn — no subsequent revision expected',
+    knownBreakageModes: [
+      'nepali-url-at-category-con-fin-statements-english-at-category-consolidated-us',
+      'pdf-filenames-use-opaque-cdn-tokens-at-giwmscdnone-gov-np',
+    ],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    notes:
+      'Audited all-of-government outturn — highest-confidence fiscal data (A). Covers federal + 7 provinces + 753 local govts in consolidated form. English CFS available from FY 2018/19; Nepali from FY 2074/75. PDFs served from giwmscdnone.gov.np CDN.',
+  },
+  {
+    // MoF audit #4 — PDMO monthly government debt stats.
+    // Active monthly series (Chaitra 2082 = most recent). Separate from
+    // quarterly pdmo-debt-bulletin.
+    sourceId: 'pdmo-monthly-debt-statistics',
+    agency: 'Public Debt Management Office',
+    agencyShort: 'PDMO',
+    datasetName: 'Monthly Government Debt Statistics (मासिक सरकारी ऋण तथ्याङ्क)',
+    sourceUrl: 'https://pdmo.gov.np/pages/monthlyrepo',
+    publicationFrequency: 'monthly',
+    expectedReleaseWindow: 'Approximately 15th of the following month',
+    reportingPeriodType: 'monthly',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    historicalCoverage: 'At least FY 2081/82 onward; likely earlier on site',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/pdmo-monthly-debt-statistics/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy:
+      'Monthly; no revision cycle documented; treat each release as final for that month',
+    knownBreakageModes: ['filename-pattern-varies-bs-month-name-nepali-or-english-inconsistent'],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 2,
+    notes:
+      'Borrowed Time vertical. Monthly debt stock: internal (T-bills + bonds + savings certs) + external. Active series — Chaitra 2082 (Apr 2026) is most recent. Distinct from the existing quarterly pdmo-debt-bulletin. Historical depth TBD; verify on site.',
+  },
+  {
+    // MoF audit #5 — PDMO annual debt + share investment report.
+    // Only FY 2080/81 and 2081/82 confirmed; historical depth uncertain.
+    sourceId: 'pdmo-annual-debt-report',
+    agency: 'Public Debt Management Office',
+    agencyShort: 'PDMO',
+    datasetName: 'Annual Report on Public Debt and Share Investment (वार्षिक प्रतिवेदन)',
+    sourceUrl: 'https://pdmo.gov.np/',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    historicalCoverage: 'FY 2080/81 and FY 2081/82 confirmed; earlier editions TBD',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/pdmo-annual-debt-report/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy: 'Annual; no revision cycle documented',
+    knownBreakageModes: [
+      'content-pages-vary-by-year-no-stable-category-url',
+      'pdf-filenames-use-nepali-unicode-in-cdn-path',
+    ],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 3,
+    notes:
+      'Borrowed Time vertical. UNCERTAINTY: only 2 editions confirmed (FY 2080/81 + 2081/82); no stable category URL found. Historical depth and full URL pattern TBD. Flagged for Mother review before parser work.',
+  },
+  {
+    // MoF audit #6 — PDMO medium-term debt strategy, 3-year forward window.
+    // Reference/policy doc, not a time-series feed. 4 editions confirmed.
+    sourceId: 'pdmo-mtds',
+    agency: 'Public Debt Management Office',
+    agencyShort: 'PDMO',
+    datasetName: 'Medium-Term Debt Management Strategy (MTDS)',
+    sourceUrl: 'https://pdmo.gov.np/pages/debtsteategy',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: false,
+    historicalCoverage: 'FY 2078/79–2080/81 through FY 2082/83–2084/85 (4 editions confirmed)',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/pdmo-mtds/parser.py',
+    parserVersion: '0.0.0',
+    revisionPolicy: 'Annual; 3-year forward window; not a time-series feed',
+    knownBreakageModes: ['url-typo-on-pdmo-site-debtsteategy-not-debtstrategy'],
+    confidenceDefault: 'A',
+    status: 'paused',
+    ingestionMode: 'reference_only',
+    tier: null,
+    notes:
+      'Borrowed Time + policy context. Strategy doc (not a statistical series). Reference-only — cite from stories, not ingested into approved_indicator_values. Note: PDMO site URL has a typo: "debtsteategy" (not "debtstrategy").',
   },
 ];
 

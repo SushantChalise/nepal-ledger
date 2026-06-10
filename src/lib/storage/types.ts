@@ -51,7 +51,27 @@ export type SupabaseSignedUrlOk = z.infer<typeof SupabaseSignedUrlOkSchema>;
 // Production passes a SupabaseClient (which structurally satisfies this);
 // tests pass a hand-rolled stub. This lets us inject without `as` casts.
 
-export type StorageErrorLike = { message: string; status?: number };
+/**
+ * Supabase Storage surfaces "object not found" as HTTP 400 with a
+ * body-encoded `statusCode: "404"` (see `@supabase/storage-js` StorageApiError).
+ * We model both so the not-found branch can check either signal.
+ */
+export type StorageErrorLike = {
+  message: string;
+  status?: number | undefined;
+  statusCode?: string | undefined;
+};
+
+/**
+ * True for any "object does not exist" response from Supabase Storage —
+ * whether surfaced as HTTP 404, body-encoded statusCode '404', or only as a
+ * "not found" message. Centralized so upload + download stay in sync.
+ */
+export function isNotFoundStorageError(error: StorageErrorLike): boolean {
+  if (error.status === 404) return true;
+  if (error.statusCode === '404') return true;
+  return /not[_ ]?found/i.test(error.message);
+}
 
 export type DownloadResp = { data: Blob; error: null } | { data: null; error: StorageErrorLike };
 

@@ -18,3 +18,7 @@ export * from './fiscal-transfers';
 export * from './census-facts';
 export * from './banking-sector-facts';
 export * from './ocr-tracking';
+// Added in migration 0004 (ADR-0015)
+export * from './dne-facts';
+// Added in migration 0005 (ADR-0017)
+export * from './foreign-aid-facts';

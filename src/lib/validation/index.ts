@@ -22,6 +22,7 @@
  */
 
 import { findIndicatorBySlug } from '@/lib/db/repositories/indicators';
+import { listKnownUnits } from '@/lib/db/repositories/indicator-units';
 import {
   findLatestApprovedByPeriod,
   listApprovedTrailingForIndicator,
@@ -52,9 +53,11 @@ import { promoteStagingRow } from './promote';
 import type { CheckOutcome, ValidationSummary } from './types';
 
 /**
- * Starter unit vocabulary. Used until `indicator_units` is seeded; the
- * orchestrator (Worker H) will swap this for a DB-backed set. Order
- * doesn't matter — membership is set-semantics.
+ * Starter unit vocabulary — the floor. The authoritative set lives in the
+ * `indicator_units` table (loaded via `listKnownUnits`); we union the two so
+ * that (a) a freshly-migrated DB with no seeded units still recognizes the
+ * core vocabulary, and (b) seeded units extend it without code changes.
+ * Order doesn't matter — membership is set-semantics.
  */
 const STARTER_KNOWN_UNITS: ReadonlySet<string> = new Set([
   'NPR_billion',
@@ -120,17 +123,30 @@ async function loadRowContext(row: StagingIndicatorValueRow): Promise<Result<Row
   return ok({ row, doc, indicator, trailing, existing });
 }
 
-function runChecks(ctx: RowContext): CheckOutcome[] {
+function runChecks(ctx: RowContext, knownUnits: ReadonlySet<string>): CheckOutcome[] {
   return [
     schemaCheck(ctx.row),
     indicatorResolutionCheck(ctx.row, ctx.indicator),
     periodParseCheck(ctx.row),
-    unitRecognitionCheck(ctx.row, STARTER_KNOWN_UNITS),
+    unitRecognitionCheck(ctx.row, knownUnits),
     plausibilityCheck(ctx.row, ctx.trailing),
     duplicateCheck(ctx.row, ctx.existing),
     revisionFlowCheck(ctx.row, ctx.existing),
     sourceIntegrityCheck(ctx.row, ctx.doc),
   ];
+}
+
+/**
+ * Load the recognized-unit set: the seeded `indicator_units` table unioned
+ * with the in-code starter floor. A DB error degrades gracefully to the
+ * starter set rather than failing the whole run (units are one check of
+ * eight; a transient read failure shouldn't block promotion of otherwise
+ * valid rows whose units are in the floor).
+ */
+async function loadKnownUnits(): Promise<ReadonlySet<string>> {
+  const fromDb = await listKnownUnits();
+  if (!fromDb.ok) return STARTER_KNOWN_UNITS;
+  return new Set([...STARTER_KNOWN_UNITS, ...fromDb.value]);
 }
 
 export type { ValidationSummary, CheckContext, CheckOutcome } from './types';
@@ -139,6 +155,7 @@ type BlockingFlag = { stagingRowId: string; flagType: DataQualityFlagType; detai
 
 async function processRow(
   row: StagingIndicatorValueRow,
+  knownUnits: ReadonlySet<string>,
   summary: {
     promoted: number;
     promotedWithWarnings: number;
@@ -150,7 +167,7 @@ async function processRow(
   if (!ctxResult.ok) return ctxResult;
   const ctx = ctxResult.value;
 
-  const outcomes = runChecks(ctx);
+  const outcomes = runChecks(ctx, knownUnits);
   const blocks = outcomes.filter(
     (o): o is Extract<CheckOutcome, { kind: 'block' }> => o.kind === 'block',
   );
@@ -211,10 +228,58 @@ async function processRow(
   return ok(undefined);
 }
 
+/**
+ * Bounded retry wrapper around `processRow` for transient connection failures.
+ *
+ * Live observation: Supabase's pooler resets the socket on roughly 0.1% of
+ * queries (ECONNRESET). The validation loop does several hundred sequential
+ * round-trips per file, so an un-retried run hit at least one reset ~70% of
+ * the time and aborted wholesale. We retry ONLY `DatabaseUnavailable` (the
+ * connection-class AppError) with exponential backoff; any other error (bad
+ * SQL, constraint violation, validation block) returns immediately and is
+ * never retried.
+ *
+ * Retry safety: `processRow`'s context loads are idempotent reads, and the
+ * promote is a single transaction (no partial state). The one at-least-once
+ * hazard — a reset AFTER a promote commit — causes the retry to write a higher
+ * revision of identical data; read queries take `revision_number DESC LIMIT 1`,
+ * so it is read-harmless and retained as a revision (Data Continuity Protocol).
+ */
+const MAX_TRANSIENT_RETRIES = 5;
+const RETRY_BASE_DELAY_MS = 150;
+
+async function processRowWithRetry(
+  row: StagingIndicatorValueRow,
+  knownUnits: ReadonlySet<string>,
+  summary: {
+    promoted: number;
+    promotedWithWarnings: number;
+    blocked: number;
+    blockingFlags: BlockingFlag[];
+  },
+): Promise<Result<void>> {
+  let last = await processRow(row, knownUnits, summary);
+  for (let attempt = 1; attempt <= MAX_TRANSIENT_RETRIES; attempt += 1) {
+    if (last.ok || last.error.kind !== 'DatabaseUnavailable') return last;
+    await delay(RETRY_BASE_DELAY_MS * 2 ** (attempt - 1));
+    last = await processRow(row, knownUnits, summary);
+  }
+  return last;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 export async function validateParserRun(parserRunId: string): Promise<Result<ValidationSummary>> {
   const stagingResult = await listStagingRowsForParserRun(parserRunId);
   if (!stagingResult.ok) return stagingResult;
   const stagingRows = stagingResult.value;
+
+  // No rows → nothing to check; skip the units read entirely.
+  const knownUnits = stagingRows.length > 0 ? await loadKnownUnits() : STARTER_KNOWN_UNITS;
 
   const summary: {
     promoted: number;
@@ -229,7 +294,7 @@ export async function validateParserRun(parserRunId: string): Promise<Result<Val
   };
 
   for (const row of stagingRows) {
-    const result = await processRow(row, summary);
+    const result = await processRowWithRetry(row, knownUnits, summary);
     if (!result.ok) return result;
   }
 

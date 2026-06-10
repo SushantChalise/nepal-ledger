@@ -15,10 +15,10 @@
  *   pnpm ingest:bfi-monthly --input "Financial Data/nrb_monthly_statistics/Bhadau_2082_Publish.xlsx"
  *   pnpm ingest:bfi-monthly --dry-run        # uses the default canonical month, no DB writes
  *
- * Source-document row creation is intentionally deferred to the orchestrator
- * (Worker D pattern). This CLI accepts `--source-document-id <uuid>` so the
- * caller pre-creates the source_document row and threads the FK in.
- * In --dry-run mode the FK requirement is relaxed (placeholder UUID).
+ * Source-document row: when `--source-document-id` is supplied the caller's
+ * pre-created row is used; otherwise the CLI self-archives the file bytes to
+ * Supabase Storage and inserts its own row via `archiveAndInsertSourceDocument`.
+ * In --dry-run mode the FK requirement is relaxed (placeholder UUID skips both).
  */
 
 import { spawn } from 'node:child_process';
@@ -37,6 +37,22 @@ const DEFAULT_INPUT = path.join(
   'Bhadau_2082_Publish.xlsx',
 );
 const PLACEHOLDER_SOURCE_DOC_ID = '00000000-0000-0000-0000-000000000000';
+const BFI_SOURCE_ID = 'nrb-bfi-monthly-xlsx';
+
+/**
+ * Upload file bytes to Supabase Storage and insert a `source_documents` row.
+ * Delegates to the shared `archiveAndInsertSourceDocument` helper so the
+ * real storageKey/hash/size from the upload are written to the DB row.
+ */
+async function ensureSourceDocument(inputPath: string): Promise<string> {
+  const { archiveAndInsertSourceDocument } = await import('./_lib/archive-source-document');
+  return archiveAndInsertSourceDocument({
+    filePath: inputPath,
+    sourceId: BFI_SOURCE_ID,
+    contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    reportingPeriodLabel: null,
+  });
+}
 
 const FactRowSchema = z.object({
   bank_class: z.enum(['commercial', 'development', 'finance', 'system_total']),
@@ -101,8 +117,12 @@ function parseArgs(argv: readonly string[]): {
 
 async function runParser(inputPath: string, sourceDocumentId: string): Promise<ParserOutput> {
   const scrapersDir = path.join(REPO_ROOT, 'scrapers');
+  // Honor the PYTHON env var (points at scrapers/.venv, which has the parser
+  // deps) — matches ingest-cmefs / ingest-fiscal-transfers. Bare 'python'
+  // resolves to the global interpreter, which lacks openpyxl.
+  const python = process.env['PYTHON'] ?? (process.platform === 'win32' ? 'python' : 'python3');
   return new Promise((resolve, reject) => {
-    const child = spawn('python', ['-m', 'nrb_bfi.parser', inputPath, sourceDocumentId], {
+    const child = spawn(python, ['-m', 'nrb_bfi.parser', inputPath, sourceDocumentId], {
       cwd: scrapersDir,
       env: { ...process.env, PYTHONPATH: scrapersDir },
     });
@@ -143,6 +163,13 @@ async function main(): Promise<void> {
   if (result.status === 'failure') {
     throw new Error('parser status=failure; refusing to write');
   }
+  // Self-create the source_documents provenance row unless the caller threaded
+  // a real FK in (the placeholder is only valid for --dry-run).
+  const sourceDocumentId =
+    args.sourceDocumentId === PLACEHOLDER_SOURCE_DOC_ID
+      ? await ensureSourceDocument(args.input)
+      : args.sourceDocumentId;
+  process.stdout.write(`[ingest-bfi-monthly] source_documents.id = ${sourceDocumentId}\n`);
   // Lazy import to keep --dry-run free of DATABASE_URL requirement.
   const { bulkInsertBankingSectorFacts } = await import('@/lib/db/repositories');
   const rows = result.fact_rows.map((r) => ({
@@ -159,7 +186,7 @@ async function main(): Promise<void> {
     publicationDateAd: r.publication_date_ad,
     publicationDateBs: r.publication_date_bs,
     fiscalYearBs: r.fiscal_year_bs,
-    sourceDocumentId: args.sourceDocumentId,
+    sourceDocumentId,
     confidenceGrade: r.confidence_grade,
     promotedBy: 'scripts/ingest-bfi-monthly.ts',
   }));

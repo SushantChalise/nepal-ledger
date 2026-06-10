@@ -46,13 +46,38 @@ from _common.municipality_resolver import (
 )
 from _common.types import ParserError, ParserStatus
 
-PARSER_VERSION: Final[str] = "0.1.0"
+PARSER_VERSION: Final[str] = "0.5.0"
 SOURCE_ID: Final[str] = "local-fiscal-transfers-cleaned"
+
+# When the workbook carries its own federal Code column we read identity
+# directly from it (exact, 1:1) instead of fuzzy-matching the name. Fuzzy
+# resolution collided distinct municipalities onto the same federal_code,
+# producing duplicate rows whose wrong (larger) value won the ON CONFLICT
+# DO NOTHING insert — inflating the FY 2082/83 total by ~65%. The cleaned
+# Fiscal Transfer XLSX has the 8-digit code in its first column.
+_CODE_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("code", "संकेत", "सङ्केत")
+_NAME_EN_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("name (english)", "english")
+_TYPE_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("type", "प्रकार")
+_FEDERAL_CODE_LEN: Final[int] = 8
+_TYPE_LABEL_TO_SLUG: Final[dict[str, str]] = {
+    "municipality": "municipality",
+    "rural municipality": "rural_municipality",
+    "metropolitan city": "metropolitan_city",
+    "sub-metropolitan city": "sub_metropolitan_city",
+    "sub metropolitan city": "sub_metropolitan_city",
+}
 
 # Fiscal year + confidence anchors. The cleaned XLSX covers FY 2082/83 only.
 _DEFAULT_FISCAL_YEAR_BS: Final[str] = "2082/83"
 _DEFAULT_CONFIDENCE: Final[Literal["A", "B", "C"]] = "A"
-_DEFAULT_UNIT: Final[str] = "NPR_thousand"
+# The Cleaned/ XLSX stores amounts in NPR crore (1 crore = 10 million NPR).
+# Verified by order-of-magnitude: the 8 atomic grant components sum to
+# ~32,157 crore = NPR 321 billion, matching the published FY 2082/83
+# intergovernmental transfer budget. (The sheet's "Grand Total" column sums
+# to ~95,552 crore because it double-counts the Total-* subtotal columns;
+# we never store those.) Previously mis-labeled NPR_thousand — that would
+# imply only NPR 321 million total, off by four orders of magnitude.
+_DEFAULT_UNIT: Final[str] = "npr_crore"
 _DEFAULT_TRANSFER_SHEET: Final[str] = "Sheet1"
 _NAME_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("local level", "municipality", "name", "स्थानीय")
 _DISTRICT_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("district", "जिल्ला")
@@ -62,11 +87,30 @@ _DISTRICT_COLUMN_KEYWORDS: Final[tuple[str, ...]] = ("district", "जिल्�
 # match wins, so list the most specific entries first. This shape tolerates
 # the MoF "X Grant (Y)" pattern AND short-form headers like "Conditional
 # Current" without depending on punctuation or budget-head codes.
+#
+# Equalization rules cover TWO naming conventions used by MoF:
+#   - Long form (fixture / some exports): "Equalization Grant (Minimum)" etc.
+#     → contains "equalization" + "minimum"/"formula"/"performance"
+#   - Short form (real Fiscal Transfer_2082_82.xlsx Sheet2 column headers):
+#     "Minimum Grant", "Formula Based Grant", "Performance Based Grant"
+#     → do NOT contain "equalization"; matched by standalone keyword pairs.
+# Total columns ("Total Equalization", "Total Conditional", etc.) are
+# excluded before rule matching in ``_match_grant_type`` — they never reach
+# the per-rule checks.
 _GRANT_HEADER_RULES: Final[tuple[tuple[tuple[str, ...], str], ...]] = (
-    # Equalization (3 sub-types) — order: most-specific keyword first.
+    # Equalization — long form: "Equalization Grant (Minimum)" etc.
     (("equalization", "minimum"), "equalization_minimum"),
     (("equalization", "formula"), "equalization_formula"),
     (("equalization", "performance"), "equalization_performance"),
+    # Equalization — short form: "Minimum Grant", "Formula Based Grant",
+    # "Performance Based Grant" (real file; no "equalization" prefix).
+    # Listed AFTER the long-form rules so the long form wins on any header
+    # that contains both "equalization" and the sub-type keyword.
+    (("minimum", "grant"), "equalization_minimum"),
+    (("formula", "grant"), "equalization_formula"),
+    (("formula", "based"), "equalization_formula"),
+    (("performance", "grant"), "equalization_performance"),
+    (("performance", "based"), "equalization_performance"),
     # Conditional (current + capital)
     (("conditional", "current"), "conditional_current"),
     (("conditional", "recurrent"), "conditional_current"),
@@ -130,7 +174,17 @@ def _safe_float(value: object) -> float | None:
 
 
 def _match_grant_type(header_text: str) -> str | None:
+    """Return the grant_type slug for a column header, or None.
+
+    Total-aggregator columns ("Total Equalization", "Total Conditional",
+    "Total Special", "Grand Total", etc.) are excluded first to prevent
+    double-counting. Any header containing the word "total" is skipped
+    before the keyword rules are evaluated.
+    """
     lowered = header_text.lower()
+    # Exclude any aggregator / total column — must come before rule matching.
+    if "total" in lowered:
+        return None
     for required, enum_value in _GRANT_HEADER_RULES:
         if all(token in lowered for token in required):
             return enum_value
@@ -180,24 +234,126 @@ def _detect_name_columns(
 
 
 def _read_workbook(path: Path) -> tuple[pd.DataFrame | None, ParserError | None]:
+    # `engine='openpyxl'` is the canonical XLSX reader (openpyxl is a pinned
+    # dependency in scrapers/pyproject.toml).
+    def _read(sheet: str | int) -> pd.DataFrame:
+        return pd.read_excel(path, sheet_name=sheet, header=None, dtype=object, engine="openpyxl")
+
     try:
-        # `engine='openpyxl'` is the canonical XLSX reader (openpyxl is a
-        # pinned dependency in scrapers/pyproject.toml).
-        df = pd.read_excel(
-            path,
-            sheet_name=_DEFAULT_TRANSFER_SHEET,
-            header=None,
-            dtype=object,
-            engine="openpyxl",
-        )
+        df = _read(_DEFAULT_TRANSFER_SHEET)
     except FileNotFoundError as exc:
         return None, ParserError(error_class="Other", error_detail=f"source file not found: {exc}")
-    except (OSError, ValueError) as exc:
+    except ValueError:
+        # Named transfer sheet absent — the Cleaned/ exports ship the data on
+        # a differently-named sheet (e.g. 'Sheet2'). Fall back to the first
+        # sheet by position rather than failing the whole parse.
+        try:
+            df = _read(0)
+        except (OSError, ValueError) as exc:
+            return None, ParserError(
+                error_class="EncodingError",
+                error_detail=f"xlsx read failed (name + positional fallback): {exc}",
+            )
+    except OSError as exc:
         return None, ParserError(
             error_class="EncodingError",
             error_detail=f"xlsx read failed: {exc}",
         )
     return df, None
+
+
+def _detect_identity_columns(
+    df: pd.DataFrame,
+    header_row: int,
+) -> tuple[int | None, int | None, int | None]:
+    """Return ``(code_col, name_en_col, type_col)`` from the header row.
+
+    Present in the cleaned Fiscal Transfer XLSX (which is self-identifying via
+    an 8-digit federal Code column); absent in the minimal test fixture, which
+    falls back to fuzzy name resolution.
+    """
+    code_col: int | None = None
+    name_en_col: int | None = None
+    type_col: int | None = None
+    for col_idx in range(len(df.columns)):
+        text = _cell_text(df.iat[header_row, col_idx]).lower()
+        if not text:
+            continue
+        if code_col is None and text in {"code", "संकेत", "सङ्केत"}:
+            code_col = col_idx
+        if name_en_col is None and any(k in text for k in _NAME_EN_COLUMN_KEYWORDS):
+            name_en_col = col_idx
+        # "Local Level Type" — must contain 'type' but not be a grant column.
+        if (
+            type_col is None
+            and any(k in text for k in _TYPE_COLUMN_KEYWORDS)
+            and _match_grant_type(text) is None
+        ):
+            type_col = col_idx
+    return code_col, name_en_col, type_col
+
+
+def _direct_identity(
+    df: pd.DataFrame,
+    raw_idx: int,
+    code_col: int,
+    name_en_col: int | None,
+    name_col: int,
+    district_col: int | None,
+    type_col: int | None,
+) -> MunicipalityMatch | None:
+    """Build a MunicipalityMatch straight from the row's own columns.
+
+    Returns None when the code is not a parseable 8-digit federal code or the
+    local-level type is unrecognised (e.g. a stray district aggregate row).
+    """
+    code_raw = _cell_text(df.iat[raw_idx, code_col]).replace(".0", "")
+    digits = "".join(ch for ch in code_raw if ch.isdigit())
+    if len(digits) != _FEDERAL_CODE_LEN:
+        return None
+    type_raw = _cell_text(df.iat[raw_idx, type_col]).lower() if type_col is not None else ""
+    slug = _TYPE_LABEL_TO_SLUG.get(type_raw)
+    if slug is None:
+        return None
+    name_en = _cell_text(df.iat[raw_idx, name_en_col]) if name_en_col is not None else ""
+    name_ne = _cell_text(df.iat[raw_idx, name_col])
+    district = _cell_text(df.iat[raw_idx, district_col]) if district_col is not None else ""
+    return MunicipalityMatch(
+        federal_code=digits,
+        name_en=name_en or name_ne,
+        name_ne=name_ne,
+        local_level_type=slug,
+        district_en=district,
+        score=100.0,
+    )
+
+
+def _row_identity(  # noqa: PLR0913 — column indices threaded through; cohesive
+    df: pd.DataFrame,
+    raw_idx: int,
+    code_col: int | None,
+    name_en_col: int | None,
+    name_col: int,
+    district_col: int | None,
+    type_col: int | None,
+    name_raw: str,
+    district_raw: str,
+    errors: list[ParserError],
+) -> MunicipalityMatch | None:
+    """Resolve one row's canonical identity.
+
+    Code-column path (self-identifying workbook) is exact; returning None there
+    is a silent skip (footer/aggregate row). Fuzzy fallback (no Code column)
+    appends a RegexMismatch error on miss.
+    """
+    if code_col is not None:
+        return _direct_identity(
+            df, raw_idx, code_col, name_en_col, name_col, district_col, type_col
+        )
+    match, resolve_err = _resolve_row(name_raw, district_raw)
+    if match is None and resolve_err is not None:
+        errors.append(resolve_err)
+    return match
 
 
 def _resolve_row(
@@ -274,6 +430,11 @@ def parse(
         )
         return _result("failure", rows, errors)
 
+    # If the workbook is self-identifying (has a federal Code column), read the
+    # code directly — exact and 1:1. Otherwise fall back to fuzzy name
+    # resolution (the minimal test fixture has no Code column).
+    code_col, name_en_col, type_col = _detect_identity_columns(df, header_row)
+
     for raw_idx in range(header_row + 1, len(df)):
         name_raw = _cell_text(df.iat[raw_idx, name_col])
         district_raw = _cell_text(df.iat[raw_idx, district_col]) if district_col is not None else ""
@@ -286,10 +447,11 @@ def parse(
         if any(tok in name_lower for tok in ("total", "जम्मा", "कुल")):
             continue
 
-        match, resolve_err = _resolve_row(name_raw, district_raw)
+        match = _row_identity(
+            df, raw_idx, code_col, name_en_col, name_col, district_col, type_col,
+            name_raw, district_raw, errors,
+        )
         if match is None:
-            if resolve_err is not None:
-                errors.append(resolve_err)
             continue
 
         for col_idx, grant_type in grant_columns.items():

@@ -12,11 +12,23 @@
  *     for revision detection across monthly snapshots
  */
 
+import { sql } from 'drizzle-orm';
 import { index, numeric, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 import { bankClassEnum, confidenceGradeEnum, reportingPeriodTypeEnum } from './enums';
 import { entities } from './entities';
 import { sourceDocuments } from './source-documents';
+
+/**
+ * Sentinel UUID standing in for "no bank entity" (system-aggregate rows where
+ * `bank_entity_id IS NULL`). Postgres treats NULLs as DISTINCT in unique
+ * indexes, so a plain unique index over `bank_entity_id` never matches NULL
+ * rows on `ON CONFLICT DO NOTHING` — re-ingesting a month would duplicate every
+ * aggregate row. Coalescing NULL to this fixed UUID inside the unique index
+ * makes those rows collide, restoring idempotent re-ingest. The value is the
+ * all-zeros UUID, which entities.id (a random v4 UUID) can never take.
+ */
+export const BANK_ENTITY_NULL_SENTINEL = '00000000-0000-0000-0000-000000000000';
 
 export const bankingSectorFacts = pgTable(
   'banking_sector_facts',
@@ -66,9 +78,14 @@ export const bankingSectorFacts = pgTable(
     promotedBy: text('promoted_by').notNull(),
   },
   (table) => [
+    // NULL bank_entity_id is coalesced to BANK_ENTITY_NULL_SENTINEL so that
+    // system-aggregate rows (NULL entity) collide on re-ingest. A plain unique
+    // index over bank_entity_id would treat each NULL as DISTINCT, letting
+    // onConflictDoNothing re-insert the ~36 aggregate rows per month. See the
+    // BANK_ENTITY_NULL_SENTINEL doc-comment above for the full rationale.
     uniqueIndex('banking_facts_unique_idx').on(
       table.bankClass,
-      table.bankEntityId,
+      sql`coalesce(${table.bankEntityId}, ${sql.raw(`'${BANK_ENTITY_NULL_SENTINEL}'`)}::uuid)`,
       table.indicatorSlug,
       table.reportingPeriodBs,
       table.reportingPeriodType,

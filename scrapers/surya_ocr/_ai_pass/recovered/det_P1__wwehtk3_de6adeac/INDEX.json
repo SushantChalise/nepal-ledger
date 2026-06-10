@@ -1,0 +1,69 @@
+{
+  "doc": "सार्वजनिक संस्थानको वार्षिक स्थिति समीक्षा २०७९ (संक्षिप्त झलक)_wwehtk3.pdf",
+  "tables_with_data": 10,
+  "fully_reconcile": 9,
+  "partial": 1,
+  "reconciled_columns": 46,
+  "tables": [
+    {
+      "page": 25,
+      "all_reconcile": true,
+      "accepted_columns": ["2075/76", "2076/77", "2077/78"],
+      "worst_residual": 1
+    },
+    {
+      "page": 27,
+      "all_reconcile": true,
+      "accepted_columns": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"],
+      "worst_residual": 0
+    },
+    {
+      "page": 49,
+      "all_reconcile": true,
+      "accepted_columns": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"],
+      "worst_residual": 1
+    },
+    {
+      "page": 50,
+      "all_reconcile": true,
+      "accepted_columns": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"],
+      "worst_residual": 1
+    },
+    {
+      "page": 51,
+      "all_reconcile": true,
+      "accepted_columns": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"],
+      "worst_residual": 1
+    },
+    {
+      "page": 52,
+      "all_reconcile": true,
+      "accepted_columns": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"],
+      "worst_residual": 2
+    },
+    {
+      "page": 53,
+      "all_reconcile": true,
+      "accepted_columns": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"],
+      "worst_residual": 1
+    },
+    {
+      "page": 56,
+      "all_reconcile": true,
+      "accepted_columns": ["2073/74", "2074/75", "2075/76", "2076/77", "2076/77"],
+      "worst_residual": 1
+    },
+    {
+      "page": 57,
+      "all_reconcile": false,
+      "accepted_columns": ["2073/74", "2075/76", "2077/78"],
+      "worst_residual": 6726
+    },
+    {
+      "page": 58,
+      "all_reconcile": true,
+      "accepted_columns": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"],
+      "worst_residual": 0
+    }
+  ]
+}

@@ -253,3 +253,45 @@ Repositories query `approved_indicator_values` exclusively. The staging/validati
 - Parser implementations: `scrapers/<source-id>/parser.py`.
 - Storage policy: [CLOUD_STACK.md](CLOUD_STACK.md) §"Supabase Storage" + [ADR-0004](decisions/0004-supabase-storage-instead-of-r2.md).
 - Confidence grade rules: [STRATEGY.md](STRATEGY.md) §"The Visible Fact Ledger".
+
+---
+
+## Operational reality (2026-06)
+
+The pipeline is now live. Five ingest CLIs are operational. They fall into two distinct patterns:
+
+### Pattern A: Staging → validation → approved (indicator time-series)
+
+CMEFs (`ingest:cmefs`) and NCPI (`ingest:ncpi`) flow through the full pipeline described above — `source_documents` → `parser_runs` → `staging_indicator_values` → validation job → `approved_indicator_values`. These CLIs use the `ingestSource()` orchestrator from `src/lib/ingestion/index.ts`.
+
+### Pattern B: Direct fact-table ingest (typed domain facts)
+
+BFI monthly (`ingest:bfi-monthly`), fiscal transfers (`ingest:fiscal-transfers`), and census (`ingest:census-2021`) write directly to **separate typed fact tables** — they do not go through the staging pipeline:
+
+| CLI | Fact table | Key |
+|-----|-----------|-----|
+| `ingest:bfi-monthly` | `banking_sector_facts` | `(bank_class, bank_entity_id, indicator_slug, reporting_period_bs, reporting_period_type)` |
+| `ingest:fiscal-transfers` | `local_government_fiscal_transfers` | `(local_level_entity_id, fiscal_year_bs, grant_type)` |
+| `ingest:census-2021` | `census_facts` | `(entity_id, indicator_slug, census_year)` |
+
+All three use `ON CONFLICT DO NOTHING` on a unique natural-key index, so re-runs are idempotent. Confidence is A by default because the sources are authoritative (NRB official statistics, MoF cleaned transfer data, CBS census).
+
+These tables are not queried by `findLatestIndicatorValue` (which reads `approved_indicator_values`). Feature code that needs BFI, fiscal-transfer, or census data imports from the typed repositories for those tables directly.
+
+### Provenance note
+
+All five CLIs self-create their `source_documents` row (content hash + deterministic storage key). File bytes are not yet uploaded to Supabase Storage — that archival step is a shared follow-up for all CLIs. See [ADR-0010](decisions/0010-ingest-cli-conventions.md) §"Source-document provenance".
+
+### Unit integrity
+
+The fiscal transfer XLSX amounts are **NPR crore** (`npr_crore`). This was established and verified against the published FY 2082/83 intergovernmental transfer budget (32,157 crore = NPR 321 billion). All new numeric sources must be reconciled by order-of-magnitude against a published aggregate total before ingest is trusted. See [ADR-0011](decisions/0011-fiscal-data-units-and-identity.md) for the verification protocol.
+
+### Related ADRs
+
+- [ADR-0010](decisions/0010-ingest-cli-conventions.md) — ingest CLI conventions (Node flags, provenance, Python spawning, batched entity resolution)
+- [ADR-0011](decisions/0011-fiscal-data-units-and-identity.md) — NPR crore unit + federal-code-direct identity for fiscal transfers
+- [ADR-0012](decisions/0012-viz-adapter-cast-location.md) — D3 type-bridges in `src/lib/viz/adapters/`
+
+### Runbook
+
+For step-by-step invocation of each CLI against live Supabase, see [INGEST_RUNBOOK.md](INGEST_RUNBOOK.md).

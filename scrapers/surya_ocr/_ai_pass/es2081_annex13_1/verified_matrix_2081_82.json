@@ -1,0 +1,1228 @@
+{
+  "source_pdf": "Financial Data/mof_documents/economic_survey/Economic_Survey_2081-82.pdf",
+  "source_page": 475,
+  "table": "अनुसूची १३.१ प्रदेशगत कुल मूल्य अभिवृद्धि (औद्योगिक वर्गीकरण अनुसार)",
+  "measure": "gross_value_added_basic_prices",
+  "unit": "npr_crore",
+  "price_basis": "current",
+  "fiscal_year_bs": "2081/82",
+  "fiscal_year_ad": "2024/25",
+  "extraction_method": "surya-ocr",
+  "verification": "Mother render-verified (Matrix-8 column strips), dual-reconciled",
+  "confidence_grade": "B",
+  "provinces": [
+    "koshi",
+    "madhes",
+    "bagamati",
+    "gandaki",
+    "lumbini",
+    "karnali",
+    "sudur-pashchim",
+    "nepal"
+  ],
+  "sectors": [
+    {
+      "idx": 0,
+      "slug": "agriculture-forestry-fishing",
+      "label_ne": "कृषि, वन र मत्स्यपालन"
+    },
+    {
+      "idx": 1,
+      "slug": "mining-quarrying",
+      "label_ne": "खानी तथा उत्खनन्"
+    },
+    {
+      "idx": 2,
+      "slug": "manufacturing",
+      "label_ne": "उत्पादनमूलक उद्योग"
+    },
+    {
+      "idx": 3,
+      "slug": "electricity-gas-steam-ac",
+      "label_ne": "विद्युत, ग्यास, वाष्प तथा वातानुकलित आपूर्ति"
+    },
+    {
+      "idx": 4,
+      "slug": "water-supply-sewerage-waste",
+      "label_ne": "पानी आपूर्ति, ढल, फोहोर व्यवस्थापन"
+    },
+    {
+      "idx": 5,
+      "slug": "construction",
+      "label_ne": "निर्माण"
+    },
+    {
+      "idx": 6,
+      "slug": "wholesale-retail-trade-vehicle-repair",
+      "label_ne": "थोक तथा खुद्रा व्यापार"
+    },
+    {
+      "idx": 7,
+      "slug": "transport-storage",
+      "label_ne": "यातायात तथा भण्डारण"
+    },
+    {
+      "idx": 8,
+      "slug": "accommodation-food-service",
+      "label_ne": "आवास तथा भोजन सेवा"
+    },
+    {
+      "idx": 9,
+      "slug": "information-communication",
+      "label_ne": "सुचना तथा सञ्चार"
+    },
+    {
+      "idx": 10,
+      "slug": "financial-insurance",
+      "label_ne": "वित्तीय तथा बीमा"
+    },
+    {
+      "idx": 11,
+      "slug": "real-estate",
+      "label_ne": "घरजग्गा कारोवार"
+    },
+    {
+      "idx": 12,
+      "slug": "professional-scientific-technical",
+      "label_ne": "पेशागत, वैज्ञानिक तथा प्राविधिक"
+    },
+    {
+      "idx": 13,
+      "slug": "administrative-support-service",
+      "label_ne": "प्रशासनिक तथा सहयोगी सेवा"
+    },
+    {
+      "idx": 14,
+      "slug": "public-administration-defence",
+      "label_ne": "सार्वजनिक प्रशासन, रक्षा"
+    },
+    {
+      "idx": 15,
+      "slug": "education",
+      "label_ne": "शिक्षा"
+    },
+    {
+      "idx": 16,
+      "slug": "human-health-social-work",
+      "label_ne": "मानव स्वास्थ्य तथा सामाजिक कार्य"
+    },
+    {
+      "idx": 17,
+      "slug": "other-service",
+      "label_ne": "अन्य सेवा"
+    }
+  ],
+  "cells": [
+    {
+      "province": "koshi",
+      "sector_idx": 0,
+      "sector_slug": "agriculture-forestry-fishing",
+      "value": 29119
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 1,
+      "sector_slug": "mining-quarrying",
+      "value": 312
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 2,
+      "sector_slug": "manufacturing",
+      "value": 5813
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 3,
+      "sector_slug": "electricity-gas-steam-ac",
+      "value": 2051
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 4,
+      "sector_slug": "water-supply-sewerage-waste",
+      "value": 385
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 5,
+      "sector_slug": "construction",
+      "value": 5200
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 6,
+      "sector_slug": "wholesale-retail-trade-vehicle-repair",
+      "value": 8095
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 7,
+      "sector_slug": "transport-storage",
+      "value": 4929
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 8,
+      "sector_slug": "accommodation-food-service",
+      "value": 1968
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 9,
+      "sector_slug": "information-communication",
+      "value": 1743
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 10,
+      "sector_slug": "financial-insurance",
+      "value": 3254
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 11,
+      "sector_slug": "real-estate",
+      "value": 5627
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 12,
+      "sector_slug": "professional-scientific-technical",
+      "value": 492
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 13,
+      "sector_slug": "administrative-support-service",
+      "value": 275
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 14,
+      "sector_slug": "public-administration-defence",
+      "value": 7090
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 15,
+      "sector_slug": "education",
+      "value": 6712
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 16,
+      "sector_slug": "human-health-social-work",
+      "value": 1765
+    },
+    {
+      "province": "koshi",
+      "sector_idx": 17,
+      "sector_slug": "other-service",
+      "value": 677
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 0,
+      "sector_slug": "agriculture-forestry-fishing",
+      "value": 26013
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 1,
+      "sector_slug": "mining-quarrying",
+      "value": 104
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 2,
+      "sector_slug": "manufacturing",
+      "value": 3791
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 3,
+      "sector_slug": "electricity-gas-steam-ac",
+      "value": 437
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 4,
+      "sector_slug": "water-supply-sewerage-waste",
+      "value": 432
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 5,
+      "sector_slug": "construction",
+      "value": 2782
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 6,
+      "sector_slug": "wholesale-retail-trade-vehicle-repair",
+      "value": 9704
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 7,
+      "sector_slug": "transport-storage",
+      "value": 4998
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 8,
+      "sector_slug": "accommodation-food-service",
+      "value": 635
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 9,
+      "sector_slug": "information-communication",
+      "value": 1768
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 10,
+      "sector_slug": "financial-insurance",
+      "value": 2495
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 11,
+      "sector_slug": "real-estate",
+      "value": 1922
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 12,
+      "sector_slug": "professional-scientific-technical",
+      "value": 282
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 13,
+      "sector_slug": "administrative-support-service",
+      "value": 266
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 14,
+      "sector_slug": "public-administration-defence",
+      "value": 6655
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 15,
+      "sector_slug": "education",
+      "value": 6888
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 16,
+      "sector_slug": "human-health-social-work",
+      "value": 1279
+    },
+    {
+      "province": "madhes",
+      "sector_idx": 17,
+      "sector_slug": "other-service",
+      "value": 368
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 0,
+      "sector_slug": "agriculture-forestry-fishing",
+      "value": 23179
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 1,
+      "sector_slug": "mining-quarrying",
+      "value": 1224
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 2,
+      "sector_slug": "manufacturing",
+      "value": 9651
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 3,
+      "sector_slug": "electricity-gas-steam-ac",
+      "value": 3257
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 4,
+      "sector_slug": "water-supply-sewerage-waste",
+      "value": 531
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 5,
+      "sector_slug": "construction",
+      "value": 7203
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 6,
+      "sector_slug": "wholesale-retail-trade-vehicle-repair",
+      "value": 44303
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 7,
+      "sector_slug": "transport-storage",
+      "value": 18310
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 8,
+      "sector_slug": "accommodation-food-service",
+      "value": 5269
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 9,
+      "sector_slug": "information-communication",
+      "value": 3256
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 10,
+      "sector_slug": "financial-insurance",
+      "value": 22025
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 11,
+      "sector_slug": "real-estate",
+      "value": 29814
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 12,
+      "sector_slug": "professional-scientific-technical",
+      "value": 3469
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 13,
+      "sector_slug": "administrative-support-service",
+      "value": 2829
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 14,
+      "sector_slug": "public-administration-defence",
+      "value": 8658
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 15,
+      "sector_slug": "education",
+      "value": 9063
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 16,
+      "sector_slug": "human-health-social-work",
+      "value": 2673
+    },
+    {
+      "province": "bagamati",
+      "sector_idx": 17,
+      "sector_slug": "other-service",
+      "value": 1737
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 0,
+      "sector_slug": "agriculture-forestry-fishing",
+      "value": 13085
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 1,
+      "sector_slug": "mining-quarrying",
+      "value": 322
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 2,
+      "sector_slug": "manufacturing",
+      "value": 1544
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 3,
+      "sector_slug": "electricity-gas-steam-ac",
+      "value": 2465
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 4,
+      "sector_slug": "water-supply-sewerage-waste",
+      "value": 188
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 5,
+      "sector_slug": "construction",
+      "value": 3753
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 6,
+      "sector_slug": "wholesale-retail-trade-vehicle-repair",
+      "value": 3853
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 7,
+      "sector_slug": "transport-storage",
+      "value": 2767
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 8,
+      "sector_slug": "accommodation-food-service",
+      "value": 2324
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 9,
+      "sector_slug": "information-communication",
+      "value": 1136
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 10,
+      "sector_slug": "financial-insurance",
+      "value": 2910
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 11,
+      "sector_slug": "real-estate",
+      "value": 2429
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 12,
+      "sector_slug": "professional-scientific-technical",
+      "value": 319
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 13,
+      "sector_slug": "administrative-support-service",
+      "value": 154
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 14,
+      "sector_slug": "public-administration-defence",
+      "value": 5558
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 15,
+      "sector_slug": "education",
+      "value": 4005
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 16,
+      "sector_slug": "human-health-social-work",
+      "value": 1160
+    },
+    {
+      "province": "gandaki",
+      "sector_idx": 17,
+      "sector_slug": "other-service",
+      "value": 315
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 0,
+      "sector_slug": "agriculture-forestry-fishing",
+      "value": 23744
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 1,
+      "sector_slug": "mining-quarrying",
+      "value": 391
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 2,
+      "sector_slug": "manufacturing",
+      "value": 4305
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 3,
+      "sector_slug": "electricity-gas-steam-ac",
+      "value": 637
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 4,
+      "sector_slug": "water-supply-sewerage-waste",
+      "value": 418
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 5,
+      "sector_slug": "construction",
+      "value": 4929
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 6,
+      "sector_slug": "wholesale-retail-trade-vehicle-repair",
+      "value": 7864
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 7,
+      "sector_slug": "transport-storage",
+      "value": 5785
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 8,
+      "sector_slug": "accommodation-food-service",
+      "value": 1573
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 9,
+      "sector_slug": "information-communication",
+      "value": 1637
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 10,
+      "sector_slug": "financial-insurance",
+      "value": 3742
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 11,
+      "sector_slug": "real-estate",
+      "value": 3403
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 12,
+      "sector_slug": "professional-scientific-technical",
+      "value": 410
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 13,
+      "sector_slug": "administrative-support-service",
+      "value": 266
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 14,
+      "sector_slug": "public-administration-defence",
+      "value": 7869
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 15,
+      "sector_slug": "education",
+      "value": 7408
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 16,
+      "sector_slug": "human-health-social-work",
+      "value": 1723
+    },
+    {
+      "province": "lumbini",
+      "sector_idx": 17,
+      "sector_slug": "other-service",
+      "value": 436
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 0,
+      "sector_slug": "agriculture-forestry-fishing",
+      "value": 7093
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 1,
+      "sector_slug": "mining-quarrying",
+      "value": 37
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 2,
+      "sector_slug": "manufacturing",
+      "value": 230
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 3,
+      "sector_slug": "electricity-gas-steam-ac",
+      "value": 147
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 4,
+      "sector_slug": "water-supply-sewerage-waste",
+      "value": 128
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 5,
+      "sector_slug": "construction",
+      "value": 1617
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 6,
+      "sector_slug": "wholesale-retail-trade-vehicle-repair",
+      "value": 1330
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 7,
+      "sector_slug": "transport-storage",
+      "value": 614
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 8,
+      "sector_slug": "accommodation-food-service",
+      "value": 744
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 9,
+      "sector_slug": "information-communication",
+      "value": 297
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 10,
+      "sector_slug": "financial-insurance",
+      "value": 407
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 11,
+      "sector_slug": "real-estate",
+      "value": 425
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 12,
+      "sector_slug": "professional-scientific-technical",
+      "value": 76
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 13,
+      "sector_slug": "administrative-support-service",
+      "value": 39
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 14,
+      "sector_slug": "public-administration-defence",
+      "value": 5242
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 15,
+      "sector_slug": "education",
+      "value": 3277
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 16,
+      "sector_slug": "human-health-social-work",
+      "value": 687
+    },
+    {
+      "province": "karnali",
+      "sector_idx": 17,
+      "sector_slug": "other-service",
+      "value": 127
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 0,
+      "sector_slug": "agriculture-forestry-fishing",
+      "value": 13140
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 1,
+      "sector_slug": "mining-quarrying",
+      "value": 88
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 2,
+      "sector_slug": "manufacturing",
+      "value": 1446
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 3,
+      "sector_slug": "electricity-gas-steam-ac",
+      "value": 330
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 4,
+      "sector_slug": "water-supply-sewerage-waste",
+      "value": 198
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 5,
+      "sector_slug": "construction",
+      "value": 2679
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 6,
+      "sector_slug": "wholesale-retail-trade-vehicle-repair",
+      "value": 3148
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 7,
+      "sector_slug": "transport-storage",
+      "value": 1356
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 8,
+      "sector_slug": "accommodation-food-service",
+      "value": 742
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 9,
+      "sector_slug": "information-communication",
+      "value": 589
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 10,
+      "sector_slug": "financial-insurance",
+      "value": 932
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 11,
+      "sector_slug": "real-estate",
+      "value": 990
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 12,
+      "sector_slug": "professional-scientific-technical",
+      "value": 161
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 13,
+      "sector_slug": "administrative-support-service",
+      "value": 48
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 14,
+      "sector_slug": "public-administration-defence",
+      "value": 5845
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 15,
+      "sector_slug": "education",
+      "value": 4998
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 16,
+      "sector_slug": "human-health-social-work",
+      "value": 977
+    },
+    {
+      "province": "sudur-pashchim",
+      "sector_idx": 17,
+      "sector_slug": "other-service",
+      "value": 178
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 0,
+      "sector_slug": "agriculture-forestry-fishing",
+      "value": 135373
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 1,
+      "sector_slug": "mining-quarrying",
+      "value": 2478
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 2,
+      "sector_slug": "manufacturing",
+      "value": 26780
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 3,
+      "sector_slug": "electricity-gas-steam-ac",
+      "value": 9324
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 4,
+      "sector_slug": "water-supply-sewerage-waste",
+      "value": 2279
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 5,
+      "sector_slug": "construction",
+      "value": 28164
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 6,
+      "sector_slug": "wholesale-retail-trade-vehicle-repair",
+      "value": 78296
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 7,
+      "sector_slug": "transport-storage",
+      "value": 38758
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 8,
+      "sector_slug": "accommodation-food-service",
+      "value": 13255
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 9,
+      "sector_slug": "information-communication",
+      "value": 10425
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 10,
+      "sector_slug": "financial-insurance",
+      "value": 35766
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 11,
+      "sector_slug": "real-estate",
+      "value": 44610
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 12,
+      "sector_slug": "professional-scientific-technical",
+      "value": 5208
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 13,
+      "sector_slug": "administrative-support-service",
+      "value": 3877
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 14,
+      "sector_slug": "public-administration-defence",
+      "value": 46916
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 15,
+      "sector_slug": "education",
+      "value": 42351
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 16,
+      "sector_slug": "human-health-social-work",
+      "value": 10264
+    },
+    {
+      "province": "nepal",
+      "sector_idx": 17,
+      "sector_slug": "other-service",
+      "value": 3836
+    }
+  ],
+  "aggregates": [
+    {
+      "province": "koshi",
+      "gva_basic": 85507,
+      "net_product_tax": 11566,
+      "gdp_producer": 97074
+    },
+    {
+      "province": "madhes",
+      "gva_basic": 70818,
+      "net_product_tax": 9579,
+      "gdp_producer": 80397
+    },
+    {
+      "province": "bagamati",
+      "gva_basic": 196452,
+      "net_product_tax": 26572,
+      "gdp_producer": 223023
+    },
+    {
+      "province": "gandaki",
+      "gva_basic": 48285,
+      "net_product_tax": 6531,
+      "gdp_producer": 54816
+    },
+    {
+      "province": "lumbini",
+      "gva_basic": 76537,
+      "net_product_tax": 10352,
+      "gdp_producer": 86890
+    },
+    {
+      "province": "karnali",
+      "gva_basic": 22514,
+      "net_product_tax": 3045,
+      "gdp_producer": 25559
+    },
+    {
+      "province": "sudur-pashchim",
+      "gva_basic": 37844,
+      "net_product_tax": 5119,
+      "gdp_producer": 42963
+    },
+    {
+      "province": "nepal",
+      "gva_basic": 537959,
+      "net_product_tax": 72763,
+      "gdp_producer": 610722
+    }
+  ],
+  "reconciliation": {
+    "per_province": [
+      {
+        "province": "koshi",
+        "sum_sectors": 85507,
+        "gva_printed": 85507,
+        "residual": -1,
+        "gva_plus_tax": 97073,
+        "gdp_printed": 97074
+      },
+      {
+        "province": "madhes",
+        "sum_sectors": 70819,
+        "gva_printed": 70818,
+        "residual": 0,
+        "gva_plus_tax": 80397,
+        "gdp_printed": 80397
+      },
+      {
+        "province": "bagamati",
+        "sum_sectors": 196451,
+        "gva_printed": 196452,
+        "residual": 1,
+        "gva_plus_tax": 223024,
+        "gdp_printed": 223023
+      },
+      {
+        "province": "gandaki",
+        "sum_sectors": 48287,
+        "gva_printed": 48285,
+        "residual": 0,
+        "gva_plus_tax": 54816,
+        "gdp_printed": 54816
+      },
+      {
+        "province": "lumbini",
+        "sum_sectors": 76540,
+        "gva_printed": 76537,
+        "residual": -1,
+        "gva_plus_tax": 86889,
+        "gdp_printed": 86890
+      },
+      {
+        "province": "karnali",
+        "sum_sectors": 22517,
+        "gva_printed": 22514,
+        "residual": 0,
+        "gva_plus_tax": 25559,
+        "gdp_printed": 25559
+      },
+      {
+        "province": "sudur-pashchim",
+        "sum_sectors": 37845,
+        "gva_printed": 37844,
+        "residual": 0,
+        "gva_plus_tax": 42963,
+        "gdp_printed": 42963
+      }
+    ],
+    "per_sector": [
+      {
+        "sector_idx": 0,
+        "sum_provinces": 135373,
+        "national": 135373,
+        "residual": 0
+      },
+      {
+        "sector_idx": 1,
+        "sum_provinces": 2478,
+        "national": 2478,
+        "residual": 0
+      },
+      {
+        "sector_idx": 2,
+        "sum_provinces": 26780,
+        "national": 26780,
+        "residual": 0
+      },
+      {
+        "sector_idx": 3,
+        "sum_provinces": 9324,
+        "national": 9324,
+        "residual": 0
+      },
+      {
+        "sector_idx": 4,
+        "sum_provinces": 2280,
+        "national": 2279,
+        "residual": 1
+      },
+      {
+        "sector_idx": 5,
+        "sum_provinces": 28163,
+        "national": 28164,
+        "residual": -1
+      },
+      {
+        "sector_idx": 6,
+        "sum_provinces": 78297,
+        "national": 78296,
+        "residual": 1
+      },
+      {
+        "sector_idx": 7,
+        "sum_provinces": 38759,
+        "national": 38758,
+        "residual": 1
+      },
+      {
+        "sector_idx": 8,
+        "sum_provinces": 13255,
+        "national": 13255,
+        "residual": 0
+      },
+      {
+        "sector_idx": 9,
+        "sum_provinces": 10426,
+        "national": 10425,
+        "residual": 1
+      },
+      {
+        "sector_idx": 10,
+        "sum_provinces": 35765,
+        "national": 35766,
+        "residual": -1
+      },
+      {
+        "sector_idx": 11,
+        "sum_provinces": 44610,
+        "national": 44610,
+        "residual": 0
+      },
+      {
+        "sector_idx": 12,
+        "sum_provinces": 5209,
+        "national": 5208,
+        "residual": 1
+      },
+      {
+        "sector_idx": 13,
+        "sum_provinces": 3877,
+        "national": 3877,
+        "residual": 0
+      },
+      {
+        "sector_idx": 14,
+        "sum_provinces": 46917,
+        "national": 46916,
+        "residual": 1
+      },
+      {
+        "sector_idx": 15,
+        "sum_provinces": 42351,
+        "national": 42351,
+        "residual": 0
+      },
+      {
+        "sector_idx": 16,
+        "sum_provinces": 10264,
+        "national": 10264,
+        "residual": 0
+      },
+      {
+        "sector_idx": 17,
+        "sum_provinces": 3838,
+        "national": 3836,
+        "residual": 2
+      },
+      {
+        "sector_idx": 18,
+        "sum_provinces": 537957,
+        "national": 537959,
+        "residual": -2
+      },
+      {
+        "sector_idx": 19,
+        "sum_provinces": 72764,
+        "national": 72763,
+        "residual": 1
+      },
+      {
+        "sector_idx": 20,
+        "sum_provinces": 610722,
+        "national": 610722,
+        "residual": 0
+      }
+    ],
+    "worst_residual_crore": {
+      "column": 3,
+      "row": 2
+    },
+    "cross_source": {
+      "national_gdp": 610722,
+      "dne_gdp_nominal_2081_82_crore": 610722,
+      "match": true
+    }
+  }
+}

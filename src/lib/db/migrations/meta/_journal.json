@@ -22,6 +22,27 @@
       "when": 1778759523967,
       "tag": "0002_0003_source_registry_tier",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1780825883817,
+      "tag": "0003_0004_banking_facts_null_dedup",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1780829264855,
+      "tag": "0004_0005_dne_facts",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1780855104135,
+      "tag": "0005_0006_foreign_aid_facts",
+      "breakpoints": true
     }
   ]
 }

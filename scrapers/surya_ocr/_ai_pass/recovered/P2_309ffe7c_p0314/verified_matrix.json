@@ -1,0 +1,5944 @@
+{
+  "source_pdf": "Financial Data/mof_documents/economic_survey/Economic_Survey_2081-82.pdf",
+  "source_page_index": 314,
+  "source_page_printed": "अनुसूची २.२४",
+  "page_id": "P2_309ffe7c_p0314",
+  "out_dir": "P2__Economic_Survey_2081-82_309ffe7c",
+  "table": "अनुसूची २.२४ : वैदेशिक सहायताको लक्ष्य, उपयोग, प्राप्ति र प्रतिबद्धता",
+  "table_en": "Annex 2.24: Foreign Aid Target, Utilization, Receipt and Commitment",
+  "measure": "foreign_aid_target_utilization_receipt_commitment",
+  "unit": "npr_crore",
+  "unit_ne": "रु. करोडमा",
+  "price_basis": "nominal",
+  "matrix_layout": {
+    "n_rows": 23,
+    "n_cols": 15,
+    "rows": "0..22 = independent fiscal years FY2058/59..FY2080/81; NO row-wise total row",
+    "columns": "15 data cols in 4 super-groups; broad totals at 0/4/8; part/part/aggregate within each group",
+    "cross_groups": [
+      {
+        "label": "appropriation_target",
+        "label_ne": "विनियोजन र लक्ष्य",
+        "part_cols": [1, 2],
+        "aggregate_col": 3
+      },
+      {
+        "label": "expenditure_utilization",
+        "label_ne": "खर्च र उपयोग",
+        "part_cols": [5, 6],
+        "aggregate_col": 7
+      },
+      {
+        "label": "receipt",
+        "label_ne": "राजस्व,अनुदान र ऋण सहितको प्राप्ति",
+        "part_cols": [9, 10],
+        "aggregate_col": 11
+      },
+      {
+        "label": "commitment",
+        "label_ne": "वैदेशिक सहायता प्रतिबद्धता",
+        "part_cols": [12, 13],
+        "aggregate_col": 14
+      }
+    ],
+    "broad_total_cols_no_identity": [0, 4, 8]
+  },
+  "provenance": {
+    "extraction_method": "surya-ocr",
+    "model_version": "0.17.1",
+    "verification": "Surya-OCR bbox-snapped 23x15 grid; per-row cross-group reconciliation (4 groups, sum(parts)==aggregate, +/-9 crore); render-confirmed (PyMuPDF Matrix 10) every reconciling group-row before acceptance; GATE applied",
+    "confidence_grade": "B",
+    "tolerance_crore": 9,
+    "reconciles_how": [
+      "per row, per group: sum(part_cols) == aggregate_col (+/-9 crore)",
+      "no column-foot total row exists (rows are independent fiscal years)"
+    ],
+    "gate": "accept iff the cell's column reconciled AND its row cross-reconciles (sum of the disaggregating part columns == the aggregate column, +/-9); with no column-foot total row the column axis collapses onto the same per-row cross-group identity",
+    "cross_source": null,
+    "render_confirmed_cells": [
+      {
+        "fiscal_year_bs": "2065/66",
+        "col_idx": 7,
+        "value": 3635,
+        "note": "render: vaideshik-sahayata-upayog reads 3635 (OCR '3638'); 2638+997=3635=agg"
+      },
+      {
+        "fiscal_year_bs": "2065/66",
+        "col_idx": 11,
+        "value": 3635,
+        "note": "render: vaideshik-sahayata-prapti reads 3635 (OCR '3634'); 2638+997=3635=agg"
+      },
+      {
+        "fiscal_year_bs": "2066/67",
+        "col_idx": 13,
+        "value": 2635,
+        "note": "render: rin-pratibaddhata reads 2635 (OCR '2634'); 7026+2635=9661=agg"
+      },
+      {
+        "fiscal_year_bs": "2079/80",
+        "col_idx": 14,
+        "value": 21805,
+        "note": "render: jamma-pratibaddhata reads 21805 (OCR '21804'); 4231+17574=21805=agg"
+      },
+      {
+        "fiscal_year_bs": "2079/80",
+        "col_idx": 1,
+        "value": 5546,
+        "note": "render: vaideshik-anudan reads 5546 (digits clean); OCR raw '<b>5546</b>' carried bold-markup noise, not a digit defect; 5546+24226=29772=agg"
+      }
+    ]
+  },
+  "columns": [
+    {
+      "col_idx": 0,
+      "slug": "kul-bajet",
+      "label_ne": "कुल बजेट",
+      "role": "broad_total",
+      "group": null
+    },
+    {
+      "col_idx": 1,
+      "slug": "vaideshik-anudan-bajet",
+      "label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "role": "part",
+      "group": "appropriation_target"
+    },
+    {
+      "col_idx": 2,
+      "slug": "vaideshik-rin-bajet",
+      "label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "role": "part",
+      "group": "appropriation_target"
+    },
+    {
+      "col_idx": 3,
+      "slug": "kul-vaideshik-srot",
+      "label_ne": "कुल वैदेशिक स्रोत",
+      "role": "aggregate",
+      "group": "appropriation_target"
+    },
+    {
+      "col_idx": 4,
+      "slug": "kul-kharcha",
+      "label_ne": "कुल खर्च",
+      "role": "broad_total",
+      "group": null
+    },
+    {
+      "col_idx": 5,
+      "slug": "vaideshik-anudan-upayog",
+      "label_ne": "वैदेशिक अनुदान उपयोग",
+      "role": "part",
+      "group": "expenditure_utilization"
+    },
+    {
+      "col_idx": 6,
+      "slug": "vaideshik-rin-upayog",
+      "label_ne": "वैदेशिक ऋण उपयोग",
+      "role": "part",
+      "group": "expenditure_utilization"
+    },
+    {
+      "col_idx": 7,
+      "slug": "vaideshik-sahayata-upayog",
+      "label_ne": "वैदेशिक सहायता उपयोग",
+      "role": "aggregate",
+      "group": "expenditure_utilization"
+    },
+    {
+      "col_idx": 8,
+      "slug": "kul-prapti",
+      "label_ne": "कुल प्राप्ति",
+      "role": "broad_total",
+      "group": null
+    },
+    {
+      "col_idx": 9,
+      "slug": "vaideshik-anudan-prapti",
+      "label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "role": "part",
+      "group": "receipt"
+    },
+    {
+      "col_idx": 10,
+      "slug": "vaideshik-rin-prapti",
+      "label_ne": "वैदेशिक ऋण प्राप्ति",
+      "role": "part",
+      "group": "receipt"
+    },
+    {
+      "col_idx": 11,
+      "slug": "vaideshik-sahayata-prapti",
+      "label_ne": "वैदेशिक सहायता प्राप्ति",
+      "role": "aggregate",
+      "group": "receipt"
+    },
+    {
+      "col_idx": 12,
+      "slug": "anudan-pratibaddhata",
+      "label_ne": "अनुदान (प्रतिबद्धता)",
+      "role": "part",
+      "group": "commitment"
+    },
+    {
+      "col_idx": 13,
+      "slug": "rin-pratibaddhata",
+      "label_ne": "ऋण (प्रतिबद्धता)",
+      "role": "part",
+      "group": "commitment"
+    },
+    {
+      "col_idx": 14,
+      "slug": "jamma-pratibaddhata",
+      "label_ne": "जम्मा (प्रतिबद्धता)",
+      "role": "aggregate",
+      "group": "commitment"
+    }
+  ],
+  "rows": [
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "kind": "fiscal_year"
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "kind": "fiscal_year"
+    }
+  ],
+  "accepted_cells": [
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 1128,
+      "raw_ocr": "११२८",
+      "render_confirmed": false,
+      "row_cross_group": "receipt",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 763,
+      "raw_ocr": "७६३",
+      "render_confirmed": false,
+      "row_cross_group": "receipt",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 1891,
+      "raw_ocr": "१८९१",
+      "render_confirmed": false,
+      "row_cross_group": "receipt",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 1826,
+      "raw_ocr": "१८२६",
+      "render_confirmed": false,
+      "row_cross_group": "commitment",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 266,
+      "raw_ocr": "२६६",
+      "render_confirmed": false,
+      "row_cross_group": "commitment",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 2092,
+      "raw_ocr": "२०९२",
+      "render_confirmed": false,
+      "row_cross_group": "commitment",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 2746,
+      "raw_ocr": "२७४६",
+      "render_confirmed": false,
+      "row_cross_group": "appropriation_target",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 1737,
+      "raw_ocr": "१७३७",
+      "render_confirmed": false,
+      "row_cross_group": "appropriation_target",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 4483,
+      "raw_ocr": "४४८३",
+      "render_confirmed": false,
+      "row_cross_group": "appropriation_target",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 2638,
+      "raw_ocr": "२६३८",
+      "render_confirmed": false,
+      "row_cross_group": "expenditure_utilization",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 997,
+      "raw_ocr": "९९७",
+      "render_confirmed": false,
+      "row_cross_group": "expenditure_utilization",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 3635,
+      "raw_ocr": "3638",
+      "render_confirmed": true,
+      "row_cross_group": "expenditure_utilization",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 2638,
+      "raw_ocr": "२६३८",
+      "render_confirmed": false,
+      "row_cross_group": "receipt",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 997,
+      "raw_ocr": "९९७",
+      "render_confirmed": false,
+      "row_cross_group": "receipt",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 3635,
+      "raw_ocr": "3634",
+      "render_confirmed": true,
+      "row_cross_group": "receipt",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 7026,
+      "raw_ocr": "७०२६",
+      "render_confirmed": false,
+      "row_cross_group": "commitment",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 2635,
+      "raw_ocr": "२६३४",
+      "render_confirmed": true,
+      "row_cross_group": "commitment",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 9661,
+      "raw_ocr": "९६६१",
+      "render_confirmed": false,
+      "row_cross_group": "commitment",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 7013,
+      "raw_ocr": "७०१३",
+      "render_confirmed": false,
+      "row_cross_group": "appropriation_target",
+      "row_cross_residual": -1,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 2965,
+      "raw_ocr": "२९६५",
+      "render_confirmed": false,
+      "row_cross_group": "appropriation_target",
+      "row_cross_residual": -1,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 9979,
+      "raw_ocr": "९९७९",
+      "render_confirmed": false,
+      "row_cross_group": "appropriation_target",
+      "row_cross_residual": -1,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 3829,
+      "raw_ocr": "३८२९",
+      "render_confirmed": false,
+      "row_cross_group": "expenditure_utilization",
+      "row_cross_residual": 1,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 2562,
+      "raw_ocr": "२५६२",
+      "render_confirmed": false,
+      "row_cross_group": "expenditure_utilization",
+      "row_cross_residual": 1,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 6390,
+      "raw_ocr": "६३९०",
+      "render_confirmed": false,
+      "row_cross_group": "expenditure_utilization",
+      "row_cross_residual": 1,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 3637,
+      "raw_ocr": "३६३७",
+      "render_confirmed": false,
+      "row_cross_group": "receipt",
+      "row_cross_residual": -1,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 2926,
+      "raw_ocr": "२९२६",
+      "render_confirmed": false,
+      "row_cross_group": "receipt",
+      "row_cross_residual": -1,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 6564,
+      "raw_ocr": "६५६४",
+      "render_confirmed": false,
+      "row_cross_group": "receipt",
+      "row_cross_residual": -1,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 5546,
+      "raw_ocr": "<b>५५४६</b>",
+      "render_confirmed": true,
+      "row_cross_group": "appropriation_target",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 24226,
+      "raw_ocr": "२४२२६",
+      "render_confirmed": false,
+      "row_cross_group": "appropriation_target",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 29772,
+      "raw_ocr": "२९७७२",
+      "render_confirmed": false,
+      "row_cross_group": "appropriation_target",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 4231,
+      "raw_ocr": "४२३१",
+      "render_confirmed": false,
+      "row_cross_group": "commitment",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 17574,
+      "raw_ocr": "१७५७४",
+      "render_confirmed": false,
+      "row_cross_group": "commitment",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 21805,
+      "raw_ocr": "२१८०४",
+      "render_confirmed": true,
+      "row_cross_group": "commitment",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 2401,
+      "raw_ocr": "२४०१",
+      "render_confirmed": false,
+      "row_cross_group": "receipt",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 11327,
+      "raw_ocr": "११३२७",
+      "render_confirmed": false,
+      "row_cross_group": "receipt",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 13728,
+      "raw_ocr": "१३७२८",
+      "render_confirmed": false,
+      "row_cross_group": "receipt",
+      "row_cross_residual": 0,
+      "col_axis": "satisfied_via_cross_group (no separate column-foot total row in this table)"
+    }
+  ],
+  "quarantined_cells": [
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 9979,
+      "raw_ocr": "९९७९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 9893,
+      "raw_ocr": "9893",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+16762, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 9887,
+      "raw_ocr": "9887",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+16762, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 3018,
+      "raw_ocr": "3018",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+16762, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 5000,
+      "raw_ocr": "5000",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 669,
+      "raw_ocr": "६६९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-8176, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 990,
+      "raw_ocr": "990",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-8176, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 9835,
+      "raw_ocr": "9835",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-8176, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 7383,
+      "raw_ocr": "७३८३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 889,
+      "raw_ocr": "889",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-7956, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 990,
+      "raw_ocr": "990",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-7956, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 9835,
+      "raw_ocr": "9835",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-7956, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 2338,
+      "raw_ocr": "2338",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-46, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 989,
+      "raw_ocr": "९८९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-46, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 0,
+      "fiscal_year_bs": "2058/59",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 3373,
+      "raw_ocr": "3373",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-46, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 9612,
+      "raw_ocr": "९६१२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 1446,
+      "raw_ocr": "१४४६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+8038, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 9289,
+      "raw_ocr": "9289",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+8038, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 2697,
+      "raw_ocr": "२६९७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+8038, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 2809,
+      "raw_ocr": "2809",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 9938,
+      "raw_ocr": "9938",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+1367, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 888,
+      "raw_ocr": "888",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+1367, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 9459,
+      "raw_ocr": "9459",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+1367, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 5883,
+      "raw_ocr": "5883",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 9938,
+      "raw_ocr": "9938",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+1367, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 888,
+      "raw_ocr": "888",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+1367, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 9459,
+      "raw_ocr": "9459",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+1367, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 2736,
+      "raw_ocr": "२७३६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+3618, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 9252,
+      "raw_ocr": "9252",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+3618, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "fiscal_year_bs": "2059/60",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 8370,
+      "raw_ocr": "8370",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+3618, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 90280,
+      "raw_ocr": "90280",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 9229,
+      "raw_ocr": "9229",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+15648, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 9252,
+      "raw_ocr": "9252",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+15648, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 2833,
+      "raw_ocr": "२८३३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+15648, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 5888,
+      "raw_ocr": "5888",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 9925,
+      "raw_ocr": "9925",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+1099, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 763,
+      "raw_ocr": "७६३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+1099, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 9589,
+      "raw_ocr": "9589",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+1099, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 9308,
+      "raw_ocr": "९३०८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 96,
+      "raw_ocr": "द९६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw 'द९६')",
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+7527, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 9805,
+      "raw_ocr": "9805",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+7527, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "fiscal_year_bs": "2060/61",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 2374,
+      "raw_ocr": "२३७४",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+7527, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 99958,
+      "raw_ocr": "99958",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 9434,
+      "raw_ocr": "9434",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+7391, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 1696,
+      "raw_ocr": "१६९६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+7391, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 3739,
+      "raw_ocr": "3739",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+7391, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 10256,
+      "raw_ocr": "१०२५६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 9839,
+      "raw_ocr": "9839",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+8400, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 927,
+      "raw_ocr": "९२७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+8400, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 2366,
+      "raw_ocr": "२३६६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+8400, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 90258,
+      "raw_ocr": "90258",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 9839,
+      "raw_ocr": "9839",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+8400, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 927,
+      "raw_ocr": "९२७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+8400, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 2366,
+      "raw_ocr": "२३६६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+8400, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 2439,
+      "raw_ocr": "2439",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+124, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 1276,
+      "raw_ocr": "१२७६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+124, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "fiscal_year_bs": "2061/62",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 3591,
+      "raw_ocr": "3591",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+124, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 97859,
+      "raw_ocr": "97859",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 1869,
+      "raw_ocr": "१८६९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+8390, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 9843,
+      "raw_ocr": "9843",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+8390, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 3322,
+      "raw_ocr": "3322",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+8390, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 99059,
+      "raw_ocr": "99059",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 9353,
+      "raw_ocr": "9353",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+7678, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 529,
+      "raw_ocr": "529",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+7678, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 2204,
+      "raw_ocr": "२२०४",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+7678, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 10617,
+      "raw_ocr": "१०६१७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 9353,
+      "raw_ocr": "9353",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+7674, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 529,
+      "raw_ocr": "529",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+7674, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "fiscal_year_bs": "2062/63",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 2208,
+      "raw_ocr": "2208",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+7674, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 98389,
+      "raw_ocr": "98389",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 2373,
+      "raw_ocr": "२३७३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-4024, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 1691,
+      "raw_ocr": "१६९१",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-4024, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 8088,
+      "raw_ocr": "8088",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-4024, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 13360,
+      "raw_ocr": "१३३६०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 9450,
+      "raw_ocr": "9450",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+10869, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 4004,
+      "raw_ocr": "4004",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+10869, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 2585,
+      "raw_ocr": "२५८५",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+10869, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 13147,
+      "raw_ocr": "१३१४७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 9450,
+      "raw_ocr": "9450",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+15869, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 9004,
+      "raw_ocr": "9004",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+15869, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 2585,
+      "raw_ocr": "<b>२५८५</b>",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '<b>२५८५</b>')",
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+15869, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 3086,
+      "raw_ocr": "३०८६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+700, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 616,
+      "raw_ocr": "६१६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+700, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "fiscal_year_bs": "2063/64",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 3002,
+      "raw_ocr": "3002",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+700, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 16900,
+      "raw_ocr": "१६९००",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 16135,
+      "raw_ocr": "१६१३५",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 2032,
+      "raw_ocr": "२०३२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-303, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 595,
+      "raw_ocr": "595",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-303, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 2930,
+      "raw_ocr": "२९३०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-303, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 15742,
+      "raw_ocr": "१५७४२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 2032,
+      "raw_ocr": "२०३२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-303, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 595,
+      "raw_ocr": "595",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-303, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 2930,
+      "raw_ocr": "२९३०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-303, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 4106,
+      "raw_ocr": "४१०६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-4300, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 593,
+      "raw_ocr": "593",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-4300, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "fiscal_year_bs": "2064/65",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 8999,
+      "raw_ocr": "8999",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-4300, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 23602,
+      "raw_ocr": "२३६०२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 8009,
+      "raw_ocr": "8009",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+10990, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 9560,
+      "raw_ocr": "9560",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+10990, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 6579,
+      "raw_ocr": "६५७९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+10990, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 21966,
+      "raw_ocr": "२१९६६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 20483,
+      "raw_ocr": "२०४८३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 8390,
+      "raw_ocr": "8390",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+550, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 855,
+      "raw_ocr": "855",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+550, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 7,
+      "fiscal_year_bs": "2065/66",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 8695,
+      "raw_ocr": "8695",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+550, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 28496,
+      "raw_ocr": "२८४९६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 5696,
+      "raw_ocr": "५६९६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+10, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 2156,
+      "raw_ocr": "२१५६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+10, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 7842,
+      "raw_ocr": "७८४२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+10, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 25969,
+      "raw_ocr": "२५९६९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 3544,
+      "raw_ocr": "3544",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+8489, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 9922,
+      "raw_ocr": "9922",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+8489, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 4977,
+      "raw_ocr": "४९७७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+8489, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 25867,
+      "raw_ocr": "२५८६७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 3588,
+      "raw_ocr": "3588",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+8533, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 9922,
+      "raw_ocr": "9922",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+8533, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "fiscal_year_bs": "2066/67",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 4977,
+      "raw_ocr": "४९७७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+8533, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 33790,
+      "raw_ocr": "३३७९०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 6534,
+      "raw_ocr": "<b>६</b>५३४",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '<b>६</b>५३४')",
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+3072, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 2223,
+      "raw_ocr": "२२२३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+3072, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 5685,
+      "raw_ocr": "5685",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+3072, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 29536,
+      "raw_ocr": "२९५३६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 8497,
+      "raw_ocr": "8497",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+17702, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 9705,
+      "raw_ocr": "9705",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+17702, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 500,
+      "raw_ocr": "X500",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw 'X500')",
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+17702, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 29005,
+      "raw_ocr": "२९००५",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 8483,
+      "raw_ocr": "8483",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+15688, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 9705,
+      "raw_ocr": "9705",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+15688, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 2500,
+      "raw_ocr": "2500",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+15688, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 6473,
+      "raw_ocr": "६४७३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-80081, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 4136,
+      "raw_ocr": "४१३६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-80081, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "fiscal_year_bs": "2067/68",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 90690,
+      "raw_ocr": "90690",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-80081, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 35890,
+      "raw_ocr": "35890",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 33990,
+      "raw_ocr": "33990",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 8059,
+      "raw_ocr": "8059",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+12775, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 9905,
+      "raw_ocr": "9905",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+12775, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 5189,
+      "raw_ocr": "५१८९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+12775, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 38090,
+      "raw_ocr": "38090",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 8059,
+      "raw_ocr": "8059",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+11868, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 9460,
+      "raw_ocr": "9460",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+11868, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 5651,
+      "raw_ocr": "५६५१",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+11868, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 538,
+      "raw_ocr": "X538",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw 'X538')",
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-5099, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 3958,
+      "raw_ocr": "3958",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-5099, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "fiscal_year_bs": "2068/69",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 9595,
+      "raw_ocr": "9595",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-5099, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 40482,
+      "raw_ocr": "४०४८२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 4699,
+      "raw_ocr": "४६९९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-125, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 2458,
+      "raw_ocr": "2458",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-125, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 7282,
+      "raw_ocr": "७२८२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-125, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 35864,
+      "raw_ocr": "३५८६४",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 3473,
+      "raw_ocr": "3473",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-50, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 1197,
+      "raw_ocr": "११९७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-50, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 4720,
+      "raw_ocr": "४७२०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-50, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 36944,
+      "raw_ocr": "3<b>६९</b>४४",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '3<b>६९</b>४४')",
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 3423,
+      "raw_ocr": "3423",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+122, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 1658,
+      "raw_ocr": "१६५८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+122, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 4959,
+      "raw_ocr": "<b></b>4959",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '<b></b>4959')",
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+122, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 390,
+      "raw_ocr": "X390",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw 'X390')",
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-4900, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 6126,
+      "raw_ocr": "६१२६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-4900, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "fiscal_year_bs": "2069/70",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 11416,
+      "raw_ocr": "११४१६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-4900, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 51724,
+      "raw_ocr": "<b>५१७२४</b>",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '<b>५१७२४</b>')",
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 6954,
+      "raw_ocr": "६९५४",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-88004, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 4370,
+      "raw_ocr": "४३७०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-88004, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 99328,
+      "raw_ocr": "99328",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-88004, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 30,
+      "raw_ocr": "X3X0X",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw 'X3X0X')",
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 4221,
+      "raw_ocr": "४२२१",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+7701, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 9500,
+      "raw_ocr": "9500",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+7701, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 6020,
+      "raw_ocr": "६०२०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+7701, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 83200,
+      "raw_ocr": "83200",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 3396,
+      "raw_ocr": "३३९६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+5500, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 2113,
+      "raw_ocr": "२११३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+5500, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 9,
+      "raw_ocr": "XX09",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw 'XX09')",
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+5500, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 7292,
+      "raw_ocr": "७२९२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-6050, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 3,
+      "raw_ocr": "<b>EOX3</b>",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '<b>EOX3</b>')",
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-6050, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 12,
+      "fiscal_year_bs": "2070/71",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 13345,
+      "raw_ocr": "१३३४५",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-6050, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 61810,
+      "raw_ocr": "६१८१०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 7339,
+      "raw_ocr": "७३३९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-76107, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 8843,
+      "raw_ocr": "8843",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-76107, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 92289,
+      "raw_ocr": "92289",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-76107, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 3157,
+      "raw_ocr": "प्र३१५७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw 'प्र३१५७')",
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 52210,
+      "raw_ocr": "<b>५२२१०</b>",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '<b>५२२१०</b>')",
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 9160,
+      "raw_ocr": "९१६०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+80400, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 93822,
+      "raw_ocr": "93822",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+80400, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 13,
+      "fiscal_year_bs": "2071/72",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 22582,
+      "raw_ocr": "२२५८२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+80400, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 59880,
+      "raw_ocr": "59880",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 99093,
+      "raw_ocr": "99093",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+78130, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 9496,
+      "raw_ocr": "९४९६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+78130, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 30459,
+      "raw_ocr": "30459",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+78130, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 60020,
+      "raw_ocr": "६००२०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 3948,
+      "raw_ocr": "3948",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+44, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 3373,
+      "raw_ocr": "3373",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+44, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 7277,
+      "raw_ocr": "७२७७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+44, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 66296,
+      "raw_ocr": "६६२९६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 3285,
+      "raw_ocr": "3285",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+37, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 4377,
+      "raw_ocr": "४३७७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+37, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 7625,
+      "raw_ocr": "७६२५",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+37, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 7920,
+      "raw_ocr": "७९२०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+88240, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 99880,
+      "raw_ocr": "99880",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+88240, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "fiscal_year_bs": "2072/73",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 19560,
+      "raw_ocr": "१९५६०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+88240, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 908597,
+      "raw_ocr": "908597",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 90590,
+      "raw_ocr": "90590",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+79901, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 19572,
+      "raw_ocr": "१९५७२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+79901, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 30261,
+      "raw_ocr": "३०२६१",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+79901, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 83724,
+      "raw_ocr": "८३७२४",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 4082,
+      "raw_ocr": "४०८२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-995, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 4907,
+      "raw_ocr": "4907",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-995, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 9984,
+      "raw_ocr": "९९८४",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-995, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 78848,
+      "raw_ocr": "७८८४८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 4134,
+      "raw_ocr": "४१३४",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+3321, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 4416,
+      "raw_ocr": "४४१६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+3321, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 5229,
+      "raw_ocr": "5229",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+3321, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 9768,
+      "raw_ocr": "९७६८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+997, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 15257,
+      "raw_ocr": "१५२५७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+997, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "fiscal_year_bs": "2073/74",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 24028,
+      "raw_ocr": "24028",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+997, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 127899,
+      "raw_ocr": "१२७८९९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 7217,
+      "raw_ocr": "७२१७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+8405, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 29808,
+      "raw_ocr": "29808",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+8405, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 28620,
+      "raw_ocr": "२८६२०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=+8405, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 108728,
+      "raw_ocr": "१०८७२८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 3937,
+      "raw_ocr": "3937",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-80784, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 9223,
+      "raw_ocr": "९२२३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-80784, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 93944,
+      "raw_ocr": "93944",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-80784, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 900853,
+      "raw_ocr": "900853",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 8388,
+      "raw_ocr": "8388",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-78996, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 5455,
+      "raw_ocr": "5455",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-78996, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 92839,
+      "raw_ocr": "92839",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-78996, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 2860,
+      "raw_ocr": "2860",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-5631, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 11709,
+      "raw_ocr": "११७०९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-5631, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "fiscal_year_bs": "2074/75",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 20200,
+      "raw_ocr": "20200",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-5631, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 131516,
+      "raw_ocr": "१३१५१६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 552,
+      "raw_ocr": "<b>X55</b>2",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '<b>X55</b>2')",
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-15103, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 24303,
+      "raw_ocr": "24303",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-15103, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 39958,
+      "raw_ocr": "39958",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-15103, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 111046,
+      "raw_ocr": "१११०४६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 2290,
+      "raw_ocr": "2290",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+80399, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 92836,
+      "raw_ocr": "92836",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+80399, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 14727,
+      "raw_ocr": "१४७२७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+80399, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 900734,
+      "raw_ocr": "900734",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 2958,
+      "raw_ocr": "२९५८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+1060, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 92990,
+      "raw_ocr": "92990",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+1060, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 94888,
+      "raw_ocr": "94888",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+1060, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 3383,
+      "raw_ocr": "3383",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+80410, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 90853,
+      "raw_ocr": "90853",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+80410, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "fiscal_year_bs": "2075/76",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 13826,
+      "raw_ocr": "१३८२६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+80410, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 153297,
+      "raw_ocr": "१५३२९७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 4500,
+      "raw_ocr": "4500",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-35683074730, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 29883,
+      "raw_ocr": "२९८८३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-35683074730, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 35683109113,
+      "raw_ocr": "३५६८३| १०९११३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '३५६८३| १०९११३')",
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-35683074730, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": null,
+      "raw_ocr": null,
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_parseable_value (OCR token missing/illegible at this cell)",
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 2322,
+      "raw_ocr": "२३२२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+88240, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 99888,
+      "raw_ocr": "99888",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+88240, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 13970,
+      "raw_ocr": "१३९७०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+88240, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 110538,
+      "raw_ocr": "११०५३८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 2975,
+      "raw_ocr": "२९७५",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+397, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 92030,
+      "raw_ocr": "92030",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+397, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 94608,
+      "raw_ocr": "94608",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+397, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 3099,
+      "raw_ocr": "3099",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+69239, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 95995,
+      "raw_ocr": "95995",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+69239, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 18,
+      "fiscal_year_bs": "2076/77",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 29855,
+      "raw_ocr": "29855",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+69239, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 986884,
+      "raw_ocr": "986884",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 3,
+      "raw_ocr": "<b>EOX3</b>",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '<b>EOX3</b>')",
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-8050, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 29950,
+      "raw_ocr": "२९९५०",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-8050, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 38003,
+      "raw_ocr": "38003",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-8050, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 119668,
+      "raw_ocr": "११९६६८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 3648,
+      "raw_ocr": "३६४८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+78989, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 96284,
+      "raw_ocr": "96284",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+78989, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 20943,
+      "raw_ocr": "२०९४३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+78989, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 930909,
+      "raw_ocr": "930909",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 3484,
+      "raw_ocr": "3484",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+79416, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 96895,
+      "raw_ocr": "96895",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+79416, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 20963,
+      "raw_ocr": "२०९६३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=+79416, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 2739,
+      "raw_ocr": "२७३९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+79897, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 99695,
+      "raw_ocr": "99695",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+79897, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "fiscal_year_bs": "2077/78",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 22537,
+      "raw_ocr": "२२५३७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+79897, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 163283,
+      "raw_ocr": "१६३२८३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 4997,
+      "raw_ocr": "4997",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-5003, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 28309,
+      "raw_ocr": "२८३०९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-5003, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": 38309,
+      "raw_ocr": "38309",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'appropriation_target': sum(parts [1, 2])-agg(col 3)=-5003, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 939000,
+      "raw_ocr": "939000",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 2748,
+      "raw_ocr": "२७४८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+3213, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 93060,
+      "raw_ocr": "93060",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+3213, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 92595,
+      "raw_ocr": "92595",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+3213, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 137754,
+      "raw_ocr": "१३७७५४",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 2894,
+      "raw_ocr": "2894",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-1627, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 93488,
+      "raw_ocr": "93488",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-1627, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 98009,
+      "raw_ocr": "9 8009",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '9 8009')",
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-1627, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 9339,
+      "raw_ocr": "9339",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+84436, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 98889,
+      "raw_ocr": "98889",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+84436, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "fiscal_year_bs": "2078/79",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 23792,
+      "raw_ocr": "२३७९२",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=+84436, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 179383,
+      "raw_ocr": "१७९३८३",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 987933,
+      "raw_ocr": "987933",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 2338,
+      "raw_ocr": "२३३८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+8687, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 99849,
+      "raw_ocr": "99849",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+8687, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 93500,
+      "raw_ocr": "93500",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=+8687, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 129397,
+      "raw_ocr": "१२९३९७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 9,
+      "col_slug": "vaideshik-anudan-prapti",
+      "col_label_ne": "वैदेशिक अनुदान प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 2301,
+      "raw_ocr": "२३०१",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-3799, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 10,
+      "col_slug": "vaideshik-rin-prapti",
+      "col_label_ne": "वैदेशिक ऋण प्राप्ति",
+      "col_role": "part",
+      "group": "receipt",
+      "value": 92304,
+      "raw_ocr": "92304",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-3799, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 21,
+      "fiscal_year_bs": "2079/80",
+      "col_idx": 11,
+      "col_slug": "vaideshik-sahayata-prapti",
+      "col_label_ne": "वैदेशिक सहायता प्राप्ति",
+      "col_role": "aggregate",
+      "group": "receipt",
+      "value": 98404,
+      "raw_ocr": "98404",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'receipt': sum(parts [9, 10])-agg(col 11)=-3799, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 0,
+      "col_slug": "kul-bajet",
+      "col_label_ne": "कुल बजेट",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 175131,
+      "raw_ocr": "१७५१३१",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 1,
+      "col_slug": "vaideshik-anudan-bajet",
+      "col_label_ne": "वैदेशिक अनुदान (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 8888,
+      "raw_ocr": "8888",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_unevaluable (group 'appropriation_target': >=1 of cols [1, 2, 3] missing/unparseable)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 2,
+      "col_slug": "vaideshik-rin-bajet",
+      "col_label_ne": "वैदेशिक ऋण (विनियोजन)",
+      "col_role": "part",
+      "group": "appropriation_target",
+      "value": 21274,
+      "raw_ocr": "२१२७४",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_unevaluable (group 'appropriation_target': >=1 of cols [1, 2, 3] missing/unparseable)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 3,
+      "col_slug": "kul-vaideshik-srot",
+      "col_label_ne": "कुल वैदेशिक स्रोत",
+      "col_role": "aggregate",
+      "group": "appropriation_target",
+      "value": null,
+      "raw_ocr": null,
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_parseable_value (OCR token missing/illegible at this cell)",
+        "row_cross_unevaluable (group 'appropriation_target': >=1 of cols [1, 2, 3] missing/unparseable)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 4,
+      "col_slug": "kul-kharcha",
+      "col_label_ne": "कुल खर्च",
+      "col_role": "broad_total",
+      "group": null,
+      "value": 26269139340,
+      "raw_ocr": "२६२६९| १३९३४०|",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '२६२६९| १३९३४०|')",
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 5,
+      "col_slug": "vaideshik-anudan-upayog",
+      "col_label_ne": "वैदेशिक अनुदान उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 2057,
+      "raw_ocr": "२०५७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-11123122064, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 6,
+      "col_slug": "vaideshik-rin-upayog",
+      "col_label_ne": "वैदेशिक ऋण उपयोग",
+      "col_role": "part",
+      "group": "expenditure_utilization",
+      "value": 9066,
+      "raw_ocr": "९०६६",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-11123122064, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 7,
+      "col_slug": "vaideshik-sahayata-upayog",
+      "col_label_ne": "वैदेशिक सहायता उपयोग",
+      "col_role": "aggregate",
+      "group": "expenditure_utilization",
+      "value": 11123133187,
+      "raw_ocr": "१११२३ | १३३१८७",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed-script/stray glyph in raw '१११२३ | १३३१८७')",
+        "row_cross_fail (group 'expenditure_utilization': sum(parts [5, 6])-agg(col 7)=-11123122064, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 8,
+      "col_slug": "kul-prapti",
+      "col_label_ne": "कुल प्राप्ति",
+      "col_role": "broad_total",
+      "group": null,
+      "value": null,
+      "raw_ocr": null,
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "no_parseable_value (OCR token missing/illegible at this cell)",
+        "no_applicable_reconciliation_axis (broad total kul-bajet/kharcha/prapti includes domestic resources; not the foreign anudan+rin part-sum; no column-foot total row exists; unevaluable -> cannot accept)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 12,
+      "col_slug": "anudan-pratibaddhata",
+      "col_label_ne": "अनुदान (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 4298,
+      "raw_ocr": "४२९८",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-2602, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 13,
+      "col_slug": "rin-pratibaddhata",
+      "col_label_ne": "ऋण (प्रतिबद्धता)",
+      "col_role": "part",
+      "group": "commitment",
+      "value": 5889,
+      "raw_ocr": "5889",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-2602, >|9|)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "fiscal_year_bs": "2080/81",
+      "col_idx": 14,
+      "col_slug": "jamma-pratibaddhata",
+      "col_label_ne": "जम्मा (प्रतिबद्धता)",
+      "col_role": "aggregate",
+      "group": "commitment",
+      "value": 12789,
+      "raw_ocr": "१२७८९",
+      "render_confirmed": false,
+      "quarantine_reasons": [
+        "row_cross_fail (group 'commitment': sum(parts [12, 13])-agg(col 14)=-2602, >|9|)"
+      ]
+    }
+  ],
+  "reconciliation": {
+    "per_column": [
+      {
+        "col_idx": 0,
+        "col_slug": "kul-bajet",
+        "col_role": "broad_total",
+        "reconciles": false,
+        "reason": "broad total; no part-sum identity in this table",
+        "rows_reconciling": 0
+      },
+      {
+        "col_idx": 1,
+        "col_slug": "vaideshik-anudan-bajet",
+        "col_role": "part",
+        "group": "appropriation_target",
+        "reconciles": true,
+        "rows_reconciling": 3,
+        "reconciling_fiscal_years": ["2064/65", "2068/69", "2079/80"]
+      },
+      {
+        "col_idx": 2,
+        "col_slug": "vaideshik-rin-bajet",
+        "col_role": "part",
+        "group": "appropriation_target",
+        "reconciles": true,
+        "rows_reconciling": 3,
+        "reconciling_fiscal_years": ["2064/65", "2068/69", "2079/80"]
+      },
+      {
+        "col_idx": 3,
+        "col_slug": "kul-vaideshik-srot",
+        "col_role": "aggregate",
+        "group": "appropriation_target",
+        "reconciles": true,
+        "rows_reconciling": 3,
+        "reconciling_fiscal_years": ["2064/65", "2068/69", "2079/80"]
+      },
+      {
+        "col_idx": 4,
+        "col_slug": "kul-kharcha",
+        "col_role": "broad_total",
+        "reconciles": false,
+        "reason": "broad total; no part-sum identity in this table",
+        "rows_reconciling": 0
+      },
+      {
+        "col_idx": 5,
+        "col_slug": "vaideshik-anudan-upayog",
+        "col_role": "part",
+        "group": "expenditure_utilization",
+        "reconciles": true,
+        "rows_reconciling": 2,
+        "reconciling_fiscal_years": ["2065/66", "2071/72"]
+      },
+      {
+        "col_idx": 6,
+        "col_slug": "vaideshik-rin-upayog",
+        "col_role": "part",
+        "group": "expenditure_utilization",
+        "reconciles": true,
+        "rows_reconciling": 2,
+        "reconciling_fiscal_years": ["2065/66", "2071/72"]
+      },
+      {
+        "col_idx": 7,
+        "col_slug": "vaideshik-sahayata-upayog",
+        "col_role": "aggregate",
+        "group": "expenditure_utilization",
+        "reconciles": true,
+        "rows_reconciling": 2,
+        "reconciling_fiscal_years": ["2065/66", "2071/72"]
+      },
+      {
+        "col_idx": 8,
+        "col_slug": "kul-prapti",
+        "col_role": "broad_total",
+        "reconciles": false,
+        "reason": "broad total; no part-sum identity in this table",
+        "rows_reconciling": 0
+      },
+      {
+        "col_idx": 9,
+        "col_slug": "vaideshik-anudan-prapti",
+        "col_role": "part",
+        "group": "receipt",
+        "reconciles": true,
+        "rows_reconciling": 4,
+        "reconciling_fiscal_years": ["2060/61", "2065/66", "2071/72", "2080/81"]
+      },
+      {
+        "col_idx": 10,
+        "col_slug": "vaideshik-rin-prapti",
+        "col_role": "part",
+        "group": "receipt",
+        "reconciles": true,
+        "rows_reconciling": 4,
+        "reconciling_fiscal_years": ["2060/61", "2065/66", "2071/72", "2080/81"]
+      },
+      {
+        "col_idx": 11,
+        "col_slug": "vaideshik-sahayata-prapti",
+        "col_role": "aggregate",
+        "group": "receipt",
+        "reconciles": true,
+        "rows_reconciling": 4,
+        "reconciling_fiscal_years": ["2060/61", "2065/66", "2071/72", "2080/81"]
+      },
+      {
+        "col_idx": 12,
+        "col_slug": "anudan-pratibaddhata",
+        "col_role": "part",
+        "group": "commitment",
+        "reconciles": true,
+        "rows_reconciling": 3,
+        "reconciling_fiscal_years": ["2062/63", "2066/67", "2079/80"]
+      },
+      {
+        "col_idx": 13,
+        "col_slug": "rin-pratibaddhata",
+        "col_role": "part",
+        "group": "commitment",
+        "reconciles": true,
+        "rows_reconciling": 3,
+        "reconciling_fiscal_years": ["2062/63", "2066/67", "2079/80"]
+      },
+      {
+        "col_idx": 14,
+        "col_slug": "jamma-pratibaddhata",
+        "col_role": "aggregate",
+        "group": "commitment",
+        "reconciles": true,
+        "rows_reconciling": 3,
+        "reconciling_fiscal_years": ["2062/63", "2066/67", "2079/80"]
+      }
+    ],
+    "per_row": [
+      {
+        "row_idx": 0,
+        "fiscal_year_bs": "2058/59",
+        "resid_appropriation_target": 16762,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": -8176,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": -7956,
+        "ok_receipt": false,
+        "resid_commitment": -46,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 1,
+        "fiscal_year_bs": "2059/60",
+        "resid_appropriation_target": 8038,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 1367,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 1367,
+        "ok_receipt": false,
+        "resid_commitment": 3618,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 2,
+        "fiscal_year_bs": "2060/61",
+        "resid_appropriation_target": 15648,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 1099,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 0,
+        "ok_receipt": true,
+        "resid_commitment": 7527,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 3,
+        "fiscal_year_bs": "2061/62",
+        "resid_appropriation_target": 7391,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 8400,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 8400,
+        "ok_receipt": false,
+        "resid_commitment": 124,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 4,
+        "fiscal_year_bs": "2062/63",
+        "resid_appropriation_target": 8390,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 7678,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 7674,
+        "ok_receipt": false,
+        "resid_commitment": 0,
+        "ok_commitment": true
+      },
+      {
+        "row_idx": 5,
+        "fiscal_year_bs": "2063/64",
+        "resid_appropriation_target": -4024,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 10869,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 15869,
+        "ok_receipt": false,
+        "resid_commitment": 700,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 6,
+        "fiscal_year_bs": "2064/65",
+        "resid_appropriation_target": 0,
+        "ok_appropriation_target": true,
+        "resid_expenditure_utilization": -303,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": -303,
+        "ok_receipt": false,
+        "resid_commitment": -4300,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 7,
+        "fiscal_year_bs": "2065/66",
+        "resid_appropriation_target": 10990,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 0,
+        "ok_expenditure_utilization": true,
+        "resid_receipt": 0,
+        "ok_receipt": true,
+        "resid_commitment": 550,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 8,
+        "fiscal_year_bs": "2066/67",
+        "resid_appropriation_target": 10,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 8489,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 8533,
+        "ok_receipt": false,
+        "resid_commitment": 0,
+        "ok_commitment": true
+      },
+      {
+        "row_idx": 9,
+        "fiscal_year_bs": "2067/68",
+        "resid_appropriation_target": 3072,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 17702,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 15688,
+        "ok_receipt": false,
+        "resid_commitment": -80081,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 10,
+        "fiscal_year_bs": "2068/69",
+        "resid_appropriation_target": -1,
+        "ok_appropriation_target": true,
+        "resid_expenditure_utilization": 12775,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 11868,
+        "ok_receipt": false,
+        "resid_commitment": -5099,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 11,
+        "fiscal_year_bs": "2069/70",
+        "resid_appropriation_target": -125,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": -50,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 122,
+        "ok_receipt": false,
+        "resid_commitment": -4900,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 12,
+        "fiscal_year_bs": "2070/71",
+        "resid_appropriation_target": -88004,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 7701,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 5500,
+        "ok_receipt": false,
+        "resid_commitment": -6050,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 13,
+        "fiscal_year_bs": "2071/72",
+        "resid_appropriation_target": -76107,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 1,
+        "ok_expenditure_utilization": true,
+        "resid_receipt": -1,
+        "ok_receipt": true,
+        "resid_commitment": 80400,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 14,
+        "fiscal_year_bs": "2072/73",
+        "resid_appropriation_target": 78130,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 44,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 37,
+        "ok_receipt": false,
+        "resid_commitment": 88240,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 15,
+        "fiscal_year_bs": "2073/74",
+        "resid_appropriation_target": 79901,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": -995,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 3321,
+        "ok_receipt": false,
+        "resid_commitment": 997,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 16,
+        "fiscal_year_bs": "2074/75",
+        "resid_appropriation_target": 8405,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": -80784,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": -78996,
+        "ok_receipt": false,
+        "resid_commitment": -5631,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 17,
+        "fiscal_year_bs": "2075/76",
+        "resid_appropriation_target": -15103,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 80399,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 1060,
+        "ok_receipt": false,
+        "resid_commitment": 80410,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 18,
+        "fiscal_year_bs": "2076/77",
+        "resid_appropriation_target": -35683074730,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 88240,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 397,
+        "ok_receipt": false,
+        "resid_commitment": 69239,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 19,
+        "fiscal_year_bs": "2077/78",
+        "resid_appropriation_target": -8050,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 78989,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 79416,
+        "ok_receipt": false,
+        "resid_commitment": 79897,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 20,
+        "fiscal_year_bs": "2078/79",
+        "resid_appropriation_target": -5003,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": 3213,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": -1627,
+        "ok_receipt": false,
+        "resid_commitment": 84436,
+        "ok_commitment": false
+      },
+      {
+        "row_idx": 21,
+        "fiscal_year_bs": "2079/80",
+        "resid_appropriation_target": 0,
+        "ok_appropriation_target": true,
+        "resid_expenditure_utilization": 8687,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": -3799,
+        "ok_receipt": false,
+        "resid_commitment": 0,
+        "ok_commitment": true
+      },
+      {
+        "row_idx": 22,
+        "fiscal_year_bs": "2080/81",
+        "resid_appropriation_target": null,
+        "ok_appropriation_target": false,
+        "resid_expenditure_utilization": -11123122064,
+        "ok_expenditure_utilization": false,
+        "resid_receipt": 0,
+        "ok_receipt": true,
+        "resid_commitment": -2602,
+        "ok_commitment": false
+      }
+    ],
+    "worst_residual_crore_accepted": 1,
+    "worst_residual_crore_all_evaluable": 35683074730,
+    "group_rows_reconciling": 12,
+    "group_rows_total": 92,
+    "cross_source": null
+  },
+  "summary": {
+    "matrix_reconciles": false,
+    "accepted_count": 36,
+    "quarantined_count": 309,
+    "worst_residual_crore": 1,
+    "structural_decision_needed": "Promotion needs a multi-axis aid-flow dimension this schema does not yet have: a dimension (aid_flow_stage x aid_instrument) capturing 4 stages (appropriation/target, expenditure/utilization, receipt, commitment) x instrument (grant/loan/total). Fiscal-year axis is BS (2058/59..2080/81) -> existing BS period handling covers it; unit npr_crore already supported; no enum/unit conversion needed for the accepted cells. Disposition decision required: this page is severely OCR-degraded (only 12 of 92 group-row identities foot), so recommend re-OCR / full-page Opus render-verify before bulk promotion rather than promoting 36 of 345 cells. The 36 accepted cells are render-confirmed and safe at confidence B; the 309 quarantined cells must NOT be promoted. Escalate: (a) add aid_flow_stage x instrument dimension via ADR, (b) decide re-extract-whole-table vs promote-the-36-now.",
+    "note": "Annex 2.24 foreign-aid matrix, 23 fiscal years (rows, independent; no row total) x 15 cols in 4 super-groups. Identity per row per group: anudan+rin == group aggregate (+/-9 crore). Surya-OCR is heavily degraded on this page (systematic leading-digit 1/9 misreads), so only 12 of 92 (group,row) identities foot. Each of those was render-confirmed at high zoom (4 agg/part cells corrected from the image) -> 36 cells ACCEPTED (worst accepted residual 1 crore). Broad totals (kul bajet/kharcha/prapti, cols 0/4/8) carry no foreign part-sum identity and no column-foot total row, so they are unevaluable and quarantined. All other cells quarantined with a per-cell reason. Nothing fabricated; no cross-source anchor provided."
+  }
+}

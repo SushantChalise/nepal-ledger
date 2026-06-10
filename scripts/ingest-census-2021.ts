@@ -28,6 +28,24 @@ import { resolve } from 'node:path';
 
 import { z } from 'zod';
 
+const PLACEHOLDER_SOURCE_DOC_ID = '00000000-0000-0000-0000-000000000000';
+const CENSUS_SOURCE_ID = 'cbs-nphc-2021';
+
+/**
+ * Upload file bytes to Supabase Storage and insert a `source_documents` row.
+ * Delegates to the shared `archiveAndInsertSourceDocument` helper so the
+ * real storageKey/hash/size from the upload are written to the DB row.
+ */
+async function ensureSourceDocument(csvPath: string): Promise<string> {
+  const { archiveAndInsertSourceDocument } = await import('./_lib/archive-source-document');
+  return archiveAndInsertSourceDocument({
+    filePath: csvPath,
+    sourceId: CENSUS_SOURCE_ID,
+    contentType: 'text/csv',
+    reportingPeriodLabel: 'Census 2021 (2078 BS)',
+  });
+}
+
 const CENSUS_FACT_DRAFT_SCHEMA = z.object({
   entity_slug: z.string().min(1),
   source_table_id: z.string().min(1),
@@ -106,11 +124,15 @@ async function spawnAndCaptureJson(
   sourceDocumentId: string,
 ): Promise<z.infer<typeof CENSUS_PARSER_RESULT_SCHEMA>> {
   const { spawn } = await import('node:child_process');
-  const parserPath = resolve(process.cwd(), 'scrapers/cbs_nphc/parser.py');
+  const scrapersDir = resolve(process.cwd(), 'scrapers');
   const python = process.env['PYTHON'] ?? (process.platform === 'win32' ? 'python' : 'python3');
   return new Promise((resolveP, rejectP) => {
-    const child = spawn(python, [parserPath, csvPath, sourceDocumentId], {
-      cwd: resolve(process.cwd(), 'scrapers'),
+    // Run as a module (`-m cbs_nphc.parser`) so the parser's relative imports
+    // (from .two_mode_reader) resolve — matches the nrb_bfi invocation. Running
+    // it as a bare file path breaks with "attempted relative import".
+    const child = spawn(python, ['-m', 'cbs_nphc.parser', csvPath, sourceDocumentId], {
+      cwd: scrapersDir,
+      env: { ...process.env, PYTHONPATH: scrapersDir },
       shell: false,
     });
     const out: Buffer[] = [];
@@ -187,6 +209,14 @@ async function main(): Promise<void> {
     );
   }
 
+  // Self-create the source_documents provenance row unless a real FK was
+  // threaded in (the placeholder is only valid for --dry-run).
+  const sourceDocumentId =
+    args.sourceDocumentId === PLACEHOLDER_SOURCE_DOC_ID
+      ? await ensureSourceDocument(args.csv)
+      : args.sourceDocumentId;
+  console.log(`[ingest] source_documents.id = ${sourceDocumentId}`);
+
   const rows = result.facts
     .filter((f) => slugToId.has(f.entity_slug))
     .map((f) => ({
@@ -198,7 +228,7 @@ async function main(): Promise<void> {
       unit: f.unit,
       censusYearAd: f.census_year_ad,
       censusYearBs: f.census_year_bs,
-      sourceDocumentId: args.sourceDocumentId,
+      sourceDocumentId,
       confidenceGrade: f.confidence_grade_proposed,
       promotedBy: 'cbs-nphc-2021-ingest-script',
     }));

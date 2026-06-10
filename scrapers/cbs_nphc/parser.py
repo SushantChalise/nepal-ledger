@@ -1,4 +1,4 @@
-"""CBS NPHC 2021 parser — deterministic Python (first batch of 5 CSVs).
+"""CBS NPHC 2021 parser — deterministic Python (first batch of 5 CSVs + absent-population batch).
 
 Source: CBS National Population & Housing Census 2021 (BS 2078). The corpus
 is the 89 palika-grain CSVs at
@@ -6,8 +6,10 @@ is the 89 palika-grain CSVs at
 
 This parser ships the **infrastructure** (two-mode reader + per-row resolver
 + column-explode → :class:`CensusFactDraft`) plus a curated **first batch of
-5 CSVs** chosen to exercise both header modes and three indicator families.
-The remaining 84 CSVs are scheduled in
+5 CSVs** chosen to exercise both header modes and three indicator families,
+and the **absent-population batch (Hhld18/19/20)** which require per-row
+dimension columns (sex, age-group) folded into the indicator slug.
+The remaining CSVs are scheduled in
 ``docs/tasks/worker-P3-followup-census-batches.md``.
 
 First-batch CSV selection
@@ -22,6 +24,34 @@ Hhld05_FloorOfHouse.csv           B      household_housing  Clean-header proof; 
 Hhld10_HouseholdFacility.csv      B      household_facility Mode B with a far wider value-column block (17 cols), and the ``x_NoFacility`` + ``atleastOne`` "aggregate" columns that need explicit handling.
 Indv01_PopulationBySex.csv        B      individual_demographic  Mode B with a completely different schema (no ``rowtotal`` / ``a_*`` cols; instead ``nHhld,total,male,female,avg_hhsize,...``) — proves the parser does NOT assume the ``Hhld*`` shape.
 ================================ ====== ====== ========================
+
+Multi-row-per-palika tables (absent-population batch)
+-----------------------------------------------------
+
+Hhld18/19/20 each have multiple sub-rows per palika keyed on sex (Hhld18) or
+sex × age-group (Hhld19/20).  The parser folds those dimension labels into
+the indicator slug so every (entity_slug, indicator_slug) pair is unique::
+
+    hhld18-absentpopnbysex-<sexname>-<col>
+        e.g. hhld18-absentpopnbysex-male-a-00to04
+
+    hhld19-absentpopnbycountry-<sexname>-<agegrpname>-<col>
+        e.g. hhld19-absentpopnbycountry-total-all-ages-a-india
+
+    hhld20-absentpopnbyreasonofabsence-<sexname>-<agegrpname>-<col>
+        e.g. hhld20-absentpopnbyreasonofabsence-male-15-24-a-salary
+
+Dimension values (``sexname``, ``agegrpname``) are taken verbatim from the
+CSV text column (e.g. "Total", "Male", "Female", "All Ages", "15 - 24") and
+slugified through :func:`_slugify_indicator` (lower-case, non-alphanumeric →
+hyphen).  The ``sex`` / ``agegrp`` *numeric* codes are intentionally NOT used
+in the slug so the human-readable label is preserved (and ``agegrp=9`` maps
+to "not-stated" rather than a cryptic "9").
+
+The dimension columns are registered in ``_TABLE_DIMENSION_COLUMNS``.
+Tables absent from that dict are treated as single-row-per-palika (legacy
+behaviour, unchanged).
+
 
 Output contract
 ---------------
@@ -40,18 +70,28 @@ district totals and belong in roll-up views, not the palika-grain
 Resolution policy
 -----------------
 
-For each palika-grain row the parser maps ``gapaname`` → the canonical
-8-digit federal code via :mod:`scrapers._common.municipality_resolver`. The
-27 CBS-vs-MoF spelling drifts catalogued in the audit (Appendix A) are
-pre-rewritten through ``_GAPANAME_OVERRIDES`` BEFORE the fuzzy resolver runs;
-the resolver itself stays generic. If a row's name cannot be resolved AND
-the override map does not cover it, the row is emitted as a
-``CensusParserError(error_class='Other')`` and skipped. **No federal codes
-are fabricated.**
+For each palika-grain row the parser maps the CBS integer triple
+``(prov, dist, gapa)`` → the canonical 8-digit federal code via the committed
+**deterministic crosswalk** ``palika_code_crosswalk.csv`` (generated offline by
+``generate_crosswalk.py`` from the MoF canonical table + a 753-row CBS
+reference; see that module for the within-district matching ladder). The
+crosswalk resolves all 753 palikas exactly and disambiguates same-named
+palikas in different districts (e.g. the two "Mayadevi" rural municipalities)
+because each triple maps to one code.
+
+The crosswalk is the primary resolver. The legacy name-based fuzzy resolver
+(:mod:`scrapers._common.municipality_resolver`, with the ``_GAPANAME_OVERRIDES``
+pre-rewrites) is retained ONLY as a fallback for a CBS ``(prov, dist, gapa)``
+triple that is absent from the crosswalk — i.e. a publication that introduces a
+palika the crosswalk has not yet been regenerated for. If neither the crosswalk
+nor the fuzzy fallback resolves a row, it is emitted as a
+``CensusParserError(error_class='MunicipalityUnresolved')`` and skipped.
+**No federal codes are fabricated.**
 """
 
 from __future__ import annotations
 
+import csv
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -61,9 +101,14 @@ from _common.municipality_resolver import (
     HIGH_CONFIDENCE_THRESHOLD,
     resolve_municipality,
 )
+
 from .two_mode_reader import CsvMode, read_census_csv
 
-PARSER_VERSION: Final[str] = "0.1.0"
+PARSER_VERSION: Final[str] = "0.3.0"
+
+# Committed deterministic crosswalk: CBS (prov,dist,gapa) → 8-digit federal code.
+# Generated by ``generate_crosswalk.py``; resolves all 753 palikas exactly.
+_CROSSWALK_PATH: Final[Path] = Path(__file__).parent / "palika_code_crosswalk.csv"
 SOURCE_ID: Final[str] = "cbs-nphc-2021"
 CENSUS_YEAR_AD: Final[str] = "2021"
 CENSUS_YEAR_BS: Final[str] = "2078"
@@ -81,14 +126,33 @@ CensusIndicatorFamily = Literal[
 ]
 
 # Mapping from CSV file stem → (indicator_family, unit). Limited to the
-# first-batch 5 files. Extending the parser to more files means extending
-# this table (and writing a fixture + test row) — see the follow-up brief.
+# first-batch 5 files plus the financial-inclusion + migration batch (3 of 6
+# targets; see blocker note below for Hhld18/19/20).
+# Extending the parser to more files means extending this table (and writing a
+# fixture + test row) — see the follow-up brief.
 _TABLE_REGISTRY: Final[dict[str, tuple[CensusIndicatorFamily, str]]] = {
     "Hhld01_OwnershipOfHouse": ("household_housing", "households"),
     "Hhld02_FoundationOfHouse": ("household_housing", "households"),
     "Hhld05_FloorOfHouse": ("household_housing", "households"),
     "Hhld10_HouseholdFacility": ("household_facility", "households"),
     "Indv01_PopulationBySex": ("individual_demographic", "persons"),
+    # --- Financial inclusion + migration batch ---
+    # Hhld11: female ownership of fixed assets (land/house) — Money Becomes Wealth.
+    "Hhld11_FemaleOwnershipOfFixedAsset": ("household_economic", "households"),
+    # Hhld12: household-level small-scale business — entrepreneurship denominator.
+    "Hhld12_SmallScaleBusiness": ("household_economic", "households"),
+    # Hhld17: households with absent members — migration driver.
+    "Hhld17_AbsentHousehold": ("household_demographic", "households"),
+    # --- Absent-population batch (multi-row-per-palika) ---
+    # Hhld18: absent population by sex × age bin (3 sex sub-rows per palika).
+    "Hhld18_AbsentPopnBySex": ("individual_migration", "persons"),
+    # Hhld19: absent population by sex × age-group × destination country
+    #   (27 sub-rows per palika: 3 sex × 9 age groups).
+    #   HIGH VALUE — remittance-source geography.
+    "Hhld19_AbsentPopnByCountry": ("individual_migration", "persons"),
+    # Hhld20: absent population by sex × age-group × reason of absence
+    #   (27 sub-rows per palika, same structure as Hhld19).
+    "Hhld20_AbsentPopnByReasonOfAbsence": ("individual_migration", "persons"),
 }
 
 # Columns common to every Hhld*/Indv* CSV. The parser refuses to run if any
@@ -159,6 +223,103 @@ _TABLE_VALUE_COLUMNS: Final[dict[str, tuple[str, ...]]] = {
         "growth_rate",
         "pop_density",
     ),
+    # --- Financial inclusion + migration batch ---
+    "Hhld11_FemaleOwnershipOfFixedAsset": (
+        "rowtotal",
+        "a_HouseOnly",
+        "b_LandOnly",
+        "c_HouseAndLand",
+        "d_NoOwnership",
+        "e_notstd",
+    ),
+    "Hhld12_SmallScaleBusiness": (
+        "rowtotal",
+        "NoBusiness",
+        "a_Cottage_m",
+        "a_Cottage_f",
+        "b_Trade_m",
+        "b_Trade_f",
+        "c_Transprt_m",
+        "c_Transprt_f",
+        "d_Service_m",
+        "d_Service_f",
+        "e_Others_m",
+        "e_Others_f",
+        "notstd",
+    ),
+    "Hhld17_AbsentHousehold": (
+        "TotHhld",
+        "absntHhld",
+        "total",
+        "male",
+        "female",
+        "AbsntHhldnotstd",
+    ),
+    # --- Absent-population batch ---
+    # Hhld18: value cols = age bins (sex is a per-row dimension, not a value col).
+    "Hhld18_AbsentPopnBySex": (
+        "rowtotal",
+        "a_00to04",
+        "b_05to09",
+        "c_10to14",
+        "d_15to19",
+        "e_20to24",
+        "f_25to29",
+        "g_30to34",
+        "h_35to39",
+        "i_40to44",
+        "j_45to49",
+        "k_50to54",
+        "l_55to59",
+        "m_60to64",
+        "n_65plus",
+        "o_notstd",
+    ),
+    # Hhld19: value cols = destination countries.
+    "Hhld19_AbsentPopnByCountry": (
+        "rowtotal",
+        "a_india",
+        "b_saarc",
+        "c_asean",
+        "d_midleast",
+        "e_othrasian",
+        "f_eucntry",
+        "g_othreuropn",
+        "h_northamericn",
+        "i_southamericn",
+        "j_african",
+        "k_pacific",
+        "l_other",
+        "m_notstd",
+    ),
+    # Hhld20: value cols = reasons of absence.
+    "Hhld20_AbsentPopnByReasonOfAbsence": (
+        "rowtotal",
+        "a_salary",
+        "b_trade",
+        "c_study",
+        "d_jobseek",
+        "e_dependnt",
+        "f_others",
+        "g_notstd",
+    ),
+}
+
+# Per-table dimension columns whose *text* values (not numeric codes) must be
+# folded into the indicator slug to disambiguate multiple sub-rows per palika.
+# Only tables listed here are treated as multi-row-per-palika; all other tables
+# default to the legacy single-row-per-palika path (unchanged behaviour).
+#
+# Slug convention:  <table-stem-kebab>-<dim1>-...-<dimN>-<col-kebab>
+# Dimension values are slugified (lowercase, non-alnum → hyphen) using the
+# human-readable label columns (sexname, agegrpname) so the slug is readable.
+_TABLE_DIMENSION_COLUMNS: Final[dict[str, tuple[str, ...]]] = {
+    # Hhld18 has one dimension: sex (3 values: Total / Male / Female).
+    "Hhld18_AbsentPopnBySex": ("sexname",),
+    # Hhld19 has two dimensions: sex × age-group (27 combinations).
+    "Hhld19_AbsentPopnByCountry": ("sexname", "agegrpname"),
+    # Hhld20 has the same two dimensions as Hhld19.
+    "Hhld20_AbsentPopnByReasonOfAbsence": ("sexname", "agegrpname"),
 }
 
 # Audit Appendix A — 27 CBS gapaname → canonical-MoF name_en spelling fixes.
@@ -285,6 +446,110 @@ def _slugify_indicator(table_stem: str, column: str) -> str:
     return f"{stem}-{col}"
 
 
+def _slugify_indicator_with_dims(
+    table_stem: str, dim_values: tuple[str, ...], column: str
+) -> str:
+    """Produce a slug that encodes per-row dimension labels between stem and column.
+
+    Used for multi-row-per-palika tables where the same value-column name
+    appears in multiple sub-rows (e.g. sex='Male' vs sex='Total').
+
+    Example::
+
+        _slugify_indicator_with_dims(
+            "Hhld19_AbsentPopnByCountry",
+            ("Male", "15 - 24"),
+            "a_india",
+        )
+        # → "hhld19-absentpopnbycountry-male-15-24-a-india"
+    """
+    stem = re.sub(r"[^a-z0-9]+", "-", table_stem.lower()).strip("-")
+    dims = "-".join(
+        re.sub(r"[^a-z0-9]+", "-", dv.lower()).strip("-") for dv in dim_values
+    )
+    col = re.sub(r"[^a-z0-9]+", "-", column.lower()).strip("-")
+    return f"{stem}-{dims}-{col}"
+
+
+def _expand_value_columns(
+    row: list[str],
+    header_index: dict[str, int],
+    value_columns: tuple[str, ...],
+    dim_values: tuple[str, ...],
+    table_stem: str,
+    federal_code: str,
+    palika_key: tuple[str, str, str],
+    gapaname: str,
+    family: CensusIndicatorFamily,
+    unit: str,
+    raw_idx: int,
+    seen: set[tuple[tuple[str, str, str], str]],
+    facts: list[CensusFactDraft],
+    errors: list[CensusParserError],
+) -> None:
+    """Expand all value columns from one CSV row into :class:`CensusFactDraft` records.
+
+    Encapsulated to keep :func:`parse` branch-count within the linter limit.
+    Mutates ``facts``, ``errors``, and ``seen`` in-place.
+
+    ``palika_key`` is the ``(prov, dist, gapa)`` string triple taken directly
+    from the CSV.  The ``seen`` set is keyed on
+    ``(palika_key, indicator_slug)`` rather than ``(federal_code, indicator_slug)``
+    so that two distinct palikas that share a romanized name — and are therefore
+    incorrectly resolved to the same federal code by the fuzzy resolver — are
+    still treated as separate entities within one parse.  This eliminates the
+    378 false-positive "duplicate" errors that occurred when, e.g., Madi
+    Municipality in Sankhuwasabha and Madi Municipality in Chitwan both
+    resolved to the same code and the second palika's facts were silently
+    dropped.
+
+    The downstream DB insert may still surface a true duplicate if the resolver
+    maps two palikas to the same code; that is a data-quality signal to fix the
+    override map, not a parser logic error.
+    """
+    for col in value_columns:
+        value = _parse_value(row[header_index[col]])
+        if value is None:
+            errors.append(
+                CensusParserError(
+                    "ValueUnparseable",
+                    f"row {raw_idx} ({gapaname}/{col}): unparseable value "
+                    f"'{row[header_index[col]]!r}'",
+                    source_excerpt=gapaname,
+                )
+            )
+            continue
+        if dim_values:
+            slug = _slugify_indicator_with_dims(table_stem, dim_values, col)
+        else:
+            slug = _slugify_indicator(table_stem, col)
+        key = (palika_key, slug)
+        if key in seen:
+            # Duplicate (palika, indicator) within one file would violate
+            # the census_facts unique index — surface it loudly rather
+            # than emit a row Postgres will reject anyway.
+            errors.append(
+                CensusParserError(
+                    "Other",
+                    f"duplicate (palika={palika_key}, indicator={slug}) "
+                    f"within {table_stem}; row {raw_idx}",
+                    source_excerpt=gapaname,
+                )
+            )
+            continue
+        seen.add(key)
+        facts.append(
+            CensusFactDraft(
+                entity_slug=federal_code,
+                source_table_id=table_stem,
+                indicator_family=family,
+                indicator_slug=slug,
+                value=value,
+                unit=unit,
+            )
+        )
+
+
 def _parse_value(raw: str) -> float | None:
     """Best-effort float parse. Returns None for blank / non-numeric / NaN."""
     text = raw.strip()
@@ -297,6 +562,56 @@ def _parse_value(raw: str) -> float | None:
         return float(text)
     except ValueError:
         return None
+
+
+# Module-level cache for the parsed crosswalk so repeated parse() calls in one
+# process (e.g. an ingest loop over many CSVs) read the file once. A
+# single-element list is the mutable container so helpers avoid ``global``.
+_CROSSWALK_CACHE: list[dict[tuple[str, str, str], str] | None] = [None]
+
+
+def _load_crosswalk(
+    *,
+    crosswalk_path_for_tests: Path | None = None,
+) -> dict[tuple[str, str, str], str]:
+    """Load ``palika_code_crosswalk.csv`` → ``{(prov,dist,gapa): federal_code}``.
+
+    Keys are the integer triple rendered as *strings* (matching the raw CSV cell
+    values the parser compares against), so lookups need no int coercion on the
+    hot path. Cached after first read.
+
+    ``crosswalk_path_for_tests`` overrides the path AND bypasses the cache so a
+    test can point at a fixture crosswalk without polluting the module cache.
+    """
+    if crosswalk_path_for_tests is not None:
+        return _read_crosswalk_file(crosswalk_path_for_tests)
+    cached = _CROSSWALK_CACHE[0]
+    if cached is not None:
+        return cached
+    loaded = _read_crosswalk_file(_CROSSWALK_PATH)
+    _CROSSWALK_CACHE[0] = loaded
+    return loaded
+
+
+def _read_crosswalk_file(path: Path) -> dict[tuple[str, str, str], str]:
+    """Parse one crosswalk CSV (comment lines starting with ``#`` are skipped)."""
+    if not path.exists():
+        # Absence is non-fatal: the parser falls back to the fuzzy resolver.
+        # This keeps the parser runnable in a checkout where the crosswalk has
+        # not been generated, at the cost of the old ~299/753 coverage.
+        return {}
+    mapping: dict[tuple[str, str, str], str] = {}
+    with path.open("r", encoding="utf-8", newline="") as fh:
+        data_lines = (line for line in fh if not line.lstrip().startswith("#"))
+        reader = csv.DictReader(data_lines)
+        for row in reader:
+            prov = (row.get("prov") or "").strip()
+            dist = (row.get("dist") or "").strip()
+            gapa = (row.get("gapa") or "").strip()
+            code = (row.get("federal_code") or "").strip()
+            if prov and dist and gapa and code:
+                mapping[(prov, dist, gapa)] = code
+    return mapping
 
 
 def _resolve_federal_code(
@@ -331,6 +646,63 @@ def _resolve_federal_code(
     return match.federal_code
 
 
+def _build_palika_code_cache(
+    rows: list[list[str]],
+    header_index: dict[str, int],
+    *,
+    resolver_for_tests: Any = None,
+    crosswalk_path_for_tests: Path | None = None,
+) -> dict[tuple[str, str, str], str | None]:
+    """Pre-resolve every unique ``(prov, dist, gapa)`` triple to a federal code.
+
+    Resolution order per unique triple:
+
+    1. **Crosswalk (primary).** Exact ``(prov, dist, gapa)`` lookup in the
+       committed ``palika_code_crosswalk.csv``. This resolves all 753 palikas
+       and disambiguates same-named palikas across districts deterministically
+       (no fuzzy matching, no district-hint guessing).
+    2. **Fuzzy resolver (fallback).** Only for a triple ABSENT from the
+       crosswalk — e.g. a CBS publication that introduces a palika before the
+       crosswalk is regenerated. Uses the legacy name + ``dname`` district-hint
+       fuzzy match. Returns ``None`` (→ ``MunicipalityUnresolved``) if that also
+       fails. **No code is ever fabricated.**
+
+    Each distinct palika is resolved exactly once even when a
+    multi-row-per-palika table (Hhld18/19/20) repeats the same geo-triple across
+    many sub-rows, so the fuzzy fallback is never invoked more than once per
+    palika.
+
+    Returns a mapping ``(prov, dist, gapa) → federal_code | None``;
+    ``None`` means neither the crosswalk nor the fuzzy fallback resolved it.
+    """
+    crosswalk = _load_crosswalk(crosswalk_path_for_tests=crosswalk_path_for_tests)
+    cache: dict[tuple[str, str, str], str | None] = {}
+    for row in rows:
+        prov = row[header_index["prov"]]
+        dist = row[header_index["dist"]]
+        gapa = row[header_index["gapa"]]
+        if not _is_palika_row(prov, dist, gapa):
+            continue
+        triple = (prov, dist, gapa)
+        if triple in cache:
+            continue  # already resolved
+
+        code = crosswalk.get(triple)
+        if code is not None:
+            cache[triple] = code
+            continue
+
+        # Fallback: triple not in the crosswalk → legacy name-based fuzzy match.
+        gapaname = row[header_index["gapaname"]].strip().strip('"')
+        dname = row[header_index["dname"]].strip().strip('"')
+        cache[triple] = _resolve_federal_code(
+            gapaname,
+            dname,
+            resolver_for_tests=resolver_for_tests,
+        )
+    return cache
+
+
 def _is_palika_row(prov: str, dist: str, gapa: str) -> bool:
     """Palika rows have all three codes non-zero. Aggregate rows
     (NEPAL / province / district totals) carry a 0 in one or more codes
@@ -347,13 +719,23 @@ def parse(
     source_document_id: str,
     *,
     resolver_for_tests: Any = None,
+    crosswalk_path_for_tests: Path | None = None,
 ) -> CensusParserResult:
     """Parse a single CBS NPHC 2021 CSV → :class:`CensusParserResult`.
 
-    The CSV must be one of the 5 first-batch files (key into
-    ``_TABLE_REGISTRY``); other filenames return ``TableUnknown``. Adding a
-    new table means extending ``_TABLE_REGISTRY``, ``_TABLE_VALUE_COLUMNS``,
-    and the fixture set.
+    The CSV must be a key in ``_TABLE_REGISTRY`` (currently 11 tables);
+    other filenames return ``TableUnknown``. Adding a new table means
+    extending ``_TABLE_REGISTRY``, ``_TABLE_VALUE_COLUMNS``, and the
+    fixture set.  Multi-row-per-palika tables (Hhld18/19/20) additionally
+    need an entry in ``_TABLE_DIMENSION_COLUMNS`` listing the per-row label
+    columns (e.g. ``sexname``, ``agegrpname``) whose values are folded into
+    the indicator slug to prevent ``(entity, slug)`` collisions.
+
+    ``crosswalk_path_for_tests`` injects a fixture crosswalk (bypassing the
+    committed CSV and its module cache); ``resolver_for_tests`` injects the
+    fuzzy-resolver fallback. Tests that pass neither exercise the real
+    crosswalk. Tests that want to exercise ONLY the fallback should pass an
+    empty fixture crosswalk together with a stub resolver.
     """
     _ = source_document_id  # threaded for symmetry with the NCPI parser
 
@@ -381,6 +763,8 @@ def parse(
         )
     family, unit = table_meta
     value_columns = _TABLE_VALUE_COLUMNS[table_stem]
+    # Dimension columns for multi-row-per-palika tables; empty tuple for legacy tables.
+    dim_col_names: tuple[str, ...] = _TABLE_DIMENSION_COLUMNS.get(table_stem, ())
 
     try:
         read = read_census_csv(path)
@@ -394,7 +778,8 @@ def parse(
     header_index = {col: i for i, col in enumerate(read.header)}
     missing_geo = [c for c in _REQUIRED_GEO_COLUMNS if c not in header_index]
     missing_val = [c for c in value_columns if c not in header_index]
-    if missing_geo or missing_val:
+    missing_dim = [c for c in dim_col_names if c not in header_index]
+    if missing_geo or missing_val or missing_dim:
         # Drain the iterator so the file handle closes promptly.
         for _row in read.rows:
             pass
@@ -405,29 +790,49 @@ def parse(
             errors=[
                 CensusParserError(
                     "ColumnMissing",
-                    f"missing required columns; geo={missing_geo}; value={missing_val}",
+                    "missing required columns; "
+                    f"geo={missing_geo}; value={missing_val}; dim={missing_dim}",
                 )
             ],
         )
 
+    # Materialise all rows upfront so we can pre-resolve every unique
+    # (prov, dist, gapa) triple exactly once before iterating for facts.
+    # This avoids calling the fuzzy resolver 27 times for each palika in
+    # multi-row tables (Hhld18/19/20) and, crucially, means two distinct
+    # palikas that share a romanised name are each resolved with their own
+    # ``dname`` district hint — the only CBS-provided discriminant besides
+    # the numeric triple itself.
+    all_rows = list(read.rows)
+
+    # Pre-resolve: (prov, dist, gapa) → federal_code | None.
+    # Each unique CBS triple calls the fuzzy resolver at most once.
+    palika_cache: dict[tuple[str, str, str], str | None] = _build_palika_code_cache(
+        all_rows,
+        header_index,
+        resolver_for_tests=resolver_for_tests,
+        crosswalk_path_for_tests=crosswalk_path_for_tests,
+    )
+
     facts: list[CensusFactDraft] = []
     errors: list[CensusParserError] = []
-    seen: set[tuple[str, str]] = set()  # (entity_slug, indicator_slug) idempotence within one parse
+    # seen keyed by (palika_key, indicator_slug) — not (federal_code, slug).
+    # Using the CBS (prov, dist, gapa) triple as the entity discriminant
+    # prevents two distinct palikas that the fuzzy resolver wrongly maps to
+    # the same federal code from generating spurious "duplicate" errors.
+    seen: set[tuple[tuple[str, str, str], str]] = set()
 
-    for raw_idx, row in enumerate(read.rows):
+    for raw_idx, row in enumerate(all_rows):
         prov = row[header_index["prov"]]
         dist = row[header_index["dist"]]
         gapa = row[header_index["gapa"]]
         if not _is_palika_row(prov, dist, gapa):
             continue
 
+        palika_key = (prov, dist, gapa)
         gapaname = row[header_index["gapaname"]].strip().strip('"')
         dname = row[header_index["dname"]].strip().strip('"')
-        federal_code = _resolve_federal_code(
-            gapaname,
-            dname,
-            resolver_for_tests=resolver_for_tests,
-        )
+        federal_code = palika_cache[palika_key]
         if federal_code is None:
             errors.append(
                 CensusParserError(
@@ -439,44 +844,28 @@ def parse(
             )
             continue
 
-        for col in value_columns:
-            value = _parse_value(row[header_index[col]])
-            if value is None:
-                errors.append(
-                    CensusParserError(
-                        "ValueUnparseable",
-                        f"row {raw_idx} ({gapaname}/{col}): unparseable value "
-                        f"'{row[header_index[col]]!r}'",
-                        source_excerpt=gapaname,
-                    )
-                )
-                continue
-            slug = _slugify_indicator(table_stem, col)
-            key = (federal_code, slug)
-            if key in seen:
-                # Duplicate (entity, indicator) within one file would violate
-                # the census_facts unique index — surface it loudly rather
-                # than emit a row Postgres will reject anyway.
-                errors.append(
-                    CensusParserError(
-                        "Other",
-                        f"duplicate (entity={federal_code}, indicator={slug}) "
-                        f"within {table_stem}; row {raw_idx}",
-                        source_excerpt=gapaname,
-                    )
-                )
-                continue
-            seen.add(key)
-            facts.append(
-                CensusFactDraft(
-                    entity_slug=federal_code,
-                    source_table_id=table_stem,
-                    indicator_family=family,
-                    indicator_slug=slug,
-                    value=value,
-                    unit=unit,
-                )
-            )
+        # For multi-row-per-palika tables, read dimension label values (e.g.
+        # sexname="Male", agegrpname="15 - 24") from the row once per palika
+        # sub-row.  These are folded into the slug so (entity, slug) is unique.
+        dim_values: tuple[str, ...] = tuple(
+            row[header_index[c]].strip().strip('"') for c in dim_col_names
+        )
+        _expand_value_columns(
+            row,
+            header_index,
+            value_columns,
+            dim_values,
+            table_stem,
+            federal_code,
+            palika_key,
+            gapaname,
+            family,
+            unit,
+            raw_idx,
+            seen,
+            facts,
+            errors,
+        )
 
     if not facts:
         return CensusParserResult(

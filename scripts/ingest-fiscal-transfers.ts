@@ -24,9 +24,8 @@
  */
 
 import { spawn as nodeSpawn } from 'node:child_process';
-import { createHash } from 'node:crypto';
-import { readFile, stat } from 'node:fs/promises';
-import { basename, resolve } from 'node:path';
+import { stat } from 'node:fs/promises';
+import { resolve } from 'node:path';
 
 import { z } from 'zod';
 
@@ -209,32 +208,20 @@ async function persist(
   rows: readonly FiscalTransferRowPayload[],
   inputPath: string,
 ): Promise<{ wrote: number; skipped: number; unresolved: number }> {
-  // Lazy import so --dry-run doesn't need DATABASE_URL set.
-  const { insertSourceDocument } = await import('@/lib/db/repositories/source-documents');
-  const { findLocalLevelEntityBySlug, bulkInsertIdempotent } =
+  // Lazy imports so --dry-run doesn't need DATABASE_URL set.
+  const { archiveAndInsertSourceDocument } = await import('./_lib/archive-source-document');
+  const { findLocalLevelEntitiesBySlugs, bulkInsertIdempotent } =
     await import('@/lib/db/repositories/local-government-fiscal-transfers');
 
-  // 1. Record the source document (append-only).
+  // 1. Archive bytes to Supabase Storage and record the source document row.
   const absoluteInput = resolve(inputPath);
-  const fileBuf = await readFile(absoluteInput);
-  const fileHash = createHash('sha256').update(fileBuf).digest('hex');
-  const fileStat = await stat(absoluteInput);
-  const today = new Date().toISOString().slice(0, 10);
-  const docResult = await insertSourceDocument({
+  const sourceDocumentId = await archiveAndInsertSourceDocument({
+    filePath: absoluteInput,
     sourceId: SOURCE_ID,
-    originalUrl: `file://${absoluteInput}`,
-    storageProvider: 'supabase',
-    storageKey: `${SOURCE_ID}/${today}/${basename(absoluteInput)}`,
-    fileHashSha256: fileHash,
-    fileSizeBytes: fileStat.size,
     contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     reportingPeriodLabel: 'FY 2082/83',
     notes: 'One-shot ingest via scripts/ingest-fiscal-transfers.ts',
   });
-  if (!docResult.ok) {
-    throw new Error(`insertSourceDocument failed: ${JSON.stringify(docResult.error)}`);
-  }
-  const sourceDocumentId = docResult.value.id;
   log(`source_documents.id = ${sourceDocumentId}`);
 
   // 2. Resolve entities + build typed inserts.
@@ -249,20 +236,25 @@ async function persist(
     promotedBy: string;
     notes: string | null;
   }> = [];
+  // Batch-resolve all federal codes in ONE query (was an N+1 loop of ~4.4k
+  // sequential lookups — minutes of round-trips over a remote connection).
+  const entityMapResult = await findLocalLevelEntitiesBySlugs(rows.map((r) => r.federal_code));
+  if (!entityMapResult.ok) {
+    throw new Error(
+      `findLocalLevelEntitiesBySlugs failed: ${JSON.stringify(entityMapResult.error)}`,
+    );
+  }
+  const entityBySlug = entityMapResult.value;
+
   let unresolved = 0;
   for (const row of rows) {
-    const entityResult = await findLocalLevelEntityBySlug(row.federal_code);
-    if (!entityResult.ok) {
-      throw new Error(
-        `findLocalLevelEntityBySlug(${row.federal_code}) failed: ${JSON.stringify(entityResult.error)}`,
-      );
-    }
-    if (entityResult.value === null) {
+    const entity = entityBySlug.get(row.federal_code);
+    if (entity === undefined) {
       unresolved += 1;
       continue;
     }
     inserts.push({
-      localLevelEntityId: entityResult.value.id,
+      localLevelEntityId: entity.id,
       fiscalYearBs: row.fiscal_year_bs,
       grantType: row.grant_type,
       // numeric(20,2) — pass as string per Drizzle convention.

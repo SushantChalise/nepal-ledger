@@ -1,0 +1,1216 @@
+"""Tests for the NRB DNE XLSX parser (nrb_dne.parser).
+
+All tests run against programmatically-generated XLSX fixtures from conftest.py.
+No network. No binary fixtures committed.
+
+Test matrix:
+    test_happy_path_*       — main parser logic on the external-reserves fixture
+    test_empty_workbook_*   — empty sheet → partial status, NoDataExtracted error
+    test_ambiguous_unit_*   — missing unit → UnitAmbiguous error, rows still parsed
+    test_bad_period_*       — malformed period header → PeriodUnparseable error
+    test_missing_file_*     — non-existent path → failure status
+    test_idempotent         — same input → same output
+    test_json_serialisable  — asdict output round-trips through json.dumps
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import asdict
+from pathlib import Path
+
+import pytest
+
+from _common.types import ParserResult, StagingRowDraft
+from nrb_dne import (
+    PARSER_VERSION,
+    SOURCE_ID,
+    DimensionalRowDraft,
+    DneParserResult,
+    parse,
+    parse_dne,
+)
+
+# ---------------------------------------------------------------------------
+# Happy path
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def happy_result(happy_path_xlsx: Path) -> ParserResult:
+    return parse(str(happy_path_xlsx), source_document_id="test-doc-happy")
+
+
+def test_happy_status_success(happy_result: ParserResult) -> None:
+    assert happy_result.status == "success", f"errors={happy_result.errors}"
+
+
+def test_happy_parser_version(happy_result: ParserResult) -> None:
+    assert happy_result.parser_version == PARSER_VERSION == "0.8.0"
+
+
+def test_happy_source_id() -> None:
+    assert SOURCE_ID == "nrb-dne-xlsx"
+
+
+def test_happy_row_count(happy_result: ParserResult) -> None:
+    # 3 indicators × (3 annual + 2 monthly) = 15 rows.
+    assert len(happy_result.staging_rows) == 15
+
+
+def test_happy_no_errors(happy_result: ParserResult) -> None:
+    assert happy_result.errors == [], f"unexpected errors: {happy_result.errors}"
+
+
+def test_happy_slugs(happy_result: ParserResult) -> None:
+    slugs = {r.indicator_slug_raw for r in happy_result.staging_rows}
+    assert "dne-total-foreign-exchange-reserves" in slugs
+    assert "dne-gold-reserves" in slugs
+    assert "dne-foreign-currency-assets" in slugs
+
+
+def test_happy_unit_all_usd_million(happy_result: ParserResult) -> None:
+    for row in happy_result.staging_rows:
+        assert row.unit == "usd_million", f"slug={row.indicator_slug_raw} unit={row.unit}"
+
+
+def test_happy_annual_periods(happy_result: ParserResult) -> None:
+    annual = [r for r in happy_result.staging_rows if r.reporting_period_type == "annual"]
+    # 3 indicators × 3 annual columns = 9 annual rows.
+    assert len(annual) == 9
+    fy_labels = {r.fiscal_year_bs for r in annual}
+    assert "2080/81" in fy_labels
+    assert "2081/82" in fy_labels
+    assert "2082/83" in fy_labels
+
+
+def test_happy_monthly_periods(happy_result: ParserResult) -> None:
+    monthly = [r for r in happy_result.staging_rows if r.reporting_period_type == "monthly"]
+    # 3 indicators × 2 monthly columns = 6 monthly rows.
+    assert len(monthly) == 6
+    bs_labels = {r.reporting_period_bs for r in monthly}
+    assert "Shrawan 2082" in bs_labels
+    assert "Bhadra 2082" in bs_labels
+
+
+def test_happy_confidence_grade(happy_result: ParserResult) -> None:
+    for row in happy_result.staging_rows:
+        assert row.confidence_grade_proposed == "B"
+
+
+def test_happy_values_correct(happy_result: ParserResult) -> None:
+    """Spot-check specific known values from the synthetic fixture."""
+    total_rows = [
+        r for r in happy_result.staging_rows
+        if r.indicator_slug_raw == "dne-total-foreign-exchange-reserves"
+    ]
+    annual_vals = {
+        r.fiscal_year_bs: r.value
+        for r in total_rows
+        if r.reporting_period_type == "annual"
+    }
+    assert annual_vals["2080/81"] == pytest.approx(1500.0)
+    assert annual_vals["2081/82"] == pytest.approx(2100.0)
+    assert annual_vals["2082/83"] == pytest.approx(2300.0)
+
+
+def test_happy_all_rows_are_staging_drafts(happy_result: ParserResult) -> None:
+    for row in happy_result.staging_rows:
+        assert isinstance(row, StagingRowDraft)
+
+
+def test_happy_period_ad_start_before_end(happy_result: ParserResult) -> None:
+    for row in happy_result.staging_rows:
+        assert row.reporting_period_ad_start < row.reporting_period_ad_end, (
+            f"slug={row.indicator_slug_raw} period_bs={row.reporting_period_bs}: "
+            f"ad_start >= ad_end"
+        )
+
+
+def test_happy_ad_label_format(happy_result: ParserResult) -> None:
+    """fiscal_year_ad_label should be YYYY/YY format for all annual rows."""
+    annual = [r for r in happy_result.staging_rows if r.reporting_period_type == "annual"]
+    for row in annual:
+        parts = row.fiscal_year_ad_label.split("/")
+        assert len(parts) == 2
+        assert parts[0].isdigit() and len(parts[0]) == 4
+        assert parts[1].isdigit() and len(parts[1]) == 2
+
+
+# ---------------------------------------------------------------------------
+# Empty workbook → partial, NoDataExtracted
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def empty_result(empty_workbook_xlsx: Path) -> ParserResult:
+    return parse(str(empty_workbook_xlsx), source_document_id="test-doc-empty")
+
+
+def test_empty_status_partial(empty_result: ParserResult) -> None:
+    assert empty_result.status == "partial"
+
+
+def test_empty_no_rows(empty_result: ParserResult) -> None:
+    assert empty_result.staging_rows == []
+
+
+def test_empty_has_no_data_error(empty_result: ParserResult) -> None:
+    detail_texts = " ".join(e.error_detail for e in empty_result.errors)
+    assert "NoDataExtracted" in detail_texts, f"errors={empty_result.errors}"
+
+
+# ---------------------------------------------------------------------------
+# Ambiguous unit → UnitAmbiguous error, rows still parsed
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def ambiguous_result(ambiguous_unit_xlsx: Path) -> ParserResult:
+    return parse(str(ambiguous_unit_xlsx), source_document_id="test-doc-ambiguous")
+
+
+def test_ambiguous_has_rows(ambiguous_result: ParserResult) -> None:
+    # Parser should still emit rows even when unit is ambiguous.
+    assert len(ambiguous_result.staging_rows) > 0
+
+
+def test_ambiguous_has_unit_error(ambiguous_result: ParserResult) -> None:
+    error_classes = [e.error_class for e in ambiguous_result.errors]
+    assert "UnitAmbiguous" in error_classes, f"errors={ambiguous_result.errors}"
+
+
+def test_ambiguous_status_partial(ambiguous_result: ParserResult) -> None:
+    # Errors present → partial.
+    assert ambiguous_result.status == "partial"
+
+
+def test_ambiguous_slug_prefix(ambiguous_result: ParserResult) -> None:
+    for row in ambiguous_result.staging_rows:
+        assert row.indicator_slug_raw.startswith("dne-")
+
+
+# ---------------------------------------------------------------------------
+# Bad period header → PeriodUnparseable error, valid column still parsed
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def bad_period_result(bad_period_xlsx: Path) -> ParserResult:
+    return parse(str(bad_period_xlsx), source_document_id="test-doc-bad-period")
+
+
+def test_bad_period_has_error(bad_period_result: ParserResult) -> None:
+    error_classes = [e.error_class for e in bad_period_result.errors]
+    assert "PeriodUnparseable" in error_classes, f"errors={bad_period_result.errors}"
+
+
+def test_bad_period_still_parses_valid_column(bad_period_result: ParserResult) -> None:
+    # The valid "2081/82" column should still produce a row for "Tax Revenue".
+    slugs = {r.indicator_slug_raw for r in bad_period_result.staging_rows}
+    assert "dne-tax-revenue" in slugs
+
+
+def test_bad_period_status_partial(bad_period_result: ParserResult) -> None:
+    assert bad_period_result.status == "partial"
+
+
+# ---------------------------------------------------------------------------
+# Missing file → failure
+# ---------------------------------------------------------------------------
+
+
+def test_missing_file_returns_failure() -> None:
+    result = parse("nonexistent-dne.xlsx", source_document_id="x")
+    assert result.status == "failure"
+    assert result.errors
+    assert result.staging_rows == []
+
+
+# ---------------------------------------------------------------------------
+# Idempotency
+# ---------------------------------------------------------------------------
+
+
+def test_idempotent(happy_path_xlsx: Path) -> None:
+    a = parse(str(happy_path_xlsx), source_document_id="x")
+    b = parse(str(happy_path_xlsx), source_document_id="x")
+    assert a.status == b.status
+    assert len(a.staging_rows) == len(b.staging_rows)
+    for ra, rb in zip(a.staging_rows, b.staging_rows, strict=True):
+        assert ra == rb
+
+
+# ---------------------------------------------------------------------------
+# JSON serialisability (orchestrator contract)
+# ---------------------------------------------------------------------------
+
+
+def test_json_serialisable(happy_result: ParserResult) -> None:
+    payload = asdict(happy_result)
+    for row in payload.get("staging_rows", []):
+        for key in ("reporting_period_ad_start", "reporting_period_ad_end", "publication_date_ad"):
+            val = row.get(key)
+            from datetime import datetime
+
+            if isinstance(val, datetime):
+                row[key] = val.isoformat()
+
+    dumped = json.dumps(payload)
+    assert "staging_rows" in dumped
+    assert "parser_version" in dumped
+    assert "dne-" in dumped
+
+
+# ---------------------------------------------------------------------------
+# Sample row spot-check (aids debugging when the suite first runs)
+# ---------------------------------------------------------------------------
+
+
+def test_sample_row_shape(happy_result: ParserResult) -> None:
+    """Verify one representative row has all required StagingRowDraft fields."""
+    row = next(
+        r for r in happy_result.staging_rows
+        if r.indicator_slug_raw == "dne-total-foreign-exchange-reserves"
+        and r.reporting_period_type == "annual"
+        and r.fiscal_year_bs == "2082/83"
+    )
+    assert row.value == pytest.approx(2300.0)
+    assert row.unit == "usd_million"
+    assert row.confidence_grade_proposed == "B"
+    assert row.fiscal_year_ad_label == "2025/26"
+    assert row.reporting_period_bs == "2082/83"
+
+
+# ---------------------------------------------------------------------------
+# Real-file structure tests (v0.2.0 — derived from actual NRB DNE XLSX layouts)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def bs_fy_suffix_result(bs_fy_suffix_xlsx: Path) -> ParserResult:
+    """BS FY with NRB revision/provisional suffixes (e.g. "2079/80R", "2080/81P")."""
+    return parse(str(bs_fy_suffix_xlsx), source_document_id="test-doc-bs-suffix")
+
+
+def test_bs_fy_suffix_parses_successfully(bs_fy_suffix_result: ParserResult) -> None:
+    """NRB revision suffix R/P/E should be stripped; BS FY should parse."""
+    assert bs_fy_suffix_result.status == "success", (
+        f"expected success, got {bs_fy_suffix_result.status}; "
+        f"errors={bs_fy_suffix_result.errors}"
+    )
+
+
+def test_bs_fy_suffix_row_count(bs_fy_suffix_result: ParserResult) -> None:
+    # 1 indicator × 3 FY columns (2079/80R, 2080/81P, 2081/82) = 3 rows.
+    assert len(bs_fy_suffix_result.staging_rows) == 3
+
+
+def test_bs_fy_suffix_stripped_to_plain_bs(bs_fy_suffix_result: ParserResult) -> None:
+    """Suffixes must be stripped; fiscal_year_bs must be plain YYYY/YY."""
+    fy_labels = {r.fiscal_year_bs for r in bs_fy_suffix_result.staging_rows}
+    assert fy_labels == {"2079/80", "2080/81", "2081/82"}
+
+
+def test_bs_fy_suffix_unit_npr_million(bs_fy_suffix_result: ParserResult) -> None:
+    for row in bs_fy_suffix_result.staging_rows:
+        assert row.unit == "npr_million", f"unit={row.unit!r}"
+
+
+def test_bs_fy_suffix_values(bs_fy_suffix_result: ParserResult) -> None:
+    vals = {r.fiscal_year_bs: r.value for r in bs_fy_suffix_result.staging_rows}
+    assert vals["2079/80"] == pytest.approx(5000.0)
+    assert vals["2080/81"] == pytest.approx(5500.0)
+    assert vals["2081/82"] == pytest.approx(6000.0)
+
+
+@pytest.fixture(scope="module")
+def ad_year_result(ad_year_sheet_xlsx: Path) -> ParserResult:
+    """AD-calendar-year FY headers (e.g. "2021/22") — converted to BS per ADR-0013."""
+    return parse(str(ad_year_sheet_xlsx), source_document_id="test-doc-ad-year")
+
+
+def test_ad_year_sheet_status_success(ad_year_result: ParserResult) -> None:
+    """AD-year FY headers now parse (ADR-0013): converted to BS, status success."""
+    assert ad_year_result.status == "success", f"errors: {ad_year_result.errors}"
+
+
+def test_ad_year_sheet_emits_rows(ad_year_result: ParserResult) -> None:
+    """The fixture's two AD-year columns (2021/22, 2022/23) yield two facts."""
+    assert len(ad_year_result.staging_rows) == 2
+
+
+def test_ad_year_sheet_converts_ad_fy_to_bs(ad_year_result: ParserResult) -> None:
+    """AD fiscal year → BS via the +57 offset (ADR-0013): 2021/22→2078/79,
+    2022/23→2079/80. The AD label is preserved in fiscal_year_ad_label."""
+    by_bs = {r.reporting_period_bs: r for r in ad_year_result.staging_rows}
+    assert set(by_bs) == {"2078/79", "2079/80"}
+    assert by_bs["2078/79"].fiscal_year_ad_label == "2021/22"
+    assert by_bs["2079/80"].fiscal_year_ad_label == "2022/23"
+    assert by_bs["2078/79"].reporting_period_type == "annual"
+
+
+def test_ad_year_sheet_no_period_error(ad_year_result: ParserResult) -> None:
+    """No PeriodUnparseable now that AD fiscal years are accepted."""
+    assert "PeriodUnparseable" not in [e.error_class for e in ad_year_result.errors]
+
+
+# ---------------------------------------------------------------------------
+# v0.4.0 — integer-year + monthly two-row header (Foreign-exchange-reserves)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def ym_result(year_month_header_xlsx: Path) -> ParserResult:
+    """Two-row header: integer AD years over AD month names (forward-filled)."""
+    return parse(str(year_month_header_xlsx), source_document_id="test-doc-ym")
+
+
+def test_ym_status_success(ym_result: ParserResult) -> None:
+    assert ym_result.status == "success", f"errors={ym_result.errors}"
+
+
+def test_ym_row_count(ym_result: ParserResult) -> None:
+    # 2 indicators × 8 monthly columns = 16 rows.
+    assert len(ym_result.staging_rows) == 16
+
+
+def test_ym_all_monthly(ym_result: ParserResult) -> None:
+    assert all(r.reporting_period_type == "monthly" for r in ym_result.staging_rows)
+
+
+def test_ym_unit_npr_million(ym_result: ParserResult) -> None:
+    assert all(r.unit == "npr_million" for r in ym_result.staging_rows)
+
+
+def test_ym_year_forward_filled(ym_result: ParserResult) -> None:
+    """The sparse year row must forward-fill: Aug-Dec → AD 2001, Jan-Mar → 2002."""
+    by_label = {
+        (r.indicator_slug_raw, r.reporting_period_bs): r
+        for r in ym_result.staging_rows
+    }
+    # Slug "dne-nepal-rastra-bank": the "A." outline enumerator on the source
+    # label "A. Nepal Rastra Bank" is stripped for slug derivation (v0.5.0).
+    # Aug 2001 → Bhadra (AD month 8), BS year 2001+57 = 2058.
+    aug = by_label[("dne-nepal-rastra-bank", "Bhadra 2058")]
+    assert aug.value == pytest.approx(100.0)
+    assert aug.fiscal_year_ad_label == "2001/02"
+    # Jan 2002 → Magh (AD month 1, < July), BS year 2002+56 = 2058.
+    jan = by_label[("dne-nepal-rastra-bank", "Magh 2058")]
+    assert jan.value == pytest.approx(150.0)
+    # Jan belongs to FY that began the prior July (AD 2001/02).
+    assert jan.fiscal_year_ad_label == "2001/02"
+
+
+def test_ym_ad_month_span_is_exact_gregorian(ym_result: ParserResult) -> None:
+    """AD monthly span is the real Gregorian month, not a BS-derived guess."""
+    aug = next(
+        r for r in ym_result.staging_rows
+        if r.indicator_slug_raw == "dne-nepal-rastra-bank"
+        and r.reporting_period_bs == "Bhadra 2058"
+    )
+    assert aug.reporting_period_ad_start.year == 2001
+    assert aug.reporting_period_ad_start.month == 8
+    assert aug.reporting_period_ad_end.month == 8
+
+
+def test_ym_approximation_flagged(ym_result: ParserResult) -> None:
+    """Every AD-monthly row records the mid-month BS approximation in notes."""
+    assert all(
+        r.parser_notes and "mid-month" in r.parser_notes
+        for r in ym_result.staging_rows
+    )
+
+
+# ---------------------------------------------------------------------------
+# v0.4.0 — repeated (year, month) column → both values kept, flagged
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def ym_dup_result(year_month_dup_xlsx: Path) -> ParserResult:
+    return parse(str(year_month_dup_xlsx), source_document_id="test-doc-ym-dup")
+
+
+def test_ym_dup_both_values_kept(ym_dup_result: ParserResult) -> None:
+    """A repeated Oct column must NOT drop data — both Kartik 2082 values emitted."""
+    kartik = [
+        r for r in ym_dup_result.staging_rows if r.reporting_period_bs == "Kartik 2082"
+    ]
+    assert len(kartik) == 2
+    assert sorted(r.value for r in kartik) == pytest.approx([300.0, 999.0])
+
+
+def test_ym_dup_emits_period_ambiguous(ym_dup_result: ParserResult) -> None:
+    assert "PeriodAmbiguous" in [e.error_class for e in ym_dup_result.errors]
+
+
+def test_ym_dup_flagged_in_notes(ym_dup_result: ParserResult) -> None:
+    flagged = [
+        r for r in ym_dup_result.staging_rows
+        if r.parser_notes and "repeated column" in r.parser_notes
+    ]
+    assert len(flagged) == 1  # only the second occurrence is flagged
+
+
+# ---------------------------------------------------------------------------
+# v0.4.0 — long panel (Exchange-rate): FY col + month col + value cols
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def long_panel_result(long_panel_xlsx: Path) -> ParserResult:
+    return parse(str(long_panel_xlsx), source_document_id="test-doc-long-panel")
+
+
+def test_long_panel_has_rows(long_panel_result: ParserResult) -> None:
+    # 3 real month rows (Annual Average skipped) × 3 value columns = 9 rows.
+    assert len(long_panel_result.staging_rows) == 9
+
+
+def test_long_panel_all_monthly(long_panel_result: ParserResult) -> None:
+    assert all(
+        r.reporting_period_type == "monthly" for r in long_panel_result.staging_rows
+    )
+
+
+def test_long_panel_fy_forward_filled(long_panel_result: ParserResult) -> None:
+    """The sparse FY label fills across its months. July 2022 → Shrawan 2079."""
+    july = [r for r in long_panel_result.staging_rows if r.reporting_period_bs == "Shrawan 2079"]
+    assert len(july) == 3  # three value columns
+    assert all(r.fiscal_year_ad_label == "2022/23" for r in july)
+
+
+def test_long_panel_jan_uses_trailing_calendar_year(long_panel_result: ParserResult) -> None:
+    """FY 2023/24 January is AD 2024 (Jan), BS Magh 2080, but FY stays 2023/24."""
+    jan = [r for r in long_panel_result.staging_rows if r.reporting_period_bs == "Magh 2080"]
+    assert len(jan) == 3
+    assert all(r.fiscal_year_ad_label == "2023/24" for r in jan)
+    assert all(r.reporting_period_ad_start.year == 2024 for r in jan)
+
+
+def test_long_panel_skips_aggregate_rows(long_panel_result: ParserResult) -> None:
+    """The 'Annual Average' row must not produce any monthly fact."""
+    # If it leaked, we'd have 4 month rows × 3 cols = 12, not 9.
+    assert len(long_panel_result.staging_rows) == 9
+
+
+def test_long_panel_unit_ambiguous(long_panel_result: ParserResult) -> None:
+    """No controlled-vocab unit exists for FX rates → honest UnitAmbiguous."""
+    assert "UnitAmbiguous" in [e.error_class for e in long_panel_result.errors]
+    # Raw column sub-label carried as the unit (validator flags it).
+    assert all(r.unit for r in long_panel_result.staging_rows)
+
+
+# ---------------------------------------------------------------------------
+# v0.4.0 — transposed layout (Tourist-arrivals): years-as-rows, months-as-cols
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def transposed_result(transposed_xlsx: Path) -> ParserResult:
+    return parse(str(transposed_xlsx), source_document_id="test-doc-transposed")
+
+
+def test_transposed_status_success(transposed_result: ParserResult) -> None:
+    assert transposed_result.status == "success", f"errors={transposed_result.errors}"
+
+
+def test_transposed_row_count(transposed_result: ParserResult) -> None:
+    # 2 year rows × 12 months = 24 (the annual Total column is ignored).
+    assert len(transposed_result.staging_rows) == 24
+
+
+def test_transposed_all_monthly(transposed_result: ParserResult) -> None:
+    assert all(
+        r.reporting_period_type == "monthly" for r in transposed_result.staging_rows
+    )
+
+
+def test_transposed_total_column_ignored(transposed_result: ParserResult) -> None:
+    """The 'Total' column is not a month → no value equals an annual total (1860)."""
+    assert all(r.value not in (1860.0, 1872.0) for r in transposed_result.staging_rows)
+
+
+def test_transposed_jan_1992_maps_to_magh_2048(transposed_result: ParserResult) -> None:
+    """Jan 1992 → Magh (AD month 1, < July) BS year 1992+56 = 2048."""
+    jan = next(
+        r for r in transposed_result.staging_rows
+        if r.reporting_period_bs == "Magh 2048"
+    )
+    assert jan.value == pytest.approx(100.0)
+    assert jan.fiscal_year_ad_label == "1991/92"
+    assert jan.reporting_period_ad_start.year == 1992
+    assert jan.reporting_period_ad_start.month == 1
+
+
+def test_transposed_unit_count(transposed_result: ParserResult) -> None:
+    """The sheet title carries 'Number' → count."""
+    assert all(r.unit == "count" for r in transposed_result.staging_rows)
+
+
+def test_transposed_single_indicator_slug(transposed_result: ParserResult) -> None:
+    """A transposed sheet is a single indicator surface; slug from the sheet name."""
+    assert {r.indicator_slug_raw for r in transposed_result.staging_rows} == {
+        "dne-tourist-arrival"
+    }
+
+
+# ---------------------------------------------------------------------------
+# v0.5.0 — Foreign Trade → dimensional_rows (ADR-0015)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def ft_result(foreign_trade_commodities_xlsx: Path) -> DneParserResult:
+    """Foreign-Trade commodity matrix → dimensional rows via parse_dne dispatch."""
+    return parse_dne(str(foreign_trade_commodities_xlsx), source_document_id="test-ft")
+
+
+def test_ft_status_success(ft_result: DneParserResult) -> None:
+    assert ft_result.status == "success", f"errors={ft_result.errors}"
+
+
+def test_ft_no_staging_rows(ft_result: DneParserResult) -> None:
+    """A dimensional file emits NO single-series staging rows (ADR-0015)."""
+    assert ft_result.staging_rows == []
+
+
+def test_ft_dimensional_row_count(ft_result: DneParserResult) -> None:
+    # 2 sections: export-india has 3 commodities, import-china has 1 = 4 rows;
+    # × 24 month columns (2 FY blocks × 12) = 96 dimensional rows. TOTAL skipped.
+    assert len(ft_result.dimensional_rows) == 96
+
+
+def test_ft_all_rows_are_dimensional_drafts(ft_result: DneParserResult) -> None:
+    for row in ft_result.dimensional_rows:
+        assert isinstance(row, DimensionalRowDraft)
+
+
+def test_ft_row_shape_has_all_adr0015_fields(ft_result: DneParserResult) -> None:
+    """Each dimensional row carries exactly the ADR-0015 contract fields."""
+    expected = {
+        "base_indicator_slug", "base_indicator_name", "dimension_kind",
+        "dimension_value", "dimension_label", "value", "unit",
+        "reporting_period_type", "reporting_period_bs",
+        "reporting_period_ad_start", "reporting_period_ad_end",
+        "fiscal_year_bs", "fiscal_year_ad_label", "confidence_grade",
+    }
+    assert set(ft_result.dimensional_rows[0].to_json_dict().keys()) == expected
+
+
+def test_ft_base_slugs_partner_qualified(ft_result: DneParserResult) -> None:
+    """Export/import direction + trade partner determine the base measure slug."""
+    bases = {r.base_indicator_slug for r in ft_result.dimensional_rows}
+    assert bases == {
+        "dne-merchandise-exports-india",
+        "dne-merchandise-imports-china",
+    }
+
+
+def test_ft_dimension_kind_is_commodity(ft_result: DneParserResult) -> None:
+    assert {r.dimension_kind for r in ft_result.dimensional_rows} == {"commodity"}
+
+
+def test_ft_unit_npr_million(ft_result: DneParserResult) -> None:
+    assert {r.unit for r in ft_result.dimensional_rows} == {"npr_million"}
+
+
+def test_ft_all_monthly_grade_b(ft_result: DneParserResult) -> None:
+    assert all(r.reporting_period_type == "monthly" for r in ft_result.dimensional_rows)
+    assert all(r.confidence_grade == "B" for r in ft_result.dimensional_rows)
+
+
+def test_ft_known_commodity_present(ft_result: DneParserResult) -> None:
+    """Cardamom (export to India) is present with the raw label preserved."""
+    card = [
+        r for r in ft_result.dimensional_rows
+        if r.dimension_value == "cardamom"
+        and r.base_indicator_slug == "dne-merchandise-exports-india"
+    ]
+    assert len(card) == 24  # 2 FY blocks × 12 months
+    assert {r.dimension_label for r in card} == {"Cardamom"}
+    aug12 = next(
+        r for r in card
+        if r.reporting_period_ad_start.year == 2012
+        and r.reporting_period_ad_start.month == 8
+    )
+    assert aug12.value == pytest.approx(100.0)  # base_val + 0 for the Aug column
+    assert aug12.fiscal_year_ad_label == "2012/13"
+    assert aug12.base_indicator_name == "Merchandise Exports to India"
+
+
+def test_ft_commodity_slug_not_over_stripped(ft_result: DneParserResult) -> None:
+    """"G.I. pipe"/"M.S. Pipe" stay DISTINCT slugs (leading G.I./M.S. not stripped)."""
+    slugs = {r.dimension_value for r in ft_result.dimensional_rows}
+    assert "g-i-pipe" in slugs
+    assert "m-s-pipe" in slugs
+    assert "pipe" not in slugs  # would mean both collapsed → data loss
+
+
+def test_ft_no_unique_key_collisions(ft_result: DneParserResult) -> None:
+    """No two rows share the dne_facts unique key (else ON CONFLICT drops data).
+
+    Exercises the structural FY-advance: the second 12-month block has a BLANK
+    FY-label cell; without the advance it would reuse 2012/13 and collide with
+    block 1 on (base, dimension, period_bs, period_type).
+    """
+    keys = [
+        (r.base_indicator_slug, r.dimension_kind, r.dimension_value,
+         r.reporting_period_bs, r.reporting_period_type)
+        for r in ft_result.dimensional_rows
+    ]
+    assert len(keys) == len(set(keys))
+    # And both fiscal years are represented (block 2 was not collapsed onto block 1).
+    fys = {r.fiscal_year_ad_label for r in ft_result.dimensional_rows}
+    assert {"2012/13", "2013/14"} <= fys
+
+
+def test_ft_json_serialisable(ft_result: DneParserResult) -> None:
+    """The DNE result dict (with dimensional_rows) round-trips through json."""
+    dumped = json.dumps(ft_result.to_json_dict())
+    assert "dimensional_rows" in dumped
+    assert "base_indicator_slug" in dumped
+    assert "staging_rows" in dumped  # present (empty) for the contract
+
+
+# ---------------------------------------------------------------------------
+# v0.5.0 — single-series slug cleanup (FX-reserves / BoP enumerators + collisions)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def fx_slug_result(fx_reserve_slug_xlsx: Path) -> ParserResult:
+    return parse(str(fx_reserve_slug_xlsx), source_document_id="test-fx-slug")
+
+
+def test_fx_slug_no_enumerator_prefix(fx_slug_result: ParserResult) -> None:
+    """No emitted slug retains a leading single-letter/numeric outline enumerator."""
+    import re as _re
+
+    slugs = {r.indicator_slug_raw for r in fx_slug_result.staging_rows}
+    offenders = [s for s in slugs if _re.match(r"dne-(?:[a-z]|\d+)-", s)]
+    assert not offenders, f"enumerator-prefixed slugs remain: {offenders}"
+
+
+def test_fx_slug_no_row_index_suffix(fx_slug_result: ParserResult) -> None:
+    """No emitted slug uses the artifact "-rNN" collision suffix anymore."""
+    import re as _re
+
+    slugs = {r.indicator_slug_raw for r in fx_slug_result.staging_rows}
+    offenders = [s for s in slugs if _re.search(r"-r\d+$", s)]
+    assert not offenders, f"-rNN slugs remain: {offenders}"
+
+
+def test_fx_slug_enumerator_and_agg_hint_stripped(fx_slug_result: ParserResult) -> None:
+    """"A. Nepal Rastra Bank (1+2)" → clean "dne-nepal-rastra-bank"."""
+    slugs = {r.indicator_slug_raw for r in fx_slug_result.staging_rows}
+    assert "dne-nepal-rastra-bank" in slugs
+    assert "dne-gross-foreign-exchange-reserve" in slugs
+
+
+def test_fx_slug_collision_qualified_by_parent(fx_slug_result: ParserResult) -> None:
+    """The repeated "Convertible" sub-row is qualified by its section parent.
+
+    First "Convertible" (under "A. Nepal Rastra Bank") → "dne-convertible";
+    second (under "C. Gross Foreign Exchange Reserve") →
+    "dne-convertible-gross-foreign-exchange-reserve" — both present, neither lost.
+    """
+    slugs = {r.indicator_slug_raw for r in fx_slug_result.staging_rows}
+    assert "dne-convertible" in slugs
+    assert "dne-convertible-gross-foreign-exchange-reserve" in slugs
+
+
+# ---------------------------------------------------------------------------
+# v0.6.0 — real-sector GDP headline single series (annual column-series layout)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def na_result(national_accounts_xlsx: Path) -> ParserResult:
+    """National-Accounts → headline GDP single series via the allowlist parser."""
+    return parse(str(national_accounts_xlsx), source_document_id="test-na")
+
+
+def test_na_status_success(na_result: ParserResult) -> None:
+    assert na_result.status == "success", f"errors={na_result.errors}"
+
+
+def test_na_only_allowlisted_slugs(na_result: ParserResult) -> None:
+    """ONLY the explicit headline allowlist is promoted (ADR-0014: no pollution)."""
+    slugs = {r.indicator_slug_raw for r in na_result.staging_rows}
+    assert slugs == {
+        "dne-gdp-nominal",
+        "dne-gdp-real-growth",
+        "dne-gdp-real",
+        "dne-gdp-per-capita-usd",
+        "dne-gdp-deflator",
+    }
+
+
+def test_na_no_industry_pollution(na_result: ParserResult) -> None:
+    """The GVA-by-industry / 'as percent of GDP' columns are NOT promoted."""
+    slugs = {r.indicator_slug_raw for r in na_result.staging_rows}
+    assert "dne-agriculture" not in slugs
+    assert "dne-industry" not in slugs
+    assert not any("percent" in s for s in slugs if s != "dne-gdp-real-growth")
+
+
+def test_na_nominal_gdp_unit_npr_billion(na_result: ParserResult) -> None:
+    """ADR-0011: Nominal GDP is NPR billion (5709 ≈ 5.7 trillion), not million."""
+    nom = [r for r in na_result.staging_rows if r.indicator_slug_raw == "dne-gdp-nominal"]
+    assert nom, "no dne-gdp-nominal rows"
+    assert all(r.unit == "npr_billion" for r in nom)
+    by_bs = {r.fiscal_year_bs: r.value for r in nom}
+    # The fixture's FY 2080/81 value mirrors the real file: NPR 5,709 billion.
+    assert by_bs["2080/81"] == pytest.approx(5709.09)
+    assert 5_000 < by_bs["2080/81"] < 7_000  # ≈ NPR 5–7 trillion sanity band
+
+
+def test_na_revision_suffix_stripped(na_result: ParserResult) -> None:
+    """FY labels with R/P suffixes parse to plain BS FY (2080/81R → 2080/81)."""
+    fy_labels = {r.fiscal_year_bs for r in na_result.staging_rows}
+    assert "2080/81" in fy_labels
+    assert "2081/82" in fy_labels
+    assert not any(s.endswith(("R", "P")) for s in fy_labels)
+
+
+def test_na_real_and_per_capita_units(na_result: ParserResult) -> None:
+    """Real GDP is npr_billion; per-capita GDP is USD; growth/deflator are %/index."""
+    by_slug_units: dict[str, set[str]] = {}
+    for r in na_result.staging_rows:
+        by_slug_units.setdefault(r.indicator_slug_raw, set()).add(r.unit)
+    assert by_slug_units["dne-gdp-real"] == {"npr_billion"}
+    assert by_slug_units["dne-gdp-per-capita-usd"] == {"usd"}
+    assert by_slug_units["dne-gdp-real-growth"] == {"percent"}
+    assert by_slug_units["dne-gdp-deflator"] == {"index_points"}
+
+
+def test_na_per_capita_magnitude(na_result: ParserResult) -> None:
+    """ADR-0011: per-capita GDP ≈ USD 1,400–1,500 (not 1.4 or 1.4M)."""
+    pc = [r for r in na_result.staging_rows if r.indicator_slug_raw == "dne-gdp-per-capita-usd"]
+    assert all(500 < r.value < 5_000 for r in pc), [r.value for r in pc]
+
+
+def test_na_all_annual_grade_b(na_result: ParserResult) -> None:
+    assert all(r.reporting_period_type == "annual" for r in na_result.staging_rows)
+    assert all(r.confidence_grade_proposed == "B" for r in na_result.staging_rows)
+
+
+def test_na_footer_row_not_an_error(na_result: ParserResult) -> None:
+    """The 'Source: …' footer row inside the data block is skipped silently."""
+    assert na_result.errors == [], f"unexpected errors: {na_result.errors}"
+
+
+# ---------------------------------------------------------------------------
+# v0.6.0 — CPI headline (index + inflation rate)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def cpi_result(cpi_xlsx: Path) -> ParserResult:
+    return parse(str(cpi_xlsx), source_document_id="test-cpi")
+
+
+def test_cpi_status_success(cpi_result: ParserResult) -> None:
+    assert cpi_result.status == "success", f"errors={cpi_result.errors}"
+
+
+def test_cpi_two_headline_slugs(cpi_result: ParserResult) -> None:
+    slugs = {r.indicator_slug_raw for r in cpi_result.staging_rows}
+    assert slugs == {"dne-cpi", "dne-inflation-rate"}
+
+
+def test_cpi_index_unit_and_magnitude(cpi_result: ParserResult) -> None:
+    """ADR-0011: CPI is an index (base 2014/15=100), ~100–200 range, index_points."""
+    cpi = [r for r in cpi_result.staging_rows if r.indicator_slug_raw == "dne-cpi"]
+    assert all(r.unit == "index_points" for r in cpi)
+    by_bs = {r.fiscal_year_bs: r.value for r in cpi}
+    assert by_bs["2080/81"] == pytest.approx(166.22)
+    assert all(50 < r.value < 300 for r in cpi)
+
+
+def test_cpi_inflation_unit_and_magnitude(cpi_result: ParserResult) -> None:
+    """ADR-0011: inflation rate is a percent, single-digit-ish (not an index)."""
+    infl = [r for r in cpi_result.staging_rows if r.indicator_slug_raw == "dne-inflation-rate"]
+    assert all(r.unit == "percent" for r in infl)
+    by_bs = {r.fiscal_year_bs: r.value for r in infl}
+    assert by_bs["2080/81"] == pytest.approx(5.44)
+    assert all(-5 < r.value < 30 for r in infl)
+
+
+# ---------------------------------------------------------------------------
+# v0.6.0 — Provincial GDP → dimensional facts (dimension_kind='province')
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def prov_result(provincial_gdp_xlsx: Path) -> DneParserResult:
+    """Provincial-GDP → province dimensional facts via parse_dne dispatch."""
+    return parse_dne(str(provincial_gdp_xlsx), source_document_id="test-prov")
+
+
+def test_prov_status_success(prov_result: DneParserResult) -> None:
+    assert prov_result.status == "success", f"errors={prov_result.errors}"
+
+
+def test_prov_no_staging_rows(prov_result: DneParserResult) -> None:
+    """A dimensional file emits NO single-series staging rows (ADR-0015)."""
+    assert prov_result.staging_rows == []
+
+
+def test_prov_dimensional_drafts(prov_result: DneParserResult) -> None:
+    for row in prov_result.dimensional_rows:
+        assert isinstance(row, DimensionalRowDraft)
+
+
+def test_prov_row_count(prov_result: DneParserResult) -> None:
+    # 2 provinces (Koshi, Bagamati) × 7 FY columns = 14. Total GVA block excluded.
+    assert len(prov_result.dimensional_rows) == 14
+
+
+def test_prov_total_gva_excluded(prov_result: DneParserResult) -> None:
+    """'Total GVA' is not a province → no fact carries it as a dimension."""
+    dims = {r.dimension_value for r in prov_result.dimensional_rows}
+    assert dims == {"koshi", "bagamati"}
+    assert "total-gva" not in dims
+
+
+def test_prov_base_measure_and_kind(prov_result: DneParserResult) -> None:
+    assert {r.base_indicator_slug for r in prov_result.dimensional_rows} == {
+        "dne-provincial-gdp"
+    }
+    assert {r.dimension_kind for r in prov_result.dimensional_rows} == {"province"}
+
+
+def test_prov_unit_npr_million(prov_result: DneParserResult) -> None:
+    """ADR-0011: sheet header '(in million)' → npr_million; values ≈ 10^5–10^6."""
+    assert {r.unit for r in prov_result.dimensional_rows} == {"npr_million"}
+    # Bagamati (Kathmandu valley) is the largest province → ≈ NPR 1.9 trillion.
+    bag = [r for r in prov_result.dimensional_rows if r.dimension_value == "bagamati"]
+    by_bs = {r.fiscal_year_bs: r.value for r in bag}
+    assert by_bs["2080/81"] == pytest.approx(1964517.0)
+    assert 1_000_000 < by_bs["2080/81"] < 3_000_000  # ≈ NPR 1–3 trillion
+
+
+def test_prov_picks_headline_gdp_row(prov_result: DneParserResult) -> None:
+    """The '(GDP)' total row is selected, NOT the 'at basic prices' sub-row."""
+    koshi = {r.fiscal_year_bs: r.value for r in prov_result.dimensional_rows
+             if r.dimension_value == "koshi"}
+    # Headline GDP (908830/970743), not basic-prices GDP (804000/855000).
+    assert koshi["2080/81"] == pytest.approx(908830.0)
+    assert koshi["2081/82"] == pytest.approx(970743.0)
+
+
+def test_prov_revision_suffix_stripped(prov_result: DneParserResult) -> None:
+    fy = {r.fiscal_year_bs for r in prov_result.dimensional_rows}
+    # 7 FY columns; the last two carried R/P suffixes that must be stripped.
+    assert {"2080/81", "2081/82"} <= fy
+    assert not any(s.endswith(("R", "P")) for s in fy)
+
+
+def test_prov_no_unique_key_collisions(prov_result: DneParserResult) -> None:
+    """No two facts share the dne_facts unique key (else ON CONFLICT drops data)."""
+    keys = [
+        (r.base_indicator_slug, r.dimension_kind, r.dimension_value,
+         r.reporting_period_bs, r.reporting_period_type)
+        for r in prov_result.dimensional_rows
+    ]
+    assert len(keys) == len(set(keys))
+
+
+def test_prov_ad_span_valid(prov_result: DneParserResult) -> None:
+    for r in prov_result.dimensional_rows:
+        assert r.reporting_period_ad_start < r.reporting_period_ad_end
+
+
+def test_prov_json_serialisable(prov_result: DneParserResult) -> None:
+    dumped = json.dumps(prov_result.to_json_dict())
+    assert "dne-provincial-gdp" in dumped
+    assert "province" in dumped
+
+
+# ---------------------------------------------------------------------------
+# v0.7.0 — Migrant workers → dimensional facts (dimension_kind='country')
+#
+# DATA-HONESTY: this file is migrant-worker HEADCOUNTS, not remittance NPR (despite
+# the filename). The parser emits base `dne-migrant-workers` / unit `count`, NOT
+# `dne-remittance-inflow` / `npr_million`. These tests lock that determination in.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def mw_result(migrant_workers_xlsx: Path) -> DneParserResult:
+    """Migrant-Workers Country sheet → country headcount facts via parse_dne dispatch."""
+    return parse_dne(str(migrant_workers_xlsx), source_document_id="test-mw")
+
+
+def test_mw_status_partial(mw_result: DneParserResult) -> None:
+    """The fixture's duplicate month group raises PeriodAmbiguous → partial."""
+    assert mw_result.status == "partial", f"errors={mw_result.errors}"
+
+
+def test_mw_no_staging_rows(mw_result: DneParserResult) -> None:
+    """A dimensional file emits NO single-series staging rows (ADR-0015)."""
+    assert mw_result.staging_rows == []
+
+
+def test_mw_dimensional_drafts(mw_result: DneParserResult) -> None:
+    for row in mw_result.dimensional_rows:
+        assert isinstance(row, DimensionalRowDraft)
+
+
+def test_mw_row_count(mw_result: DneParserResult) -> None:
+    # 2 countries (Qatar, Malaysia) × 5 month groups = 10 facts. The "Nepal"
+    # placeholder and the "Total" aggregate rows are excluded as dimensions.
+    assert len(mw_result.dimensional_rows) == 10
+
+
+def test_mw_base_measure_is_headcount_not_remittance(mw_result: DneParserResult) -> None:
+    """The crux data-honesty assertion: HEADCOUNT measure + count unit, never NPR.
+
+    ADR-0015 named `dne-remittance-inflow`/`npr_million` assuming this file held NPR;
+    the real file is worker headcounts (Male/Female/Total demographic triples), so the
+    parser MUST emit the honest measure/unit instead.
+    """
+    assert {r.base_indicator_slug for r in mw_result.dimensional_rows} == {
+        "dne-migrant-workers"
+    }
+    assert {r.unit for r in mw_result.dimensional_rows} == {"count"}
+    # Guard against a regression that re-mislabels headcounts as remittance NPR.
+    assert all(r.base_indicator_slug != "dne-remittance-inflow"
+               for r in mw_result.dimensional_rows)
+    assert all(r.unit not in ("npr_million", "npr_billion")
+               for r in mw_result.dimensional_rows)
+
+
+def test_mw_dimension_kind_country(mw_result: DneParserResult) -> None:
+    assert {r.dimension_kind for r in mw_result.dimensional_rows} == {"country"}
+
+
+def test_mw_dimensions_are_countries(mw_result: DneParserResult) -> None:
+    """Only real source countries become dimensions; aggregates/placeholders excluded."""
+    dims = {r.dimension_value for r in mw_result.dimensional_rows}
+    assert dims == {"qatar", "malaysia"}
+    assert "total" not in dims  # the aggregate "Total" row is not a country
+    assert "nepal" not in dims  # the all-zero "Nepal" placeholder is not a destination
+
+
+def test_mw_all_monthly_grade_b(mw_result: DneParserResult) -> None:
+    assert all(r.reporting_period_type == "monthly" for r in mw_result.dimensional_rows)
+    assert all(r.confidence_grade == "B" for r in mw_result.dimensional_rows)
+
+
+def test_mw_row_shape_has_all_adr0015_fields(mw_result: DneParserResult) -> None:
+    """Each dimensional row carries exactly the ADR-0015 contract fields."""
+    expected = {
+        "base_indicator_slug", "base_indicator_name", "dimension_kind",
+        "dimension_value", "dimension_label", "value", "unit",
+        "reporting_period_type", "reporting_period_bs",
+        "reporting_period_ad_start", "reporting_period_ad_end",
+        "fiscal_year_bs", "fiscal_year_ad_label", "confidence_grade",
+    }
+    assert set(mw_result.dimensional_rows[0].to_json_dict().keys()) == expected
+
+
+def test_mw_total_column_used_not_sum(mw_result: DneParserResult) -> None:
+    """A fact equals the group's "Total" column value (Male+Female), read directly.
+
+    Qatar Mid-Aug FY2021/22 → AD Aug 2021 → BS Bhadra 2078, Total = 105 (the explicit
+    Total cell), not Male (100) and not a re-summed 100+5.
+    """
+    aug = next(
+        r for r in mw_result.dimensional_rows
+        if r.dimension_value == "qatar"
+        and r.fiscal_year_ad_label == "2021/22"
+        and r.reporting_period_ad_start.year == 2021
+        and r.reporting_period_ad_start.month == 8
+    )
+    assert aug.value == pytest.approx(105.0)
+    assert aug.reporting_period_bs == "Bhadra 2078"
+    assert aug.fiscal_year_bs == "2078/79"
+    assert aug.base_indicator_name == "Migrant Workers (departures, headcount)"
+
+
+def test_mw_ad_month_span_is_exact_gregorian(mw_result: DneParserResult) -> None:
+    """AD month span is the real Gregorian month (Aug = 1st–28th), not BS-derived."""
+    aug = next(
+        r for r in mw_result.dimensional_rows
+        if r.dimension_value == "qatar" and r.reporting_period_bs == "Bhadra 2078"
+    )
+    assert aug.reporting_period_ad_start.month == 8
+    assert aug.reporting_period_ad_end.month == 8
+    assert aug.reporting_period_ad_start < aug.reporting_period_ad_end
+
+
+def test_mw_aug_started_fy_calendar_split(mw_result: DneParserResult) -> None:
+    """Aug–Dec fall in the FY's lead AD year (Aug 2022 ∈ FY 2022/23, not 2023)."""
+    aug = next(
+        r for r in mw_result.dimensional_rows
+        if r.dimension_value == "malaysia"
+        and r.fiscal_year_ad_label == "2022/23"
+        and r.reporting_period_ad_start.month == 8
+    )
+    assert aug.reporting_period_ad_start.year == 2022
+    assert aug.fiscal_year_bs == "2079/80"
+
+
+def test_mw_duplicate_month_group_emits_period_ambiguous(mw_result: DneParserResult) -> None:
+    """The fixture's stray duplicate Mid-Aug group surfaces a PeriodAmbiguous error."""
+    assert "PeriodAmbiguous" in [e.error_class for e in mw_result.errors]
+
+
+def test_mw_duplicate_month_group_keeps_both_values(mw_result: DneParserResult) -> None:
+    """The duplicate group is NOT dropped — both Bhadra 2079 facts for Qatar exist.
+
+    Honest no-data-loss behaviour (mirrors the two-row-monthly precedent): the real
+    group (Total=127) and the source-duplicate group (Total=0) are BOTH emitted. On a
+    live `dne_facts` insert the unique key collides and ON CONFLICT DO NOTHING keeps
+    the FIRST-inserted (the real 127, emitted left-to-right before the dup), so no real
+    data is lost; the PeriodAmbiguous flag tells the validator to adjudicate.
+    """
+    qatar_bhadra_2079 = [
+        r for r in mw_result.dimensional_rows
+        if r.dimension_value == "qatar" and r.reporting_period_bs == "Bhadra 2079"
+    ]
+    assert len(qatar_bhadra_2079) == 2
+    assert sorted(r.value for r in qatar_bhadra_2079) == pytest.approx([0.0, 127.0])
+
+
+def test_mw_json_serialisable(mw_result: DneParserResult) -> None:
+    """The DNE result dict (with dimensional_rows) round-trips through json."""
+    dumped = json.dumps(mw_result.to_json_dict())
+    assert "dne-migrant-workers" in dumped
+    assert "country" in dumped
+    assert "staging_rows" in dumped  # present (empty) for the contract
+
+
+# ---------------------------------------------------------------------------
+# v0.8.0 — Balance of Payments (BPM6) → remittance-inflow single series
+#
+# DATA-HONESTY: this file HOLDS the real remittance NPR inflow (Personal transfers
+# Credit) that the headcount file (v0.7.0) lacks. The parser emits the headline annual
+# series `dne-remittance-inflow` / unit `npr_million` from the full-FY (July) cumulative
+# Credit column. These tests lock the magnitude (~NPR 1.2–1.7 trillion/yr), the
+# Credit-side read, the allowlist (no catalogue pollution), and the no-fabrication rule
+# for a partial trailing fiscal year.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def bop_result(bop_bpm6_xlsx: Path) -> ParserResult:
+    """Balance-of-Payments-BPM6 → remittance-inflow single series via parse() dispatch."""
+    return parse(str(bop_bpm6_xlsx), source_document_id="test-bop")
+
+
+def test_bop_status_success(bop_result: ParserResult) -> None:
+    assert bop_result.status == "success", f"errors={bop_result.errors}"
+
+
+def test_bop_no_errors(bop_result: ParserResult) -> None:
+    assert bop_result.errors == []
+
+
+def test_bop_only_remittance_slug(bop_result: ParserResult) -> None:
+    """ONLY the allowlisted remittance series is promoted — no catalogue pollution.
+
+    The generic detector would mis-promote ~100 BoP line items (Goods/Services, the
+    Secondary-income parent, the financial-account flows) as bogus single-series
+    "indicators" (ADR-0014). The dedicated route emits exactly one slug; the decoy
+    "1.A Goods and Services", the "1.C Secondary income" parent, and the
+    "1.C.2.1.1 O/W Workers' remittances" sub-line are all excluded.
+    """
+    assert {r.indicator_slug_raw for r in bop_result.staging_rows} == {
+        "dne-remittance-inflow"
+    }
+
+
+def test_bop_is_npr_remittance_not_headcount(bop_result: ParserResult) -> None:
+    """The crux data-honesty assertion: this IS remittance NPR, the right magnitude.
+
+    Complements the v0.7.0 headcount determination: the migrant-WORKER file is counts
+    (band 10^5–10^6 persons); THIS BoP file is the remittance MONEY (band ~NPR 1.2–1.7
+    TRILLION = 1.2–1.7M in npr_million). A recent full fiscal year must land in that
+    band and carry the NPR-million unit — never a headcount-scale value or a count unit.
+    """
+    assert {r.unit for r in bop_result.staging_rows} == {"npr_million"}
+    # Every full-FY remittance value is in the trillion-NPR band (≥ NPR 1.0 trillion =
+    # 1_000_000 in npr_million), not the headcount band (~10^5–10^6 persons).
+    assert all(r.value >= 1_000_000.0 for r in bop_result.staging_rows)
+    assert all(r.unit != "count" for r in bop_result.staging_rows)
+
+
+def test_bop_full_fy_magnitude(bop_result: ParserResult) -> None:
+    """Full-FY (July cumulative) Credit values match NRB's published remittance totals.
+
+    FY2079/80 (AD 2022/23) = 1,240,686 npr_million = NPR 1.24 trillion; FY2080/81
+    (AD 2023/24) = 1,445,315 = NPR 1.45 trillion (ADR-0011 magnitude check).
+    """
+    by_fy = {r.fiscal_year_bs: r.value for r in bop_result.staging_rows}
+    assert by_fy["2079/80"] == pytest.approx(1_240_686.4, abs=0.5)
+    assert by_fy["2080/81"] == pytest.approx(1_445_315.1, abs=0.5)
+
+
+def test_bop_reads_credit_not_debit_or_net(bop_result: ParserResult) -> None:
+    """The promoted value is the CREDIT (inflow) side, not Debit or Net.
+
+    Remittance INFLOW is the Credit side. In the fixture, Personal transfers FY2022/23
+    July carries Credit=1,240,686.4, Debit=500, Net=1,240,186.4 — distinct enough that a
+    wrong-side read is provable. The fact must equal the Credit value.
+    """
+    fy_2079 = next(r for r in bop_result.staging_rows if r.fiscal_year_bs == "2079/80")
+    assert fy_2079.value == pytest.approx(1_240_686.4, abs=0.5)
+    # Guard: not the Debit (500) and not the Net (1,240,186.4) side.
+    assert fy_2079.value != pytest.approx(500.0, abs=0.5)
+    assert fy_2079.value != pytest.approx(1_240_186.4, abs=0.5)
+
+
+def test_bop_partial_fy_excluded_no_fabrication(bop_result: ParserResult) -> None:
+    """A partial trailing fiscal year (no July column) yields NO annual row.
+
+    The fixture's third block (FY2024/25P / BS 2081/82) stops at September — its full-FY
+    cumulative total does not exist yet. The parser must NOT fabricate or forward a
+    partial cumulative; FY 2081/82 must be absent (the Data Continuity Protocol: never
+    fabricate forward).
+    """
+    fys = {r.fiscal_year_bs for r in bop_result.staging_rows}
+    assert fys == {"2079/80", "2080/81"}
+    assert "2081/82" not in fys
+
+
+def test_bop_all_annual_grade_b(bop_result: ParserResult) -> None:
+    assert all(r.reporting_period_type == "annual" for r in bop_result.staging_rows)
+    assert all(r.confidence_grade_proposed == "B" for r in bop_result.staging_rows)
+
+
+def test_bop_fiscal_year_ad_label_mapped(bop_result: ParserResult) -> None:
+    """AD fiscal-year labels are carried through alongside the BS canonical period."""
+    by_fy = {r.fiscal_year_bs: r.fiscal_year_ad_label for r in bop_result.staging_rows}
+    assert by_fy["2079/80"] == "2022/23"
+    assert by_fy["2080/81"] == "2023/24"
+
+
+def test_bop_annual_span_valid(bop_result: ParserResult) -> None:
+    """Each annual row has a one-year AD span (mid-July → mid-July)."""
+    for r in bop_result.staging_rows:
+        assert r.reporting_period_ad_start < r.reporting_period_ad_end
+        assert r.reporting_period_ad_end.year - r.reporting_period_ad_start.year == 1
+
+
+def test_bop_all_rows_are_staging_drafts(bop_result: ParserResult) -> None:
+    for row in bop_result.staging_rows:
+        assert isinstance(row, StagingRowDraft)
+
+
+def test_bop_no_dimensional_rows(bop_bpm6_xlsx: Path) -> None:
+    """BoP is a single-series file — parse_dne emits staging rows, NOT dimensional."""
+    res = parse_dne(str(bop_bpm6_xlsx), source_document_id="test-bop-dne")
+    assert res.dimensional_rows == []
+    assert len(res.staging_rows) == 2
+
+
+def test_bop_json_serialisable(bop_result: ParserResult) -> None:
+    """The result dict round-trips through json with the remittance slug + unit."""
+    dumped = json.dumps([asdict(r) for r in bop_result.staging_rows], default=str)
+    assert "dne-remittance-inflow" in dumped
+    assert "npr_million" in dumped

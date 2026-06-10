@@ -1,0 +1,873 @@
+{
+  "source_pdf": "Financial Data/mof_documents/yellowbook/सार्वजनिक संस्थानको वार्षिक स्थिति समीक्षा २०८१_ksi3tbe.pdf",
+  "source_page": 78,
+  "page_id": "P0_1d6841fe_p0078",
+  "out_dir": "P0__ksi3tbe_1d6841fe",
+  "table": "५.४ सार्वजनिक संस्थानको एकीकृत वासलात",
+  "table_en": "Public Enterprises Consolidated Balance Sheet",
+  "measure": "consolidated_balance_sheet",
+  "unit": "npr_lakh",
+  "price_basis": "nominal",
+  "provenance": {
+    "extraction_method": "surya-ocr",
+    "model_version": "0.17.1",
+    "verification": "bbox-resolved transcription from page_0078.json; dual-foot + balance-identity reconciliation; GATE applied",
+    "confidence_grade": "B",
+    "value_columns": [
+      {
+        "key": "2079",
+        "label_ne": "आषाढ मसान्त २०७९"
+      },
+      {
+        "key": "2080",
+        "label_ne": "आषाढ मसान्त २०८०"
+      }
+    ],
+    "excluded_columns": [
+      {
+        "key": "pct_diff",
+        "label_ne": "तुलनामा (% फरक)",
+        "reason": "year-on-year % change column, not a summable value column"
+      }
+    ],
+    "tolerance_lakh": 9,
+    "gate": "accept iff column reconciles (sum(0..7)==total8 AND sum(9..14)==total15 AND total8==total15, each within +/-9 lakh) AND row cross-reconciles; row cross-reconcile is UNEVALUABLE for every row (no disaggregating->aggregate column relationship and no cross-source anchor) so no cell can clear the full gate"
+  },
+  "columns": [
+    {
+      "key": "2079",
+      "label_ne": "आषाढ मसान्त २०७९"
+    },
+    {
+      "key": "2080",
+      "label_ne": "आषाढ मसान्त २०८०"
+    }
+  ],
+  "rows": [
+    {
+      "idx": 0,
+      "slug": "paid-up-capital",
+      "label_ne": "चुक्ता पुँजी",
+      "side": "liab_equity",
+      "kind": "line_item"
+    },
+    {
+      "idx": 1,
+      "slug": "share-premium",
+      "label_ne": "शेयर प्रिमियम",
+      "side": "liab_equity",
+      "kind": "line_item"
+    },
+    {
+      "idx": 2,
+      "slug": "advance-for-share-investment",
+      "label_ne": "शेयर लगानी वापत प्राप्त एडभान्स रकम",
+      "side": "liab_equity",
+      "kind": "line_item"
+    },
+    {
+      "idx": 3,
+      "slug": "reserve-fund",
+      "label_ne": "जगेडा कोष",
+      "side": "liab_equity",
+      "kind": "line_item"
+    },
+    {
+      "idx": 4,
+      "slug": "accumulated-profit-loss",
+      "label_ne": "संचित नाफा/(नोक्सान)",
+      "side": "liab_equity",
+      "kind": "line_item"
+    },
+    {
+      "idx": 5,
+      "slug": "medium-long-term-loan",
+      "label_ne": "मध्यम तथा दिर्घकालीन ऋण",
+      "side": "liab_equity",
+      "kind": "line_item"
+    },
+    {
+      "idx": 6,
+      "slug": "short-term-loan-deposit",
+      "label_ne": "अल्पकालीन ऋण/निक्षेप",
+      "side": "liab_equity",
+      "kind": "line_item"
+    },
+    {
+      "idx": 7,
+      "slug": "current-other-liabilities-provisions",
+      "label_ne": "चालु र अन्य दायित्व तथा व्यवस्था",
+      "side": "liab_equity",
+      "kind": "line_item"
+    },
+    {
+      "idx": 8,
+      "slug": "total",
+      "label_ne": "कुल जम्मा",
+      "side": "liab_equity",
+      "kind": "aggregate"
+    },
+    {
+      "idx": 9,
+      "slug": "net-fixed-assets",
+      "label_ne": "खुद स्थिर सम्पत्ति",
+      "side": "assets",
+      "kind": "line_item"
+    },
+    {
+      "idx": 10,
+      "slug": "investments",
+      "label_ne": "लगानी",
+      "side": "assets",
+      "kind": "line_item"
+    },
+    {
+      "idx": 11,
+      "slug": "loan-investment",
+      "label_ne": "कर्जा लगानी",
+      "side": "assets",
+      "kind": "line_item"
+    },
+    {
+      "idx": 12,
+      "slug": "cash-and-bank-balance",
+      "label_ne": "नगद तथा बैङ्क मौज्दात",
+      "side": "assets",
+      "kind": "line_item"
+    },
+    {
+      "idx": 13,
+      "slug": "current-assets",
+      "label_ne": "चालु सम्पत्ति",
+      "side": "assets",
+      "kind": "line_item"
+    },
+    {
+      "idx": 14,
+      "slug": "other-assets",
+      "label_ne": "अन्य सम्पत्ति",
+      "side": "assets",
+      "kind": "line_item"
+    },
+    {
+      "idx": 15,
+      "slug": "total",
+      "label_ne": "कुल जम्मा",
+      "side": "assets",
+      "kind": "aggregate"
+    }
+  ],
+  "accepted_cells": [],
+  "quarantined_cells": [
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 0,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "paid-up-capital",
+      "label_ne": "चुक्ता पुँजी",
+      "value": 3725541,
+      "raw_ocr": "३,७२५,५४१",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 1,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "share-premium",
+      "label_ne": "शेयर प्रिमियम",
+      "value": 98999,
+      "raw_ocr": "98,999",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 2,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "advance-for-share-investment",
+      "label_ne": "शेयर लगानी वापत प्राप्त एडभान्स रकम",
+      "value": 43668,
+      "raw_ocr": "४३,६६८",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 3,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "reserve-fund",
+      "label_ne": "जगेडा कोष",
+      "value": 3305928,
+      "raw_ocr": "३,३०५,९२८",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 4,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "accumulated-profit-loss",
+      "label_ne": "संचित नाफा/(नोक्सान)",
+      "value": 524078,
+      "raw_ocr": "५२४,०७८",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 5,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "medium-long-term-loan",
+      "label_ne": "मध्यम तथा दिर्घकालीन ऋण",
+      "value": 6492634,
+      "raw_ocr": "६,४९२,६३४",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 6,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "short-term-loan-deposit",
+      "label_ne": "अल्पकालीन ऋण/निक्षेप",
+      "value": 6681880,
+      "raw_ocr": "६,६८१,८८०",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 7,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "current-other-liabilities-provisions",
+      "label_ne": "चालु र अन्य दायित्व तथा व्यवस्था",
+      "value": 2953901,
+      "raw_ocr": "२,९५३,९०१",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 8,
+      "side": "liab_equity",
+      "row_kind": "aggregate",
+      "row_slug": "total",
+      "label_ne": "कुल जम्मा",
+      "value": 23741740,
+      "raw_ocr": "२३,७४१,७४०",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 9,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "net-fixed-assets",
+      "label_ne": "खुद स्थिर सम्पत्ति",
+      "value": 7998413,
+      "raw_ocr": "७,९९८,४१३",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 10,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "investments",
+      "label_ne": "लगानी",
+      "value": 4210753,
+      "raw_ocr": "४,२१०,७५३",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 11,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "loan-investment",
+      "label_ne": "कर्जा लगानी",
+      "value": 7164692,
+      "raw_ocr": "७,१६४,६९२",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 12,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "cash-and-bank-balance",
+      "label_ne": "नगद तथा बैङ्क मौज्दात",
+      "value": 1159243,
+      "raw_ocr": "१,१५९,२४३",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 13,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "current-assets",
+      "label_ne": "चालु सम्पत्ति",
+      "value": 2749574,
+      "raw_ocr": "२,७४९,५७४",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 14,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "other-assets",
+      "label_ne": "अन्य सम्पत्ति",
+      "value": 459064,
+      "raw_ocr": "४५९,०६४",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2079",
+      "column_label_ne": "आषाढ मसान्त २०७९",
+      "row_idx": 15,
+      "side": "assets",
+      "row_kind": "aggregate",
+      "row_slug": "total",
+      "label_ne": "कुल जम्मा",
+      "value": 23741740,
+      "raw_ocr": "२३,७४१,७४०",
+      "quarantine_reasons": [
+        "column_identity_A_fail (sum(0..7)-total8=+84889, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 0,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "paid-up-capital",
+      "label_ne": "चुक्ता पुँजी",
+      "value": 4121281,
+      "raw_ocr": "४,१२१,२८१",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 1,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "share-premium",
+      "label_ne": "शेयर प्रिमियम",
+      "value": null,
+      "raw_ocr": "_",
+      "quarantine_reasons": [
+        "no_parseable_value (OCR token missing or non-numeric, e.g. '_')",
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 2,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "advance-for-share-investment",
+      "label_ne": "शेयर लगानी वापत प्राप्त एडभान्स रकम",
+      "value": 10573,
+      "raw_ocr": "१०,५७३",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 3,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "reserve-fund",
+      "label_ne": "जगेडा कोष",
+      "value": 5077967,
+      "raw_ocr": "५,०७७,९६७",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 4,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "accumulated-profit-loss",
+      "label_ne": "संचित नाफा/(नोक्सान)",
+      "value": 611496,
+      "raw_ocr": "६११,४९६",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 5,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "medium-long-term-loan",
+      "label_ne": "मध्यम तथा दिर्घकालीन ऋण",
+      "value": 7995588,
+      "raw_ocr": "७,९९५,५८८",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 6,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "short-term-loan-deposit",
+      "label_ne": "अल्पकालीन ऋण/निक्षेप",
+      "value": 7740105,
+      "raw_ocr": "७,७४०,१०५",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 7,
+      "side": "liab_equity",
+      "row_kind": "line_item",
+      "row_slug": "current-other-liabilities-provisions",
+      "label_ne": "चालु र अन्य दायित्व तथा व्यवस्था",
+      "value": 2814141,
+      "raw_ocr": "२,८१४,१४१",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 8,
+      "side": "liab_equity",
+      "row_kind": "aggregate",
+      "row_slug": "total",
+      "label_ne": "कुल जम्मा",
+      "value": 28371151,
+      "raw_ocr": "२८,३७१,१५१",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 9,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "net-fixed-assets",
+      "label_ne": "खुद स्थिर सम्पत्ति",
+      "value": 99349524,
+      "raw_ocr": "99,३४9,5२४",
+      "quarantine_reasons": [
+        "ocr_digit_glyphs_suspect (mixed Latin/Devanagari or stray glyph in raw '99,३४9,5२४')",
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 10,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "investments",
+      "label_ne": "लगानी",
+      "value": 4927392,
+      "raw_ocr": "४,९२७,३९२",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 11,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "loan-investment",
+      "label_ne": "कर्जा लगानी",
+      "value": 7549765,
+      "raw_ocr": "७,५४९,७६५",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 12,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "cash-and-bank-balance",
+      "label_ne": "नगद तथा बैङ्क मौज्दात",
+      "value": 1421025,
+      "raw_ocr": "१,४२१,०२५",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 13,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "current-assets",
+      "label_ne": "चालु सम्पत्ति",
+      "value": 2730721,
+      "raw_ocr": "२,७३०,७२१",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 14,
+      "side": "assets",
+      "row_kind": "line_item",
+      "row_slug": "other-assets",
+      "label_ne": "अन्य सम्पत्ति",
+      "value": 400424,
+      "raw_ocr": "४००,४२४",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    },
+    {
+      "column": "2080",
+      "column_label_ne": "आषाढ मसान्त २०८०",
+      "row_idx": 15,
+      "side": "assets",
+      "row_kind": "aggregate",
+      "row_slug": "total",
+      "label_ne": "कुल जम्मा",
+      "value": 28371151,
+      "raw_ocr": "२८,३७१,१५१",
+      "quarantine_reasons": [
+        "column_identity_A_unevaluable (a liabilities+equity cell missing/unparseable)",
+        "column_identity_B_fail (sum(9..14)-total15=+88007700, >|9|)",
+        "row_cross_reconcile_unevaluable (no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable)"
+      ]
+    }
+  ],
+  "reconciliation": {
+    "per_column": [
+      {
+        "column": "2079",
+        "column_label_ne": "आषाढ मसान्त २०७९",
+        "residual_A_liabFoot": 84889,
+        "residual_B_assetFoot": -1,
+        "residual_C_balanceIdentity": 0,
+        "reconciles": false
+      },
+      {
+        "column": "2080",
+        "column_label_ne": "आषाढ मसान्त २०८०",
+        "residual_A_liabFoot": null,
+        "residual_B_assetFoot": 88007700,
+        "residual_C_balanceIdentity": 0,
+        "reconciles": false
+      }
+    ],
+    "per_row": [
+      {
+        "row_idx": 0,
+        "side": "liab_equity",
+        "row_slug": "paid-up-capital",
+        "label_ne": "चुक्ता पुँजी",
+        "value_2079": 3725541,
+        "value_2080": 4121281,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 1,
+        "side": "liab_equity",
+        "row_slug": "share-premium",
+        "label_ne": "शेयर प्रिमियम",
+        "value_2079": 98999,
+        "value_2080": null,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 2,
+        "side": "liab_equity",
+        "row_slug": "advance-for-share-investment",
+        "label_ne": "शेयर लगानी वापत प्राप्त एडभान्स रकम",
+        "value_2079": 43668,
+        "value_2080": 10573,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 3,
+        "side": "liab_equity",
+        "row_slug": "reserve-fund",
+        "label_ne": "जगेडा कोष",
+        "value_2079": 3305928,
+        "value_2080": 5077967,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 4,
+        "side": "liab_equity",
+        "row_slug": "accumulated-profit-loss",
+        "label_ne": "संचित नाफा/(नोक्सान)",
+        "value_2079": 524078,
+        "value_2080": 611496,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 5,
+        "side": "liab_equity",
+        "row_slug": "medium-long-term-loan",
+        "label_ne": "मध्यम तथा दिर्घकालीन ऋण",
+        "value_2079": 6492634,
+        "value_2080": 7995588,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 6,
+        "side": "liab_equity",
+        "row_slug": "short-term-loan-deposit",
+        "label_ne": "अल्पकालीन ऋण/निक्षेप",
+        "value_2079": 6681880,
+        "value_2080": 7740105,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 7,
+        "side": "liab_equity",
+        "row_slug": "current-other-liabilities-provisions",
+        "label_ne": "चालु र अन्य दायित्व तथा व्यवस्था",
+        "value_2079": 2953901,
+        "value_2080": 2814141,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 8,
+        "side": "liab_equity",
+        "row_slug": "total",
+        "label_ne": "कुल जम्मा",
+        "value_2079": 23741740,
+        "value_2080": 28371151,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 9,
+        "side": "assets",
+        "row_slug": "net-fixed-assets",
+        "label_ne": "खुद स्थिर सम्पत्ति",
+        "value_2079": 7998413,
+        "value_2080": 99349524,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 10,
+        "side": "assets",
+        "row_slug": "investments",
+        "label_ne": "लगानी",
+        "value_2079": 4210753,
+        "value_2080": 4927392,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 11,
+        "side": "assets",
+        "row_slug": "loan-investment",
+        "label_ne": "कर्जा लगानी",
+        "value_2079": 7164692,
+        "value_2080": 7549765,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 12,
+        "side": "assets",
+        "row_slug": "cash-and-bank-balance",
+        "label_ne": "नगद तथा बैङ्क मौज्दात",
+        "value_2079": 1159243,
+        "value_2080": 1421025,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 13,
+        "side": "assets",
+        "row_slug": "current-assets",
+        "label_ne": "चालु सम्पत्ति",
+        "value_2079": 2749574,
+        "value_2080": 2730721,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 14,
+        "side": "assets",
+        "row_slug": "other-assets",
+        "label_ne": "अन्य सम्पत्ति",
+        "value_2079": 459064,
+        "value_2080": 400424,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      },
+      {
+        "row_idx": 15,
+        "side": "assets",
+        "row_slug": "total",
+        "label_ne": "कुल जम्मा",
+        "value_2079": 23741740,
+        "value_2080": 28371151,
+        "row_cross_reconcile": "unevaluable",
+        "row_cross_reason": "no disaggregating columns sum to an aggregate column in this table (the two columns are independent balance-sheet dates), and no cross-source anchor was provided -> row cross-reconcile is unevaluable"
+      }
+    ],
+    "worst_residual_lakh_genuine_foot_break": 84889,
+    "worst_residual_lakh_incl_glyph_artifact": 88007700,
+    "worst_residual_lakh_accepted": null,
+    "cross_source": null,
+    "diagnostics": {
+      "col_2079": {
+        "asset_side_foots": true,
+        "asset_foot_residual": -1,
+        "balance_identity_holds": true,
+        "liab_side_break_lakh": 84889,
+        "break_attributed_to": "share-premium (row_idx 1): OCR token '98,999' (Latin digits) = 98999; single defect explains the entire +84889 liab-foot break",
+        "back_solved_share_premium_2079_NOT_PROMOTED": 14110
+      },
+      "col_2080": {
+        "balance_identity_holds": true,
+        "share_premium_missing": "raw token '_' (dash); printed value is nil/blank",
+        "liab_7_items_foot_to_total_exactly": true,
+        "liab_7_items_minus_total": 0,
+        "asset_side_break": "net-fixed-assets (row_idx 9): OCR token '99,3४9,5२4' is a mixed Latin/Devanagari glyph mess (naive parse 99349524) -> garbage, not a real value",
+        "back_solved_net_fixed_assets_2080_NOT_PROMOTED": 11341824
+      },
+      "interpretation": "Page is OCR-degraded on exactly 2 numeric cells (share-premium 2079, net-fixed-assets 2080) plus 1 legitimately-blank cell (share-premium 2080). All totals and all other line items are mutually consistent. The full GATE (column-reconciles AND row-cross-reconciles) cannot be cleared: no column passes all three column identities, and the row cross-reconcile term is unevaluable (no aggregate column, no cross-source anchor). All 32 cells quarantined; none fabricated."
+    }
+  },
+  "summary": {
+    "matrix_reconciles": false,
+    "accepted_count": 0,
+    "quarantined_count": 32,
+    "worst_residual_lakh": 84889,
+    "note": "Table 5.4 consolidated balance sheet, amounts in lakh. Two value columns (Ashadh-end 2079, Ashadh-end 2080). NO column fully reconciles, so the GATE accepts zero cells. Col 2079: assets foot (B=-1) and balance identity holds (C=0), but liabilities foot fails by +84889 lakh, entirely caused by the share-premium cell OCR'd as Latin '98,999' (=98999; back-solved correct value ~14110, NOT promoted). Col 2080: balance identity holds (C=0) and the 7 non-share-premium liability items already equal the total exactly (share-premium row is a printed '_' = nil), but the assets side cannot be footed because net-fixed-assets OCR'd to mixed-glyph garbage '99,3४9,5२4' (back-solved correct value ~11341824, NOT promoted). Additionally, row cross-reconcile is unevaluable for every row: the two columns are independent reporting dates (no disaggregating-->aggregate column relationship) and no cross-source anchor was provided, so even a clean column could not clear the full gate. All 32 cells quarantined with reasons; nothing fabricated. See reconciliation.diagnostics for the per-cell breakdown."
+  }
+}

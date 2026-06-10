@@ -1,0 +1,57 @@
+{
+  "doc": "सार्वजनिक संस्थानको वार्षिक स्थिति समिक्षा २०८० (संक्षिप्त झलक)_brzjuc2.pdf",
+  "tables_with_data": 8,
+  "fully_reconcile": 6,
+  "partial": 2,
+  "reconciled_columns": 34,
+  "tables": [
+    {
+      "page": 20,
+      "all_reconcile": true,
+      "accepted_columns": ["2076/77", "2077/78", "2078/79"],
+      "worst_residual": 2
+    },
+    {
+      "page": 21,
+      "all_reconcile": true,
+      "accepted_columns": ["2074/75", "2075/76", "2076/77", "2077/78", "2078/79"],
+      "worst_residual": 0
+    },
+    {
+      "page": 40,
+      "all_reconcile": false,
+      "accepted_columns": ["2077/78", "2078/79"],
+      "worst_residual": 998012
+    },
+    {
+      "page": 41,
+      "all_reconcile": true,
+      "accepted_columns": ["2074/75", "2075/76", "2076/77", "2077/78", "2078/79"],
+      "worst_residual": 1
+    },
+    {
+      "page": 43,
+      "all_reconcile": true,
+      "accepted_columns": ["2074/75", "2075/76", "2076/77", "2077/78", "2078/79"],
+      "worst_residual": 1
+    },
+    {
+      "page": 44,
+      "all_reconcile": true,
+      "accepted_columns": ["2074/75", "2075/76", "2076/77", "2077/78", "2078/79"],
+      "worst_residual": 1
+    },
+    {
+      "page": 45,
+      "all_reconcile": false,
+      "accepted_columns": ["2075/76", "2076/77", "2077/78", "2078/79"],
+      "worst_residual": 4
+    },
+    {
+      "page": 46,
+      "all_reconcile": true,
+      "accepted_columns": ["2074/75", "2075/76", "2076/77", "2077/78", "2078/79"],
+      "worst_residual": 0
+    }
+  ]
+}

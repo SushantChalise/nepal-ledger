@@ -21,6 +21,7 @@ import { err, ok, type Result } from '@/lib/errors';
 import { sha256OfBuffer } from './hash';
 import { getSupabaseClient } from './supabase-client';
 import {
+  isNotFoundStorageError,
   SupabaseUploadOkSchema,
   type StorageClientLike,
   type StorageObject,
@@ -114,12 +115,12 @@ export async function uploadSourceDocument(
       kind: 'Conflict',
       reason: `storage key collision with different content at ${storageKey}`,
     });
-  } else if (existing.error.status !== undefined && existing.error.status !== 404) {
+  } else if (!isNotFoundStorageError(existing.error)) {
     // Anything other than not-found is a real upstream failure.
     return err({
       kind: 'External',
       service: 'supabase-storage',
-      cause: `probe failed (${existing.error.status}): ${existing.error.message}`,
+      cause: `probe failed (${existing.error.status ?? existing.error.statusCode ?? 'unknown'}): ${existing.error.message}`,
     });
   }
 
