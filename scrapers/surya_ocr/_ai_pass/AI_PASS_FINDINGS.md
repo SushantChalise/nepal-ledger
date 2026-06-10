@@ -109,8 +109,23 @@ instant, exact.** Staged at `recovered/det_P1__*/p*/verified_matrix.json` (+ per
 `extraction_method=textlayer-deterministic`, confidence B. **Not promoted.**
 
 This is the proof of the route-smart thesis: the cheap deterministic path recovers exact SOE financials
-the DB lacks, where the expensive LLM path yielded 3–59% on the same domain (scanned ksi3tbe). The 19
-non-reconciling tables need extractor refinement (header/row-count variants) — incremental.
+the DB lacks, where the expensive LLM path yielded 3–59% on the same domain (scanned ksi3tbe).
+
+**Refined (commit d81de70):** diagnosed the non-reconciling tables → fixed (a) parenthesized negatives
+split across text-layer spans (the net-profit/loss tables), (b) per-COLUMN acceptance (ship FY columns
+that reconcile; quarantine the rest). Re-harvest: **35 tables fully reconcile + 9 partial = 197
+reconciled fiscal-year columns (~1,180 exact SOE cells), 0 LLM.**
+
+### Redbook deterministic feasibility (assessed; substantial next build)
+
+A redbook page (2080/81) text layer: the **numbers + budget codes are clean digits** (`21111`,
+`10100011`, `7,81,68,04`) but the descriptive labels are heavily PUA-corrupt (worse than the yellowbook),
+and the layout is **hierarchical** (ministry → office → economic-code; चालु/recurrent + पुँजीगत/capital →
+जम्मा per head). ⇒ A redbook deterministic extractor is feasible — **key rows by the clean numeric code
+(not the corrupt label)** and reconcile **रrecurrent+capital=total per head**, heads → appropriation total
+— but it is a substantial build (hierarchy + 535pg × 17 editions). Best done as a focused build following
+`parser_contract.py` + tests, not rushed. This is the highest-value remaining deterministic target
+(federal budget detail; DB has only FY2074/75).
 
 ## 5. How to continue
 
