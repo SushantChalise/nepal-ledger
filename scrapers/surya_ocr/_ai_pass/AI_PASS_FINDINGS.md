@@ -98,6 +98,20 @@ recovery; (c) the structural ADRs below.
 
 ---
 
+## 4b. Route-smart in action — deterministic SOE recovery (built + run this session)
+
+`deterministic_yellowbook.py` extracts the 6-sector × fiscal-year summary tables from the P1 SOE
+yellowbooks via fitz bbox reconstruction + `devanagari_normalization` + the Σ(6 sectors)=कुल जम्मा gate.
+**The table numeric cells are clean digits** (only prose/ligatures carry PUA corruption). Run across all
+5 P1 yellowbooks: **44 tables found, 25 fully reconcile** (worst residual 0–1 lakh) — operating income /
+net profit / net worth etc. by sector across multiple editions = several FY ranges. **Zero LLM tokens,
+instant, exact.** Staged at `recovered/det_P1__*/p*/verified_matrix.json` (+ per-doc `INDEX.json`).
+`extraction_method=textlayer-deterministic`, confidence B. **Not promoted.**
+
+This is the proof of the route-smart thesis: the cheap deterministic path recovers exact SOE financials
+the DB lacks, where the expensive LLM path yielded 3–59% on the same domain (scanned ksi3tbe). The 19
+non-reconciling tables need extractor refinement (header/row-count variants) — incremental.
+
 ## 5. How to continue
 
 - **Unattended:** `run_ai_pass_overnight.ps1 -Execute` (walks the ledger via headless `claude`; safe/bounded).
