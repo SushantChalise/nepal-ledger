@@ -8,6 +8,25 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-11 — Government audit fact domain (ADR-0024): OAG beruju + findings model
+
+**What changed:** Added a dedicated, entity-keyed fact domain for Nepal's government audit reports (Office of the Auditor General — federal/provincial/local/corporations) instead of forcing audit data into the time-series `indicator_values` pipeline. Implements the Money Wasted pillar + Budget Watch / Local Ledger data need ([STRATEGY.md](../STRATEGY.md) Pillar 4, Vertical #10). **Foundation only — no corpus parsed, no data ingested.** (Renumbered from ADR-0010 / migration idx 0003 after the loving-wing build-out claimed those numbers in parallel.)
+
+### Doctrine
+
+- **ADR-0024** — government audit reports are a distinct fact domain (*beruju* irregularities + structured narrative findings), populated direct-to-fact-table like `local_government_fiscal_transfers`. Locks 5 enums (`audit_subject_class` / `beruju_category` / `audit_amount_basis` / `extraction_method` / `review_status`), 3 tables, raw+normalized amount provenance, OCR-locator provenance, NULL-entity tier aggregates (`UNIQUE NULLS NOT DISTINCT`), source-precedence-guarded upserts, and a reconciliation-gate (ADR-0021) ship requirement.
+
+### Schema + scaffolding (across PRs #42–47)
+
+- `src/lib/db/schema/audit-facts.ts` — `audit_entity_summaries`, `audit_beruju_lines`, `audit_findings`. Migration `0006_0007_audit_facts.sql` (generated; `drizzle-kit check` clean).
+- Plus: the repository (`audit-facts.ts`) + Zod parser-output contract; a 7-province + entities-repo seed; the OAG acquisition scraper (`scrapers/oag_audit_reports/`); and two pre-ingest recon docs.
+
+### Verification
+
+- `pnpm typecheck` / `lint` / `test` / `drizzle-kit check` / `check:source-registry` — green.
+
+---
+
 ## 2026-06-10 (round 17) — Overnight AI-pass build step 1: Master Recovery Ledger over the whole OCR corpus
 
 **What changed:** Built the methodical backbone for the overnight AI-pass (plan: [`docs/OVERNIGHT_AI_PASS_PLAN.md`](../OVERNIGHT_AI_PASS_PLAN.md)): a deterministic, re-runnable **table-locator scan** over the entire Surya-OCR corpus that emits the **Master Recovery Ledger** — every `(document → table-region)`, value-ordered, deduped against the documented truth layer, with the OCR-in-progress state recorded. **Recover + stage only**; the human promotes in the morning (no unattended DB writes). Build step 1 of 5.
