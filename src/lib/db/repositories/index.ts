@@ -12,6 +12,7 @@ export * from './approved-indicator-values';
 export * from './data-quality-flags';
 export * from './banking-sector-facts';
 export * from './local-government-fiscal-transfers';
+export * from './entities';
 export * as censusFactsRepo from './census-facts';
 export * as ocrTrackingRepo from './ocr-tracking';
 export * as auditFactsRepo from './audit-facts';
