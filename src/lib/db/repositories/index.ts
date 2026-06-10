@@ -14,3 +14,4 @@ export * from './banking-sector-facts';
 export * from './local-government-fiscal-transfers';
 export * as censusFactsRepo from './census-facts';
 export * as ocrTrackingRepo from './ocr-tracking';
+export * as auditFactsRepo from './audit-facts';
