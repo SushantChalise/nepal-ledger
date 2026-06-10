@@ -76,7 +76,7 @@ Total registered sources: 70
 | Reference | imf-article-iv | IMF | Article IV consultation reports — Nepal | annual | reference_only | active |
 | Reference | mof-economic-survey-annual | MoF | Economic Survey (annual) | annual | reference_only | active |
 | Reference | ndhs-survey | MoHP | Nepal Demographic & Health Survey (NDHS) | ad_hoc | reference_only | active |
-| Reference | nlss-survey | NSO | Nepal Living Standards Survey (NLSS) | ad_hoc | reference_only | active |
+| Tier 2 | [nlss-survey](nlss-survey.md) | NSO | Nepal Living Standards Survey (NLSS) | ad_hoc | manual_upload | active |
 | Reference | npc-16th-plan | NPC | 16th Five-Year Plan (FY 2081/82–2085/86) | ad_hoc | reference_only | active |
 | Reference | pdmo-mtds | PDMO | Medium-Term Debt Management Strategy (MTDS) | annual | reference_only | paused |
 | Reference | wb-wdi | WB | World Development Indicators (WDI) — Nepal | annual | reference_only | active |

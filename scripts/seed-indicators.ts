@@ -36,6 +36,7 @@ const NCPI_SOURCE_ID = 'nrb-ncpi-table';
 const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
+const NLSS_SOURCE_ID = 'nlss-survey';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -951,6 +952,130 @@ const NCPI_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// NSO Nepal Living Standards Survey (NLSS) — welfare + poverty indicators.
+// Sources: NLSS-IV Summary Report (NSO, February 2024).
+// Category: 'demographic' — closest available fit for household welfare
+// indicators (a dedicated 'welfare' category would need an ADR + schema
+// migration; deferred). Units: percent / ratio / npr (all pre-existing).
+// Confidence default: A (primary NSO household survey, official poverty line).
+const NLSS_INDICATORS: readonly SeedIndicator[] = [
+  // ── Poverty headcount by domain ───────────────────────────────────────────
+  {
+    slug: 'nlss-poverty-headcount-national',
+    nameEn: 'Poverty Headcount Rate — National',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  {
+    slug: 'nlss-poverty-headcount-urban',
+    nameEn: 'Poverty Headcount Rate — Urban',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  {
+    slug: 'nlss-poverty-headcount-rural',
+    nameEn: 'Poverty Headcount Rate — Rural',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  // ── Poverty headcount by province ─────────────────────────────────────────
+  {
+    slug: 'nlss-poverty-headcount-koshi',
+    nameEn: 'Poverty Headcount Rate — Koshi Province',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  {
+    slug: 'nlss-poverty-headcount-madhesh',
+    nameEn: 'Poverty Headcount Rate — Madhesh Province',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  {
+    slug: 'nlss-poverty-headcount-bagmati',
+    nameEn: 'Poverty Headcount Rate — Bagmati Province',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  {
+    slug: 'nlss-poverty-headcount-gandaki',
+    nameEn: 'Poverty Headcount Rate — Gandaki Province',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  {
+    slug: 'nlss-poverty-headcount-lumbini',
+    nameEn: 'Poverty Headcount Rate — Lumbini Province',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  {
+    slug: 'nlss-poverty-headcount-karnali',
+    nameEn: 'Poverty Headcount Rate — Karnali Province',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  {
+    slug: 'nlss-poverty-headcount-sudurpaschim',
+    nameEn: 'Poverty Headcount Rate — Sudurpaschim Province',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  // ── Welfare aggregates ────────────────────────────────────────────────────
+  {
+    slug: 'nlss-per-capita-consumption-annual',
+    nameEn: 'Average Annual Per-Capita Consumption Expenditure',
+    category: 'demographic',
+    unit: 'npr',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  {
+    slug: 'nlss-gini-consumption',
+    nameEn: 'Gini Index of Per-Capita Consumption (0–1 scale)',
+    category: 'demographic',
+    unit: 'ratio',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  {
+    slug: 'nlss-food-share-consumption',
+    nameEn: 'Food Share of Per-Capita Consumption',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+  {
+    slug: 'nlss-non-food-share-consumption',
+    nameEn: 'Non-Food Share of Per-Capita Consumption',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'ad_hoc',
+    sourceAgency: 'National Statistics Office',
+  },
+];
+
 function log(msg: string): void {
   process.stdout.write(`[seed-indicators] ${msg}\n`);
 }
@@ -1111,6 +1236,35 @@ async function persist(): Promise<void> {
     esLinked += 1;
   }
   log(`indicator_source_map: ${esLinked} links ensured → ${ECONOMIC_SURVEY_SOURCE_ID}`);
+
+  // 12. NSO NLSS welfare + poverty indicators.
+  const nlssInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...NLSS_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!nlssInsertResult.ok)
+    throw new Error(`NLSS indicators insert failed: ${JSON.stringify(nlssInsertResult.error)}`);
+  log(
+    `indicators (NLSS): ${nlssInsertResult.value.length} inserted (of ${NLSS_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 13. NLSS source map links.
+  let nlssLinked = 0;
+  for (const ind of NLSS_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      NLSS_SOURCE_ID,
+      'NLSS-IV Summary Report 2022/23 (NSO)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    nlssLinked += 1;
+  }
+  log(`indicator_source_map: ${nlssLinked} links ensured → ${NLSS_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1121,12 +1275,15 @@ async function main(): Promise<void> {
       `indicators (CMEFs) = ${INDICATORS.length}, source = ${CMEFS_SOURCE_ID}`,
   );
   log(`indicators (NCPI)  = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
+  log(`indicators (NLSS)  = ${NLSS_INDICATORS.length}, source = ${NLSS_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');
     for (const i of INDICATORS) log(`  - ${i.slug} (${i.category}, ${i.unit})`);
     log('dry-run: would upsert the following indicator slugs (NCPI):');
     for (const i of NCPI_INDICATORS) log(`  - ${i.slug} (${i.category}, ${i.unit})`);
+    log('dry-run: would upsert the following indicator slugs (NLSS):');
+    for (const i of NLSS_INDICATORS) log(`  - ${i.slug} (${i.category}, ${i.unit})`);
     log('dry-run complete — no DB writes performed');
     return;
   }

@@ -183,6 +183,52 @@ Self-archives bytes to Supabase Storage and inserts `source_documents` row via
 `scripts/_lib/archive-source-document.ts` (mirrors BFI pattern). Parser is
 spawned as a module (`python -m scrapers.cbs_nphc.parser`) for relative imports.
 
+### NLSS-IV (nso_nlss)
+
+Source ID: `nlss-survey` | Parser: `scrapers/nso_nlss/parser.py` v0.1.0
+
+**One-time setup (if not already seeded):**
+
+```powershell
+# Seed the source registry row + indicator catalogue:
+pnpm seed:source-registry
+pnpm seed:indicators
+```
+
+**Download the report PDF** (if not already archived):
+
+```powershell
+# The summary report is ~3 MB. Download and save to:
+# Financial Data/nso_nlss/NLSS_IV_Summary_2022-23.pdf
+#
+# Official portal: https://data.nsonepal.gov.np/dataset/poverty-status-2023
+# Mirror:          https://giwmscdnone.gov.np/media/app/public/36/posts/1707800524_89.pdf
+```
+
+**Dry-run (parser only, no DB writes):**
+
+```powershell
+pnpm ingest:nlss --dry-run
+# or with explicit path:
+pnpm ingest:nlss --dry-run --input "C:\Users\ACER\Projects\Economy\Financial Data\nso_nlss\NLSS_IV_Summary_2022-23.pdf"
+```
+
+**Live ingest:**
+
+```powershell
+pnpm ingest:nlss
+# or with explicit path:
+pnpm ingest:nlss --input "C:\Users\ACER\Projects\Economy\Financial Data\nso_nlss\NLSS_IV_Summary_2022-23.pdf"
+```
+
+Expected output: 20 staging rows promoted to `approved_indicator_values`:
+- 14 NLSS-IV rows (FY 2079/80 BS = 2022/23 AD)
+- 6 NLSS-III comparison rows (FY 2067/68 BS = 2010/11 AD)
+
+All rows carry `confidence_grade = 'A'`. The parser uses
+`pdfplumber.page.extract_text()` + regex (NOT `extract_tables()` — the NLSS
+PDF is typeset text, not PDF table objects).
+
 ### DNE XLSX (NRB Database on Nepalese Economy)
 
 Source ID: `nrb-dne-xlsx` (umbrella; see source-registry reconciliation note in
