@@ -2101,15 +2101,16 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "scoped",
-      "reconciliation_result": null,
-      "artifact_path": null,
+      "status": "recovered",
+      "reconciliation_result": "reconciled (worst residual 0)",
+      "artifact_path": "_ai_pass/recovered/P0_1d6841fe_p0098",
       "dedup": {
         "class": "new",
         "owner": "dne_facts soe-* (only equity+loan, 1 FY 2080/81)"
       },
       "value_rank": 660.73,
-      "notes": ""
+      "notes": "87 SOE net-worth cells reconciled (~59%; Σenterprises=category जम्मा=कुल जम्मा per FY col); 60 quarantined (scanned misreads). Sparse SOE tables yield OK; dense ones (5.16) do not.",
+      "updated_utc": "2026-06-10T20:16:10+00:00"
     },
     {
       "id": "P0_1d6841fe_p0222",
@@ -2568,15 +2569,16 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "scoped",
-      "reconciliation_result": null,
+      "status": "quarantined",
+      "reconciliation_result": "5/147 cells reconciled — table structure perfect (row identity col2+col3=col4, 6 category subtotals, grand total all verified on the few clean rows) but the SCANNED ksi3tbe page image is too degraded for render-verify to read dense digits. ~3% yield.",
       "artifact_path": null,
       "dedup": {
         "class": "new",
         "owner": "dne_facts soe-* (only equity+loan, 1 FY 2080/81)"
       },
       "value_rank": 660.5,
-      "notes": ""
+      "notes": "DECISIVE: scanned ksi3tbe = very low yield/token. Re-OCR at higher DPI needed before LLM recovery is worthwhile here.",
+      "updated_utc": "2026-06-10T19:46:16+00:00"
     },
     {
       "id": "P0_1d6841fe_p0295",

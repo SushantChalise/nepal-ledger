@@ -1,0 +1,3439 @@
+{
+  "source_pdf": "Financial Data/mof_documents/yellowbook/सार्वजनिक संस्थानको वार्षिक स्थिति समीक्षा २०८१_ksi3tbe.pdf",
+  "source_page_ocr": 98,
+  "source_page_pymupdf_index": 98,
+  "page_id": "P0_1d6841fe_p0098",
+  "out_dir": "P0__ksi3tbe_1d6841fe",
+  "table": "५.१८ सार्वजनिक संस्थानको शेयरधनीकोष (नेटवर्थ)",
+  "table_en": "Public Enterprises Shareholders' Fund (Net Worth)",
+  "measure": "shareholders_fund_net_worth",
+  "unit": "npr_lakh",
+  "price_basis": "nominal",
+  "provenance": {
+    "extraction_method": "surya-ocr",
+    "model_version": "0.17.1",
+    "verification": "bbox-resolved transcription from _ocr_output/P0__ksi3tbe_1d6841fe/page_0098.json, then every numeric cell visually re-verified at 8x-20x render zoom of the source PDF (PyMuPDF page index 98); per-category footing + grand-total roll-up reconciliation; GATE applied",
+    "confidence_grade": "B",
+    "value_columns": [
+      {
+        "key": "fy2078_79",
+        "col_idx": 2,
+        "label_ne": "आर्थिक वर्ष २०७८/७९",
+        "fy": "2078/79"
+      },
+      {
+        "key": "fy2079_80",
+        "col_idx": 3,
+        "label_ne": "आर्थिक वर्ष २०७९/८०",
+        "fy": "2079/80"
+      }
+    ],
+    "excluded_columns": [
+      {
+        "key": "pct_change",
+        "col_idx": 4,
+        "label_ne": "% Change",
+        "reason": "year-on-year % change (derived ratio); not a summable value column and not footing-reconcilable"
+      }
+    ],
+    "negative_convention": "parenthesised figures are negative (accumulated loss / negative net worth)",
+    "tolerance_lakh": 9,
+    "gate": "accept a numeric cell iff its applicable column axis reconciles: for component/subtotal cells, its category foots (Σ components == printed जम्मा subtotal, +/-9 lakh) for that column; for the grand-total cell, the 6 subtotals roll up to कुल जम्मा (+/-9). The cross-column axis is NOT APPLICABLE (independent FY columns, no cross-source anchor) and is not required. The % Change column is quarantined wholesale (derived ratio). Quarantine on a failed applicable axis or illegibility, with reasons; never fabricate, never force-reconcile."
+  },
+  "columns": [
+    {
+      "key": "fy2078_79",
+      "col_idx": 2,
+      "label_ne": "आर्थिक वर्ष २०७८/७९",
+      "fy": "2078/79",
+      "kind": "value"
+    },
+    {
+      "key": "fy2079_80",
+      "col_idx": 3,
+      "label_ne": "आर्थिक वर्ष २०७९/८०",
+      "fy": "2079/80",
+      "kind": "value"
+    },
+    {
+      "key": "pct_change",
+      "col_idx": 4,
+      "label_ne": "% Change",
+      "kind": "derived_ratio"
+    }
+  ],
+  "categories": [
+    {
+      "key": "industrial",
+      "label_ne": "औद्योगिक",
+      "label_en": "Industrial",
+      "component_row_idxs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "subtotal_row_idx": 11
+    },
+    {
+      "key": "commercial",
+      "label_ne": "व्यापारिक",
+      "label_en": "Commercial",
+      "component_row_idxs": [13, 14, 15, 16],
+      "subtotal_row_idx": 17
+    },
+    {
+      "key": "service",
+      "label_ne": "सेवा",
+      "label_en": "Service",
+      "component_row_idxs": [19, 20, 21, 22, 23, 24, 25, 26, 27],
+      "subtotal_row_idx": 28
+    },
+    {
+      "key": "social",
+      "label_ne": "सामाजिक",
+      "label_en": "Social",
+      "component_row_idxs": [30, 31, 32, 33, 34],
+      "subtotal_row_idx": 35
+    },
+    {
+      "key": "utility",
+      "label_ne": "जनोपयोगी",
+      "label_en": "Utility",
+      "component_row_idxs": [37, 38, 39, 40, 41],
+      "subtotal_row_idx": 42
+    },
+    {
+      "key": "financial",
+      "label_ne": "वित्तीय",
+      "label_en": "Financial",
+      "component_row_idxs": [44, 45, 46, 47, 48, 49, 50, 51, 52],
+      "subtotal_row_idx": 53
+    }
+  ],
+  "rows": [
+    {
+      "idx": 1,
+      "kind": "component",
+      "category": "industrial",
+      "slug": "dirgha-bikas-sansthan",
+      "label_ne": "दीर्घ विकास संस्थान"
+    },
+    {
+      "idx": 2,
+      "kind": "component",
+      "category": "industrial",
+      "slug": "gidibuti-utpadan",
+      "label_ne": "जिडिबुटी उत्पादन तथा प्रशोधन कम्पनी लि."
+    },
+    {
+      "idx": 3,
+      "kind": "component",
+      "category": "industrial",
+      "slug": "hetauda-cement",
+      "label_ne": "हिटौंडा सिमेन्ट उद्योग लि."
+    },
+    {
+      "idx": 4,
+      "kind": "component",
+      "category": "industrial",
+      "slug": "janakpur-churot",
+      "label_ne": "जनकपुर चुरोट कारखाना लि."
+    },
+    {
+      "idx": 5,
+      "kind": "component",
+      "category": "industrial",
+      "slug": "nepal-aushadhi",
+      "label_ne": "नेपाल औषधि लिमिटेड"
+    },
+    {
+      "idx": 6,
+      "kind": "component",
+      "category": "industrial",
+      "slug": "udayapur-cement",
+      "label_ne": "उदयपुर सिमेन्ट उद्योग लि."
+    },
+    {
+      "idx": 7,
+      "kind": "component",
+      "category": "industrial",
+      "slug": "nepal-orind-magnesite",
+      "label_ne": "नेपाल ओरिण्ड म्याग्नासाइट प्रा.लि."
+    },
+    {
+      "idx": 8,
+      "kind": "component",
+      "category": "industrial",
+      "slug": "butwal-dhago",
+      "label_ne": "बुटवल धागो कारखाना लि."
+    },
+    {
+      "idx": 9,
+      "kind": "component",
+      "category": "industrial",
+      "slug": "nepal-metal",
+      "label_ne": "नेपाल मेटल कम्पनी लि."
+    },
+    {
+      "idx": 10,
+      "kind": "component",
+      "category": "industrial",
+      "slug": "dhaubadi-falam",
+      "label_ne": "धौवादी फलाम कम्पनी लि."
+    },
+    {
+      "idx": 11,
+      "kind": "subtotal",
+      "category": "industrial",
+      "slug": "jamma-audyogik",
+      "label_ne": "जम्मा (औद्योगिक)"
+    },
+    {
+      "idx": 13,
+      "kind": "component",
+      "category": "commercial",
+      "slug": "krishi-samagri",
+      "label_ne": "कृषि सामग्री कम्पनी लि."
+    },
+    {
+      "idx": 14,
+      "kind": "component",
+      "category": "commercial",
+      "slug": "khadya-byabastha",
+      "label_ne": "खाद्य व्यवस्था तथा व्यापार कम्पनी लि."
+    },
+    {
+      "idx": 15,
+      "kind": "component",
+      "category": "commercial",
+      "slug": "nepal-oil-nigam",
+      "label_ne": "नेपाल आयल निगम लि."
+    },
+    {
+      "idx": 16,
+      "kind": "component",
+      "category": "commercial",
+      "slug": "nepal-ban-nigam",
+      "label_ne": "नेपाल वन निगम लिमिटेड"
+    },
+    {
+      "idx": 17,
+      "kind": "subtotal",
+      "category": "commercial",
+      "slug": "jamma-byaparik",
+      "label_ne": "जम्मा (व्यापारिक)"
+    },
+    {
+      "idx": 19,
+      "kind": "component",
+      "category": "service",
+      "slug": "audyogik-kshetra-byabasthapan",
+      "label_ne": "औद्योगिक क्षेत्र व्यवस्थापन लि."
+    },
+    {
+      "idx": 20,
+      "kind": "component",
+      "category": "service",
+      "slug": "nepal-parbahan-godam",
+      "label_ne": "नेपाल पारवहन तथा गोदाम व्यवस्था कं.लि."
+    },
+    {
+      "idx": 21,
+      "kind": "component",
+      "category": "service",
+      "slug": "nepal-bayuseva",
+      "label_ne": "नेपाल वायुसेवा निगम"
+    },
+    {
+      "idx": 22,
+      "kind": "component",
+      "category": "service",
+      "slug": "rastriya-utpadakatwa",
+      "label_ne": "राष्ट्रिय उत्पादकत्व तथा आर्थिक विकास के.लि."
+    },
+    {
+      "idx": 23,
+      "kind": "component",
+      "category": "service",
+      "slug": "nepal-nagarik-uddayan",
+      "label_ne": "नेपाल नागरिक उड्डयन प्राधिकरण"
+    },
+    {
+      "idx": 24,
+      "kind": "component",
+      "category": "service",
+      "slug": "nepal-purwadhar-nirman",
+      "label_ne": "नेपाल पूर्वाधार निर्माण कम्पनी लि."
+    },
+    {
+      "idx": 25,
+      "kind": "component",
+      "category": "service",
+      "slug": "sajha-yatayat",
+      "label_ne": "साझा यातायात सहकारी संस्था लि."
+    },
+    {
+      "idx": 26,
+      "kind": "component",
+      "category": "service",
+      "slug": "nepal-railway",
+      "label_ne": "नेपाल रेल्वे कम्पनी लि."
+    },
+    {
+      "idx": 27,
+      "kind": "component",
+      "category": "service",
+      "slug": "bishal-bazar",
+      "label_ne": "विशाल बजार कम्पनी लि."
+    },
+    {
+      "idx": 28,
+      "kind": "subtotal",
+      "category": "service",
+      "slug": "jamma-sewa",
+      "label_ne": "जम्मा (सेवा)"
+    },
+    {
+      "idx": 30,
+      "kind": "component",
+      "category": "social",
+      "slug": "sanskritik-sansthan",
+      "label_ne": "सांस्कृतिक संस्थान"
+    },
+    {
+      "idx": 31,
+      "kind": "component",
+      "category": "social",
+      "slug": "gorkhapatra",
+      "label_ne": "गोरखापत्र संस्थान"
+    },
+    {
+      "idx": 32,
+      "kind": "component",
+      "category": "social",
+      "slug": "janak-shiksha",
+      "label_ne": "जनक शिक्षा सामग्री केन्द्र लि."
+    },
+    {
+      "idx": 33,
+      "kind": "component",
+      "category": "social",
+      "slug": "nepal-television",
+      "label_ne": "नेपाल टेलिभिजन"
+    },
+    {
+      "idx": 34,
+      "kind": "component",
+      "category": "social",
+      "slug": "rastriya-aawas",
+      "label_ne": "राष्ट्रिय आवास कम्पनी लि."
+    },
+    {
+      "idx": 35,
+      "kind": "subtotal",
+      "category": "social",
+      "slug": "jamma-samajik",
+      "label_ne": "जम्मा (सामाजिक)"
+    },
+    {
+      "idx": 37,
+      "kind": "component",
+      "category": "utility",
+      "slug": "nepal-khanepani",
+      "label_ne": "नेपाल खानेपानी संस्थान"
+    },
+    {
+      "idx": 38,
+      "kind": "component",
+      "category": "utility",
+      "slug": "nepal-bidyut-pradhikaran",
+      "label_ne": "नेपाल विद्युत प्राधिकरण"
+    },
+    {
+      "idx": 39,
+      "kind": "component",
+      "category": "utility",
+      "slug": "nepal-dursanchar",
+      "label_ne": "नेपाल दूरसञ्चार कम्पनी लि."
+    },
+    {
+      "idx": 40,
+      "kind": "component",
+      "category": "utility",
+      "slug": "bidyut-utpadan",
+      "label_ne": "बिद्युत उत्पादन कम्पनी लि."
+    },
+    {
+      "idx": 41,
+      "kind": "component",
+      "category": "utility",
+      "slug": "rastriya-prasaran-grid",
+      "label_ne": "राष्ट्रिय प्रशारण ग्रिड कम्पनी"
+    },
+    {
+      "idx": 42,
+      "kind": "subtotal",
+      "category": "utility",
+      "slug": "jamma-janopayogi",
+      "label_ne": "जम्मा (जनोपयोगी)"
+    },
+    {
+      "idx": 44,
+      "kind": "component",
+      "category": "financial",
+      "slug": "krishi-bikas-bank",
+      "label_ne": "कृषि विकास बैङ्क लि."
+    },
+    {
+      "idx": 45,
+      "kind": "component",
+      "category": "financial",
+      "slug": "rastriya-bima-sansthan-jeevan",
+      "label_ne": "राष्ट्रिय बिमा संस्थान (जीवन)"
+    },
+    {
+      "idx": 46,
+      "kind": "component",
+      "category": "financial",
+      "slug": "rastriya-bima-company",
+      "label_ne": "राष्ट्रिय बिमा कम्पनी लि."
+    },
+    {
+      "idx": 47,
+      "kind": "component",
+      "category": "financial",
+      "slug": "rastriya-banijya-bank",
+      "label_ne": "राष्ट्रिय वाणिज्य बैङ्क लि."
+    },
+    {
+      "idx": 48,
+      "kind": "component",
+      "category": "financial",
+      "slug": "nikshep-karja-surakshan",
+      "label_ne": "निक्षेप तथा कर्जा सुरक्षण कोष"
+    },
+    {
+      "idx": 49,
+      "kind": "component",
+      "category": "financial",
+      "slug": "nepal-stock-exchange",
+      "label_ne": "नेपाल स्टक एक्सचेन्ज लिमिटेड"
+    },
+    {
+      "idx": 50,
+      "kind": "component",
+      "category": "financial",
+      "slug": "nagarik-lagani-kosh",
+      "label_ne": "नागरिक लगानी कोष"
+    },
+    {
+      "idx": 51,
+      "kind": "component",
+      "category": "financial",
+      "slug": "hidcl",
+      "label_ne": "हाइड्रोइलेक्ट्रिसिटी इन्भेष्टमेन्ट एण्ड डेभलपमेन्ट बैंक"
+    },
+    {
+      "idx": 52,
+      "kind": "component",
+      "category": "financial",
+      "slug": "nepal-bank",
+      "label_ne": "नेपाल बैङ्क लि."
+    },
+    {
+      "idx": 53,
+      "kind": "subtotal",
+      "category": "financial",
+      "slug": "jamma-bittiya",
+      "label_ne": "जम्मा (वित्तीय)"
+    },
+    {
+      "idx": 54,
+      "kind": "grand_total",
+      "category": "ALL",
+      "slug": "kul-jamma",
+      "label_ne": "कुल जम्मा"
+    }
+  ],
+  "accepted_cells": [
+    {
+      "row_idx": 1,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "dirgha-bikas-sansthan",
+      "label_ne": "दीर्घ विकास संस्थान",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 14986,
+      "raw_ocr": "98,958",
+      "category_foot_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 2,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "gidibuti-utpadan",
+      "label_ne": "जिडिबुटी उत्पादन तथा प्रशोधन कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 4424,
+      "raw_ocr": "8.838",
+      "category_foot_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 3,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "hetauda-cement",
+      "label_ne": "हिटौंडा सिमेन्ट उद्योग लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 50,
+      "raw_ocr": "40",
+      "category_foot_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 4,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "janakpur-churot",
+      "label_ne": "जनकपुर चुरोट कारखाना लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": -28144,
+      "raw_ocr": "(२८,9४४)",
+      "category_foot_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 5,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "nepal-aushadhi",
+      "label_ne": "नेपाल औषधि लिमिटेड",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": -18740,
+      "raw_ocr": "(95,680)",
+      "category_foot_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 6,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "udayapur-cement",
+      "label_ne": "उदयपुर सिमेन्ट उद्योग लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 42295,
+      "raw_ocr": "87,794",
+      "category_foot_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 7,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "nepal-orind-magnesite",
+      "label_ne": "नेपाल ओरिण्ड म्याग्नासाइट प्रा.लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": -44217,
+      "raw_ocr": "(४४,२१७)",
+      "category_foot_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 8,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "butwal-dhago",
+      "label_ne": "बुटवल धागो कारखाना लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": -15903,
+      "raw_ocr": "(94,903)",
+      "category_foot_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 9,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "nepal-metal",
+      "label_ne": "नेपाल मेटल कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 1783,
+      "raw_ocr": "9,953",
+      "category_foot_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 10,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "dhaubadi-falam",
+      "label_ne": "धौवादी फलाम कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 2536,
+      "raw_ocr": "२,५३६",
+      "category_foot_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 11,
+      "row_kind": "subtotal",
+      "category": "industrial",
+      "row_slug": "jamma-audyogik",
+      "label_ne": "जम्मा (औद्योगिक)",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": -40929,
+      "raw_ocr": "(४०,९२९)",
+      "category_foot_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 13,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "krishi-samagri",
+      "label_ne": "कृषि सामग्री कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 116354,
+      "raw_ocr": "998,348",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 14,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "khadya-byabastha",
+      "label_ne": "खाद्य व्यवस्था तथा व्यापार कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 23005,
+      "raw_ocr": "23,00%",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 15,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "nepal-oil-nigam",
+      "label_ne": "नेपाल आयल निगम लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": -68137,
+      "raw_ocr": "(६८,१३७)",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 16,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "nepal-ban-nigam",
+      "label_ne": "नेपाल वन निगम लिमिटेड",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 4353,
+      "raw_ocr": "8,343",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 17,
+      "row_kind": "subtotal",
+      "category": "commercial",
+      "row_slug": "jamma-byaparik",
+      "label_ne": "जम्मा (व्यापारिक)",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 75575,
+      "raw_ocr": "७४,४७४",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 19,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "audyogik-kshetra-byabasthapan",
+      "label_ne": "औद्योगिक क्षेत्र व्यवस्थापन लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 443485,
+      "raw_ocr": "883,858",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 20,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-parbahan-godam",
+      "label_ne": "नेपाल पारवहन तथा गोदाम व्यवस्था कं.लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 5187,
+      "raw_ocr": "४,१८७",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 21,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-bayuseva",
+      "label_ne": "नेपाल वायुसेवा निगम",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": -51144,
+      "raw_ocr": "(49,988)",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 22,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "rastriya-utpadakatwa",
+      "label_ne": "राष्ट्रिय उत्पादकत्व तथा आर्थिक विकास के.लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": -930,
+      "raw_ocr": "(930)",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 23,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-nagarik-uddayan",
+      "label_ne": "नेपाल नागरिक उड्डयन प्राधिकरण",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 2059475,
+      "raw_ocr": "२.०५९.४७५",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 24,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-purwadhar-nirman",
+      "label_ne": "नेपाल पूर्वाधार निर्माण कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 2475,
+      "raw_ocr": "2,86%",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 25,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "sajha-yatayat",
+      "label_ne": "साझा यातायात सहकारी संस्था लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 38911,
+      "raw_ocr": "३८,९११",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 26,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-railway",
+      "label_ne": "नेपाल रेल्वे कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": -2039,
+      "raw_ocr": "(2,039)",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 27,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "bishal-bazar",
+      "label_ne": "विशाल बजार कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 50237,
+      "raw_ocr": "५०,२३७",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 28,
+      "row_kind": "subtotal",
+      "category": "service",
+      "row_slug": "jamma-sewa",
+      "label_ne": "जम्मा (सेवा)",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 2545657,
+      "raw_ocr": "२. ४४४. ६४७",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 30,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "sanskritik-sansthan",
+      "label_ne": "सांस्कृतिक संस्थान",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": -2553,
+      "raw_ocr": "(२,४५३)",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 31,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "gorkhapatra",
+      "label_ne": "गोरखापत्र संस्थान",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 6491,
+      "raw_ocr": "4.889",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 32,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "janak-shiksha",
+      "label_ne": "जनक शिक्षा सामग्री केन्द्र लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 44366,
+      "raw_ocr": "४४,३६६",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 33,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "nepal-television",
+      "label_ne": "नेपाल टेलिभिजन",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 16909,
+      "raw_ocr": "98,909",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 34,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "rastriya-aawas",
+      "label_ne": "राष्ट्रिय आवास कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 23609,
+      "raw_ocr": "२३,६०९",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 35,
+      "row_kind": "subtotal",
+      "category": "social",
+      "row_slug": "jamma-samajik",
+      "label_ne": "जम्मा (सामाजिक)",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 88822,
+      "raw_ocr": "55,522",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 37,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "nepal-khanepani",
+      "label_ne": "नेपाल खानेपानी संस्थान",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": -19945,
+      "raw_ocr": "(१९,९४५)",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 38,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "nepal-bidyut-pradhikaran",
+      "label_ne": "नेपाल विद्युत प्राधिकरण",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 2063522,
+      "raw_ocr": "२.०६३.५२२",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 39,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "nepal-dursanchar",
+      "label_ne": "नेपाल दूरसञ्चार कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 952680,
+      "raw_ocr": "947,550",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 40,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "bidyut-utpadan",
+      "label_ne": "बिद्युत उत्पादन कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 48178,
+      "raw_ocr": "४८,१७८",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 41,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "rastriya-prasaran-grid",
+      "label_ne": "राष्ट्रिय प्रशारण ग्रिड कम्पनी",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 46434,
+      "raw_ocr": "४६,४३४",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 42,
+      "row_kind": "subtotal",
+      "category": "utility",
+      "row_slug": "jamma-janopayogi",
+      "label_ne": "जम्मा (जनोपयोगी)",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 3090869,
+      "raw_ocr": "३,०९०,८६९",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 44,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "krishi-bikas-bank",
+      "label_ne": "कृषि विकास बैङ्क लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 333570,
+      "raw_ocr": "333,400",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 45,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "rastriya-bima-sansthan-jeevan",
+      "label_ne": "राष्ट्रिय बिमा संस्थान (जीवन)",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 3140,
+      "raw_ocr": "3,980",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 46,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "rastriya-bima-company",
+      "label_ne": "राष्ट्रिय बिमा कम्पनी लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 36519,
+      "raw_ocr": "३६,५१९",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 47,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "rastriya-banijya-bank",
+      "label_ne": "राष्ट्रिय वाणिज्य बैङ्क लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 306142,
+      "raw_ocr": "३०६,१४२",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 48,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nikshep-karja-surakshan",
+      "label_ne": "निक्षेप तथा कर्जा सुरक्षण कोष",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 192936,
+      "raw_ocr": "१९२,९३६",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 49,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nepal-stock-exchange",
+      "label_ne": "नेपाल स्टक एक्सचेन्ज लिमिटेड",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 62051,
+      "raw_ocr": "६२,०५१",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 50,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nagarik-lagani-kosh",
+      "label_ne": "नागरिक लगानी कोष",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 353058,
+      "raw_ocr": "३५३,०५८",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 51,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "hidcl",
+      "label_ne": "हाइड्रोइलेक्ट्रिसिटी इन्भेष्टमेन्ट एण्ड डेभलपमेन्ट बैंक",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 223678,
+      "raw_ocr": "२२३,६७८",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 52,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nepal-bank",
+      "label_ne": "नेपाल बैङ्क लि.",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 354636,
+      "raw_ocr": "३५४,६३६",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 53,
+      "row_kind": "subtotal",
+      "category": "financial",
+      "row_slug": "jamma-bittiya",
+      "label_ne": "जम्मा (वित्तीय)",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 1865729,
+      "raw_ocr": "१,८६५,७२९",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 54,
+      "row_kind": "grand_total",
+      "category": "ALL",
+      "row_slug": "kul-jamma",
+      "label_ne": "कुल जम्मा",
+      "column": "fy2078_79",
+      "col_idx": 2,
+      "fy": "2078/79",
+      "column_label_ne": "आर्थिक वर्ष २०७८/७९",
+      "value": 7625724,
+      "raw_ocr": "७,६२५,७२४",
+      "subtotal_roll_residual": -1,
+      "all_component_equiv_residual": -1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 13,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "krishi-samagri",
+      "label_ne": "कृषि सामग्री कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 116908,
+      "raw_ocr": "११६,९०८",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 14,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "khadya-byabastha",
+      "label_ne": "खाद्य व्यवस्था तथा व्यापार कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 24457,
+      "raw_ocr": "२४,४५७",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 15,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "nepal-oil-nigam",
+      "label_ne": "नेपाल आयल निगम लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 61411,
+      "raw_ocr": "६१,४११",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 16,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "nepal-ban-nigam",
+      "label_ne": "नेपाल वन निगम लिमिटेड",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 3610,
+      "raw_ocr": "3,590",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 17,
+      "row_kind": "subtotal",
+      "category": "commercial",
+      "row_slug": "jamma-byaparik",
+      "label_ne": "जम्मा (व्यापारिक)",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 206386,
+      "raw_ocr": "२०६,३८६",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 19,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "audyogik-kshetra-byabasthapan",
+      "label_ne": "औद्योगिक क्षेत्र व्यवस्थापन लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 443841,
+      "raw_ocr": "४४३,८४१",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 20,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-parbahan-godam",
+      "label_ne": "नेपाल पारवहन तथा गोदाम व्यवस्था कं.लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 5599,
+      "raw_ocr": "4,499",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 21,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-bayuseva",
+      "label_ne": "नेपाल वायुसेवा निगम",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": -57972,
+      "raw_ocr": "(५७,९७२)",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 22,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "rastriya-utpadakatwa",
+      "label_ne": "राष्ट्रिय उत्पादकत्व तथा आर्थिक विकास के.लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": -973,
+      "raw_ocr": "(९७३)",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 23,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-nagarik-uddayan",
+      "label_ne": "नेपाल नागरिक उड्डयन प्राधिकरण",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 3651191,
+      "raw_ocr": "३,६५१,१९१",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 24,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-purwadhar-nirman",
+      "label_ne": "नेपाल पूर्वाधार निर्माण कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 2543,
+      "raw_ocr": "2,883",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 25,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "sajha-yatayat",
+      "label_ne": "साझा यातायात सहकारी संस्था लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 41106,
+      "raw_ocr": "४१,१०६",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 26,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-railway",
+      "label_ne": "नेपाल रेल्वे कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": -4035,
+      "raw_ocr": "(XEO.8)",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 27,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "bishal-bazar",
+      "label_ne": "विशाल बजार कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 51711,
+      "raw_ocr": "५१,७११",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 28,
+      "row_kind": "subtotal",
+      "category": "service",
+      "row_slug": "jamma-sewa",
+      "label_ne": "जम्मा (सेवा)",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 4133010,
+      "raw_ocr": "8,933,090",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 30,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "sanskritik-sansthan",
+      "label_ne": "सांस्कृतिक संस्थान",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": -2702,
+      "raw_ocr": "(२,७०२)",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 31,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "gorkhapatra",
+      "label_ne": "गोरखापत्र संस्थान",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 7126,
+      "raw_ocr": "७,१२६",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 32,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "janak-shiksha",
+      "label_ne": "जनक शिक्षा सामग्री केन्द्र लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 46303,
+      "raw_ocr": "४६,३०३",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 33,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "nepal-television",
+      "label_ne": "नेपाल टेलिभिजन",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 14910,
+      "raw_ocr": "98,890",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 34,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "rastriya-aawas",
+      "label_ne": "राष्ट्रिय आवास कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 23693,
+      "raw_ocr": "२३,६९३",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 35,
+      "row_kind": "subtotal",
+      "category": "social",
+      "row_slug": "jamma-samajik",
+      "label_ne": "जम्मा (सामाजिक)",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 89330,
+      "raw_ocr": "द९,३३०",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 37,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "nepal-khanepani",
+      "label_ne": "नेपाल खानेपानी संस्थान",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": -25403,
+      "raw_ocr": "(24,803)",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 38,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "nepal-bidyut-pradhikaran",
+      "label_ne": "नेपाल विद्युत प्राधिकरण",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 2415106,
+      "raw_ocr": "२,४१५,१०६",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 39,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "nepal-dursanchar",
+      "label_ne": "नेपाल दूरसञ्चार कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 939450,
+      "raw_ocr": "९३९,४५०",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 40,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "bidyut-utpadan",
+      "label_ne": "बिद्युत उत्पादन कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 49562,
+      "raw_ocr": "89,287",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 41,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "rastriya-prasaran-grid",
+      "label_ne": "राष्ट्रिय प्रशारण ग्रिड कम्पनी",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 48326,
+      "raw_ocr": "४८,३२६",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 42,
+      "row_kind": "subtotal",
+      "category": "utility",
+      "row_slug": "jamma-janopayogi",
+      "label_ne": "जम्मा (जनोपयोगी)",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 3427041,
+      "raw_ocr": "३,४२७,०४१",
+      "category_foot_residual": 0,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 44,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "krishi-bikas-bank",
+      "label_ne": "कृषि विकास बैङ्क लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 337937,
+      "raw_ocr": "३३७,९३७",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 45,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "rastriya-bima-sansthan-jeevan",
+      "label_ne": "राष्ट्रिय बिमा संस्थान (जीवन)",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 3154,
+      "raw_ocr": "3,948",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 46,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "rastriya-bima-company",
+      "label_ne": "राष्ट्रिय बिमा कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 40382,
+      "raw_ocr": "४०,३८२",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 47,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "rastriya-banijya-bank",
+      "label_ne": "राष्ट्रिय वाणिज्य बैङ्क लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 507383,
+      "raw_ocr": "५०७,३८३",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 48,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nikshep-karja-surakshan",
+      "label_ne": "निक्षेप तथा कर्जा सुरक्षण कोष",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 231366,
+      "raw_ocr": "२३१,३६६",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 49,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nepal-stock-exchange",
+      "label_ne": "नेपाल स्टक एक्सचेन्ज लिमिटेड",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 62823,
+      "raw_ocr": "६२,८२३",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 50,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nagarik-lagani-kosh",
+      "label_ne": "नागरिक लगानी कोष",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 222889,
+      "raw_ocr": "२२२,८८९",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 51,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "hidcl",
+      "label_ne": "हाइड्रोइलेक्ट्रिसिटी इन्भेष्टमेन्ट एण्ड डेभलपमेन्ट बैंक",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 251126,
+      "raw_ocr": "२५१,१२६",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 52,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nepal-bank",
+      "label_ne": "नेपाल बैङ्क लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 365227,
+      "raw_ocr": "३६५,२२७",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 53,
+      "row_kind": "subtotal",
+      "category": "financial",
+      "row_slug": "jamma-bittiya",
+      "label_ne": "जम्मा (वित्तीय)",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 2022286,
+      "raw_ocr": "२,०२२,२८६",
+      "category_foot_residual": 1,
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    },
+    {
+      "row_idx": 54,
+      "row_kind": "grand_total",
+      "category": "ALL",
+      "row_slug": "kul-jamma",
+      "label_ne": "कुल जम्मा",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 9821317,
+      "raw_ocr": "९,८२१,३१७",
+      "subtotal_roll_residual": 1,
+      "all_component_equiv_residual": 803,
+      "equiv_note": "grand==Σ42 components breaks by +803 lakh, attributable entirely to the quarantined industrial block; the printed subtotal roll-up identity (the structural identity actually shown on the page) holds within +/-9",
+      "cross_column_axis": "not_applicable",
+      "cross_column_reason": "no disaggregating->aggregate column set exists (the two FY columns are independent net-worth values, not parts of a row total) and no cross-source anchor was provided -> the cross-column axis is NOT APPLICABLE and is not required for acceptance"
+    }
+  ],
+  "quarantined_cells": [
+    {
+      "row_idx": 1,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "dirgha-bikas-sansthan",
+      "label_ne": "दीर्घ विकास संस्थान",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 8640,
+      "raw_ocr": "5,580",
+      "category_foot_residual": 800,
+      "quarantine_reasons": [
+        "category_foot_fail (col 3: sum(components of industrial)=-55935 vs printed जम्मा subtotal=-56735, residual=+800 > |9| lakh; every component and the subtotal of this block were visually re-verified at high zoom, so this is a genuine print-level footing break in the source, NOT an OCR error)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "gidibuti-utpadan",
+      "label_ne": "जिडिबुटी उत्पादन तथा प्रशोधन कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 4940,
+      "raw_ocr": "8,980",
+      "category_foot_residual": 800,
+      "quarantine_reasons": [
+        "category_foot_fail (col 3: sum(components of industrial)=-55935 vs printed जम्मा subtotal=-56735, residual=+800 > |9| lakh; every component and the subtotal of this block were visually re-verified at high zoom, so this is a genuine print-level footing break in the source, NOT an OCR error)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "hetauda-cement",
+      "label_ne": "हिटौंडा सिमेन्ट उद्योग लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": -2579,
+      "raw_ocr": "(२,५७९)",
+      "category_foot_residual": 800,
+      "quarantine_reasons": [
+        "category_foot_fail (col 3: sum(components of industrial)=-55935 vs printed जम्मा subtotal=-56735, residual=+800 > |9| lakh; every component and the subtotal of this block were visually re-verified at high zoom, so this is a genuine print-level footing break in the source, NOT an OCR error)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "janakpur-churot",
+      "label_ne": "जनकपुर चुरोट कारखाना लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": -28139,
+      "raw_ocr": "(२८,9३९)",
+      "category_foot_residual": 800,
+      "quarantine_reasons": [
+        "category_foot_fail (col 3: sum(components of industrial)=-55935 vs printed जम्मा subtotal=-56735, residual=+800 > |9| lakh; every component and the subtotal of this block were visually re-verified at high zoom, so this is a genuine print-level footing break in the source, NOT an OCR error)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "nepal-aushadhi",
+      "label_ne": "नेपाल औषधि लिमिटेड",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": -20295,
+      "raw_ocr": "(२०,२९५)",
+      "category_foot_residual": 800,
+      "quarantine_reasons": [
+        "category_foot_fail (col 3: sum(components of industrial)=-55935 vs printed जम्मा subtotal=-56735, residual=+800 > |9| lakh; every component and the subtotal of this block were visually re-verified at high zoom, so this is a genuine print-level footing break in the source, NOT an OCR error)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "udayapur-cement",
+      "label_ne": "उदयपुर सिमेन्ट उद्योग लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 38657,
+      "raw_ocr": "३८,६५७",
+      "category_foot_residual": 800,
+      "quarantine_reasons": [
+        "category_foot_fail (col 3: sum(components of industrial)=-55935 vs printed जम्मा subtotal=-56735, residual=+800 > |9| lakh; every component and the subtotal of this block were visually re-verified at high zoom, so this is a genuine print-level footing break in the source, NOT an OCR error)"
+      ]
+    },
+    {
+      "row_idx": 7,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "nepal-orind-magnesite",
+      "label_ne": "नेपाल ओरिण्ड म्याग्नासाइट प्रा.लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": -45876,
+      "raw_ocr": "(84.508)",
+      "category_foot_residual": 800,
+      "quarantine_reasons": [
+        "category_foot_fail (col 3: sum(components of industrial)=-55935 vs printed जम्मा subtotal=-56735, residual=+800 > |9| lakh; every component and the subtotal of this block were visually re-verified at high zoom, so this is a genuine print-level footing break in the source, NOT an OCR error)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "butwal-dhago",
+      "label_ne": "बुटवल धागो कारखाना लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": -16281,
+      "raw_ocr": "(१६,२८१)",
+      "category_foot_residual": 800,
+      "quarantine_reasons": [
+        "category_foot_fail (col 3: sum(components of industrial)=-55935 vs printed जम्मा subtotal=-56735, residual=+800 > |9| lakh; every component and the subtotal of this block were visually re-verified at high zoom, so this is a genuine print-level footing break in the source, NOT an OCR error)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "nepal-metal",
+      "label_ne": "नेपाल मेटल कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 1783,
+      "raw_ocr": "9,653",
+      "category_foot_residual": 800,
+      "quarantine_reasons": [
+        "category_foot_fail (col 3: sum(components of industrial)=-55935 vs printed जम्मा subtotal=-56735, residual=+800 > |9| lakh; every component and the subtotal of this block were visually re-verified at high zoom, so this is a genuine print-level footing break in the source, NOT an OCR error)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "dhaubadi-falam",
+      "label_ne": "धौवादी फलाम कम्पनी लि.",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": 3215,
+      "raw_ocr": "३,२१५",
+      "category_foot_residual": 800,
+      "quarantine_reasons": [
+        "category_foot_fail (col 3: sum(components of industrial)=-55935 vs printed जम्मा subtotal=-56735, residual=+800 > |9| lakh; every component and the subtotal of this block were visually re-verified at high zoom, so this is a genuine print-level footing break in the source, NOT an OCR error)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "row_kind": "subtotal",
+      "category": "industrial",
+      "row_slug": "jamma-audyogik",
+      "label_ne": "जम्मा (औद्योगिक)",
+      "column": "fy2079_80",
+      "col_idx": 3,
+      "fy": "2079/80",
+      "column_label_ne": "आर्थिक वर्ष २०७९/८०",
+      "value": -56735,
+      "raw_ocr": "(१६,७३५)",
+      "category_foot_residual": 800,
+      "quarantine_reasons": [
+        "category_foot_fail (col 3: sum(components of industrial)=-55935 vs printed जम्मा subtotal=-56735, residual=+800 > |9| lakh; every component and the subtotal of this block were visually re-verified at high zoom, so this is a genuine print-level footing break in the source, NOT an OCR error)"
+      ]
+    },
+    {
+      "row_idx": 1,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "dirgha-bikas-sansthan",
+      "label_ne": "दीर्घ विकास संस्थान",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(82.38)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 2,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "gidibuti-utpadan",
+      "label_ne": "जिडिबुटी उत्पादन तथा प्रशोधन कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(8.83)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 3,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "hetauda-cement",
+      "label_ne": "हिटौंडा सिमेन्ट उद्योग लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(४,२२०.१२)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 4,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "janakpur-churot",
+      "label_ne": "जनकपुर चुरोट कारखाना लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(0.03)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 5,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "nepal-aushadhi",
+      "label_ne": "नेपाल औषधि लिमिटेड",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "5.30",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 6,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "udayapur-cement",
+      "label_ne": "उदयपुर सिमेन्ट उद्योग लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(5.50)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 7,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "nepal-orind-magnesite",
+      "label_ne": "नेपाल ओरिण्ड म्याग्नासाइट प्रा.लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(3.6X)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 8,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "butwal-dhago",
+      "label_ne": "बुटवल धागो कारखाना लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(२.३८)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 9,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "nepal-metal",
+      "label_ne": "नेपाल मेटल कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 10,
+      "row_kind": "component",
+      "category": "industrial",
+      "row_slug": "dhaubadi-falam",
+      "label_ne": "धौवादी फलाम कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "२६.७४",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 11,
+      "row_kind": "subtotal",
+      "category": "industrial",
+      "row_slug": "jamma-audyogik",
+      "label_ne": "जम्मा (औद्योगिक)",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(३८,६२)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 13,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "krishi-samagri",
+      "label_ne": "कृषि सामग्री कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "0.85",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 14,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "khadya-byabastha",
+      "label_ne": "खाद्य व्यवस्था तथा व्यापार कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "X.39",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 15,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "nepal-oil-nigam",
+      "label_ne": "नेपाल आयल निगम लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "990.93",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 16,
+      "row_kind": "component",
+      "category": "commercial",
+      "row_slug": "nepal-ban-nigam",
+      "label_ne": "नेपाल वन निगम लिमिटेड",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(96.05)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 17,
+      "row_kind": "subtotal",
+      "category": "commercial",
+      "row_slug": "jamma-byaparik",
+      "label_ne": "जम्मा (व्यापारिक)",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "903.09",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 19,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "audyogik-kshetra-byabasthapan",
+      "label_ne": "औद्योगिक क्षेत्र व्यवस्थापन लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "0.05",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 20,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-parbahan-godam",
+      "label_ne": "नेपाल पारवहन तथा गोदाम व्यवस्था कं.लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "6.93",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 21,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-bayuseva",
+      "label_ne": "नेपाल वायुसेवा निगम",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(93.3X)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 22,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "rastriya-utpadakatwa",
+      "label_ne": "राष्ट्रिय उत्पादकत्व तथा आर्थिक विकास के.लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(8.55)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 23,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-nagarik-uddayan",
+      "label_ne": "नेपाल नागरिक उड्डयन प्राधिकरण",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "७७.२९",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 24,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-purwadhar-nirman",
+      "label_ne": "नेपाल पूर्वाधार निर्माण कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "२.७४",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 25,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "sajha-yatayat",
+      "label_ne": "साझा यातायात सहकारी संस्था लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "५.६४",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 26,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "nepal-railway",
+      "label_ne": "नेपाल रेल्वे कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(९७.९9)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 27,
+      "row_kind": "component",
+      "category": "service",
+      "row_slug": "bishal-bazar",
+      "label_ne": "विशाल बजार कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "२.९३",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 28,
+      "row_kind": "subtotal",
+      "category": "service",
+      "row_slug": "jamma-sewa",
+      "label_ne": "जम्मा (सेवा)",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "६२.३६",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 30,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "sanskritik-sansthan",
+      "label_ne": "सांस्कृतिक संस्थान",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(4.57)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 31,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "gorkhapatra",
+      "label_ne": "गोरखापत्र संस्थान",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "9.05",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 32,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "janak-shiksha",
+      "label_ne": "जनक शिक्षा सामग्री केन्द्र लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "8.38",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 33,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "nepal-television",
+      "label_ne": "नेपाल टेलिभिजन",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(99.52)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 34,
+      "row_kind": "component",
+      "category": "social",
+      "row_slug": "rastriya-aawas",
+      "label_ne": "राष्ट्रिय आवास कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "0.3X",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 35,
+      "row_kind": "subtotal",
+      "category": "social",
+      "row_slug": "jamma-samajik",
+      "label_ne": "जम्मा (सामाजिक)",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "०.५७",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 37,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "nepal-khanepani",
+      "label_ne": "नेपाल खानेपानी संस्थान",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(२७.३६)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 38,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "nepal-bidyut-pradhikaran",
+      "label_ne": "नेपाल विद्युत प्राधिकरण",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "90.08",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 39,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "nepal-dursanchar",
+      "label_ne": "नेपाल दूरसञ्चार कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(9.39)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 40,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "bidyut-utpadan",
+      "label_ne": "बिद्युत उत्पादन कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "२.८७",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 41,
+      "row_kind": "component",
+      "category": "utility",
+      "row_slug": "rastriya-prasaran-grid",
+      "label_ne": "राष्ट्रिय प्रशारण ग्रिड कम्पनी",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "8.00",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 42,
+      "row_kind": "subtotal",
+      "category": "utility",
+      "row_slug": "jamma-janopayogi",
+      "label_ne": "जम्मा (जनोपयोगी)",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "90.55",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 44,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "krishi-bikas-bank",
+      "label_ne": "कृषि विकास बैङ्क लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "9.39",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 45,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "rastriya-bima-sansthan-jeevan",
+      "label_ne": "राष्ट्रिय बिमा संस्थान (जीवन)",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "0.86",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 46,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "rastriya-bima-company",
+      "label_ne": "राष्ट्रिय बिमा कम्पनी लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "१०.५८",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 47,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "rastriya-banijya-bank",
+      "label_ne": "राष्ट्रिय वाणिज्य बैङ्क लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "६५.७३",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 48,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nikshep-karja-surakshan",
+      "label_ne": "निक्षेप तथा कर्जा सुरक्षण कोष",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "98.88",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 49,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nepal-stock-exchange",
+      "label_ne": "नेपाल स्टक एक्सचेन्ज लिमिटेड",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "9.24",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 50,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nagarik-lagani-kosh",
+      "label_ne": "नागरिक लगानी कोष",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "(34.50)",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 51,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "hidcl",
+      "label_ne": "हाइड्रोइलेक्ट्रिसिटी इन्भेष्टमेन्ट एण्ड डेभलपमेन्ट बैंक",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "१२.२७",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 52,
+      "row_kind": "component",
+      "category": "financial",
+      "row_slug": "nepal-bank",
+      "label_ne": "नेपाल बैङ्क लि.",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "2.99",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 53,
+      "row_kind": "subtotal",
+      "category": "financial",
+      "row_slug": "jamma-bittiya",
+      "label_ne": "जम्मा (वित्तीय)",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "5.39",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    },
+    {
+      "row_idx": 54,
+      "row_kind": "grand_total",
+      "category": "ALL",
+      "row_slug": "kul-jamma",
+      "label_ne": "कुल जम्मा",
+      "column": "pct_change",
+      "col_idx": 4,
+      "column_label_ne": "% Change",
+      "value": null,
+      "raw_ocr": "२८.७९",
+      "quarantine_reasons": [
+        "derived_ratio_column (% Change is a year-on-year ratio between col idx 2 and idx 3; it does not participate in any summation and is not footing-reconcilable -> quarantined wholesale per the task rule; raw OCR token retained for provenance only, value not parsed)"
+      ]
+    }
+  ],
+  "reconciliation": {
+    "per_column": [
+      {
+        "column": "fy2078_79",
+        "col_idx": 2,
+        "fy": "2078/79",
+        "label_ne": "आर्थिक वर्ष २०७८/७९",
+        "kind": "value",
+        "categories": [
+          {
+            "category": "industrial",
+            "label_ne": "औद्योगिक",
+            "label_en": "Industrial",
+            "component_sum": -40930,
+            "printed_subtotal": -40929,
+            "foot_residual": -1,
+            "foots": true
+          },
+          {
+            "category": "commercial",
+            "label_ne": "व्यापारिक",
+            "label_en": "Commercial",
+            "component_sum": 75575,
+            "printed_subtotal": 75575,
+            "foot_residual": 0,
+            "foots": true
+          },
+          {
+            "category": "service",
+            "label_ne": "सेवा",
+            "label_en": "Service",
+            "component_sum": 2545657,
+            "printed_subtotal": 2545657,
+            "foot_residual": 0,
+            "foots": true
+          },
+          {
+            "category": "social",
+            "label_ne": "सामाजिक",
+            "label_en": "Social",
+            "component_sum": 88822,
+            "printed_subtotal": 88822,
+            "foot_residual": 0,
+            "foots": true
+          },
+          {
+            "category": "utility",
+            "label_ne": "जनोपयोगी",
+            "label_en": "Utility",
+            "component_sum": 3090869,
+            "printed_subtotal": 3090869,
+            "foot_residual": 0,
+            "foots": true
+          },
+          {
+            "category": "financial",
+            "label_ne": "वित्तीय",
+            "label_en": "Financial",
+            "component_sum": 1865730,
+            "printed_subtotal": 1865729,
+            "foot_residual": 1,
+            "foots": true
+          }
+        ],
+        "grand_total": {
+          "printed": 7625724,
+          "subtotal_roll_sum": 7625723,
+          "roll_residual": -1,
+          "roll_ok": true,
+          "all_component_sum": 7625723,
+          "equiv_residual": -1,
+          "equiv_ok": true
+        },
+        "column_reconciles": true
+      },
+      {
+        "column": "fy2079_80",
+        "col_idx": 3,
+        "fy": "2079/80",
+        "label_ne": "आर्थिक वर्ष २०७९/८०",
+        "kind": "value",
+        "categories": [
+          {
+            "category": "industrial",
+            "label_ne": "औद्योगिक",
+            "label_en": "Industrial",
+            "component_sum": -55935,
+            "printed_subtotal": -56735,
+            "foot_residual": 800,
+            "foots": false
+          },
+          {
+            "category": "commercial",
+            "label_ne": "व्यापारिक",
+            "label_en": "Commercial",
+            "component_sum": 206386,
+            "printed_subtotal": 206386,
+            "foot_residual": 0,
+            "foots": true
+          },
+          {
+            "category": "service",
+            "label_ne": "सेवा",
+            "label_en": "Service",
+            "component_sum": 4133011,
+            "printed_subtotal": 4133010,
+            "foot_residual": 1,
+            "foots": true
+          },
+          {
+            "category": "social",
+            "label_ne": "सामाजिक",
+            "label_en": "Social",
+            "component_sum": 89330,
+            "printed_subtotal": 89330,
+            "foot_residual": 0,
+            "foots": true
+          },
+          {
+            "category": "utility",
+            "label_ne": "जनोपयोगी",
+            "label_en": "Utility",
+            "component_sum": 3427041,
+            "printed_subtotal": 3427041,
+            "foot_residual": 0,
+            "foots": true
+          },
+          {
+            "category": "financial",
+            "label_ne": "वित्तीय",
+            "label_en": "Financial",
+            "component_sum": 2022287,
+            "printed_subtotal": 2022286,
+            "foot_residual": 1,
+            "foots": true
+          }
+        ],
+        "grand_total": {
+          "printed": 9821317,
+          "subtotal_roll_sum": 9821318,
+          "roll_residual": 1,
+          "roll_ok": true,
+          "all_component_sum": 9822120,
+          "equiv_residual": 803,
+          "equiv_ok": false
+        },
+        "column_reconciles": false
+      }
+    ],
+    "per_row": [
+      {
+        "row_idx": 1,
+        "row_kind": "component",
+        "category": "industrial",
+        "row_slug": "dirgha-bikas-sansthan",
+        "label_ne": "दीर्घ विकास संस्थान",
+        "value_fy2078_79": 14986,
+        "value_fy2079_80": 8640,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 2,
+        "row_kind": "component",
+        "category": "industrial",
+        "row_slug": "gidibuti-utpadan",
+        "label_ne": "जिडिबुटी उत्पादन तथा प्रशोधन कम्पनी लि.",
+        "value_fy2078_79": 4424,
+        "value_fy2079_80": 4940,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 3,
+        "row_kind": "component",
+        "category": "industrial",
+        "row_slug": "hetauda-cement",
+        "label_ne": "हिटौंडा सिमेन्ट उद्योग लि.",
+        "value_fy2078_79": 50,
+        "value_fy2079_80": -2579,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 4,
+        "row_kind": "component",
+        "category": "industrial",
+        "row_slug": "janakpur-churot",
+        "label_ne": "जनकपुर चुरोट कारखाना लि.",
+        "value_fy2078_79": -28144,
+        "value_fy2079_80": -28139,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 5,
+        "row_kind": "component",
+        "category": "industrial",
+        "row_slug": "nepal-aushadhi",
+        "label_ne": "नेपाल औषधि लिमिटेड",
+        "value_fy2078_79": -18740,
+        "value_fy2079_80": -20295,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 6,
+        "row_kind": "component",
+        "category": "industrial",
+        "row_slug": "udayapur-cement",
+        "label_ne": "उदयपुर सिमेन्ट उद्योग लि.",
+        "value_fy2078_79": 42295,
+        "value_fy2079_80": 38657,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 7,
+        "row_kind": "component",
+        "category": "industrial",
+        "row_slug": "nepal-orind-magnesite",
+        "label_ne": "नेपाल ओरिण्ड म्याग्नासाइट प्रा.लि.",
+        "value_fy2078_79": -44217,
+        "value_fy2079_80": -45876,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 8,
+        "row_kind": "component",
+        "category": "industrial",
+        "row_slug": "butwal-dhago",
+        "label_ne": "बुटवल धागो कारखाना लि.",
+        "value_fy2078_79": -15903,
+        "value_fy2079_80": -16281,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 9,
+        "row_kind": "component",
+        "category": "industrial",
+        "row_slug": "nepal-metal",
+        "label_ne": "नेपाल मेटल कम्पनी लि.",
+        "value_fy2078_79": 1783,
+        "value_fy2079_80": 1783,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 10,
+        "row_kind": "component",
+        "category": "industrial",
+        "row_slug": "dhaubadi-falam",
+        "label_ne": "धौवादी फलाम कम्पनी लि.",
+        "value_fy2078_79": 2536,
+        "value_fy2079_80": 3215,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 11,
+        "row_kind": "subtotal",
+        "category": "industrial",
+        "row_slug": "jamma-audyogik",
+        "label_ne": "जम्मा (औद्योगिक)",
+        "value_fy2078_79": -40929,
+        "value_fy2079_80": -56735,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 13,
+        "row_kind": "component",
+        "category": "commercial",
+        "row_slug": "krishi-samagri",
+        "label_ne": "कृषि सामग्री कम्पनी लि.",
+        "value_fy2078_79": 116354,
+        "value_fy2079_80": 116908,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 14,
+        "row_kind": "component",
+        "category": "commercial",
+        "row_slug": "khadya-byabastha",
+        "label_ne": "खाद्य व्यवस्था तथा व्यापार कम्पनी लि.",
+        "value_fy2078_79": 23005,
+        "value_fy2079_80": 24457,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 15,
+        "row_kind": "component",
+        "category": "commercial",
+        "row_slug": "nepal-oil-nigam",
+        "label_ne": "नेपाल आयल निगम लि.",
+        "value_fy2078_79": -68137,
+        "value_fy2079_80": 61411,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 16,
+        "row_kind": "component",
+        "category": "commercial",
+        "row_slug": "nepal-ban-nigam",
+        "label_ne": "नेपाल वन निगम लिमिटेड",
+        "value_fy2078_79": 4353,
+        "value_fy2079_80": 3610,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 17,
+        "row_kind": "subtotal",
+        "category": "commercial",
+        "row_slug": "jamma-byaparik",
+        "label_ne": "जम्मा (व्यापारिक)",
+        "value_fy2078_79": 75575,
+        "value_fy2079_80": 206386,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 19,
+        "row_kind": "component",
+        "category": "service",
+        "row_slug": "audyogik-kshetra-byabasthapan",
+        "label_ne": "औद्योगिक क्षेत्र व्यवस्थापन लि.",
+        "value_fy2078_79": 443485,
+        "value_fy2079_80": 443841,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 20,
+        "row_kind": "component",
+        "category": "service",
+        "row_slug": "nepal-parbahan-godam",
+        "label_ne": "नेपाल पारवहन तथा गोदाम व्यवस्था कं.लि.",
+        "value_fy2078_79": 5187,
+        "value_fy2079_80": 5599,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 21,
+        "row_kind": "component",
+        "category": "service",
+        "row_slug": "nepal-bayuseva",
+        "label_ne": "नेपाल वायुसेवा निगम",
+        "value_fy2078_79": -51144,
+        "value_fy2079_80": -57972,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 22,
+        "row_kind": "component",
+        "category": "service",
+        "row_slug": "rastriya-utpadakatwa",
+        "label_ne": "राष्ट्रिय उत्पादकत्व तथा आर्थिक विकास के.लि.",
+        "value_fy2078_79": -930,
+        "value_fy2079_80": -973,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 23,
+        "row_kind": "component",
+        "category": "service",
+        "row_slug": "nepal-nagarik-uddayan",
+        "label_ne": "नेपाल नागरिक उड्डयन प्राधिकरण",
+        "value_fy2078_79": 2059475,
+        "value_fy2079_80": 3651191,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 24,
+        "row_kind": "component",
+        "category": "service",
+        "row_slug": "nepal-purwadhar-nirman",
+        "label_ne": "नेपाल पूर्वाधार निर्माण कम्पनी लि.",
+        "value_fy2078_79": 2475,
+        "value_fy2079_80": 2543,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 25,
+        "row_kind": "component",
+        "category": "service",
+        "row_slug": "sajha-yatayat",
+        "label_ne": "साझा यातायात सहकारी संस्था लि.",
+        "value_fy2078_79": 38911,
+        "value_fy2079_80": 41106,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 26,
+        "row_kind": "component",
+        "category": "service",
+        "row_slug": "nepal-railway",
+        "label_ne": "नेपाल रेल्वे कम्पनी लि.",
+        "value_fy2078_79": -2039,
+        "value_fy2079_80": -4035,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 27,
+        "row_kind": "component",
+        "category": "service",
+        "row_slug": "bishal-bazar",
+        "label_ne": "विशाल बजार कम्पनी लि.",
+        "value_fy2078_79": 50237,
+        "value_fy2079_80": 51711,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 28,
+        "row_kind": "subtotal",
+        "category": "service",
+        "row_slug": "jamma-sewa",
+        "label_ne": "जम्मा (सेवा)",
+        "value_fy2078_79": 2545657,
+        "value_fy2079_80": 4133010,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 30,
+        "row_kind": "component",
+        "category": "social",
+        "row_slug": "sanskritik-sansthan",
+        "label_ne": "सांस्कृतिक संस्थान",
+        "value_fy2078_79": -2553,
+        "value_fy2079_80": -2702,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 31,
+        "row_kind": "component",
+        "category": "social",
+        "row_slug": "gorkhapatra",
+        "label_ne": "गोरखापत्र संस्थान",
+        "value_fy2078_79": 6491,
+        "value_fy2079_80": 7126,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 32,
+        "row_kind": "component",
+        "category": "social",
+        "row_slug": "janak-shiksha",
+        "label_ne": "जनक शिक्षा सामग्री केन्द्र लि.",
+        "value_fy2078_79": 44366,
+        "value_fy2079_80": 46303,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 33,
+        "row_kind": "component",
+        "category": "social",
+        "row_slug": "nepal-television",
+        "label_ne": "नेपाल टेलिभिजन",
+        "value_fy2078_79": 16909,
+        "value_fy2079_80": 14910,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 34,
+        "row_kind": "component",
+        "category": "social",
+        "row_slug": "rastriya-aawas",
+        "label_ne": "राष्ट्रिय आवास कम्पनी लि.",
+        "value_fy2078_79": 23609,
+        "value_fy2079_80": 23693,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 35,
+        "row_kind": "subtotal",
+        "category": "social",
+        "row_slug": "jamma-samajik",
+        "label_ne": "जम्मा (सामाजिक)",
+        "value_fy2078_79": 88822,
+        "value_fy2079_80": 89330,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 37,
+        "row_kind": "component",
+        "category": "utility",
+        "row_slug": "nepal-khanepani",
+        "label_ne": "नेपाल खानेपानी संस्थान",
+        "value_fy2078_79": -19945,
+        "value_fy2079_80": -25403,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 38,
+        "row_kind": "component",
+        "category": "utility",
+        "row_slug": "nepal-bidyut-pradhikaran",
+        "label_ne": "नेपाल विद्युत प्राधिकरण",
+        "value_fy2078_79": 2063522,
+        "value_fy2079_80": 2415106,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 39,
+        "row_kind": "component",
+        "category": "utility",
+        "row_slug": "nepal-dursanchar",
+        "label_ne": "नेपाल दूरसञ्चार कम्पनी लि.",
+        "value_fy2078_79": 952680,
+        "value_fy2079_80": 939450,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 40,
+        "row_kind": "component",
+        "category": "utility",
+        "row_slug": "bidyut-utpadan",
+        "label_ne": "बिद्युत उत्पादन कम्पनी लि.",
+        "value_fy2078_79": 48178,
+        "value_fy2079_80": 49562,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 41,
+        "row_kind": "component",
+        "category": "utility",
+        "row_slug": "rastriya-prasaran-grid",
+        "label_ne": "राष्ट्रिय प्रशारण ग्रिड कम्पनी",
+        "value_fy2078_79": 46434,
+        "value_fy2079_80": 48326,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 42,
+        "row_kind": "subtotal",
+        "category": "utility",
+        "row_slug": "jamma-janopayogi",
+        "label_ne": "जम्मा (जनोपयोगी)",
+        "value_fy2078_79": 3090869,
+        "value_fy2079_80": 3427041,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 44,
+        "row_kind": "component",
+        "category": "financial",
+        "row_slug": "krishi-bikas-bank",
+        "label_ne": "कृषि विकास बैङ्क लि.",
+        "value_fy2078_79": 333570,
+        "value_fy2079_80": 337937,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 45,
+        "row_kind": "component",
+        "category": "financial",
+        "row_slug": "rastriya-bima-sansthan-jeevan",
+        "label_ne": "राष्ट्रिय बिमा संस्थान (जीवन)",
+        "value_fy2078_79": 3140,
+        "value_fy2079_80": 3154,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 46,
+        "row_kind": "component",
+        "category": "financial",
+        "row_slug": "rastriya-bima-company",
+        "label_ne": "राष्ट्रिय बिमा कम्पनी लि.",
+        "value_fy2078_79": 36519,
+        "value_fy2079_80": 40382,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 47,
+        "row_kind": "component",
+        "category": "financial",
+        "row_slug": "rastriya-banijya-bank",
+        "label_ne": "राष्ट्रिय वाणिज्य बैङ्क लि.",
+        "value_fy2078_79": 306142,
+        "value_fy2079_80": 507383,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 48,
+        "row_kind": "component",
+        "category": "financial",
+        "row_slug": "nikshep-karja-surakshan",
+        "label_ne": "निक्षेप तथा कर्जा सुरक्षण कोष",
+        "value_fy2078_79": 192936,
+        "value_fy2079_80": 231366,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 49,
+        "row_kind": "component",
+        "category": "financial",
+        "row_slug": "nepal-stock-exchange",
+        "label_ne": "नेपाल स्टक एक्सचेन्ज लिमिटेड",
+        "value_fy2078_79": 62051,
+        "value_fy2079_80": 62823,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 50,
+        "row_kind": "component",
+        "category": "financial",
+        "row_slug": "nagarik-lagani-kosh",
+        "label_ne": "नागरिक लगानी कोष",
+        "value_fy2078_79": 353058,
+        "value_fy2079_80": 222889,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 51,
+        "row_kind": "component",
+        "category": "financial",
+        "row_slug": "hidcl",
+        "label_ne": "हाइड्रोइलेक्ट्रिसिटी इन्भेष्टमेन्ट एण्ड डेभलपमेन्ट बैंक",
+        "value_fy2078_79": 223678,
+        "value_fy2079_80": 251126,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 52,
+        "row_kind": "component",
+        "category": "financial",
+        "row_slug": "nepal-bank",
+        "label_ne": "नेपाल बैङ्क लि.",
+        "value_fy2078_79": 354636,
+        "value_fy2079_80": 365227,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 53,
+        "row_kind": "subtotal",
+        "category": "financial",
+        "row_slug": "jamma-bittiya",
+        "label_ne": "जम्मा (वित्तीय)",
+        "value_fy2078_79": 1865729,
+        "value_fy2079_80": 2022286,
+        "cross_column_axis": "not_applicable"
+      },
+      {
+        "row_idx": 54,
+        "row_kind": "grand_total",
+        "category": "ALL",
+        "row_slug": "kul-jamma",
+        "label_ne": "कुल जम्मा",
+        "value_fy2078_79": 7625724,
+        "value_fy2079_80": 9821317,
+        "cross_column_axis": "not_applicable"
+      }
+    ],
+    "worst_residual_lakh": 800,
+    "worst_residual_lakh_accepted": 1,
+    "cross_source": null,
+    "diagnostics": {
+      "genuine_print_footing_break": {
+        "where": "col idx 3 (FY 2079/80), औद्योगिक (Industrial) category",
+        "component_sum": -55935,
+        "printed_subtotal": -56735,
+        "residual_lakh": 800,
+        "explanation": "All 10 industrial component cells AND the (४०,९२९)/(५६,७३५) subtotal for col idx 3 were visually re-verified at 16x-20x zoom against the rendered source page. The 10 components sum to -55,935 but the printed जम्मा subtotal is -56,735, an 800-lakh discrepancy. This is a footing error in the PUBLISHED Yellowbook table itself, not an OCR artefact. The implied 'correct' component is NOT back-solved or fabricated; the block is quarantined as printed.",
+        "back_solved_value_NOT_PROMOTED": null
+      },
+      "ocr_vs_verified_corrections": "surya-ocr badly degraded this scanned page (per-cell confidences 0.27-1.00; many Devanagari digits flipped, e.g. ९<->१, ८<->६, script-mixed tokens, and the col-3 header OCR'd '२०७९/५०' for the true '२०७९/८०'). The naive OCR matrix reconciles on ZERO categories. After high-zoom visual verification of every numeric cell, col idx 2 foots on all 6 categories + grand (residuals -1..+1, lakh-rounding), and col idx 3 foots on 5 of 6 categories + grand; only the industrial col-3 block carries a genuine 800-lakh print break. Notable OCR->verified fixes: row1 98,958/5,580->14,986/8,640; row4 ...944/...939->...144/...139; row9 9,953/9,653->1,783/1,783 (both cols); service subtotal 8,933,090->4,133,010 (col3) and ~2,444,647->2,545,657 (col2); social subtotal 55,522->88,822; row33 98,909/98,890->16,909/14,910.",
+      "note_lakh_rounding": "Several foot/roll residuals are exactly +/-1 lakh (financial, grand). These are normal rounding of the underlying figures to lakh in the source and are within the +/-9 tolerance."
+    }
+  },
+  "summary": {
+    "matrix_reconciles": false,
+    "accepted_count": 87,
+    "quarantined_count": 60,
+    "worst_residual_lakh": 800,
+    "note": "Table 5.18 public-enterprise net worth, NPR lakh, two FY value columns (2078/79, 2079/80) + a % Change ratio column. Col idx 2 reconciles fully: all 6 category subtotals foot and the grand total rolls up (residuals -1..+1, lakh rounding) -> its 49 numeric cells accepted. Col idx 3 reconciles on 5 of 6 categories and the grand roll-up, but the औद्योगिक (industrial) block carries a genuine 800-lakh print footing break (-55,935 components vs -56,735 printed subtotal, all cells visually verified) -> the 10 industrial components + their subtotal in col idx 3 (11 cells) are quarantined; the remaining 38 numeric col-3 cells are accepted. The % Change column (49 cells) is quarantined wholesale as a non-summable derived ratio. matrix_reconciles is FALSE because one category-column block does not foot. Nothing fabricated, nothing force-reconciled. See reconciliation.diagnostics for the OCR->verified correction map."
+  }
+}

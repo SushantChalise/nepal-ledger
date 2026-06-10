@@ -1,7 +1,16 @@
 # Overnight AI-pass — session findings & strategic handoff (2026-06-10/11)
 
-**Status:** Machinery built + validated; recovery started; **critical economics finding below needs a
-human scope decision.** Recover + stage only — **nothing promoted** (your morning gate).
+**Status:** Machinery built + validated; recovery measured; **scope decided = "route smart"** (see §3).
+Recover + stage only — **nothing promoted** (your morning gate).
+
+> **DECISION (user, 2026-06-11): "Route smart."** Do NOT brute-force LLM the corpus. The routing plan
+> [`ROUTING.md`](ROUTING.md) classifies all 50 docs: **39 docs / 11,742 pages (~94%) have a usable text
+> layer → cheap DETERMINISTIC parsers** (not LLM); only **~1,549 pages** (2 econ surveys = B-LLM-clean;
+> ksi3tbe SOE review = C-scan-limited; intergovt FY2077/78 + FY2075/76 = C-scan/ADR; 6 scanned agreements
+> = low-value) need LLM-OCR, and only the _reconcilable_ subset there. This solves the token-economics
+> problem by routing, not by spending. **Key insight:** the P1 SOE yellowbooks (2079/2080) are TEXT-LAYER
+> Devanagari (dev_ratio 0.64–0.76) → the SOE financials the DB lacks are recoverable DETERMINISTICALLY
+> from them (cheap+exact), instead of the expensive low-yield scanned ksi3tbe.
 
 ---
 
