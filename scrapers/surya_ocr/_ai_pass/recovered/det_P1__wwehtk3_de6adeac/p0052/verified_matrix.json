@@ -1,0 +1,133 @@
+{
+  "source_pdf": "Financial Data/mof_documents/yellowbook/सार्वजनिक संस्थानको वार्षिक स्थिति समीक्षा २०७९ (संक्षिप्त झलक)_wwehtk3.pdf",
+  "source_page": 52,
+  "extraction_method": "textlayer-deterministic",
+  "confidence_grade": "B",
+  "found": true,
+  "unit": "npr_lakh",
+  "fiscal_years": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"],
+  "sectors": [
+    {
+      "label_raw": "औ ƭोिगक ( ( ) ( )",
+      "values": {
+        "0": 3107,
+        "1": 1620,
+        "2": -3937,
+        "3": 9147,
+        "4": 9496
+      },
+      "sector_ne": "औद्योगिक",
+      "sector_en": "industrial"
+    },
+    {
+      "label_raw": "व्यापािरक ( )",
+      "values": {
+        "0": 120647,
+        "1": 38791,
+        "2": 90871,
+        "3": 129931,
+        "4": 3709
+      },
+      "sector_ne": "व्यापारिक",
+      "sector_en": "commercial"
+    },
+    {
+      "label_raw": "सेवा ( ) ( )",
+      "values": {
+        "0": 17323,
+        "1": 47881,
+        "2": 25873,
+        "3": 8772,
+        "4": 26294
+      },
+      "sector_ne": "सेवा",
+      "sector_en": "service"
+    },
+    {
+      "label_raw": "सामािजक ( ) ( ) ( )",
+      "values": {
+        "0": 3723,
+        "1": 2085,
+        "2": -2101,
+        "3": 3026,
+        "4": 2204
+      },
+      "sector_ne": "सामाजिक",
+      "sector_en": "social"
+    },
+    {
+      "label_raw": "जनोपयोगी",
+      "values": {
+        "0": 166495,
+        "1": 203243,
+        "2": 196169,
+        "3": 206309,
+        "4": 130590
+      },
+      "sector_ne": "जनोपयोगी",
+      "sector_en": "utility"
+    },
+    {
+      "label_raw": "िव ƣीय",
+      "values": {
+        "0": 116643,
+        "1": 145039,
+        "2": 182040,
+        "3": 167687,
+        "4": 174703
+      },
+      "sector_ne": "वित्तीय",
+      "sector_en": "financial"
+    }
+  ],
+  "total": {
+    "label_raw": "कुल जम्मा",
+    "values": {
+      "0": 414277,
+      "1": 434489,
+      "2": 488916,
+      "3": 482982,
+      "4": 263588
+    }
+  },
+  "reconciliation": [
+    {
+      "col": "2073/74",
+      "sum_sectors": 427938,
+      "printed_total": 414277,
+      "residual": 13661,
+      "reconciles": false
+    },
+    {
+      "col": "2074/75",
+      "sum_sectors": 438659,
+      "printed_total": 434489,
+      "residual": 4170,
+      "reconciles": false
+    },
+    {
+      "col": "2075/76",
+      "sum_sectors": 488915,
+      "printed_total": 488916,
+      "residual": -1,
+      "reconciles": true
+    },
+    {
+      "col": "2076/77",
+      "sum_sectors": 524872,
+      "printed_total": 482982,
+      "residual": 41890,
+      "reconciles": false
+    },
+    {
+      "col": "2077/78",
+      "sum_sectors": 346996,
+      "printed_total": 263588,
+      "residual": 83408,
+      "reconciles": false
+    }
+  ],
+  "accepted_columns": ["2075/76"],
+  "worst_residual": 83408,
+  "all_columns_reconcile": false
+}

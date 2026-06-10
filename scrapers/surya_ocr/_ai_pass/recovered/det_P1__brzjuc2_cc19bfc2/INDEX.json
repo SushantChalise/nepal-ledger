@@ -1,0 +1,47 @@
+{
+  "doc": "सार्वजनिक संस्थानको वार्षिक स्थिति समिक्षा २०८० (संक्षिप्त झलक)_brzjuc2.pdf",
+  "found": 8,
+  "reconcile": 4,
+  "tables": [
+    {
+      "page": 20,
+      "reconciles": true,
+      "worst_residual": 2
+    },
+    {
+      "page": 21,
+      "reconciles": true,
+      "worst_residual": 0
+    },
+    {
+      "page": 40,
+      "reconciles": false,
+      "worst_residual": 998012
+    },
+    {
+      "page": 41,
+      "reconciles": true,
+      "worst_residual": 1
+    },
+    {
+      "page": 43,
+      "reconciles": false,
+      "worst_residual": 795631
+    },
+    {
+      "page": 44,
+      "reconciles": false,
+      "worst_residual": 194782
+    },
+    {
+      "page": 45,
+      "reconciles": false,
+      "worst_residual": 4
+    },
+    {
+      "page": 46,
+      "reconciles": true,
+      "worst_residual": 0
+    }
+  ]
+}

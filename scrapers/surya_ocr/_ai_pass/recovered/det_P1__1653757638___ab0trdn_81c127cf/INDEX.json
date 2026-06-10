@@ -1,0 +1,57 @@
+{
+  "doc": "1653757638_सार्वजनिक संस्थानको वार्षिक स्थिति समीक्षा २०७९_ab0trdn.pdf",
+  "found": 10,
+  "reconcile": 6,
+  "tables": [
+    {
+      "page": 29,
+      "reconciles": true,
+      "worst_residual": 1
+    },
+    {
+      "page": 31,
+      "reconciles": true,
+      "worst_residual": 0
+    },
+    {
+      "page": 53,
+      "reconciles": true,
+      "worst_residual": 1
+    },
+    {
+      "page": 54,
+      "reconciles": true,
+      "worst_residual": 1
+    },
+    {
+      "page": 55,
+      "reconciles": true,
+      "worst_residual": 1
+    },
+    {
+      "page": 56,
+      "reconciles": false,
+      "worst_residual": 83408
+    },
+    {
+      "page": 57,
+      "reconciles": false,
+      "worst_residual": 435732
+    },
+    {
+      "page": 60,
+      "reconciles": false,
+      "worst_residual": 194782
+    },
+    {
+      "page": 61,
+      "reconciles": false,
+      "worst_residual": 6726
+    },
+    {
+      "page": 62,
+      "reconciles": true,
+      "worst_residual": 0
+    }
+  ]
+}

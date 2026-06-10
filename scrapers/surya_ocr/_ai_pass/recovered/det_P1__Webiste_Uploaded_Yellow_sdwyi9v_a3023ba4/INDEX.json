@@ -1,0 +1,47 @@
+{
+  "doc": "Webiste Uploaded Yellow_sdwyi9v.pdf",
+  "found": 8,
+  "reconcile": 5,
+  "tables": [
+    {
+      "page": 38,
+      "reconciles": true,
+      "worst_residual": 0
+    },
+    {
+      "page": 56,
+      "reconciles": false,
+      "worst_residual": 476874
+    },
+    {
+      "page": 58,
+      "reconciles": true,
+      "worst_residual": 1
+    },
+    {
+      "page": 59,
+      "reconciles": false,
+      "worst_residual": 0
+    },
+    {
+      "page": 60,
+      "reconciles": true,
+      "worst_residual": 1
+    },
+    {
+      "page": 61,
+      "reconciles": true,
+      "worst_residual": 1
+    },
+    {
+      "page": 63,
+      "reconciles": false,
+      "worst_residual": 2
+    },
+    {
+      "page": 65,
+      "reconciles": true,
+      "worst_residual": 1
+    }
+  ]
+}
