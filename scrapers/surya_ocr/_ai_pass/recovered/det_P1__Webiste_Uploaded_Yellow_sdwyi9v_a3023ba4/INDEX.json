@@ -1,46 +1,56 @@
 {
   "doc": "Webiste Uploaded Yellow_sdwyi9v.pdf",
-  "found": 8,
-  "reconcile": 5,
+  "tables_with_data": 8,
+  "fully_reconcile": 5,
+  "partial": 3,
+  "reconciled_columns": 37,
   "tables": [
     {
       "page": 38,
-      "reconciles": true,
+      "all_reconcile": true,
+      "accepted_columns": ["2076/77", "2077/78", "2078/79", "2079/80", "2080/81"],
       "worst_residual": 0
     },
     {
       "page": 56,
-      "reconciles": false,
+      "all_reconcile": false,
+      "accepted_columns": ["2077/78", "2078/79", "2079/80", "2080/81"],
       "worst_residual": 476874
     },
     {
       "page": 58,
-      "reconciles": true,
+      "all_reconcile": true,
+      "accepted_columns": ["2076/77", "2077/78", "2078/79", "2079/80", "2080/81"],
       "worst_residual": 1
     },
     {
       "page": 59,
-      "reconciles": false,
+      "all_reconcile": false,
+      "accepted_columns": ["2077/78", "2078/79", "2079/80", "2080/81"],
       "worst_residual": 0
     },
     {
       "page": 60,
-      "reconciles": true,
+      "all_reconcile": true,
+      "accepted_columns": ["2076/77", "2077/78", "2078/79", "2079/80", "2080/81"],
       "worst_residual": 1
     },
     {
       "page": 61,
-      "reconciles": true,
+      "all_reconcile": true,
+      "accepted_columns": ["2076/77", "2077/78", "2078/79", "2079/80", "2080/81"],
       "worst_residual": 1
     },
     {
       "page": 63,
-      "reconciles": false,
+      "all_reconcile": false,
+      "accepted_columns": ["2077/78", "2078/79", "2079/80", "2080/81"],
       "worst_residual": 2
     },
     {
       "page": 65,
-      "reconciles": true,
+      "all_reconcile": true,
+      "accepted_columns": ["2076/77", "2077/78", "2078/79", "2079/80", "2080/81"],
       "worst_residual": 1
     }
   ]

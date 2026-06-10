@@ -12,9 +12,9 @@
       "values": {
         "0": -138785,
         "1": -162505,
-        "2": 174956,
-        "3": 180263,
-        "4": 189582
+        "2": -174956,
+        "3": -180263,
+        "4": -189582
       },
       "sector_ne": "औद्योगिक",
       "sector_en": "industrial"
@@ -26,7 +26,7 @@
         "1": 121065,
         "2": 214791,
         "3": 193870,
-        "4": 168231
+        "4": -168231
       },
       "sector_ne": "व्यापारिक",
       "sector_en": "commercial"
@@ -47,10 +47,10 @@
       "label_raw": "सामािजक ) ( ) ( ) ( ) ( ) ( ) ( )",
       "values": {
         "0": -34192,
-        "1": 32518,
-        "2": 35644,
-        "3": 37603,
-        "4": 40002
+        "1": -32518,
+        "2": -35644,
+        "3": -37603,
+        "4": -40002
       },
       "sector_ne": "सामाजिक",
       "sector_en": "social"
@@ -100,34 +100,34 @@
     },
     {
       "col": "2075/76",
-      "sum_sectors": 648009,
+      "sum_sectors": 582973,
       "printed_total": 582972,
-      "residual": 65037,
-      "reconciles": false
+      "residual": 1,
+      "reconciles": true
     },
     {
       "col": "2076/77",
-      "sum_sectors": 1176319,
+      "sum_sectors": 755119,
       "printed_total": 755119,
-      "residual": 421200,
-      "reconciles": false
+      "residual": 0,
+      "reconciles": true
     },
     {
       "col": "2077/78",
-      "sum_sectors": 1359349,
+      "sum_sectors": 923617,
       "printed_total": 923616,
-      "residual": 435733,
-      "reconciles": false
+      "residual": 1,
+      "reconciles": true
     },
     {
       "col": "2078/79",
-      "sum_sectors": 1319709,
+      "sum_sectors": 524079,
       "printed_total": 524078,
-      "residual": 795631,
-      "reconciles": false
+      "residual": 1,
+      "reconciles": true
     }
   ],
-  "accepted_columns": ["2074/75"],
-  "worst_residual": 795631,
-  "all_columns_reconcile": false
+  "accepted_columns": ["2074/75", "2075/76", "2076/77", "2077/78", "2078/79"],
+  "worst_residual": 1,
+  "all_columns_reconcile": true
 }

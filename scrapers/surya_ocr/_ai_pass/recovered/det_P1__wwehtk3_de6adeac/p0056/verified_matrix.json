@@ -10,11 +10,11 @@
     {
       "label_raw": "औ ƭोिगक ( ) ( ) ( ) ( ) ( )",
       "values": {
-        "0": 80583,
-        "1": 79204,
-        "2": 97391,
-        "3": 87316,
-        "4": 33324
+        "0": -80583,
+        "1": -79204,
+        "2": -97391,
+        "3": -87316,
+        "4": -33324
       },
       "sector_ne": "औद्योगिक",
       "sector_en": "industrial"
@@ -93,41 +93,41 @@
   "reconciliation": [
     {
       "col": "2073/74",
-      "sum_sectors": 3056791,
+      "sum_sectors": 2895625,
       "printed_total": 2895625,
-      "residual": 161166,
-      "reconciles": false
+      "residual": 0,
+      "reconciles": true
     },
     {
       "col": "2074/75",
-      "sum_sectors": 5254617,
+      "sum_sectors": 5096209,
       "printed_total": 5096209,
-      "residual": 158408,
-      "reconciles": false
+      "residual": 0,
+      "reconciles": true
     },
     {
       "col": "2075/76",
-      "sum_sectors": 6401328,
+      "sum_sectors": 6206546,
       "printed_total": 6206546,
-      "residual": 194782,
-      "reconciles": false
+      "residual": 0,
+      "reconciles": true
     },
     {
       "col": "2076/77",
-      "sum_sectors": 7213667,
+      "sum_sectors": 7039035,
       "printed_total": 7039035,
-      "residual": 174632,
-      "reconciles": false
+      "residual": 0,
+      "reconciles": true
     },
     {
       "col": "2076/77",
-      "sum_sectors": 7623940,
+      "sum_sectors": 7557292,
       "printed_total": 7557291,
-      "residual": 66649,
-      "reconciles": false
+      "residual": 1,
+      "reconciles": true
     }
   ],
-  "accepted_columns": [],
-  "worst_residual": 194782,
-  "all_columns_reconcile": false
+  "accepted_columns": ["2073/74", "2074/75", "2075/76", "2076/77", "2076/77"],
+  "worst_residual": 1,
+  "all_columns_reconcile": true
 }

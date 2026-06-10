@@ -10,11 +10,11 @@
     {
       "label_raw": "औ ƭोिगक ( ( ) ( )",
       "values": {
-        "0": 3107,
+        "0": -3107,
         "1": 1620,
         "2": -3937,
-        "3": 9147,
-        "4": 9496
+        "3": -9147,
+        "4": -9496
       },
       "sector_ne": "औद्योगिक",
       "sector_en": "industrial"
@@ -26,7 +26,7 @@
         "1": 38791,
         "2": 90871,
         "3": 129931,
-        "4": 3709
+        "4": -3709
       },
       "sector_ne": "व्यापारिक",
       "sector_en": "commercial"
@@ -37,8 +37,8 @@
         "0": 17323,
         "1": 47881,
         "2": 25873,
-        "3": 8772,
-        "4": 26294
+        "3": -8772,
+        "4": -26294
       },
       "sector_ne": "सेवा",
       "sector_en": "service"
@@ -46,11 +46,11 @@
     {
       "label_raw": "सामािजक ( ) ( ) ( )",
       "values": {
-        "0": 3723,
-        "1": 2085,
+        "0": -3723,
+        "1": -2085,
         "2": -2101,
-        "3": 3026,
-        "4": 2204
+        "3": -3026,
+        "4": -2204
       },
       "sector_ne": "सामाजिक",
       "sector_en": "social"
@@ -93,17 +93,17 @@
   "reconciliation": [
     {
       "col": "2073/74",
-      "sum_sectors": 427938,
+      "sum_sectors": 414278,
       "printed_total": 414277,
-      "residual": 13661,
-      "reconciles": false
+      "residual": 1,
+      "reconciles": true
     },
     {
       "col": "2074/75",
-      "sum_sectors": 438659,
+      "sum_sectors": 434489,
       "printed_total": 434489,
-      "residual": 4170,
-      "reconciles": false
+      "residual": 0,
+      "reconciles": true
     },
     {
       "col": "2075/76",
@@ -114,20 +114,20 @@
     },
     {
       "col": "2076/77",
-      "sum_sectors": 524872,
+      "sum_sectors": 482982,
       "printed_total": 482982,
-      "residual": 41890,
-      "reconciles": false
+      "residual": 0,
+      "reconciles": true
     },
     {
       "col": "2077/78",
-      "sum_sectors": 346996,
+      "sum_sectors": 263590,
       "printed_total": 263588,
-      "residual": 83408,
-      "reconciles": false
+      "residual": 2,
+      "reconciles": true
     }
   ],
-  "accepted_columns": ["2075/76"],
-  "worst_residual": 83408,
-  "all_columns_reconcile": false
+  "accepted_columns": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"],
+  "worst_residual": 2,
+  "all_columns_reconcile": true
 }

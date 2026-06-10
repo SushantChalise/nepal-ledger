@@ -51,14 +51,37 @@ RECON_TOL = 2     # lakh rounding tolerance for Σ(sectors)==कुल जम्
 
 
 def _num(text: str):
-    """Parse a clean numeric cell -> int/float, or None. Handles ()=negative, commas, %."""
+    """Parse a clean numeric cell -> int/float, or None. Parens anywhere = negative
+    (financial loss convention), commas/%/spaces stripped."""
     t = to_arabic_numerals(text).strip()
-    neg = t.startswith("(") and t.endswith(")")
-    t = t.strip("()%").replace(",", "").replace(" ", "")
+    neg = "(" in t or ")" in t
+    t = re.sub(r"[()%,\s]", "", t)
     if not re.fullmatch(r"-?\d+(\.\d+)?", t):
         return None
     v = float(t) if "." in t else int(t)
-    return -v if neg else v
+    return -abs(v) if neg else v
+
+
+def fold_parens(cells):
+    """Fold parenthesized negatives that the text layer split across spans, e.g.
+    "(", "3,937", ")"  ->  "(3937)" at the number's x. cells = [(x, text)] sorted by x."""
+    out, i, n = [], 0, len(cells)
+    while i < n:
+        x, t = cells[i]
+        ts = to_arabic_numerals(t).strip()
+        # case: bare "(" then number then ")"  (3 spans)
+        if ts == "(" and i + 2 < n and to_arabic_numerals(cells[i + 2][1]).strip() == ")":
+            out.append((cells[i + 1][0], "(" + cells[i + 1][1] + ")"))
+            i += 3
+            continue
+        # case: "(" then number")" or "(number" then ")"  (2 spans)
+        if ts == "(" and i + 1 < n:
+            out.append((cells[i + 1][0], "(" + cells[i + 1][1] + ")"))
+            i += 2
+            continue
+        out.append((x, t))
+        i += 1
+    return out
 
 
 def _spans(page):
@@ -106,7 +129,7 @@ def extract(pdf_path, page_index, unit_hint):
     def assign(cells):
         """map a row's numeric cells to the nearest header column -> {col_idx: value}."""
         vals = {}
-        for x, t in cells:
+        for x, t in fold_parens(cells):
             v = _num(t)
             if v is None:
                 continue
