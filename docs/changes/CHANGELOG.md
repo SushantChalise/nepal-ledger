@@ -8,6 +8,23 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-10 (round 16) — Economic Survey macro annex: GVA-by-sector recovered (Tier-2 OCR, FY2081/82)
+
+**What changed:** First recovery from the previously-deferred Economic Survey **macro annex** (ADR-0016 deferred it as RTL-mirrored / CID-broken; ADR-0021 designated OCR-of-the-rendered-page as the route, and the overnight Surya run OCR'd both Nepali editions). Recovered **annex 13.1 — प्रदेशगत कुल मूल्य अभिवृद्धि (provincial GVA by industrial classification)** for **FY2081/82**: national 18 industries + 7 provinces × 18 = **144 facts** → `dne_facts` (`economic-survey-gva-current`) — the GVA-by-sector gap (DATA_AUDIT §6).
+
+- **Method (Tier-2 OCR + AI-QA).** Pure OCR of the dense 16-col × 21-row landscape table had ~27% province-cell damage. Resolved by Mother **render-verification**: each column rendered as a `Matrix(8)` strip and read off the printed page; OCR errors corrected (e.g. आवास `93244`→13255, स्वास्थ्य `90788`→10264 — spurious leading `9`). No digit invented; nothing computed-and-left-unread.
+- **Dual reconciliation gate (over-determined).** Σ(18 sectors)=printed GVA per province (residual 0…+3 crore); GVA+tax=GDP (±1); Σ(7 provinces)=national per sector (−1…+2); **national GDP 610,722 crore = `dne-gdp-nominal` to the rupee.** Worst residual 3 crore (rounding). New **G5** check in `data-audit.ts` makes it a permanent regression.
+- **Model (ADR-0023, no migration).** One measure `economic-survey-gva-current`, two dimension kinds: `industry` (national, 18) + `province-industry` (composite `<prov>__<sector>`, 126; ADR-0018). `npr_crore`, `extraction_method=surya-ocr`, confidence B. New `source_documents` row for the Nepali ES 2081-82 PDF under `mof-economic-survey-annual`.
+- **Excluded, honestly.** FY2080/81 carries a **+799 printed-source Σ-vs-total defect** (every cell render-verified correct-as-printed) → not promoted, documented (never force-reconciled). Constant-price tables, fiscal annex, other editions deferred.
+- **Orchestration learning.** A delegated worker thrashed on open-ended *visual* verification while Mother idled — `docs/AGENT_OPS.md` gains a "Stuck / Hung / Thrashing Worker Recovery" protocol (detect from output-dir artifacts, `TaskStop`, take over inline; never delegate open-ended visual QA; never block idly on a worker).
+- **Gates:** `pnpm audit:data` re-run — G1–G4 still pass, **new G5 within rounding (worst 2 crore), no new mismatch**.
+
+**Live DB:** dne_facts **271,745** (+144) · `economic-survey-gva-current` 144 (18 `industry` + 126 `province-industry`, FY2081/82). Accuracy flags open: **0**.
+
+**Related:** ADR-0023; ADR-0016 (the deferral this revisits), ADR-0021/0022 (OCR tier + verification gate), ADR-0018 (composite dimension); DATA_AUDIT §2/§5/§6; `scripts/ingest-economic-survey-gva.ts`; artifacts `scrapers/surya_ocr/_ai_pass/es2081_annex13_1/`.
+
+---
+
 ## 2026-06-08 (round 15) — Intergovernmental fiscal transfers: 5 FYs (deterministic multi-edition recovery)
 
 **What changed:** Asked to "tackle the 6 scanned FYs" via OCR, the investigation overturned the premise — **most weren't scanned**. Re-inspecting the bytes (the do-not-assume rule), of the 6 deferred FYs only **FY2077/78 is genuinely image-only**; the rest have exact text layers the template parser simply couldn't read. So they were recovered **deterministically** (text-layer, exact, reconciled) — strictly better than OCR (no digit-error risk).

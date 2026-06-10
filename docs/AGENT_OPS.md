@@ -299,6 +299,42 @@ When a worker returns a broken diff or CI is red.
 - Decide: fix-forward (new task brief) or revert (git revert)
 - Fix-forward is the default; revert when the broken state blocks all parallel work
 
+### Stuck / Hung / Thrashing Worker Recovery (the loop MUST self-recover)
+
+A background worker can fail **without ever returning** — it hangs, or it thrashes (retries the
+same step forever) and never writes its deliverable. The compounding failure is **Mother sitting
+idle**, blocked on a completion notification that never arrives. That is not acceptable; the
+orchestration loop must detect and recover.
+
+**Never block idly on a background worker.** After spawning one, Mother either (a) keeps doing
+non-overlapping work, or (b) arms a deadline — a `Monitor` on the deliverable artifact, or a
+self-scheduled check — with a rough ETA. **If the ETA passes with no deliverable, intervene; do
+not keep waiting.**
+
+**Detect from artifacts, not the transcript** (the agent `.output` file is the full JSONL
+transcript — reading it overflows context). Signals of a stuck worker:
+- The **deliverable file was never written** (the one thing the brief said to produce), AND
+- the worker's output dir is full of **retry scripts** — `foo.py`, `foo2.py`, `render_precise.py`,
+  `render_precise2.py`, `render_precise3.py` — i.e. the same step attempted N ways. That pattern
+  IS the thrash signature. `ls` the dir; don't read the transcript.
+
+**Recover:**
+1. `TaskStop <agentId>` (if already gone, control is yours).
+2. Diagnose what it choked on (usually: the brief was open-ended on a hard sub-step).
+3. **Take over inline** (Mother does it) **or re-dispatch with a NARROWER, fully-specified scope**
+   — exact cell list, exact command/recipe, a checkpointed deliverable. **Never re-delegate the
+   same task the same way** — it will thrash again.
+
+**Prevention:**
+- **Do not delegate open-ended *visual* verification.** Reading digits off rendered crops is the
+  single most thrash-prone sub-task. Mother does visual QA inline with the **proven method**:
+  render a whole-column strip at `Matrix(7–8)` with `get_pixmap(clip=…)` and read it top-to-bottom
+  by known row order — NOT per-cell "precise" crops (the thing that thrashes). If it must be
+  delegated, hand the worker an **exact bounded cell list + the exact `get_pixmap` recipe**, never
+  "figure out how to read these."
+- **Bound every worker** with an expected duration and a written fallback in Mother's plan ("if no
+  `X.json` by ~N min → stop, take over with the strip method").
+
 ---
 
 ## What to Tell a Worker That It Cannot See
@@ -326,6 +362,8 @@ If you find yourself thinking "the worker should just figure this out," you have
 | Mother accepts a diff without reading it | Bugs land; patterns drift; tests are theater | Always Read the diff; rerun gates locally |
 | Skipping an ADR because "we'll write it later" | Decisions get lost; future workers can't reason about constraints | ADR is part of the task; PR without ADR doesn't merge |
 | Reusing a worker across unrelated tasks in one session | Context bleed; worker uses stale assumptions | Fresh Agent invocation per task |
+| Mother blocks idly waiting on a background worker's notification | If the worker hangs/thrashes, the whole loop stalls with no recovery | Arm a deadline (Monitor/self-check); on timeout, `ls` the output dir and intervene — see "Stuck / Hung / Thrashing Worker Recovery" |
+| Delegating open-ended *visual* verification (read digits off crops) | Most thrash-prone sub-task; worker spins on `render_preciseN.py` forever | Mother does visual QA inline (column-strip render); or hand an exact cell list + exact `get_pixmap` recipe |
 
 ---
 

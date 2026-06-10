@@ -1,6 +1,6 @@
 # Data Audit — Nepal Ledger truth-layer inventory, coverage, accuracy & gaps
 
-**Generated:** 2026-06-08 · **Regenerate:** `pnpm audit:data` (`scripts/data-audit.ts`, read-only).
+**Generated:** 2026-06-08 · **Partial update 2026-06-10:** + Economic Survey GVA-by-sector (§2/§5/§6, ADR-0023; broader counts not refreshed). · **Regenerate:** `pnpm audit:data` (`scripts/data-audit.ts`, read-only).
 
 > **Mission context.** Nepal Ledger aims to be the most **comprehensive AND accurate**
 > database of Nepal's financial data, for advanced reporting + AI applications.
@@ -60,6 +60,7 @@
 | **Foreign aid** | `foreign_aid_facts` (donor + sector) | **7 FY w/ gaps** (see §3) | B | ⚠️ gaps |
 | **Public enterprises** | `soe-government-share`, `soe-loan-principal` | **1 FY (2080/81)**, equity+loan only | B | ⚠️ revenue/profit deferred |
 | **Federal budget** | `budget-allocation-{total,recurrent,capital}` × budget-head | **1 FY (2074/75)**, 57 heads | B | ⚠️ single year |
+| **Sectoral GVA** | `economic-survey-gva-current` (`industry` + `province-industry`) | **1 FY (2081/82)**, 18 industries × (national + 7 provinces) = 144 facts | B | ✅ new — Tier-2 OCR, render-verified (ADR-0023) |
 | **Fiscal transfers** | `local_government_fiscal_transfers` | **5 FY (2078/79–2082/83)**, 30,104 rows | A/B | ✅ deepened 2026-06-08 (Stream 2 + deterministic multi-edition recovery); 3 text-layer FYs pending adapters + 1 scanned FY pending OCR |
 | **Census** | `census_facts` | 531,618 rows, 753 palikas (NPHC 2021) | A | ✅ full |
 | **Banking** | `banking_sector_facts` | 58 months (2078→2082) | A | ✅ |
@@ -97,6 +98,8 @@ These are the cross-checks that prove a number is trustworthy. **All pass except
 | Redbook recurrent+capital = stated total (per head) | matches every head | ✅ exact |
 | Foreign-aid donor-total = sector-total (per FY) | **all 7 FYs match exactly** | ✅ |
 | Intergovernmental transfers Σ(753 local levels) vs printed `स्थानीय तह` doc total | FY2078/79 2,830,147 lakh = printed; FY2079/80 3,003,716 lakh = printed | ✅ exact (to the rupee) |
+| Economic Survey GVA Σ(province-industry) vs national `industry` per sector (FY2081/82, G5) | worst residual 2 npr_crore; 0 of 18 sectors >±9 | ✅ within rounding |
+| Economic Survey GVA national GDP vs `dne-gdp-nominal` (FY2081/82) | 610,722 npr_crore = 6,107.221 npr_billion | ✅ exact (to the rupee) |
 
 > **✅ RESOLVED (2026-06-08) — foreign-aid FY2070/71:** the earlier donor≠sector gap
 > (113,240,000 vs 95,934,658) was a pdfplumber row-merge artifact — 2 ministries whose
@@ -118,7 +121,7 @@ These are the cross-checks that prove a number is trustworthy. **All pass except
     - **FY2077/78 — genuinely scanned** → Surya OCR (harness built + validated end-to-end on real data; see below). Reconciliation of pure-OCR digits is the open risk.
 - **Surya GPU path VALIDATED end-to-end** (2026-06-08): the `--surya` CLI runs the full render→tile→detect→recognize→stitch→reconstruct pipeline on a real intergovernmental page in ~30s (incl. model load), emitting valid UTF-8 JSON `ocr_tracking` (e.g. FY2079/80 p.1: 2 tiles, 533 cells, 14 stitch disagreements, mean line-confidence 0.836). Enablement fixes landed (bare-script absolute import + `sys.path` bootstrap; UTF-8 stdout for Devanagari; `--max-pages` bound). Reserved for the one genuinely-scanned FY (2077/78) + optional `ocr_tracking` provenance passes; the 5 recovered FYs use exact text-layer values, not OCR.
 - **Full Yellow Book SOE financials** — revenue, profit/loss, paid-up capital (we have only equity + loan, 1 FY).
-- **Economic Survey macro annex** — GDP-levels / GVA-by-sector / fiscal detail (RTL-mirror; OCR-of-visual-page is the route — headline GDP/CPI already covered by DNE).
+- **Economic Survey macro annex** — ✅ **GVA-by-sector (annex 13.1) RECOVERED for FY2081/82** (2026-06-10): national 18 industries + 7 provinces × 18, Tier-2 Surya-OCR, Mother render-verified + dual-reconciled, promoted to `dne_facts` (`economic-survey-gva-current`, ADR-0023). **Still deferred:** FY2080/81 (a +799 printed-source Σ-vs-total defect — excluded, not faked), the constant-price (स्थिर मूल्य) tables, fiscal/revenue annex, and the other survey editions (RTL-mirrored text layer; OCR-of-visual-page is the proven route). Headline GDP/CPI already covered by DNE.
 - **Preeti/CID redbook + remaining whitebook editions** — more budget years + the aid-year gaps.
 
 **Other gaps:**

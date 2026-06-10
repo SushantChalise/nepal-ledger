@@ -196,6 +196,24 @@ async function main(): Promise<void> {
     FROM dne_facts WHERE base_indicator_slug LIKE 'budget-allocation-%'
     GROUP BY dimension_value ORDER BY stated_total DESC NULLS LAST LIMIT 5`,
   );
+  await section(
+    db,
+    'G5. Economic Survey GVA: Σ(province-industry) vs national industry per sector (ADR-0023)',
+    sql`
+    WITH prov AS (
+      SELECT split_part(dimension_value, '__', 2) AS sector, sum(value::numeric) AS psum
+      FROM dne_facts
+      WHERE base_indicator_slug='economic-survey-gva-current' AND dimension_kind='province-industry'
+      GROUP BY 1),
+    nat AS (
+      SELECT dimension_value AS sector, value::numeric AS nat
+      FROM dne_facts
+      WHERE base_indicator_slug='economic-survey-gva-current' AND dimension_kind='industry')
+    SELECT max(abs(p.psum - n.nat))::numeric(20,2) AS worst_residual_crore,
+           count(*) FILTER (WHERE abs(p.psum - n.nat) > 9) AS sectors_over_tolerance,
+           count(*) AS sectors
+    FROM nat n JOIN prov p ON p.sector = n.sector`,
+  );
 
   // ── H. Provenance / confidence distribution ─────────────────────────────
   await section(

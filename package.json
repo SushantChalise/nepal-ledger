@@ -31,6 +31,7 @@
     "ingest:dne-yellowbook": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-dne-yellowbook.ts",
     "ingest:fcgo-cfs": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-fcgo-cfs.ts",
     "ingest:economic-survey": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-economic-survey.ts",
+    "ingest:economic-survey-gva": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-economic-survey-gva.ts",
     "ingest:customs-trade": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-customs-trade.ts",
     "ingest:whitebook": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-whitebook.ts",
     "ingest:redbook": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-redbook.ts",
