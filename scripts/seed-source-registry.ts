@@ -978,13 +978,22 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     publicationFrequency: 'annual',
     reportingPeriodType: 'annual',
     fileFormat: 'pdf',
-    requiresTableExtraction: false,
+    requiresTableExtraction: true,
     licenseStatus: 'proprietary',
     confidenceDefault: 'A',
     status: 'active',
-    ingestionMode: 'reference_only',
-    tier: null,
-    notes: 'International benchmark.',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    parserOwner: 'scrapers/imf_article_iv/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Annual. Each Article IV supersedes the prior year projections; historical actuals are stable.',
+    knownBreakageModes: [
+      'table-layout-shifts-between-editions',
+      'column-header-uses-fy-prefix-in-some-editions',
+    ],
+    notes:
+      'Manual upload — PDF obtained from imf.org/Countries/NPL annually after Article IV conclusion. Parses the Selected Economic Indicators appendix table (actuals + projections). Splits actual vs forecast via column marker (E/P/e/f).',
   },
   {
     sourceId: 'adb-ado-nepal',
@@ -995,13 +1004,22 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     publicationFrequency: 'annual',
     reportingPeriodType: 'annual',
     fileFormat: 'pdf',
-    requiresTableExtraction: false,
+    requiresTableExtraction: true,
     licenseStatus: 'cc_by',
     confidenceDefault: 'A',
     status: 'active',
-    ingestionMode: 'reference_only',
-    tier: null,
-    notes: 'International benchmark.',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    parserOwner: 'scrapers/adb_ado/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Annual. Each ADO edition replaces prior projections; historical actuals stable.',
+    knownBreakageModes: [
+      'table-may-use-calendar-year-not-nepal-fy',
+      'nepal-chapter-page-number-drifts-between-editions',
+    ],
+    notes:
+      'Manual upload — PDF obtained from adb.org/countries/nepal/economy annually with the ADO release. Parses the Nepal Selected Economic Indicators table (actuals + forecasts). Splits actual vs forecast via column marker (e/f).',
   },
 
   // ─── Added from 2026-05 NRB/MoF catalog audits (Worker A + Worker B) ───
