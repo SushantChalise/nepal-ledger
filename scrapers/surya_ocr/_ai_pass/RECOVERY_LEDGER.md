@@ -1,6 +1,6 @@
 # Master Recovery Ledger — Overnight AI-pass worklist
 
-> Generated: `2026-06-10T17:38:01+00:00` · Generator: `scrapers/surya_ocr/_ai_pass/locate_tables.py`  
+> Generated: `2026-06-10T19:06:46+00:00` · Generator: `scrapers/surya_ocr/_ai_pass/locate_tables.py`  
 > Plan: `docs/OVERNIGHT_AI_PASS_PLAN.md` · Dedup baseline: docs/DATA_AUDIT.md (2026-06-08 + 2026-06-10 GVA) + \_ai_pass artifacts  
 > Status flow: `pending -> scoped -> {recovered|quarantined|needs-decision} -> staged -> [promoted-by-human]`
 
@@ -8,15 +8,15 @@
 
 ## OCR state
 
-- Corpus OCR: **11,061 / 13,297 pages** — ⏳ **IN PROGRESS** (re-run the locator after it finishes to pick up new pages)
-- Pending OCR (0 pages yet, no candidates until done): `P4__-__2qteqov_0b52daa4`, `P4__-__6d7mimy_6227f9c7`, `P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba`, `P5__207576_ce72ae7e`
-- Partial OCR (scanned so far): `P4__RB_2070-71_20140722052750_d5gsbhl_290b1533`
+- Corpus OCR: **11,443 / 13,297 pages** — ⏳ **IN PROGRESS** (re-run the locator after it finishes to pick up new pages)
+- Pending OCR (0 pages yet, no candidates until done): `P4__-__2qteqov_0b52daa4`, `P4__-__6d7mimy_6227f9c7`, `P5__207576_ce72ae7e`
+- Partial OCR (scanned so far): `P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba`
 
 ## Summary
 
-- Documents: **50** · Table candidates: **1339** (**1337** pending)
+- Documents: **50** · Table candidates: **1350** (**1342** pending)
 - By dedup class:
-  - `partly-in-db`: 817
+  - `partly-in-db`: 828
   - `new`: 491
   - `owned-deterministic`: 22
   - `unknown`: 6
@@ -75,8 +75,8 @@ Dedup classes: `new` = not in DB → recover · `partly-in-db` = some FYs/measur
 | P3   | `P3__-__31acuu6_cbd219c0`                                       | complete |   41/41 |     41 |    1 | owned-deterministic | mof_whitebook (Tier-1a, deterministic)                                 |
 | P4   | `P4__-__2qteqov_0b52daa4`                                       | pending  |   0/746 |      0 |    0 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
 | P4   | `P4__-__6d7mimy_6227f9c7`                                       | pending  |   0/717 |      0 |    0 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
-| P4   | `P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba`  | pending  |   0/652 |      0 |    0 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
-| P4   | `P4__RB_2070-71_20140722052750_d5gsbhl_290b1533`                | partial  | 554/634 |    546 |    5 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
+| P4   | `P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba`  | partial  | 302/652 |    294 |    6 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
+| P4   | `P4__RB_2070-71_20140722052750_d5gsbhl_290b1533`                | complete | 634/634 |    624 |   10 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
 | P4   | `P4__20190603123023_4qfchpf_577867e3`                           | complete | 629/629 |    618 |   13 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
 | P4   | `P4__-__l24f95n_0d1e9134`                                       | complete | 597/597 |    587 |   12 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
 | P4   | `P4__Redbook_2077_Website_20201129075335_onafyha_a612b19a`      | complete | 566/566 |    557 |   13 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
@@ -95,7 +95,7 @@ Dedup classes: `new` = not in DB → recover · `partly-in-db` = some FYs/measur
 | P4   | `P4__Budget_Details_-_Red_Book_2062_-_2063_2013071712_350d64d2` | complete | 101/101 |    100 |    2 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
 | P5   | `P5__207576_ce72ae7e`                                           | pending  |    0/41 |      0 |    0 | needs-decision      | local_government_fiscal_transfers (5 FYs: 2078/79-2082/83)             |
 
-## Next up — top 30 of 1337 pending (value order)
+## Next up — top 30 of 1342 pending (value order)
 
 |   # | id                  | tier | doc                    | page(s) | unit  | num-lines | coarse | dedup          | hint                                                         |
 | --: | ------------------- | ---- | ---------------------- | ------- | ----- | --------: | :----: | -------------- | ------------------------------------------------------------ |
@@ -134,8 +134,8 @@ Dedup classes: `new` = not in DB → recover · `partly-in-db` = some FYs/measur
 
 | Tier | Pending candidates | Σ num-lines |
 | ---- | -----------------: | ----------: |
-| P0   |                112 |      18,381 |
+| P0   |                111 |      18,337 |
 | P1   |                387 |      44,706 |
-| P2   |                679 |     102,817 |
+| P2   |                674 |     101,168 |
 | P3   |                 22 |     126,325 |
-| P4   |                137 |   1,361,731 |
+| P4   |                148 |   1,436,499 |

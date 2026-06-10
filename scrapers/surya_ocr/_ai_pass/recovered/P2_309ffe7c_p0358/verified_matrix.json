@@ -1,0 +1,662 @@
+{
+  "table_id": "P2_309ffe7c_p0358",
+  "out_dir": "P2__Economic_Survey_2081-82_309ffe7c",
+  "source_path": "Financial Data/mof_documents/economic_survey/Economic_Survey_2081-82.pdf",
+  "page": 358,
+  "table_title": "अनुसूची ५.३ : भारत निर्यात भएका केही प्रमुख वस्तुहरु (Annex 5.3: Selected major commodities exported to India)",
+  "unit": "npr_crore",
+  "unit_source_label": "रु. करोडमा",
+  "provenance": {
+    "extraction_method": "surya-ocr",
+    "ocr_model": "surya-ocr 0.17.1",
+    "confidence": "B",
+    "assembled_by": "ai_pass matrix-assembly + GATE (deterministic post-OCR reconciliation)",
+    "assembled_utc": "2026-06-10T18:54:30.653854+00:00",
+    "source_citation": "स्रोतः नेपाल राष्ट्र बैंक, २०८१ (Nepal Rastra Bank, 2081)"
+  },
+  "matrix_shape": {
+    "rows": ["row_31_ka_jamma", "row_32_kha_anya", "row_33_jamma"],
+    "row_labels": {
+      "row_31_ka_jamma": "क. जम्मा",
+      "row_32_kha_anya": "ख. अन्य",
+      "row_33_jamma": "जम्मा (क+ख)"
+    },
+    "columns": [
+      {
+        "col_id": "C0",
+        "fy": "2071/72"
+      },
+      {
+        "col_id": "C1",
+        "fy": "2072/73"
+      },
+      {
+        "col_id": "C2",
+        "fy": "2073/74"
+      },
+      {
+        "col_id": "C3",
+        "fy": "2074/75"
+      },
+      {
+        "col_id": "C4",
+        "fy": "2075/76"
+      },
+      {
+        "col_id": "C5",
+        "fy": "2076/77"
+      },
+      {
+        "col_id": "C6",
+        "fy": "2077/78"
+      },
+      {
+        "col_id": "C7",
+        "fy": "2078/79"
+      },
+      {
+        "col_id": "C8",
+        "fy": "2079/80"
+      },
+      {
+        "col_id": "C9",
+        "fy": "2080/81"
+      },
+      {
+        "col_id": "C10",
+        "fy": "2080/81_8mo"
+      },
+      {
+        "col_id": "C11",
+        "fy": "2081/82_8mo"
+      }
+    ],
+    "note": "Columns are independent fiscal years; C10/C11 are 'first eight months' (प्रथम आठ महिना) partial-period snapshots, NOT annual aggregates and NOT sums of other columns."
+  },
+  "reconciliation": {
+    "identity": "ka_jamma (row 31) + kha_anya (row 32) == jamma (row 33), per column",
+    "col_tolerance": 0.1,
+    "cross_column_axis": "NOT APPLICABLE - no aggregate/disaggregating fiscal-year columns in this table",
+    "items_do_not_sum_to_ka_jamma": "confirmed: the 28 numbered commodity rows are a SELECTION, not exhaustive components; Sigma(items)=ka_jamma is NOT used as a key. Rows 11-13 (क.चट्टी/ख.बोरा/ग.डोरी) are sub-components of row 10 (जुटका सामान) and are not double-counted.",
+    "per_column": {
+      "2071/72": {
+        "col_id": "C0",
+        "ka_jamma": null,
+        "kha_anya": 9509.7,
+        "sum_ka_kha": null,
+        "jamma_printed": 4586.5,
+        "residual": null,
+        "reconciles": false,
+        "reason": "OCR-corrupt/unparseable cell(s) in column for row(s): ka_jamma; ka+kha=jamma identity cannot be verified"
+      },
+      "2072/73": {
+        "col_id": "C1",
+        "ka_jamma": 2812.4,
+        "kha_anya": 1137.0,
+        "sum_ka_kha": 3949.4,
+        "jamma_printed": 3949.4,
+        "residual": 0.0,
+        "reconciles": true,
+        "reason": null
+      },
+      "2073/74": {
+        "col_id": "C2",
+        "ka_jamma": 2883.4,
+        "kha_anya": 1261.4,
+        "sum_ka_kha": 4144.8,
+        "jamma_printed": 4144.9,
+        "residual": -0.1,
+        "reconciles": true,
+        "reason": null
+      },
+      "2074/75": {
+        "col_id": "C3",
+        "ka_jamma": 3148.4,
+        "kha_anya": 1523.6,
+        "sum_ka_kha": 4672.0,
+        "jamma_printed": 4672.0,
+        "residual": 0.0,
+        "reconciles": true,
+        "reason": null
+      },
+      "2075/76": {
+        "col_id": "C4",
+        "ka_jamma": 3502.0,
+        "kha_anya": 2771.2,
+        "sum_ka_kha": 6273.2,
+        "jamma_printed": 6273.2,
+        "residual": 0.0,
+        "reconciles": true,
+        "reason": null
+      },
+      "2076/77": {
+        "col_id": "C5",
+        "ka_jamma": 2836.0,
+        "kha_anya": 4174.8,
+        "sum_ka_kha": 7010.8,
+        "jamma_printed": 7010.9,
+        "residual": -0.1,
+        "reconciles": true,
+        "reason": null
+      },
+      "2077/78": {
+        "col_id": "C6",
+        "ka_jamma": null,
+        "kha_anya": null,
+        "sum_ka_kha": null,
+        "jamma_printed": 10637.2,
+        "residual": null,
+        "reconciles": false,
+        "reason": "OCR-corrupt/unparseable cell(s) in column for row(s): ka_jamma, kha_anya; ka+kha=jamma identity cannot be verified"
+      },
+      "2078/79": {
+        "col_id": "C7",
+        "ka_jamma": 8328.9,
+        "kha_anya": 99985.9,
+        "sum_ka_kha": 108314.8,
+        "jamma_printed": 14422.2,
+        "residual": 93892.6,
+        "reconciles": false,
+        "reason": "ka+kha (108314.8) != jamma (14422.2); residual 93892.6 exceeds +-0.1"
+      },
+      "2079/80": {
+        "col_id": "C8",
+        "ka_jamma": 5844.8,
+        "kha_anya": 4823.9,
+        "sum_ka_kha": 10668.7,
+        "jamma_printed": 10668.6,
+        "residual": 0.1,
+        "reconciles": true,
+        "reason": null
+      },
+      "2080/81": {
+        "col_id": "C9",
+        "ka_jamma": 6660.6,
+        "kha_anya": 3657.1,
+        "sum_ka_kha": 10317.7,
+        "jamma_printed": 10317.7,
+        "residual": 0.0,
+        "reconciles": true,
+        "reason": null
+      },
+      "2080/81_8mo": {
+        "col_id": "C10",
+        "ka_jamma": 8833.7,
+        "kha_anya": 2895.0,
+        "sum_ka_kha": 11728.7,
+        "jamma_printed": 6841.3,
+        "residual": 4887.4,
+        "reconciles": false,
+        "reason": "ka+kha (11728.7) != jamma (6841.3); residual 4887.4 exceeds +-0.1"
+      },
+      "2081/82_8mo": {
+        "col_id": "C11",
+        "ka_jamma": 8439.4,
+        "kha_anya": 7979.3,
+        "sum_ka_kha": 16418.7,
+        "jamma_printed": 12500.9,
+        "residual": 3917.8,
+        "reconciles": false,
+        "reason": "ka+kha (16418.7) != jamma (12500.9); residual 3917.8 exceeds +-0.1"
+      }
+    }
+  },
+  "accepted_cells": [
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2072/73",
+      "col_id": "C1",
+      "value": 2812.4,
+      "raw_ocr": "२८१२.४",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2072/73",
+      "col_id": "C1",
+      "value": 1137.0,
+      "raw_ocr": "११३७.०",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2072/73",
+      "col_id": "C1",
+      "value": 3949.4,
+      "raw_ocr": "३९४९.४",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2073/74",
+      "col_id": "C2",
+      "value": 2883.4,
+      "raw_ocr": "२८८३.४",
+      "col_residual": -0.1,
+      "row_cross_residual": -0.1,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2073/74",
+      "col_id": "C2",
+      "value": 1261.4,
+      "raw_ocr": "१२६१.४",
+      "col_residual": -0.1,
+      "row_cross_residual": -0.1,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2073/74",
+      "col_id": "C2",
+      "value": 4144.9,
+      "raw_ocr": "४१४४.९",
+      "col_residual": -0.1,
+      "row_cross_residual": -0.1,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2074/75",
+      "col_id": "C3",
+      "value": 3148.4,
+      "raw_ocr": "३१४८.४",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2074/75",
+      "col_id": "C3",
+      "value": 1523.6,
+      "raw_ocr": "१५२३.६",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2074/75",
+      "col_id": "C3",
+      "value": 4672.0,
+      "raw_ocr": "४६७२.०",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2075/76",
+      "col_id": "C4",
+      "value": 3502.0,
+      "raw_ocr": "३५०२.०",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2075/76",
+      "col_id": "C4",
+      "value": 2771.2,
+      "raw_ocr": "२७७१.२",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2075/76",
+      "col_id": "C4",
+      "value": 6273.2,
+      "raw_ocr": "६२७३.२",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2076/77",
+      "col_id": "C5",
+      "value": 2836.0,
+      "raw_ocr": "२८३६.०",
+      "col_residual": -0.1,
+      "row_cross_residual": -0.1,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2076/77",
+      "col_id": "C5",
+      "value": 4174.8,
+      "raw_ocr": "४१७४.८",
+      "col_residual": -0.1,
+      "row_cross_residual": -0.1,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2076/77",
+      "col_id": "C5",
+      "value": 7010.9,
+      "raw_ocr": "७०१०.९",
+      "col_residual": -0.1,
+      "row_cross_residual": -0.1,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2079/80",
+      "col_id": "C8",
+      "value": 5844.8,
+      "raw_ocr": "५८४४.८",
+      "col_residual": 0.1,
+      "row_cross_residual": 0.1,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2079/80",
+      "col_id": "C8",
+      "value": 4823.9,
+      "raw_ocr": "४८२३.९",
+      "col_residual": 0.1,
+      "row_cross_residual": 0.1,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2079/80",
+      "col_id": "C8",
+      "value": 10668.6,
+      "raw_ocr": "१०६६८.६",
+      "col_residual": 0.1,
+      "row_cross_residual": 0.1,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2080/81",
+      "col_id": "C9",
+      "value": 6660.6,
+      "raw_ocr": "<b>६६६०.६</b>",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2080/81",
+      "col_id": "C9",
+      "value": 3657.1,
+      "raw_ocr": "३६५७.१",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2080/81",
+      "col_id": "C9",
+      "value": 10317.7,
+      "raw_ocr": "१०३१७.७",
+      "col_residual": 0.0,
+      "row_cross_residual": 0.0,
+      "status": "accepted"
+    }
+  ],
+  "quarantine": [
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2071/72",
+      "col_id": "C0",
+      "value": null,
+      "raw_ocr": "₹.000,₹",
+      "col_residual": null,
+      "row_cross_residual": null,
+      "status": "quarantined",
+      "reason": "cell value un-parseable from OCR (raw='₹.000,₹'); cannot accept"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2071/72",
+      "col_id": "C0",
+      "value": 9509.7,
+      "raw_ocr": "9509.7",
+      "col_residual": null,
+      "row_cross_residual": null,
+      "status": "quarantined",
+      "reason": "column 2071/72 failed per-column identity ka+kha=jamma: OCR-corrupt/unparseable cell(s) in column for row(s): ka_jamma; ka+kha=jamma identity cannot be verified"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2071/72",
+      "col_id": "C0",
+      "value": 4586.5,
+      "raw_ocr": "४५८६.५",
+      "col_residual": null,
+      "row_cross_residual": null,
+      "status": "quarantined",
+      "reason": "column 2071/72 failed per-column identity ka+kha=jamma: OCR-corrupt/unparseable cell(s) in column for row(s): ka_jamma; ka+kha=jamma identity cannot be verified"
+    },
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2077/78",
+      "col_id": "C6",
+      "value": null,
+      "raw_ocr": "₹.000,₹",
+      "col_residual": null,
+      "row_cross_residual": null,
+      "status": "quarantined",
+      "reason": "cell value un-parseable from OCR (raw='₹.000,₹'); cannot accept"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2077/78",
+      "col_id": "C6",
+      "value": null,
+      "raw_ocr": "E = 49.9",
+      "col_residual": null,
+      "row_cross_residual": null,
+      "status": "quarantined",
+      "reason": "cell value un-parseable from OCR (raw='E = 49.9'); cannot accept"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2077/78",
+      "col_id": "C6",
+      "value": 10637.2,
+      "raw_ocr": "१०६३७.२",
+      "col_residual": null,
+      "row_cross_residual": null,
+      "status": "quarantined",
+      "reason": "column 2077/78 failed per-column identity ka+kha=jamma: OCR-corrupt/unparseable cell(s) in column for row(s): ka_jamma, kha_anya; ka+kha=jamma identity cannot be verified"
+    },
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2078/79",
+      "col_id": "C7",
+      "value": 8328.9,
+      "raw_ocr": "8328.9",
+      "col_residual": 93892.6,
+      "row_cross_residual": 93892.6,
+      "status": "quarantined",
+      "reason": "column 2078/79 failed per-column identity ka+kha=jamma: ka+kha (108314.8) != jamma (14422.2); residual 93892.6 exceeds +-0.1"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2078/79",
+      "col_id": "C7",
+      "value": 99985.9,
+      "raw_ocr": "99985.9",
+      "col_residual": 93892.6,
+      "row_cross_residual": 93892.6,
+      "status": "quarantined",
+      "reason": "column 2078/79 failed per-column identity ka+kha=jamma: ka+kha (108314.8) != jamma (14422.2); residual 93892.6 exceeds +-0.1"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2078/79",
+      "col_id": "C7",
+      "value": 14422.2,
+      "raw_ocr": "१४४२२.२",
+      "col_residual": 93892.6,
+      "row_cross_residual": 93892.6,
+      "status": "quarantined",
+      "reason": "column 2078/79 failed per-column identity ka+kha=jamma: ka+kha (108314.8) != jamma (14422.2); residual 93892.6 exceeds +-0.1"
+    },
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2080/81_8mo",
+      "col_id": "C10",
+      "value": 8833.7,
+      "raw_ocr": "8833.7",
+      "col_residual": 4887.4,
+      "row_cross_residual": 4887.4,
+      "status": "quarantined",
+      "reason": "column 2080/81_8mo failed per-column identity ka+kha=jamma: ka+kha (11728.7) != jamma (6841.3); residual 4887.4 exceeds +-0.1"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2080/81_8mo",
+      "col_id": "C10",
+      "value": 2895.0,
+      "raw_ocr": "2895.0",
+      "col_residual": 4887.4,
+      "row_cross_residual": 4887.4,
+      "status": "quarantined",
+      "reason": "column 2080/81_8mo failed per-column identity ka+kha=jamma: ka+kha (11728.7) != jamma (6841.3); residual 4887.4 exceeds +-0.1"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2080/81_8mo",
+      "col_id": "C10",
+      "value": 6841.3,
+      "raw_ocr": "६८४१.३",
+      "col_residual": 4887.4,
+      "row_cross_residual": 4887.4,
+      "status": "quarantined",
+      "reason": "column 2080/81_8mo failed per-column identity ka+kha=jamma: ka+kha (11728.7) != jamma (6841.3); residual 4887.4 exceeds +-0.1"
+    },
+    {
+      "row_key": "row_31_ka_jamma",
+      "row_idx": 31,
+      "row_label": "क. जम्मा",
+      "fy": "2081/82_8mo",
+      "col_id": "C11",
+      "value": 8439.4,
+      "raw_ocr": "<b>8</b>439.4",
+      "col_residual": 3917.8,
+      "row_cross_residual": 3917.8,
+      "status": "quarantined",
+      "reason": "column 2081/82_8mo failed per-column identity ka+kha=jamma: ka+kha (16418.7) != jamma (12500.9); residual 3917.8 exceeds +-0.1"
+    },
+    {
+      "row_key": "row_32_kha_anya",
+      "row_idx": 32,
+      "row_label": "ख. अन्य",
+      "fy": "2081/82_8mo",
+      "col_id": "C11",
+      "value": 7979.3,
+      "raw_ocr": "७९७९.३",
+      "col_residual": 3917.8,
+      "row_cross_residual": 3917.8,
+      "status": "quarantined",
+      "reason": "column 2081/82_8mo failed per-column identity ka+kha=jamma: ka+kha (16418.7) != jamma (12500.9); residual 3917.8 exceeds +-0.1"
+    },
+    {
+      "row_key": "row_33_jamma",
+      "row_idx": 33,
+      "row_label": "जम्मा (क+ख)",
+      "fy": "2081/82_8mo",
+      "col_id": "C11",
+      "value": 12500.9,
+      "raw_ocr": "१२५००.९",
+      "col_residual": 3917.8,
+      "row_cross_residual": 3917.8,
+      "status": "quarantined",
+      "reason": "column 2081/82_8mo failed per-column identity ka+kha=jamma: ka+kha (16418.7) != jamma (12500.9); residual 3917.8 exceeds +-0.1"
+    }
+  ],
+  "structural_decision_needed": "PERIOD ENUM GAP: the two 'प्रथम आठ महिना' (first eight months) columns (2080/81_8mo C10, 2081/82_8mo C11) report an eight-month-cumulative period. docs/CALENDAR_AND_PERIODS.md reporting_period_type enum is {'monthly','quarterly','annual','nine_months_cumulative','year_to_date'} - there is NO 'eight_months_cumulative' (nor a generic 'first_n_months_cumulative'). Both 8mo columns are QUARANTINED here on reconciliation grounds, so NO 8mo cell is in the accepted set; the accepted matrix (7 reconciled full-year columns x 3 rows) is promotable as-is under reporting_period_type='annual'. BUT before any future promotion of the 8-month columns, the user must decide: add 'eight_months_cumulative' to the enum, or generalize to 'first_n_months_cumulative' with an n field (ADR + migration). Unit 'npr_crore' already exists (es2081_annex13_1, promoted) - no unit decision needed. No new dimension_kind needed: rows are an aggregate breakdown, columns are fiscal years.",
+  "summary": {
+    "matrix_reconciles": true,
+    "worst_residual": 0.1,
+    "accepted_count": 21,
+    "quarantined_count": 15
+  }
+}

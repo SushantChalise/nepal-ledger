@@ -1,33 +1,32 @@
 {
   "schema_version": 1,
-  "generated_utc": "2026-06-10T17:38:01+00:00",
+  "generated_utc": "2026-06-10T19:06:46+00:00",
   "generator": "scrapers/surya_ocr/_ai_pass/locate_tables.py",
   "plan": "docs/OVERNIGHT_AI_PASS_PLAN.md",
   "dedup_baseline": "docs/DATA_AUDIT.md (2026-06-08 + 2026-06-10 GVA) + _ai_pass artifacts",
   "ocr_state": {
-    "pages_present": 11061,
+    "pages_present": 11443,
     "pages_target": 13297,
     "in_progress": true,
     "docs_pending_ocr": [
       "P4__-__2qteqov_0b52daa4",
       "P4__-__6d7mimy_6227f9c7",
-      "P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba",
       "P5__207576_ce72ae7e"
     ],
-    "docs_partial_ocr": ["P4__RB_2070-71_20140722052750_d5gsbhl_290b1533"]
+    "docs_partial_ocr": ["P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba"]
   },
   "status_flow": "pending -> scoped -> {recovered|quarantined|needs-decision} -> staged -> [promoted-by-human]",
   "stats": {
     "docs": 50,
-    "table_candidates": 1339,
+    "table_candidates": 1350,
     "table_candidates_by_dedup_class": {
       "needs-decision": 3,
       "new": 491,
-      "partly-in-db": 817,
+      "partly-in-db": 828,
       "unknown": 6,
       "owned-deterministic": 22
     },
-    "pending_candidates": 1337
+    "pending_candidates": 1342
   },
   "docs": [
     {
@@ -754,10 +753,10 @@
       "avg_words": 184.0,
       "dev_ratio": 0.403,
       "pages_total": 652,
-      "pages_ocrd": 0,
-      "ocr_status": "pending",
-      "table_page_count": 0,
-      "table_candidate_count": 0,
+      "pages_ocrd": 302,
+      "ocr_status": "partial",
+      "table_page_count": 294,
+      "table_candidate_count": 6,
       "recovered_artifacts": [],
       "dedup": {
         "class": "partly-in-db",
@@ -777,10 +776,10 @@
       "avg_words": 214.7,
       "dev_ratio": 0.334,
       "pages_total": 634,
-      "pages_ocrd": 554,
-      "ocr_status": "partial",
-      "table_page_count": 546,
-      "table_candidate_count": 5,
+      "pages_ocrd": 634,
+      "ocr_status": "complete",
+      "table_page_count": 624,
+      "table_candidate_count": 10,
       "recovered_artifacts": [],
       "dedup": {
         "class": "partly-in-db",
@@ -3328,9 +3327,9 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "pending",
-      "reconciliation_result": null,
-      "artifact_path": null,
+      "status": "needs-decision",
+      "reconciliation_result": "balance identity exact both yrs (कुल जम्मा liab==assets: 23741740/2079, 28371151/2080); FY2080 col reconciles; FY2079 liab-foot off 84889 (share-premium cell mis-OCR'd) + net-fixed-assets 2080 mixed-glyph — 2 cells back-solved but NOT promoted",
+      "artifact_path": "_ai_pass/recovered/P0_1d6841fe_p0078",
       "dedup": {
         "class": "new",
         "owner": "dne_facts soe-* (only equity+loan, 1 FY 2080/81)"
@@ -16727,9 +16726,9 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "pending",
-      "reconciliation_result": null,
-      "artifact_path": null,
+      "status": "recovered",
+      "reconciliation_result": "reconciled (worst residual 0.1)",
+      "artifact_path": "_ai_pass/recovered/P2_309ffe7c_p0358",
       "dedup": {
         "class": "partly-in-db",
         "owner": "dne_facts economic-survey-gva-current (FY2081/82 annex 13.1, promoted)"
@@ -16872,9 +16871,9 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "pending",
-      "reconciliation_result": null,
-      "artifact_path": null,
+      "status": "needs-decision",
+      "reconciliation_result": "36/345 cells cross-reconciled (worst residual 1cr); 309 quarantined — page severely OCR-degraded (12/92 group identities foot)",
+      "artifact_path": "_ai_pass/recovered/P2_309ffe7c_p0314",
       "dedup": {
         "class": "partly-in-db",
         "owner": "dne_facts economic-survey-gva-current (FY2081/82 annex 13.1, promoted)"
@@ -16905,7 +16904,7 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "pending",
+      "status": "scoped",
       "reconciliation_result": null,
       "artifact_path": null,
       "dedup": {
@@ -17660,8 +17659,8 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "pending",
-      "reconciliation_result": null,
+      "status": "quarantined",
+      "reconciliation_result": "no reconciliation key — GROWTH-RATE table (प्रतिशत/वृद्धिदर); sector growth rates don't sum to a total. Not recoverable via the reconciliation gate (cheap scope-only abort).",
       "artifact_path": null,
       "dedup": {
         "class": "partly-in-db",
@@ -18803,7 +18802,7 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "pending",
+      "status": "scoped",
       "reconciliation_result": null,
       "artifact_path": null,
       "dedup": {
@@ -36472,21 +36471,21 @@
       "notes": ""
     },
     {
-      "id": "P4_290b1533_p0029",
-      "out_dir": "P4__RB_2070-71_20140722052750_d5gsbhl_290b1533",
-      "source_path": "Financial Data/mof_documents/redbook/RB 2070-71_20140722052750_d5gsbhl.pdf",
+      "id": "P4_830109ba_p0032",
+      "out_dir": "P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba",
+      "source_path": "Financial Data/mof_documents/redbook/Red Book Central 2074-75_20170530083940_00lqgwe.pdf",
       "category": "redbook",
       "tier_code": "P4",
-      "page_start": 29,
-      "page_end": 553,
-      "n_pages": 525,
+      "page_start": 32,
+      "page_end": 301,
+      "n_pages": 270,
       "table_hint": "(untitled table)",
       "titled": false,
       "anchors": [],
       "unit_hint": "thousand",
       "signals": {
-        "numeric_lines": 89085,
-        "max_numeric_on_page": 199,
+        "numeric_lines": 57009,
+        "max_numeric_on_page": 242,
         "has_total_keyword": true,
         "coarse_run": true
       },
@@ -36499,6 +36498,35 @@
       },
       "value_rank": 260.0,
       "notes": "OCR incomplete for this doc"
+    },
+    {
+      "id": "P4_290b1533_p0029",
+      "out_dir": "P4__RB_2070-71_20140722052750_d5gsbhl_290b1533",
+      "source_path": "Financial Data/mof_documents/redbook/RB 2070-71_20140722052750_d5gsbhl.pdf",
+      "category": "redbook",
+      "tier_code": "P4",
+      "page_start": 29,
+      "page_end": 603,
+      "n_pages": 575,
+      "table_hint": "(untitled table)",
+      "titled": false,
+      "anchors": [],
+      "unit_hint": "thousand",
+      "signals": {
+        "numeric_lines": 97304,
+        "max_numeric_on_page": 199,
+        "has_total_keyword": true,
+        "coarse_run": true
+      },
+      "status": "pending",
+      "reconciliation_result": null,
+      "artifact_path": null,
+      "dedup": {
+        "class": "partly-in-db",
+        "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
+      },
+      "value_rank": 260.0,
+      "notes": ""
     },
     {
       "id": "P4_577867e3_p0035",
@@ -37054,6 +37082,35 @@
       "notes": ""
     },
     {
+      "id": "P4_830109ba_p0010",
+      "out_dir": "P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba",
+      "source_path": "Financial Data/mof_documents/redbook/Red Book Central 2074-75_20170530083940_00lqgwe.pdf",
+      "category": "redbook",
+      "tier_code": "P4",
+      "page_start": 10,
+      "page_end": 22,
+      "n_pages": 13,
+      "table_hint": "(untitled table)",
+      "titled": false,
+      "anchors": [],
+      "unit_hint": "thousand",
+      "signals": {
+        "numeric_lines": 2531,
+        "max_numeric_on_page": 218,
+        "has_total_keyword": true,
+        "coarse_run": false
+      },
+      "status": "pending",
+      "reconciliation_result": null,
+      "artifact_path": null,
+      "dedup": {
+        "class": "partly-in-db",
+        "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
+      },
+      "value_rank": 212.66,
+      "notes": "OCR incomplete for this doc"
+    },
+    {
       "id": "P4_13ce67d1_p0016",
       "out_dir": "P4__-__k3ip15v_13ce67d1",
       "source_path": "Financial Data/mof_documents/redbook/व्यय अनुमानको विवरण (रातो किताब) २०८१-८२_k3ip15v.pdf",
@@ -37225,7 +37282,7 @@
         "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
       },
       "value_rank": 211.12,
-      "notes": "OCR incomplete for this doc"
+      "notes": ""
     },
     {
       "id": "P4_6690ba61_p0007",
@@ -37283,6 +37340,35 @@
         "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
       },
       "value_rank": 210.56,
+      "notes": ""
+    },
+    {
+      "id": "P4_290b1533_p0605",
+      "out_dir": "P4__RB_2070-71_20140722052750_d5gsbhl_290b1533",
+      "source_path": "Financial Data/mof_documents/redbook/RB 2070-71_20140722052750_d5gsbhl.pdf",
+      "category": "redbook",
+      "tier_code": "P4",
+      "page_start": 605,
+      "page_end": 611,
+      "n_pages": 7,
+      "table_hint": "अनुसूची - १",
+      "titled": true,
+      "anchors": ["अनुसूची - १"],
+      "unit_hint": "thousand",
+      "signals": {
+        "numeric_lines": 1881,
+        "max_numeric_on_page": 307,
+        "has_total_keyword": true,
+        "coarse_run": false
+      },
+      "status": "pending",
+      "reconciliation_result": null,
+      "artifact_path": null,
+      "dedup": {
+        "class": "partly-in-db",
+        "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
+      },
+      "value_rank": 209.41,
       "notes": ""
     },
     {
@@ -37431,6 +37517,35 @@
       "notes": ""
     },
     {
+      "id": "P4_290b1533_p0616",
+      "out_dir": "P4__RB_2070-71_20140722052750_d5gsbhl_290b1533",
+      "source_path": "Financial Data/mof_documents/redbook/RB 2070-71_20140722052750_d5gsbhl.pdf",
+      "category": "redbook",
+      "tier_code": "P4",
+      "page_start": 616,
+      "page_end": 622,
+      "n_pages": 7,
+      "table_hint": "अनुसूची -३",
+      "titled": true,
+      "anchors": ["अनुसूची -३"],
+      "unit_hint": "thousand",
+      "signals": {
+        "numeric_lines": 1462,
+        "max_numeric_on_page": 238,
+        "has_total_keyword": true,
+        "coarse_run": false
+      },
+      "status": "pending",
+      "reconciliation_result": null,
+      "artifact_path": null,
+      "dedup": {
+        "class": "partly-in-db",
+        "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
+      },
+      "value_rank": 207.31,
+      "notes": ""
+    },
+    {
       "id": "P4_6690ba61_p0532",
       "out_dir": "P4__RB_2069-70_20140722052658_wcqrs1s_6690ba61",
       "source_path": "Financial Data/mof_documents/redbook/RB 2069-70_20140722052658_wcqrs1s.pdf",
@@ -37516,6 +37631,35 @@
       },
       "value_rank": 206.43,
       "notes": ""
+    },
+    {
+      "id": "P4_830109ba_p0025",
+      "out_dir": "P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba",
+      "source_path": "Financial Data/mof_documents/redbook/Red Book Central 2074-75_20170530083940_00lqgwe.pdf",
+      "category": "redbook",
+      "tier_code": "P4",
+      "page_start": 25,
+      "page_end": 30,
+      "n_pages": 6,
+      "table_hint": "(untitled table)",
+      "titled": false,
+      "anchors": [],
+      "unit_hint": "thousand",
+      "signals": {
+        "numeric_lines": 1211,
+        "max_numeric_on_page": 233,
+        "has_total_keyword": true,
+        "coarse_run": false
+      },
+      "status": "pending",
+      "reconciliation_result": null,
+      "artifact_path": null,
+      "dedup": {
+        "class": "partly-in-db",
+        "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
+      },
+      "value_rank": 206.06,
+      "notes": "OCR incomplete for this doc"
     },
     {
       "id": "P4_0315aab6_p0022",
@@ -37689,6 +37833,35 @@
         "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
       },
       "value_rank": 205.4,
+      "notes": ""
+    },
+    {
+      "id": "P4_290b1533_p0623",
+      "out_dir": "P4__RB_2070-71_20140722052750_d5gsbhl_290b1533",
+      "source_path": "Financial Data/mof_documents/redbook/RB 2070-71_20140722052750_d5gsbhl.pdf",
+      "category": "redbook",
+      "tier_code": "P4",
+      "page_start": 623,
+      "page_end": 629,
+      "n_pages": 7,
+      "table_hint": "अनुसूची -४",
+      "titled": true,
+      "anchors": ["अनुसूची -४"],
+      "unit_hint": "thousand",
+      "signals": {
+        "numeric_lines": 1071,
+        "max_numeric_on_page": 176,
+        "has_total_keyword": true,
+        "coarse_run": false
+      },
+      "status": "pending",
+      "reconciliation_result": null,
+      "artifact_path": null,
+      "dedup": {
+        "class": "partly-in-db",
+        "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
+      },
+      "value_rank": 205.35,
       "notes": ""
     },
     {
@@ -38037,7 +38210,7 @@
         "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
       },
       "value_rank": 204.59,
-      "notes": "OCR incomplete for this doc"
+      "notes": ""
     },
     {
       "id": "P4_a612b19a_p0553",
@@ -38359,6 +38532,35 @@
       "notes": ""
     },
     {
+      "id": "P4_290b1533_p0612",
+      "out_dir": "P4__RB_2070-71_20140722052750_d5gsbhl_290b1533",
+      "source_path": "Financial Data/mof_documents/redbook/RB 2070-71_20140722052750_d5gsbhl.pdf",
+      "category": "redbook",
+      "tier_code": "P4",
+      "page_start": 612,
+      "page_end": 615,
+      "n_pages": 4,
+      "table_hint": "अनुसूची -२",
+      "titled": true,
+      "anchors": ["अनुसूची -२"],
+      "unit_hint": "thousand",
+      "signals": {
+        "numeric_lines": 577,
+        "max_numeric_on_page": 168,
+        "has_total_keyword": true,
+        "coarse_run": false
+      },
+      "status": "pending",
+      "reconciliation_result": null,
+      "artifact_path": null,
+      "dedup": {
+        "class": "partly-in-db",
+        "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
+      },
+      "value_rank": 202.88,
+      "notes": ""
+    },
+    {
       "id": "P4_a612b19a_p0549",
       "out_dir": "P4__Redbook_2077_Website_20201129075335_onafyha_a612b19a",
       "source_path": "Financial Data/mof_documents/redbook/Redbook 2077 Website_20201129075335_onafyha.pdf",
@@ -38530,6 +38732,35 @@
         "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
       },
       "value_rank": 202.42,
+      "notes": ""
+    },
+    {
+      "id": "P4_290b1533_p0631",
+      "out_dir": "P4__RB_2070-71_20140722052750_d5gsbhl_290b1533",
+      "source_path": "Financial Data/mof_documents/redbook/RB 2070-71_20140722052750_d5gsbhl.pdf",
+      "category": "redbook",
+      "tier_code": "P4",
+      "page_start": 631,
+      "page_end": 633,
+      "n_pages": 3,
+      "table_hint": "अनुसूची -५",
+      "titled": true,
+      "anchors": ["अनुसूची -५"],
+      "unit_hint": "thousand",
+      "signals": {
+        "numeric_lines": 468,
+        "max_numeric_on_page": 174,
+        "has_total_keyword": true,
+        "coarse_run": false
+      },
+      "status": "pending",
+      "reconciliation_result": null,
+      "artifact_path": null,
+      "dedup": {
+        "class": "partly-in-db",
+        "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
+      },
+      "value_rank": 202.34,
       "notes": ""
     },
     {
@@ -39787,6 +40018,64 @@
       "notes": ""
     },
     {
+      "id": "P4_830109ba_p0003",
+      "out_dir": "P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba",
+      "source_path": "Financial Data/mof_documents/redbook/Red Book Central 2074-75_20170530083940_00lqgwe.pdf",
+      "category": "redbook",
+      "tier_code": "P4",
+      "page_start": 3,
+      "page_end": 5,
+      "n_pages": 3,
+      "table_hint": "अनुसूचीहरु",
+      "titled": true,
+      "anchors": ["अनुसूचीहरु"],
+      "unit_hint": "thousand",
+      "signals": {
+        "numeric_lines": 131,
+        "max_numeric_on_page": 63,
+        "has_total_keyword": true,
+        "coarse_run": false
+      },
+      "status": "pending",
+      "reconciliation_result": null,
+      "artifact_path": null,
+      "dedup": {
+        "class": "partly-in-db",
+        "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
+      },
+      "value_rank": 200.66,
+      "notes": "OCR incomplete for this doc"
+    },
+    {
+      "id": "P4_830109ba_p0008",
+      "out_dir": "P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba",
+      "source_path": "Financial Data/mof_documents/redbook/Red Book Central 2074-75_20170530083940_00lqgwe.pdf",
+      "category": "redbook",
+      "tier_code": "P4",
+      "page_start": 8,
+      "page_end": 8,
+      "n_pages": 1,
+      "table_hint": "(untitled table)",
+      "titled": false,
+      "anchors": [],
+      "unit_hint": "thousand",
+      "signals": {
+        "numeric_lines": 123,
+        "max_numeric_on_page": 123,
+        "has_total_keyword": true,
+        "coarse_run": false
+      },
+      "status": "pending",
+      "reconciliation_result": null,
+      "artifact_path": null,
+      "dedup": {
+        "class": "partly-in-db",
+        "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
+      },
+      "value_rank": 200.62,
+      "notes": "OCR incomplete for this doc"
+    },
+    {
       "id": "P4_577867e3_p0007",
       "out_dir": "P4__20190603123023_4qfchpf_577867e3",
       "source_path": "Financial Data/mof_documents/redbook/ब्यय अनुमानको विवरण २०७६_20190603123023_4qfchpf.pdf",
@@ -40048,6 +40337,35 @@
       "notes": ""
     },
     {
+      "id": "P4_830109ba_p0002",
+      "out_dir": "P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba",
+      "source_path": "Financial Data/mof_documents/redbook/Red Book Central 2074-75_20170530083940_00lqgwe.pdf",
+      "category": "redbook",
+      "tier_code": "P4",
+      "page_start": 2,
+      "page_end": 2,
+      "n_pages": 1,
+      "table_hint": "(untitled table)",
+      "titled": false,
+      "anchors": [],
+      "unit_hint": null,
+      "signals": {
+        "numeric_lines": 85,
+        "max_numeric_on_page": 85,
+        "has_total_keyword": true,
+        "coarse_run": false
+      },
+      "status": "pending",
+      "reconciliation_result": null,
+      "artifact_path": null,
+      "dedup": {
+        "class": "partly-in-db",
+        "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
+      },
+      "value_rank": 200.43,
+      "notes": "OCR incomplete for this doc"
+    },
+    {
       "id": "P4_0315aab6_p0002",
       "out_dir": "P4__1636954126_Redbook_2078_79_Revised_5pfrbev_0315aab6",
       "source_path": "Financial Data/mof_documents/redbook/1636954126_Redbook_2078_79_Revised_5pfrbev.pdf",
@@ -40103,7 +40421,7 @@
         "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
       },
       "value_rank": 200.38,
-      "notes": "OCR incomplete for this doc"
+      "notes": ""
     },
     {
       "id": "P4_6690ba61_p0005",
@@ -40335,7 +40653,7 @@
         "owner": "dne_facts budget-allocation (1 FY: 2074/75, 57 heads)"
       },
       "value_rank": 200.22,
-      "notes": "OCR incomplete for this doc"
+      "notes": ""
     },
     {
       "id": "P4_577867e3_p0001",
@@ -41229,5 +41547,5 @@
       "notes": "recovered artifact present"
     }
   ],
-  "merged_from_prev": false
+  "merged_from_prev": true
 }
