@@ -202,6 +202,56 @@ pnpm ingest:dne --input "<path>" --source-id nrb-db-external-sector
 Source-id to registry reconciliation is pending. Dry-run only until Mother
 resolves the FK question.
 
+### IMF Article IV (Selected Economic Indicators)
+
+Source ID: `imf-article-iv` | Parser: `scrapers/imf_article_iv/parser.py` v0.1.0
+
+**Prerequisites:** Download the Nepal Article IV PDF from
+<https://www.imf.org/en/Countries/NPL> and place it in a local directory.
+The parser reads the "Selected Economic Indicators" appendix table and emits
+12 indicator slugs (6 actual + 6 forecast).
+
+```powershell
+# Dry-run (no DB writes):
+pnpm ingest:imf-article-iv --dry-run --input "<path-to-article-iv.pdf>"
+
+# Live ingest:
+pnpm ingest:imf-article-iv --input "<path-to-article-iv.pdf>"
+```
+
+**Note:** The ingest CLI is not yet wired (pending a thin CLI wrapper following
+the `ingest:dne` pattern). Until then, run the parser directly and inspect its
+JSON output:
+
+```powershell
+cd scrapers
+python -m imf_article_iv.parser "<path-to-pdf>" "manual-doc-id"
+```
+
+### ADB ADO Nepal (Selected Economic Indicators)
+
+Source ID: `adb-ado-nepal` | Parser: `scrapers/adb_ado/parser.py` v0.1.0
+
+**Prerequisites:** Download the ADB ADO Nepal chapter PDF from
+<https://www.adb.org/countries/nepal/economy> and place it in a local directory.
+The parser reads the Nepal chapter Selected Economic Indicators table and emits
+10 indicator slugs (5 actual + 5 forecast).
+
+```powershell
+# Dry-run (no DB writes):
+pnpm ingest:adb-ado --dry-run --input "<path-to-ado-nepal.pdf>"
+
+# Live ingest:
+pnpm ingest:adb-ado --input "<path-to-ado-nepal.pdf>"
+```
+
+**Note:** Same as IMF — CLI wrapper pending. Run parser directly for now:
+
+```powershell
+cd scrapers
+python -m adb_ado.parser "<path-to-pdf>" "manual-doc-id"
+```
+
 ---
 
 ## Operational Gotchas

@@ -36,6 +36,8 @@ const NCPI_SOURCE_ID = 'nrb-ncpi-table';
 const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
+const IMF_SOURCE_ID = 'imf-article-iv';
+const ADB_SOURCE_ID = 'adb-ado-nepal';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -219,6 +221,7 @@ const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'usd', displayEn: 'USD', dimension: 'currency' },
   { unit: 'percent', displayEn: 'percent', dimension: 'ratio' },
   { unit: 'percent_yoy', displayEn: 'percent (year-on-year)', dimension: 'ratio' },
+  { unit: 'percent_gdp', displayEn: 'percent of GDP', dimension: 'ratio' },
   { unit: 'index_points', displayEn: 'index points', dimension: 'index' },
   { unit: 'months', displayEn: 'months', dimension: 'duration' },
   { unit: 'count', displayEn: 'count', dimension: 'count' },
@@ -951,6 +954,199 @@ const NCPI_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// ─── IMF Article IV — Nepal Selected Economic Indicators ──────────────────
+// Six indicator pairs (actual + forecast) from the appendix table. The
+// -actual slug covers historical outturns; -forecast covers IMF projections
+// (columns marked E/P/e/f in the source). This split prevents projections from
+// mixing with confirmed outturns in approved_indicator_values. Confidence A.
+// Unit 'percent_gdp' distinguishes % of GDP ratios from plain growth rates
+// so the Fact Ledger can display the correct denominator label.
+const IMF_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'imf-gdp-real-growth-actual',
+    nameEn: 'Real GDP Growth — Outturn (IMF Article IV)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'imf-gdp-real-growth-forecast',
+    nameEn: 'Real GDP Growth — Projection (IMF Article IV)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'imf-cpi-inflation-avg-actual',
+    nameEn: 'CPI Inflation, Average — Outturn (IMF Article IV)',
+    category: 'price',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'imf-cpi-inflation-avg-forecast',
+    nameEn: 'CPI Inflation, Average — Projection (IMF Article IV)',
+    category: 'price',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'imf-fiscal-balance-pct-gdp-actual',
+    nameEn: 'Overall Fiscal Balance (% of GDP) — Outturn (IMF Article IV)',
+    category: 'fiscal',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'imf-fiscal-balance-pct-gdp-forecast',
+    nameEn: 'Overall Fiscal Balance (% of GDP) — Projection (IMF Article IV)',
+    category: 'fiscal',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'imf-current-account-pct-gdp-actual',
+    nameEn: 'Current Account Balance (% of GDP) — Outturn (IMF Article IV)',
+    category: 'external_sector',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'imf-current-account-pct-gdp-forecast',
+    nameEn: 'Current Account Balance (% of GDP) — Projection (IMF Article IV)',
+    category: 'external_sector',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'imf-public-debt-pct-gdp-actual',
+    nameEn: 'Public Sector Debt (% of GDP) — Outturn (IMF Article IV)',
+    category: 'fiscal',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'imf-public-debt-pct-gdp-forecast',
+    nameEn: 'Public Sector Debt (% of GDP) — Projection (IMF Article IV)',
+    category: 'fiscal',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'imf-gross-reserves-months-actual',
+    nameEn: 'Gross Official Reserves (months of imports) — Outturn (IMF Article IV)',
+    category: 'external_sector',
+    unit: 'months',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'imf-gross-reserves-months-forecast',
+    nameEn: 'Gross Official Reserves (months of imports) — Projection (IMF Article IV)',
+    category: 'external_sector',
+    unit: 'months',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+];
+
+// ─── ADB Asian Development Outlook — Nepal section ────────────────────────
+// Five indicator pairs (actual + forecast) from the Nepal chapter summary
+// table. Same -actual / -forecast split. ADB may not always publish public
+// debt; that series is included when the table provides it. Confidence A.
+const ADB_ADO_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'adb-ado-gdp-real-growth-actual',
+    nameEn: 'Real GDP Growth — Outturn (ADB ADO)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Asian Development Bank',
+  },
+  {
+    slug: 'adb-ado-gdp-real-growth-forecast',
+    nameEn: 'Real GDP Growth — Forecast (ADB ADO)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Asian Development Bank',
+  },
+  {
+    slug: 'adb-ado-cpi-inflation-avg-actual',
+    nameEn: 'CPI Inflation, Average — Outturn (ADB ADO)',
+    category: 'price',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Asian Development Bank',
+  },
+  {
+    slug: 'adb-ado-cpi-inflation-avg-forecast',
+    nameEn: 'CPI Inflation, Average — Forecast (ADB ADO)',
+    category: 'price',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Asian Development Bank',
+  },
+  {
+    slug: 'adb-ado-fiscal-balance-pct-gdp-actual',
+    nameEn: 'Fiscal Balance (% of GDP) — Outturn (ADB ADO)',
+    category: 'fiscal',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Asian Development Bank',
+  },
+  {
+    slug: 'adb-ado-fiscal-balance-pct-gdp-forecast',
+    nameEn: 'Fiscal Balance (% of GDP) — Forecast (ADB ADO)',
+    category: 'fiscal',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Asian Development Bank',
+  },
+  {
+    slug: 'adb-ado-current-account-pct-gdp-actual',
+    nameEn: 'Current Account Balance (% of GDP) — Outturn (ADB ADO)',
+    category: 'external_sector',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Asian Development Bank',
+  },
+  {
+    slug: 'adb-ado-current-account-pct-gdp-forecast',
+    nameEn: 'Current Account Balance (% of GDP) — Forecast (ADB ADO)',
+    category: 'external_sector',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Asian Development Bank',
+  },
+  {
+    slug: 'adb-ado-gross-reserves-months-actual',
+    nameEn: 'Gross Reserves (months of imports) — Outturn (ADB ADO)',
+    category: 'external_sector',
+    unit: 'months',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Asian Development Bank',
+  },
+  {
+    slug: 'adb-ado-gross-reserves-months-forecast',
+    nameEn: 'Gross Reserves (months of imports) — Forecast (ADB ADO)',
+    category: 'external_sector',
+    unit: 'months',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Asian Development Bank',
+  },
+];
+
 function log(msg: string): void {
   process.stdout.write(`[seed-indicators] ${msg}\n`);
 }
@@ -1111,6 +1307,62 @@ async function persist(): Promise<void> {
     esLinked += 1;
   }
   log(`indicator_source_map: ${esLinked} links ensured → ${ECONOMIC_SURVEY_SOURCE_ID}`);
+
+  // 12. IMF Article IV — actual + forecast pairs.
+  const imfInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...IMF_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!imfInsertResult.ok)
+    throw new Error(`IMF indicators insert failed: ${JSON.stringify(imfInsertResult.error)}`);
+  log(
+    `indicators (IMF Article IV): ${imfInsertResult.value.length} inserted (of ${IMF_INDICATORS.length}; existing skipped)`,
+  );
+
+  let imfLinked = 0;
+  for (const ind of IMF_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      IMF_SOURCE_ID,
+      'IMF Article IV Selected Economic Indicators (actuals + projections)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    imfLinked += 1;
+  }
+  log(`indicator_source_map: ${imfLinked} links ensured → ${IMF_SOURCE_ID}`);
+
+  // 13. ADB ADO Nepal — actual + forecast pairs.
+  const adbInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...ADB_ADO_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!adbInsertResult.ok)
+    throw new Error(`ADB indicators insert failed: ${JSON.stringify(adbInsertResult.error)}`);
+  log(
+    `indicators (ADB ADO): ${adbInsertResult.value.length} inserted (of ${ADB_ADO_INDICATORS.length}; existing skipped)`,
+  );
+
+  let adbLinked = 0;
+  for (const ind of ADB_ADO_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      ADB_SOURCE_ID,
+      'ADB ADO Nepal section Selected Economic Indicators (actuals + forecasts)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    adbLinked += 1;
+  }
+  log(`indicator_source_map: ${adbLinked} links ensured → ${ADB_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1121,6 +1373,8 @@ async function main(): Promise<void> {
       `indicators (CMEFs) = ${INDICATORS.length}, source = ${CMEFS_SOURCE_ID}`,
   );
   log(`indicators (NCPI)  = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
+  log(`indicators (IMF)   = ${IMF_INDICATORS.length}, source = ${IMF_SOURCE_ID}`);
+  log(`indicators (ADB)   = ${ADB_ADO_INDICATORS.length}, source = ${ADB_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');
