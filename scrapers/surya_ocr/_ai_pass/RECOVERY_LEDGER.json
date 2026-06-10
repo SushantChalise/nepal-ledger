@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "generated_utc": "2026-06-10T19:06:46+00:00",
+  "generated_utc": "2026-06-10T19:26:39+00:00",
   "generator": "scrapers/surya_ocr/_ai_pass/locate_tables.py",
   "plan": "docs/OVERNIGHT_AI_PASS_PLAN.md",
   "dedup_baseline": "docs/DATA_AUDIT.md (2026-06-08 + 2026-06-10 GVA) + _ai_pass artifacts",
   "ocr_state": {
-    "pages_present": 11443,
+    "pages_present": 11525,
     "pages_target": 13297,
     "in_progress": true,
     "docs_pending_ocr": [
@@ -26,7 +26,7 @@
       "unknown": 6,
       "owned-deterministic": 22
     },
-    "pending_candidates": 1342
+    "pending_candidates": 1339
   },
   "docs": [
     {
@@ -753,9 +753,9 @@
       "avg_words": 184.0,
       "dev_ratio": 0.403,
       "pages_total": 652,
-      "pages_ocrd": 302,
+      "pages_ocrd": 384,
       "ocr_status": "partial",
-      "table_page_count": 294,
+      "table_page_count": 376,
       "table_candidate_count": 6,
       "recovered_artifacts": [],
       "dedup": {
@@ -1200,8 +1200,8 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "pending",
-      "reconciliation_result": null,
+      "status": "needs-decision",
+      "reconciliation_result": "multipage wf VALIDATED on p20-22 slice: grand_total/row-identity reconciles (Σ4grants=जम्मा ±1); 36/99 rows accepted, 63 quarantined (OCR digit errors). ~36% row yield, ~700k tokens/page (scanned FY = hard OCR).",
       "artifact_path": null,
       "dedup": {
         "class": "needs-decision",
@@ -2101,7 +2101,7 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "pending",
+      "status": "scoped",
       "reconciliation_result": null,
       "artifact_path": null,
       "dedup": {
@@ -2568,7 +2568,7 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "pending",
+      "status": "scoped",
       "reconciliation_result": null,
       "artifact_path": null,
       "dedup": {
@@ -16904,9 +16904,9 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "scoped",
-      "reconciliation_result": null,
-      "artifact_path": null,
+      "status": "needs-decision",
+      "reconciliation_result": "33/400 cells cleared both axes (within-column formula chain + province→जम्मा); rest quarantined — page heavily OCR-degraded (Surya Latin-for-Devanagari substitution)",
+      "artifact_path": "_ai_pass/recovered/P2_309ffe7c_p0481",
       "dedup": {
         "class": "partly-in-db",
         "owner": "dne_facts economic-survey-gva-current (FY2081/82 annex 13.1, promoted)"
@@ -18802,9 +18802,9 @@
         "has_total_keyword": true,
         "coarse_run": false
       },
-      "status": "scoped",
-      "reconciliation_result": null,
-      "artifact_path": null,
+      "status": "recovered",
+      "reconciliation_result": "reconciled (worst residual 0.2)",
+      "artifact_path": "_ai_pass/recovered/P2_309ffe7c_p0477",
       "dedup": {
         "class": "partly-in-db",
         "owner": "dne_facts economic-survey-gva-current (FY2081/82 annex 13.1, promoted)"
@@ -36477,14 +36477,14 @@
       "category": "redbook",
       "tier_code": "P4",
       "page_start": 32,
-      "page_end": 301,
-      "n_pages": 270,
+      "page_end": 383,
+      "n_pages": 352,
       "table_hint": "(untitled table)",
       "titled": false,
       "anchors": [],
       "unit_hint": "thousand",
       "signals": {
-        "numeric_lines": 57009,
+        "numeric_lines": 74420,
         "max_numeric_on_page": 242,
         "has_total_keyword": true,
         "coarse_run": true

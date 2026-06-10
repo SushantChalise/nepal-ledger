@@ -1,6 +1,6 @@
 # Master Recovery Ledger — Overnight AI-pass worklist
 
-> Generated: `2026-06-10T19:06:46+00:00` · Generator: `scrapers/surya_ocr/_ai_pass/locate_tables.py`  
+> Generated: `2026-06-10T19:26:39+00:00` · Generator: `scrapers/surya_ocr/_ai_pass/locate_tables.py`  
 > Plan: `docs/OVERNIGHT_AI_PASS_PLAN.md` · Dedup baseline: docs/DATA_AUDIT.md (2026-06-08 + 2026-06-10 GVA) + \_ai_pass artifacts  
 > Status flow: `pending -> scoped -> {recovered|quarantined|needs-decision} -> staged -> [promoted-by-human]`
 
@@ -8,13 +8,13 @@
 
 ## OCR state
 
-- Corpus OCR: **11,443 / 13,297 pages** — ⏳ **IN PROGRESS** (re-run the locator after it finishes to pick up new pages)
+- Corpus OCR: **11,525 / 13,297 pages** — ⏳ **IN PROGRESS** (re-run the locator after it finishes to pick up new pages)
 - Pending OCR (0 pages yet, no candidates until done): `P4__-__2qteqov_0b52daa4`, `P4__-__6d7mimy_6227f9c7`, `P5__207576_ce72ae7e`
 - Partial OCR (scanned so far): `P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba`
 
 ## Summary
 
-- Documents: **50** · Table candidates: **1350** (**1342** pending)
+- Documents: **50** · Table candidates: **1350** (**1339** pending)
 - By dedup class:
   - `partly-in-db`: 828
   - `new`: 491
@@ -75,7 +75,7 @@ Dedup classes: `new` = not in DB → recover · `partly-in-db` = some FYs/measur
 | P3   | `P3__-__31acuu6_cbd219c0`                                       | complete |   41/41 |     41 |    1 | owned-deterministic | mof_whitebook (Tier-1a, deterministic)                                 |
 | P4   | `P4__-__2qteqov_0b52daa4`                                       | pending  |   0/746 |      0 |    0 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
 | P4   | `P4__-__6d7mimy_6227f9c7`                                       | pending  |   0/717 |      0 |    0 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
-| P4   | `P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba`  | partial  | 302/652 |    294 |    6 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
+| P4   | `P4__Red_Book_Central_2074-75_20170530083940_00lqgwe_830109ba`  | partial  | 384/652 |    376 |    6 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
 | P4   | `P4__RB_2070-71_20140722052750_d5gsbhl_290b1533`                | complete | 634/634 |    624 |   10 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
 | P4   | `P4__20190603123023_4qfchpf_577867e3`                           | complete | 629/629 |    618 |   13 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
 | P4   | `P4__-__l24f95n_0d1e9134`                                       | complete | 597/597 |    587 |   12 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
@@ -95,47 +95,47 @@ Dedup classes: `new` = not in DB → recover · `partly-in-db` = some FYs/measur
 | P4   | `P4__Budget_Details_-_Red_Book_2062_-_2063_2013071712_350d64d2` | complete | 101/101 |    100 |    2 | partly-in-db        | dne_facts budget-allocation (1 FY: 2074/75, 57 heads)                  |
 | P5   | `P5__207576_ce72ae7e`                                           | pending  |    0/41 |      0 |    0 | needs-decision      | local_government_fiscal_transfers (5 FYs: 2078/79-2082/83)             |
 
-## Next up — top 30 of 1342 pending (value order)
+## Next up — top 30 of 1339 pending (value order)
 
-|   # | id                  | tier | doc                    | page(s) | unit  | num-lines | coarse | dedup          | hint                                                         |
-| --: | ------------------- | ---- | ---------------------- | ------- | ----- | --------: | :----: | -------------- | ------------------------------------------------------------ |
-|   1 | `P0_33e35121_p0010` | P0   | `P0__207778_33e35121`  | 10–41   | lakh  |      4941 |        | needs-decision | p10 (untitled table)                                         |
-|   2 | `P0_1d6841fe_p0071` | P0   | `P0__ksi3tbe_1d6841fe` | 71–77   | lakh  |       995 |        | new            | p71 (untitled table)                                         |
-|   3 | `P0_1d6841fe_p0345` | P0   | `P0__ksi3tbe_1d6841fe` | 345–364 | lakh  |       661 |        | new            | ७.१ नेपाल सरकार वा नेपाल सरकारको स्वामित्वमा रहेका संस्थानहर |
-|   4 | `P0_1d6841fe_p0256` | P0   | `P0__ksi3tbe_1d6841fe` | 256–266 | lakh  |       576 |        | new            | p256 (untitled table)                                        |
-|   5 | `P0_1d6841fe_p0302` | P0   | `P0__ksi3tbe_1d6841fe` | 302–307 | lakh  |       448 |        | new            | p302 (untitled table)                                        |
-|   6 | `P0_1d6841fe_p0087` | P0   | `P0__ksi3tbe_1d6841fe` | 87–88   | lakh  |       415 |        | new            | ५.११ - सार्वजनिक संस्थानको प्रशासनिक खर्च (कर्मचारी खर्चसहित |
-|   7 | `P0_1d6841fe_p0337` | P0   | `P0__ksi3tbe_1d6841fe` | 337–342 | lakh  |       395 |        | new            | p337 (untitled table)                                        |
-|   8 | `P0_1d6841fe_p0117` | P0   | `P0__ksi3tbe_1d6841fe` | 117–121 | lakh  |       343 |        | new            | p117 (untitled table)                                        |
-|   9 | `P0_1d6841fe_p0136` | P0   | `P0__ksi3tbe_1d6841fe` | 136–144 | lakh  |       326 |        | new            | p136 (untitled table)                                        |
-|  10 | `P0_1d6841fe_p0168` | P0   | `P0__ksi3tbe_1d6841fe` | 168–171 | lakh  |       316 |        | new            | p168 (untitled table)                                        |
-|  11 | `P0_1d6841fe_p0250` | P0   | `P0__ksi3tbe_1d6841fe` | 250–253 | crore |       288 |        | new            | p250 (untitled table)                                        |
-|  12 | `P0_1d6841fe_p0323` | P0   | `P0__ksi3tbe_1d6841fe` | 323–325 | ?     |       238 |        | new            | p323 (untitled table)                                        |
-|  13 | `P0_1d6841fe_p0083` | P0   | `P0__ksi3tbe_1d6841fe` | 83–84   | lakh  |       232 |        | new            | ५.९ - सार्वजनिक संस्थानको कुल सञ्चालन/बिक्री आय              |
-|  14 | `P0_1d6841fe_p0394` | P0   | `P0__ksi3tbe_1d6841fe` | 394     | ?     |       232 |        | new            | अनुसूची ४                                                    |
-|  15 | `P0_1d6841fe_p0395` | P0   | `P0__ksi3tbe_1d6841fe` | 395     | lakh  |       222 |        | new            | अनुसूची ४ वाट                                                |
-|  16 | `P0_1d6841fe_p0282` | P0   | `P0__ksi3tbe_1d6841fe` | 282–284 | ?     |       218 |        | new            | p282 (untitled table)                                        |
-|  17 | `P0_1d6841fe_p0161` | P0   | `P0__ksi3tbe_1d6841fe` | 161–163 | lakh  |       215 |        | new            | p161 (untitled table)                                        |
-|  18 | `P0_1d6841fe_p0393` | P0   | `P0__ksi3tbe_1d6841fe` | 393     | ?     |       215 |        | new            | अनुसूची ४ बाट                                                |
-|  19 | `P0_1d6841fe_p0185` | P0   | `P0__ksi3tbe_1d6841fe` | 185–188 | lakh  |       209 |        | new            | p185 (untitled table)                                        |
-|  20 | `P0_1d6841fe_p0367` | P0   | `P0__ksi3tbe_1d6841fe` | 367–376 | lakh  |       208 |        | new            | p367 (untitled table)                                        |
-|  21 | `P0_1d6841fe_p0085` | P0   | `P0__ksi3tbe_1d6841fe` | 85–86   | lakh  |       203 |        | new            | ५.१० - सार्वजनिक संस्थानको खुद नाफा/नोक्सान                  |
-|  22 | `P0_1d6841fe_p0111` | P0   | `P0__ksi3tbe_1d6841fe` | 111–113 | lakh  |       191 |        | new            | p111 (untitled table)                                        |
-|  23 | `P0_1d6841fe_p0173` | P0   | `P0__ksi3tbe_1d6841fe` | 173–176 | lakh  |       189 |        | new            | p173 (untitled table)                                        |
-|  24 | `P0_1d6841fe_p0203` | P0   | `P0__ksi3tbe_1d6841fe` | 203–204 | ?     |       178 |        | new            | p203 (untitled table)                                        |
-|  25 | `P0_1d6841fe_p0094` | P0   | `P0__ksi3tbe_1d6841fe` | 94–95   | lakh  |       171 |        | new            | ५.१५ - सार्वजनिक संस्थानको सञ्चित नाफा तथा नोक्सान रकमको विव |
-|  26 | `P0_1d6841fe_p0330` | P0   | `P0__ksi3tbe_1d6841fe` | 330–332 | ?     |       171 |        | new            | p330 (untitled table)                                        |
-|  27 | `P0_1d6841fe_p0024` | P0   | `P0__ksi3tbe_1d6841fe` | 24–25   | lakh  |       166 |        | new            | तालिका १.३                                                   |
-|  28 | `P0_1d6841fe_p0004` | P0   | `P0__ksi3tbe_1d6841fe` | 4–8     | ?     |       163 |        | new            | तालिका सूची                                                  |
-|  29 | `P0_1d6841fe_p0180` | P0   | `P0__ksi3tbe_1d6841fe` | 180–183 | lakh  |       164 |        | new            | p180 (untitled table)                                        |
-|  30 | `P0_1d6841fe_p0289` | P0   | `P0__ksi3tbe_1d6841fe` | 289–290 | ?     |       162 |        | new            | p289 (untitled table)                                        |
+|   # | id                  | tier | doc                    | page(s) | unit  | num-lines | coarse | dedup | hint                                                         |
+| --: | ------------------- | ---- | ---------------------- | ------- | ----- | --------: | :----: | ----- | ------------------------------------------------------------ |
+|   1 | `P0_1d6841fe_p0071` | P0   | `P0__ksi3tbe_1d6841fe` | 71–77   | lakh  |       995 |        | new   | p71 (untitled table)                                         |
+|   2 | `P0_1d6841fe_p0345` | P0   | `P0__ksi3tbe_1d6841fe` | 345–364 | lakh  |       661 |        | new   | ७.१ नेपाल सरकार वा नेपाल सरकारको स्वामित्वमा रहेका संस्थानहर |
+|   3 | `P0_1d6841fe_p0256` | P0   | `P0__ksi3tbe_1d6841fe` | 256–266 | lakh  |       576 |        | new   | p256 (untitled table)                                        |
+|   4 | `P0_1d6841fe_p0302` | P0   | `P0__ksi3tbe_1d6841fe` | 302–307 | lakh  |       448 |        | new   | p302 (untitled table)                                        |
+|   5 | `P0_1d6841fe_p0087` | P0   | `P0__ksi3tbe_1d6841fe` | 87–88   | lakh  |       415 |        | new   | ५.११ - सार्वजनिक संस्थानको प्रशासनिक खर्च (कर्मचारी खर्चसहित |
+|   6 | `P0_1d6841fe_p0337` | P0   | `P0__ksi3tbe_1d6841fe` | 337–342 | lakh  |       395 |        | new   | p337 (untitled table)                                        |
+|   7 | `P0_1d6841fe_p0117` | P0   | `P0__ksi3tbe_1d6841fe` | 117–121 | lakh  |       343 |        | new   | p117 (untitled table)                                        |
+|   8 | `P0_1d6841fe_p0136` | P0   | `P0__ksi3tbe_1d6841fe` | 136–144 | lakh  |       326 |        | new   | p136 (untitled table)                                        |
+|   9 | `P0_1d6841fe_p0168` | P0   | `P0__ksi3tbe_1d6841fe` | 168–171 | lakh  |       316 |        | new   | p168 (untitled table)                                        |
+|  10 | `P0_1d6841fe_p0250` | P0   | `P0__ksi3tbe_1d6841fe` | 250–253 | crore |       288 |        | new   | p250 (untitled table)                                        |
+|  11 | `P0_1d6841fe_p0323` | P0   | `P0__ksi3tbe_1d6841fe` | 323–325 | ?     |       238 |        | new   | p323 (untitled table)                                        |
+|  12 | `P0_1d6841fe_p0083` | P0   | `P0__ksi3tbe_1d6841fe` | 83–84   | lakh  |       232 |        | new   | ५.९ - सार्वजनिक संस्थानको कुल सञ्चालन/बिक्री आय              |
+|  13 | `P0_1d6841fe_p0394` | P0   | `P0__ksi3tbe_1d6841fe` | 394     | ?     |       232 |        | new   | अनुसूची ४                                                    |
+|  14 | `P0_1d6841fe_p0395` | P0   | `P0__ksi3tbe_1d6841fe` | 395     | lakh  |       222 |        | new   | अनुसूची ४ वाट                                                |
+|  15 | `P0_1d6841fe_p0282` | P0   | `P0__ksi3tbe_1d6841fe` | 282–284 | ?     |       218 |        | new   | p282 (untitled table)                                        |
+|  16 | `P0_1d6841fe_p0161` | P0   | `P0__ksi3tbe_1d6841fe` | 161–163 | lakh  |       215 |        | new   | p161 (untitled table)                                        |
+|  17 | `P0_1d6841fe_p0393` | P0   | `P0__ksi3tbe_1d6841fe` | 393     | ?     |       215 |        | new   | अनुसूची ४ बाट                                                |
+|  18 | `P0_1d6841fe_p0185` | P0   | `P0__ksi3tbe_1d6841fe` | 185–188 | lakh  |       209 |        | new   | p185 (untitled table)                                        |
+|  19 | `P0_1d6841fe_p0367` | P0   | `P0__ksi3tbe_1d6841fe` | 367–376 | lakh  |       208 |        | new   | p367 (untitled table)                                        |
+|  20 | `P0_1d6841fe_p0085` | P0   | `P0__ksi3tbe_1d6841fe` | 85–86   | lakh  |       203 |        | new   | ५.१० - सार्वजनिक संस्थानको खुद नाफा/नोक्सान                  |
+|  21 | `P0_1d6841fe_p0111` | P0   | `P0__ksi3tbe_1d6841fe` | 111–113 | lakh  |       191 |        | new   | p111 (untitled table)                                        |
+|  22 | `P0_1d6841fe_p0173` | P0   | `P0__ksi3tbe_1d6841fe` | 173–176 | lakh  |       189 |        | new   | p173 (untitled table)                                        |
+|  23 | `P0_1d6841fe_p0203` | P0   | `P0__ksi3tbe_1d6841fe` | 203–204 | ?     |       178 |        | new   | p203 (untitled table)                                        |
+|  24 | `P0_1d6841fe_p0094` | P0   | `P0__ksi3tbe_1d6841fe` | 94–95   | lakh  |       171 |        | new   | ५.१५ - सार्वजनिक संस्थानको सञ्चित नाफा तथा नोक्सान रकमको विव |
+|  25 | `P0_1d6841fe_p0330` | P0   | `P0__ksi3tbe_1d6841fe` | 330–332 | ?     |       171 |        | new   | p330 (untitled table)                                        |
+|  26 | `P0_1d6841fe_p0024` | P0   | `P0__ksi3tbe_1d6841fe` | 24–25   | lakh  |       166 |        | new   | तालिका १.३                                                   |
+|  27 | `P0_1d6841fe_p0004` | P0   | `P0__ksi3tbe_1d6841fe` | 4–8     | ?     |       163 |        | new   | तालिका सूची                                                  |
+|  28 | `P0_1d6841fe_p0180` | P0   | `P0__ksi3tbe_1d6841fe` | 180–183 | lakh  |       164 |        | new   | p180 (untitled table)                                        |
+|  29 | `P0_1d6841fe_p0289` | P0   | `P0__ksi3tbe_1d6841fe` | 289–290 | ?     |       162 |        | new   | p289 (untitled table)                                        |
+|  30 | `P0_1d6841fe_p0090` | P0   | `P0__ksi3tbe_1d6841fe` | 90–91   | lakh  |       160 |        | new   | ५.१३ - नेपाल सरकारको शेयर लगानीमा देखिएको फरक रकम            |
 
 ## Remaining pending by tier
 
 | Tier | Pending candidates | Σ num-lines |
 | ---- | -----------------: | ----------: |
-| P0   |                111 |      18,337 |
+| P0   |                108 |      13,151 |
 | P1   |                387 |      44,706 |
 | P2   |                674 |     101,168 |
 | P3   |                 22 |     126,325 |
-| P4   |                148 |   1,436,499 |
+| P4   |                148 |   1,453,910 |
