@@ -1,0 +1,67 @@
+{
+  "doc": "1653757638_सार्वजनिक संस्थानको वार्षिक स्थिति समीक्षा २०७९_ab0trdn.pdf",
+  "tables_found": 10,
+  "fully_reconcile": 6,
+  "tables": [
+    {
+      "page": 29,
+      "reconciles": true,
+      "worst_residual": 1,
+      "fiscal_years": ["2075/76", "2076/77", "2077/78"]
+    },
+    {
+      "page": 31,
+      "reconciles": true,
+      "worst_residual": 0,
+      "fiscal_years": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"]
+    },
+    {
+      "page": 53,
+      "reconciles": true,
+      "worst_residual": 1,
+      "fiscal_years": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"]
+    },
+    {
+      "page": 54,
+      "reconciles": true,
+      "worst_residual": 1,
+      "fiscal_years": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"]
+    },
+    {
+      "page": 55,
+      "reconciles": true,
+      "worst_residual": 1,
+      "fiscal_years": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"]
+    },
+    {
+      "page": 56,
+      "reconciles": false,
+      "worst_residual": 83408,
+      "fiscal_years": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"]
+    },
+    {
+      "page": 57,
+      "reconciles": false,
+      "worst_residual": 435732,
+      "fiscal_years": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"]
+    },
+    {
+      "page": 60,
+      "reconciles": false,
+      "worst_residual": 194782,
+      "fiscal_years": ["2073/74", "2074/75", "2075/76", "2076/77", "2076/77"]
+    },
+    {
+      "page": 61,
+      "reconciles": false,
+      "worst_residual": 6726,
+      "fiscal_years": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"]
+    },
+    {
+      "page": 62,
+      "reconciles": true,
+      "worst_residual": 0,
+      "fiscal_years": ["2073/74", "2074/75", "2075/76", "2076/77", "2077/78"]
+    }
+  ]
+}
