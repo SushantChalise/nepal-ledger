@@ -11,6 +11,11 @@
  * npr_million; reporting_period_type is annual; fiscal year is BS 2079/80
  * (AD 2022/23) for the bundled FY 2022/23 publication.
  *
+ * The parser (v0.2.0) auto-detects the fiscal year from "FY YYYY/YY" in the
+ * Executive Summary prose, so no --period flag is needed — the correct BS
+ * period is stamped on every staging row regardless of which edition PDF is
+ * provided (FY 2018/19 through FY 2023/24 all work).
+ *
  * Pipeline (via ingestSource() orchestrator):
  *   1. Read the PDF from disk
  *   2. Archive to Supabase Storage (content-addressed; idempotent)
@@ -26,6 +31,7 @@
  * Usage:
  *   pnpm ingest:fcgo-cfs
  *   pnpm ingest:fcgo-cfs --dry-run
+ *   pnpm ingest:fcgo-cfs --input "Financial Data/fcgo_consolidated/FCGO_CFS_2023-24.pdf"
  *   pnpm ingest:fcgo-cfs --input "Financial Data/fcgo_consolidated/FCGO_CFS_2022-23.pdf"
  *   pnpm ingest:fcgo-cfs --source-id fcgo-consolidated-financial-statements
  *
@@ -195,7 +201,7 @@ async function main(): Promise<void> {
     fileName: basename(args.inputPath),
     contentType: 'application/pdf',
     parserPath: PARSER_PATH,
-    reportingPeriodLabel: 'FY 2079/80',
+    // reportingPeriodLabel omitted: parser v0.2.0 auto-detects FY from prose.
     parserTimeoutMs: 120_000,
   });
 

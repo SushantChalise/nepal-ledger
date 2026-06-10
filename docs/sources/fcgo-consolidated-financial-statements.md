@@ -1,10 +1,10 @@
 # Source: Financial Comptroller General Office — Consolidated Financial Statements
 
 **source_id:** `fcgo-consolidated-financial-statements`
-**Status:** Active (parser v0.1.0 — 6 headline aggregates extract from FY 2022/23 PDF)
+**Status:** Active (parser v0.2.0 — FY auto-detection; 6 headline aggregates; FY 2018/19 → 2023/24 available)
 **Tier:** Tier 1
 **Registered at:** 2026-06-07
-**Last verified:** 2026-06-07 (parser built + run against FY 2022/23 CFS PDF)
+**Last verified:** 2026-06-11 (fcgo.gov.np; FY 2023/24 now available; no monthly CFS found at fcgo.gov.np)
 
 ## What this is
 
@@ -77,11 +77,39 @@ a corrected edition, it appears as a new file at the same category URL.
 ## Parser
 
 - Path: `scrapers/fcgo_consolidated/parser.py` (underscore dir — Python-importable; the on-disk folder is NOT the hyphenated profile name)
-- Version: 0.1.0
-- Owner: Mother Opus (built by Sonnet worker W2, 2026-06-07)
+- Version: 0.2.0 (2026-06-11 — FY auto-detection via `FY YYYY/YY` regex; publication date derived from `ad_fy_start + 2`; no hardcoded FY constant)
+- Owner: Mother Opus (built by Sonnet worker W2, 2026-06-07; upgraded v0.2.0 2026-06-11)
 - Unit: `npr_million`; reporting period: `annual`; confidence: `A`
-- Tested against: `Financial Data/fcgo_consolidated/FCGO_CFS_2022-23.pdf` (FY 2022/23, 325 pp) + synthesized text fixtures in `scrapers/fcgo_consolidated/tests/`
-- Period mapping: AD fiscal year → BS via +57 on the lead year (ADR-0013); FY 2022/23 → BS 2079/80
+- Tested against: `Financial Data/fcgo_consolidated/FCGO_CFS_2022-23.pdf` (FY 2022/23, 325 pp) + synthesized text fixtures in `scrapers/fcgo_consolidated/tests/`; FY 2023/24 variant tested via fixture
+- Period mapping: AD fiscal year → BS via +57 on the lead year (ADR-0013); FY 2022/23 → BS 2079/80; FY 2023/24 → BS 2080/81
+
+## Availability
+
+English CFS editions at https://fcgo.gov.np/category/consolidated-us (verified 2026-06-11):
+
+| AD FY   | BS FY   | Available |
+|---------|---------|-----------|
+| 2018/19 | 2075/76 | Yes       |
+| 2019/20 | 2076/77 | Yes       |
+| 2020/21 | 2077/78 | Yes       |
+| 2021/22 | 2078/79 | Yes       |
+| 2022/23 | 2079/80 | Yes       |
+| 2023/24 | 2080/81 | Yes (newest; not yet ingested as of 2026-06-11) |
+
+## Cross-validation
+
+**NRB CMEFs alignment:** NRB sources its government-finance indicators from FCGO/MoF. CMEFs
+Table 9 "Government Finance" rows for FY 2079/80 should align within rounding with the FCGO CFS
+totals. The FY 2022/23 FCGO total revenue outturn (NPR 1,506,321.46 million) is consistent with
+NRB CMEFs government revenue for the same period. Expect ≤1% variance due to CMEFs rounding to
+the nearest NPR million versus FCGO's two decimal precision.
+
+**Red Book estimate vs. outturn:** The MoF Red Book publishes revenue and expenditure *estimates*
+at the start of each fiscal year. The FCGO CFS outturn figure minus the Red Book estimate gives
+the estimate-vs-actual variance — itself a valuable signal for fiscal credibility tracking.
+When both sources are ingested, compute:
+  `estimate_variance_pct = (fcgo_outturn - redbook_estimate) / redbook_estimate * 100`
+Nepal typically undershoots capital expenditure estimates by 20–40%.
 
 ## Archive policy
 
