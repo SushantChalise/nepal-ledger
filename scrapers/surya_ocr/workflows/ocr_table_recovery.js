@@ -37,7 +37,12 @@ export const meta = {
     {
       title: 'Verify columns',
       detail:
-        'one bounded agent per column: exact render recipe, ≤2 attempts, reconciliation-gated',
+        'one bounded agent per column: exact render recipe, ≤3 attempts w/ residual-localization, reconciliation-gated',
+    },
+    {
+      title: 'Cross-column repair',
+      detail:
+        'solve stubborn cells from reconciled siblings (Σ parts = aggregate), then render-confirm',
     },
     {
       title: 'Reconcile + gate',
@@ -57,6 +62,7 @@ const SCOPE_SCHEMA = {
     'columns',
     'rows',
     'total_row_idx',
+    'cross_groups',
     'y_top_px',
     'y_bottom_px',
     'unit',
@@ -107,6 +113,28 @@ const SCOPE_SCHEMA = {
     total_row_idx: {
       type: 'number',
       description: 'row idx whose value each column must reconcile to (Σ components)',
+    },
+    cross_groups: {
+      type: 'array',
+      description:
+        'cross-column identities for repair: each group is a set of part columns that sum to an aggregate column (e.g. the 7 province columns sum to the Nepal column, for each FY). [] if the table has no such structure.',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['label', 'aggregate_col', 'part_cols'],
+        properties: {
+          label: { type: 'string' },
+          aggregate_col: {
+            type: 'number',
+            description: 'col idx of the aggregate (e.g. Nepal 2081/82)',
+          },
+          part_cols: {
+            type: 'array',
+            items: { type: 'number' },
+            description: 'col idxs that sum to it',
+          },
+        },
+      },
     },
     y_top_px: { type: 'number' },
     y_bottom_px: { type: 'number' },
@@ -183,6 +211,7 @@ function scopePrompt(a) {
     `Find the table matching: "${a.table_hint}".`,
     `Return its structure: the column list with each column's pixel x-range (x0_px,x1_px from the cell bboxes), the row list (idx,label,is_total) top-to-bottom, the total_row_idx the components must sum to, y_top_px/y_bottom_px spanning the data rows, and the printed UNIT (read the header — never assume).`,
     `State reconciles_how: the exact reconciliation identities (e.g. "sum(rows 0..N)=total_row per column", "sum(cols 0..M)=last col per row").`,
+    `Also return cross_groups: the CROSS-COLUMN identities (sets of part columns that sum to an aggregate column), as {label, aggregate_col, part_cols[]}. E.g. for a provincial table, one group per fiscal year: aggregate_col = the Nepal/national column for that FY, part_cols = the 7 province columns for that FY. Return [] if the table has no such cross-column structure. These power the repair stage.`,
     `CRITICAL: if the table has NO printed total / no reconciliation key, set found=false and reconciles_how=[] — do NOT invent one. A table we cannot reconcile must not be recovered.`,
   ].join('\n');
 }
@@ -201,6 +230,22 @@ function columnPrompt(scope, col, a) {
     `4) If it does NOT reconcile, the residual LOCALIZES the misread: a residual of ±N means one cell is ~N off (or two cells). Re-render the suspect row(s) at HIGHER zoom and re-read — escalate across attempts: Matrix(12,12), then Matrix(16,16) on the narrowest crop around the suspect cells. HARD CAP: 3 render attempts total. Common OCR confusions to check at high zoom: ५/8↔८/5, ९/9↔१/1, ०/0↔६/6.`,
     `5) If still not reconciling after 3 attempts, set reconciles=false and put the ambiguous row_idx(s) in quarantined — do NOT guess a digit to force it.`,
     `Return the column values (every row_idx), reconciles, residual (Σcomponents − total), attempts, quarantined. Never invent a digit the image does not show.`,
+  ].join('\n');
+}
+
+function repairPrompt(scope, col, suspects, allValues, a) {
+  const nRows = scope.rows.length;
+  const lines = suspects.map(
+    (s) =>
+      `  row ${s.row_idx}: OCR read = ${s.read}; cross-column identity implies ≈ ${s.implied != null ? s.implied : '(ambiguous — 2+ unverified cells in this row; read carefully)'}`,
+  );
+  return [
+    `CROSS-COLUMN REPAIR of ONE column (idx ${col.idx}, "${col.label}"). Return col_idx=${col.idx}. ${ENV}`,
+    `This column failed per-column reconciliation. The reconciliation LATTICE (Σ across the sibling columns = the aggregate) localized the suspect cell(s):`,
+    ...lines,
+    `For EACH suspect row: render JUST that cell at high zoom and READ the printed Devanagari digits. The "implies ≈" value is ONLY a hint for where to look and what to expect — the PRINTED PAGE is the sole truth. If the print clearly shows the implied value, great (the lattice was right); if it shows something else, use what's printed.`,
+    `Render recipe (compute each suspect row's y): rowY = ${scope.y_top_px} + row_idx*(${scope.y_bottom_px}-${scope.y_top_px})/${nRows}; write+run a python file: import fitz; p=fitz.open(r"${a.pdf_path}")[${a.page_index}]; pix=p.get_pixmap(matrix=fitz.Matrix(18,18), clip=fitz.Rect(${col.x0_px}/3-3, rowY/3-2, ${col.x1_px}/3+3, rowY/3+7)); pix.save(...); then Read it.`,
+    `Return the FULL column (all ${nRows} row_idx values: your render-confirmed corrections for the suspect rows + these unchanged OCR values for the rest: ${JSON.stringify(allValues)}), set reconciles = (does Σ of the component rows now equal row ${scope.total_row_idx} within ±3?), residual, attempts, and quarantined (any row still illegible — never guess).`,
   ].join('\n');
 }
 
@@ -268,7 +313,7 @@ const colResults = (
           schema: COLUMN_SCHEMA,
           label: `col:${col.idx}`,
           phase: 'Verify columns',
-          model: 'opus', // accuracy-critical visual digit-reading — strongest reader maximizes yield
+          model: a.column_model || 'opus', // accuracy-critical visual reading; override via args.column_model
         }),
     ),
   )
@@ -285,8 +330,72 @@ if (Array.isArray(a.only_columns) && a.only_columns.length) {
   return { status: 'partial-rerun', reran: a.only_columns, columns: colResults };
 }
 
+// ---------- Cross-column repair: solve stubborn cells from reconciled siblings, then render-confirm ----------
+phase('Cross-column repair');
+const reconciledIdx = new Set(colResults.filter((c) => c.reconciles).map((c) => c.col_idx));
+const colByIdx = Object.fromEntries(colResults.map((c) => [c.col_idx, c]));
+const valAt = (ci, r) => {
+  const c = colByIdx[ci];
+  const v = c && c.values.find((x) => x.row_idx === r);
+  return v ? v.value : null;
+};
+// A suspect = a cell in a NON-reconciled column whose row's cross-column identity (Σ parts = aggregate) is broken.
+const suspectsByCol = {};
+for (const g of scope.cross_groups || []) {
+  if (!reconciledIdx.has(g.aggregate_col)) continue; // need a trusted aggregate to solve against
+  for (const aggCell of colByIdx[g.aggregate_col].values) {
+    const r = aggCell.row_idx;
+    const sum = g.part_cols.reduce((s, pc) => s + (valAt(pc, r) || 0), 0);
+    const resid = sum - aggCell.value;
+    if (Math.abs(resid) <= 3) continue; // this row already cross-reconciles
+    const badParts = g.part_cols.filter((pc) => !reconciledIdx.has(pc));
+    for (const pc of badParts) {
+      const implied = badParts.length === 1 ? valAt(pc, r) - resid : null; // unique solve only when 1 bad part in the row
+      (suspectsByCol[pc] = suspectsByCol[pc] || []).push({
+        row_idx: r,
+        read: valAt(pc, r),
+        implied,
+      });
+    }
+  }
+}
+const repairTargets = Object.keys(suspectsByCol).map(Number);
+const suspectCount = Object.values(suspectsByCol).reduce((s, arr) => s + arr.length, 0);
+log(
+  `Cross-column repair: ${repairTargets.length} columns, ${suspectCount} suspect cells localized by the lattice.`,
+);
+if (repairTargets.length) {
+  const repaired = (
+    await parallel(
+      repairTargets.map(
+        (ci) => () =>
+          agent(
+            repairPrompt(
+              scope,
+              scope.columns.find((sc) => sc.idx === ci), // scope column carries the geometry (x0_px/x1_px/label)
+              suspectsByCol[ci],
+              colByIdx[ci].values,
+              a,
+            ),
+            {
+              schema: COLUMN_SCHEMA,
+              label: `repair:${ci}`,
+              phase: 'Cross-column repair',
+              model: 'opus',
+            },
+          ),
+      ),
+    )
+  ).filter(Boolean);
+  for (const rc of repaired) colByIdx[rc.col_idx] = rc; // merge render-confirmed columns back
+}
+const finalCols = colResults.map((c) => colByIdx[c.col_idx]);
+log(
+  `After repair: ${finalCols.filter((c) => c.reconciles).length}/${finalCols.length} columns reconcile.`,
+);
+
 phase('Reconcile + gate');
-const gate = await agent(gatePrompt(scope, colResults, a), { schema: GATE_SCHEMA, label: 'gate' });
+const gate = await agent(gatePrompt(scope, finalCols, a), { schema: GATE_SCHEMA, label: 'gate' });
 log(
   `GATE → reconciles=${gate.matrix_reconciles} worst_residual=${gate.worst_residual} accepted=${gate.accepted_count} quarantined=${gate.quarantined_count}`,
 );
@@ -294,4 +403,4 @@ if (gate.cross_source) log(`Cross-source: ${gate.cross_source}`);
 if (gate.structural_decision_needed)
   log(`⚠ ESCALATE to user before promotion: ${gate.structural_decision_needed}`);
 
-return { status: 'done', scope, columns: colResults, gate };
+return { status: 'done', scope, columns: finalCols, gate };
