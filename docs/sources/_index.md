@@ -6,7 +6,7 @@ Generated from `scripts/seed-source-registry.ts` (the canonical seed).
 For schema + workflow, see [`../SOURCE_REGISTRY.md`](../SOURCE_REGISTRY.md).
 For the lifetime contract, see [ADR-0009](../decisions/0009-source-registry-single-source-of-truth.md).
 
-Total registered sources: 70
+Total registered sources: 71
 
 | Tier | Source ID | Agency | Dataset | Frequency | Mode | Status |
 |---|---|---|---|---|---|---|
@@ -21,6 +21,7 @@ Total registered sources: 70
 | Tier 1 | [nepse-eod](nepse-eod.md) | NEPSE | End-of-day quotes + market cap by stock | daily | automated_cron | paused |
 | Tier 1 | [noc-petroleum-monthly](noc-petroleum-monthly.md) | NOC | Petroleum imports + price-revision notices | monthly | manual_upload | paused |
 | Tier 1 | [nrb-bfi-monthly-xlsx](nrb-bfi-monthly-xlsx.md) | NRB | Banking & Financial Statistics — Monthly (BFI XLSX) | monthly | manual_upload | active |
+| Tier 1 | [nrb-bop](nrb-bop.md) | NRB | Balance of Payments — Historical Back-Series (BPM5) | annual | manual_upload | active |
 | Tier 1 | [nrb-db-external-sector](nrb-db-external-sector.md) | NRB | Database on Nepalese Economy — External Sector (BoP, Forex, Trade, Remittance, Tourism) | monthly | manual_upload | paused |
 | Tier 1 | [nrb-db-fiscal-sector](nrb-db-fiscal-sector.md) | NRB | Database on Nepalese Economy — Fiscal Sector (Government Revenue, Expenditure, Debt) | monthly | manual_upload | paused |
 | Tier 1 | [nrb-dne-xlsx](nrb-dne-xlsx.md) | NRB | Database on Nepalese Economy — structured time-series XLSX (all sectors) | monthly | manual_upload | active |
