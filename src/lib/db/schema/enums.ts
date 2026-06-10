@@ -217,3 +217,78 @@ export const stitchResolutionEnum = pgEnum('stitch_resolution', [
   'flagged_for_review',
 ]);
 export type StitchResolution = (typeof stitchResolutionEnum.enumValues)[number];
+
+// ─── Added in migration 0006 — government audit fact domain (ADR-0024) ──
+
+/**
+ * The class of audited subject the OAG report covers. Despite the "tier"
+ * intuition, these are subject CLASSES, not only government tiers —
+ * corporations, constitutional bodies, and committees/boards are audited
+ * alongside the three government tiers. Extending this set = future ADR.
+ */
+export const auditSubjectClassEnum = pgEnum('audit_subject_class', [
+  'federal_government',
+  'provincial_government',
+  'local_government',
+  'public_corporation',
+  'constitutional_body',
+  'committee_board_authority',
+  'other_institution',
+]);
+export type AuditSubjectClass = (typeof auditSubjectClassEnum.enumValues)[number];
+
+/**
+ * OAG's classification of an irregularity (beruju). Canonical Nepali audit
+ * taxonomy; `other` is the escape hatch for labels not yet mapped (the exact
+ * source label is preserved in `beruju_category_label_raw`). Extending = ADR.
+ */
+export const berujuCategoryEnum = pgEnum('beruju_category', [
+  'recoverable', // असुल उपर गर्नुपर्ने (incl. embezzlement, loss/damage)
+  'irregular', // अनियमित (to-regularize: irregular)
+  'evidence_not_submitted', // प्रमाण कागजात पेश नभएको
+  'advance_outstanding', // पेश्की बाँकी (peski)
+  'revenue_arrears', // राजस्व / धरौटी बक्यौता
+  'responsibility_not_transferred', // जिम्मेवारी नसारिएको
+  'other',
+]);
+export type BerujuCategory = (typeof berujuCategoryEnum.enumValues)[number];
+
+/**
+ * WHICH amount a beruju line/finding describes. A single category can recur
+ * across bases — e.g. an entity's `recoverable` beruju has a current-year
+ * raised amount, a settled amount, and a cumulative-outstanding amount.
+ */
+export const auditAmountBasisEnum = pgEnum('audit_amount_basis', [
+  'current_year_raised', // यो वर्ष कायम
+  'settled_this_year', // फर्स्यौट / सम्परीक्षण
+  'cumulative_outstanding', // अद्यावधिक बाँकी
+  'opening_outstanding', // गत वर्षसम्मको बाँकी
+  'adjustment', // समायोजन / पुनर्वर्गीकरण
+  'other',
+]);
+export type AuditAmountBasis = (typeof auditAmountBasisEnum.enumValues)[number];
+
+/**
+ * How a fact row's values were extracted from the source PDF. Drives the
+ * confidence grade and post-hoc auditability (text_layer → A; surya_ocr → B
+ * until human-verified). Mirrors the tiered-recovery doctrine (ADR-0021).
+ */
+export const extractionMethodEnum = pgEnum('extraction_method', [
+  'text_layer', // Tier 0 — born-digital pdfplumber text
+  'preeti_fix', // Tier 1 — legacy-encoding / geometry repair
+  'surya_ocr', // Tier 2 — Surya OCR on scanned pages
+  'manual_review', // hand-entered / corrected by a reviewer
+]);
+export type ExtractionMethod = (typeof extractionMethodEnum.enumValues)[number];
+
+/**
+ * Human-review state of a fact row. Defaults to `unreviewed` so OCR-derived
+ * rows never imply false confidence; promotion gates check this column.
+ */
+export const reviewStatusEnum = pgEnum('review_status', [
+  'unreviewed',
+  'auto_accepted',
+  'human_verified',
+  'flagged',
+]);
+export type ReviewStatus = (typeof reviewStatusEnum.enumValues)[number];
