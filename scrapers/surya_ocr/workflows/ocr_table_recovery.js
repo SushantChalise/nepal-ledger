@@ -253,11 +253,22 @@ function gatePrompt(scope, cols, a) {
   const cross = a.cross_check
     ? `Cross-source: also verify ${a.cross_check.label} == ${a.cross_check.expected} (±9) and report it in cross_source.`
     : 'No cross-source anchor provided.';
+  const hasCross = Array.isArray(scope.cross_groups) && scope.cross_groups.length > 0;
   return [
     `Assemble the verified columns into the final matrix and apply the GATE. ${ENV}`,
-    `Reconciliation identities: ${scope.reconciles_how.join('; ')}.`,
+    `Reconciliation identities for THIS table: ${scope.reconciles_how.join('; ')}.`,
     `Inputs you have: the per-column results (values + reconciles flags) are in this prompt's context via the workflow; rebuild the matrix from them.`,
-    `Accept a cell ONLY if its column reconciled AND its row cross-reconciles (Σ across the disaggregating columns == the aggregate column, ±9). Quarantine every other cell WITH a reason — never silently drop.`,
+    // Accept on the axes that EXIST for this table. A column-footing table with
+    // no cross_groups must still ship its column-reconciled cells — do NOT
+    // reject them because cross-reconciliation is unevaluable (that bug fully
+    // quarantined a balance sheet whose columns + balance identity reconciled).
+    `Acceptance rule — a cell is ACCEPTED if it passes every reconciliation axis that APPLIES to this table:`,
+    `  • column axis (always, when a total row exists): the cell's column reconciled (Σ component rows = the printed total row, within tolerance);`,
+    hasCross
+      ? `  • cross-column axis (this table HAS cross_groups): its row also cross-reconciles (Σ disaggregating columns == the aggregate column, ±9).`
+      : `  • cross-column axis: NOT APPLICABLE (this table has no cross_groups / no disaggregating→aggregate columns). Do NOT require it; do NOT reject a column-reconciled cell because cross-reconciliation is unevaluable.`,
+    `Also honor any printed identity in reconciles_how (e.g. a balance-sheet "total == total"). A column that is a derived ratio (e.g. "% change") is NOT footing-reconcilable — quarantine that column but still accept the reconciled value columns.`,
+    `Quarantine ONLY cells whose applicable axis failed, or specific misread/illegible cells — WITH a reason. Never silently drop; never fabricate; never force-reconcile.`,
     cross,
     `Write the accepted matrix to ${a.out_dir}/verified_matrix.json (cells + per-province/per-row reconciliation residuals + quarantine list + provenance: extraction_method=surya-ocr, confidence B).`,
     `Report matrix_reconciles, worst_residual, accepted_count, quarantined_count, artifact_path, and structural_decision_needed: name any schema/enum/ADR decision required before promotion (e.g. a new dimension_kind, a unit conversion, an enum gap). DO NOT write to any database or schema — promotion is the user's gate.`,
