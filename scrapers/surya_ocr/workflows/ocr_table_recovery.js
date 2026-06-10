@@ -285,11 +285,26 @@ log(`Args OK: page ${a.page_index}, out ${a.out_dir}`);
 
 phase('Scope');
 const scope = await agent(scopePrompt(a), { schema: SCOPE_SCHEMA, label: 'scope' });
-if (!scope.found || scope.reconciles_how.length === 0) {
+// Reconcilable if the structure implies a key, even when the agent forgot to
+// echo reconciles_how (observed: a scope agent filled cross_groups +
+// total_row_idx but left reconciles_how=[]). Derive it from the structure.
+const hasColTotal =
+  Number.isInteger(scope.total_row_idx) &&
+  scope.total_row_idx >= 0 &&
+  scope.total_row_idx < scope.rows.length;
+const hasCross = Array.isArray(scope.cross_groups) && scope.cross_groups.length > 0;
+if (!scope.found || (scope.reconciles_how.length === 0 && !hasColTotal && !hasCross)) {
   log(
     `No reconciliation key for "${a.table_hint}" — aborting CLEANLY (cannot verify ⇒ will not ship). This is a handled outcome, not a failure.`,
   );
   return { status: 'no-reconciliation-key', scope };
+}
+if (scope.reconciles_how.length === 0) {
+  if (hasColTotal)
+    scope.reconciles_how.push(`sum(component rows) = row ${scope.total_row_idx} per column`);
+  for (const g of scope.cross_groups || [])
+    scope.reconciles_how.push(`sum(cols [${g.part_cols}]) = col ${g.aggregate_col} (${g.label})`);
+  log(`Derived reconciles_how from structure: ${scope.reconciles_how.join(' | ')}`);
 }
 log(
   `Scoped "${scope.table_title}": ${scope.columns.length} cols × ${scope.rows.length} rows, unit ${scope.unit}. Keys: ${scope.reconciles_how.join(' | ')}`,
