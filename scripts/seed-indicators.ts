@@ -291,6 +291,69 @@ const INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// ─── CMEFs v0.2.0 extended indicators (parser nrb_cmefs v0.2.0) ─────────────
+// Government finance, monetary, and external-sector extensions. Prose-based.
+// Cross-validate revenue/expenditure vs FCGO CFS and DNE in the TS validation
+// layer (see docs/sources/nrb-cmefs-monthly.md §"Cross-validation").
+const CMEFS_V02_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'cmefs-merchandise-exports-ytd',
+    nameEn: 'Merchandise Exports (year-to-date)',
+    category: 'external_sector',
+    unit: 'npr_billion',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-govt-revenue-total-ytd',
+    nameEn: 'Government Total Revenue (year-to-date)',
+    category: 'fiscal',
+    unit: 'npr_billion',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-govt-expenditure-total-ytd',
+    nameEn: 'Government Total Expenditure (year-to-date)',
+    category: 'fiscal',
+    unit: 'npr_billion',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-govt-fiscal-balance-ytd',
+    nameEn: 'Government Fiscal Balance (year-to-date)',
+    category: 'fiscal',
+    unit: 'npr_billion',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-m2-yoy',
+    nameEn: 'Broad Money (M2) — Year-on-Year Growth',
+    category: 'monetary',
+    unit: 'percent_yoy',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-private-sector-credit-yoy',
+    nameEn: 'Private Sector Credit — Year-on-Year Growth',
+    category: 'monetary',
+    unit: 'percent_yoy',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-bfi-deposits-yoy',
+    nameEn: 'BFI Deposits — Year-on-Year Growth',
+    category: 'monetary',
+    unit: 'percent_yoy',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+];
+
 // ─── NCPI indicators (parser nrb_ncpi v0.1.0) ────────────────────────────────
 // Each canonical concept is registered once per geography variant (overall,
 // rural, urban) — three slugs per CSV row. Unit is always percent_yoy
@@ -994,7 +1057,38 @@ async function persist(): Promise<void> {
   }
   log(`indicator_source_map: ${linked} links ensured → ${CMEFS_SOURCE_ID}`);
 
-  // 4. NCPI indicators.
+  // 4. CMEFs v0.2.0 extended indicators.
+  const cmefs02InsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...CMEFS_V02_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!cmefs02InsertResult.ok)
+    throw new Error(
+      `CMEFs v0.2.0 indicators insert failed: ${JSON.stringify(cmefs02InsertResult.error)}`,
+    );
+  log(
+    `indicators (CMEFs v0.2.0): ${cmefs02InsertResult.value.length} inserted ` +
+      `(of ${CMEFS_V02_INDICATORS.length}; existing skipped)`,
+  );
+  let cmefs02Linked = 0;
+  for (const ind of CMEFS_V02_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok)
+      throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      CMEFS_SOURCE_ID,
+      'CMEFs extended set (v0.2.0)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    cmefs02Linked += 1;
+  }
+  log(`indicator_source_map: ${cmefs02Linked} links ensured → ${CMEFS_SOURCE_ID} (v0.2.0)`);
+
+  // 6. NCPI indicators.
   const ncpiInsertResult = await safeQuery(() =>
     db()
       .insert(indicators)
@@ -1008,7 +1102,7 @@ async function persist(): Promise<void> {
     `indicators (NCPI): ${ncpiInsertResult.value.length} inserted (of ${NCPI_INDICATORS.length}; existing skipped)`,
   );
 
-  // 5. NCPI source map links.
+  // 7. NCPI source map links.
   let ncpiLinked = 0;
   for (const ind of NCPI_INDICATORS) {
     const found = await findIndicatorBySlug(ind.slug);
