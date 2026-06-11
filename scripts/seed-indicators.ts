@@ -37,6 +37,7 @@ const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const WDI_SOURCE_ID = 'wb-wdi';
+const NRB_FISCAL_SOURCE_ID = 'nrb-db-fiscal-sector';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -336,6 +337,46 @@ const WDI_INDICATORS: readonly SeedIndicator[] = [
     unit: 'percent',
     nativeFrequency: 'annual',
     sourceAgency: 'World Bank',
+  },
+];
+
+// ─── NRB DB Fiscal Sector indicators (parser nrb_db_fiscal_sector v0.1.0) ────
+// Monthly cumulative YTD (revenue + expenditure + domestic debt) and annual
+// (foreign debt) series from NRB's Database on Nepalese Economy, Fiscal Sector.
+// Confidence B: NRB compiles from MoF; preliminary figures revised monthly.
+// Source: https://www.nrb.org.np/database-on-nepalese-economy/fiscal-sector/
+const NRB_FINSEC_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'nrb-fiscal-revenue-cumulative-ytd',
+    nameEn: 'Government Total Revenue (cumulative YTD, NRB)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-fiscal-expenditure-cumulative-ytd',
+    nameEn: 'Government Total Expenditure (cumulative YTD, NRB)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-fiscal-debt-domestic-outstanding',
+    nameEn: 'Outstanding Domestic Government Debt (NRB)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-fiscal-debt-external-outstanding',
+    nameEn: 'Net Outstanding Foreign Government Debt (NRB)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
   },
 ];
 
@@ -1361,6 +1402,39 @@ async function persist(): Promise<void> {
     wdiLinked += 1;
   }
   log(`indicator_source_map: ${wdiLinked} links ensured → ${WDI_SOURCE_ID}`);
+
+  // 14. NRB DB Fiscal Sector indicators (parser nrb_db_fiscal_sector v0.1.0).
+  const nrbFinsecInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...NRB_FINSEC_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!nrbFinsecInsertResult.ok)
+    throw new Error(
+      `NRB fiscal-sector indicators insert failed: ${JSON.stringify(nrbFinsecInsertResult.error)}`,
+    );
+  log(
+    `indicators (NRB Fiscal Sector): ${nrbFinsecInsertResult.value.length} inserted ` +
+      `(of ${NRB_FINSEC_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 15. NRB Fiscal Sector source map links.
+  let nrbFinsecLinked = 0;
+  for (const ind of NRB_FINSEC_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok)
+      throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      NRB_FISCAL_SOURCE_ID,
+      'NRB DB Fiscal Sector — revenue, expenditure, domestic debt, foreign debt',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    nrbFinsecLinked += 1;
+  }
+  log(`indicator_source_map: ${nrbFinsecLinked} links ensured → ${NRB_FISCAL_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1372,6 +1446,7 @@ async function main(): Promise<void> {
   );
   log(`indicators (NCPI)  = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
   log(`indicators (WDI)   = ${WDI_INDICATORS.length}, source = ${WDI_SOURCE_ID}`);
+  log(`indicators (NRB Fiscal Sector) = ${NRB_FINSEC_INDICATORS.length}, source = ${NRB_FISCAL_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');
