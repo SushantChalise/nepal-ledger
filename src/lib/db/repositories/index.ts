@@ -11,6 +11,7 @@ export * from './staging-indicator-values';
 export * from './approved-indicator-values';
 export * from './data-quality-flags';
 export * from './banking-sector-facts';
+export * from './migration-permit-facts';
 export * from './local-government-fiscal-transfers';
 export * from './entities';
 export * as censusFactsRepo from './census-facts';

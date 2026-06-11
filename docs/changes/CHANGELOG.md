@@ -8,6 +8,26 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-11 — Migration Atlas Phase 2/3: origin→destination Sankey + DoFE permit fact domain
+
+**What changed:** Two parallel-built features (one Mother-built, one delegated to a scope-fenced worker — disjoint file scopes). **(1)** A live **origin-province → destination-region Sankey** (the Atlas's Figure 6) on `/migration`. **(2)** The **`migration_permit_facts`** fact-domain foundation (ADR-0026) for the DoFE labour-permit corpus. All gates green: typecheck · lint · **219 tests** · `next build` · `drizzle-kit check` · `check:source-registry`.
+
+### View C — the flow Sankey (Atlas Fig 6)
+
+- `MigrationFlowSankey` (client) renders absent population from origin **province** → destination **region**, reusing the existing `d3-sankey` adapter (ADR-0012) and mirroring `money-flow`'s Sankey field-for-field (mobile stacked-bar fallback + sr-only table). Unit is **people**.
+- The roll-up is a pure, unit-tested module: `flow-graph.ts` (`buildMigrationFlowGraph`) — palika-grain census → province×region, consolidating the 13 census buckets to the 6 the Atlas uses. Kept OUT of the `server-only` query file so it's testable (mirrors `choropleth-scale.ts`).
+- Province resolution uses `district-province.ts` — an **authoritative** `DISTRICT_TO_PROVINCE` (77→7) generated from the source geometry's province field (not guessed); tested against the constitutional split (14/8/13/11/12/10/9).
+- `getMigrationFlowSankey()` (SQL + DB boundary) groups the same non-double-counting census slice by `entities.metadata->>'district_en'` × region. Typed fallback; never throws.
+
+### DoFE migration permit fact domain (ADR-0026)
+
+- **[ADR-0026](../decisions/0026-migration-permit-fact-domain.md)** — `migration_permit_facts`, a dimensional fact table (period × destination × origin × skill × category × sex), NULL = marginal, one **`UNIQUE NULLS NOT DISTINCT`** natural key (the `audit_facts` pattern — no coalesce-sentinel needed). **Foundation only — no data, no parser; source `dofe-labour-migration` stays paused.**
+- New: `schema/migration-permit-facts.ts`, 4 enums (`migration_skill_class` / `_permit_category` / `_destination_region` / `_sex`), repository + Zod parser-output contract (`src/lib/ingestion/migration-permit-types.ts`), migration `0007_0008_migration_permit_facts` (`UNIQUE NULLS NOT DISTINCT` generated, not hand-written). +21 tests.
+
+**Next:** the deterministic DoFE parser (flips the source to active + populates the table) + the remittance-BoP backfill.
+
+---
+
 ## 2026-06-11 — Migration Atlas Phase 2 (partial): intensity map + pipeline registrations
 
 **What changed:** Upgraded the palika choropleth from absolute count to **migration intensity — share of each local level's population living abroad** (absent ÷ total population), matching the NDRI Atlas's *headline* map ("% of absentee population by municipality"). Registered the next two acquisition-pipeline sources. All gates green (typecheck / lint / 188 tests / build / source-registry).

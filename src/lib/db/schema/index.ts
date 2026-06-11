@@ -24,3 +24,5 @@ export * from './dne-facts';
 export * from './foreign-aid-facts';
 // Added in migration 0006 (ADR-0024)
 export * from './audit-facts';
+// Added in migration 0007 (ADR-0026)
+export * from './migration-permit-facts';

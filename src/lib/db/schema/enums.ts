@@ -292,3 +292,57 @@ export const reviewStatusEnum = pgEnum('review_status', [
   'flagged',
 ]);
 export type ReviewStatus = (typeof reviewStatusEnum.enumValues)[number];
+
+// ─── Migration permit fact domain (ADR-0026) ────────────────────────────
+
+/**
+ * DoFE labour-permit skill class (Migration Atlas Fig 11). MoLESS classifies
+ * re-entry permits as `skilled`. `NULL` on a fact row = marginal over skill.
+ * Extending this set = future ADR.
+ */
+export const migrationSkillClassEnum = pgEnum('migration_skill_class', [
+  'unskilled',
+  'semi_skilled',
+  'skilled',
+  'highly_skilled',
+  'professional',
+]);
+export type MigrationSkillClass = (typeof migrationSkillClassEnum.enumValues)[number];
+
+/**
+ * DoFE permit category (Migration Atlas Fig 8). `NULL` on a fact row =
+ * marginal over category.
+ */
+export const migrationPermitCategoryEnum = pgEnum('migration_permit_category', [
+  'new_individual',
+  'reentry',
+  'recruitment_agency',
+  'g2g',
+]);
+export type MigrationPermitCategory = (typeof migrationPermitCategoryEnum.enumValues)[number];
+
+/**
+ * Destination region bucket, aligned with the census Hhld19 region buckets so
+ * the migration-permit and census-migration domains reconcile. `NULL` on a
+ * fact row = marginal over region.
+ */
+export const migrationDestinationRegionEnum = pgEnum('migration_destination_region', [
+  'india',
+  'saarc_other',
+  'asean',
+  'middle_east',
+  'other_asia',
+  'europe',
+  'africa',
+  'americas',
+  'other',
+]);
+export type MigrationDestinationRegion = (typeof migrationDestinationRegionEnum.enumValues)[number];
+
+/**
+ * Sex dimension for migration-permit facts. `total` is the explicit
+ * both-sexes aggregate (the column is NOT NULL, so the aggregate is a value,
+ * not a NULL marginal).
+ */
+export const migrationSexEnum = pgEnum('migration_sex', ['male', 'female', 'total']);
+export type MigrationSex = (typeof migrationSexEnum.enumValues)[number];

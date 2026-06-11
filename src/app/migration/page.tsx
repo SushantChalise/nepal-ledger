@@ -6,8 +6,10 @@ import { KpiCard } from '@/features/pulse/components/KpiCard';
 import {
   getMigrationByCountrySeries,
   getAbsenteeShareByPalika,
+  getMigrationFlowSankey,
 } from '@/features/migration-source/server/queries';
 import { DestinationBarChart } from '@/features/migration-source/components/DestinationBarChart';
+import { MigrationFlowSankey } from '@/features/migration-source/components/MigrationFlowSankey';
 import { PalikaChoropleth } from '@/features/migration-source/components/PalikaChoropleth';
 import { formatPeopleFull, formatSharePct } from '@/features/migration-source/format';
 
@@ -49,9 +51,13 @@ export default async function MigrationPage() {
   }
 
   const data = result.value;
-  // Independent of the destination ranking — the origin choropleth has its own
-  // typed fallback and must never break the page if the census slice is absent.
-  const palikaResult = await getAbsenteeShareByPalika();
+  // Independent of the destination ranking — the origin choropleth + the flow
+  // Sankey each have their own typed fallback and must never break the page if
+  // the census slice is absent.
+  const [palikaResult, flowResult] = await Promise.all([
+    getAbsenteeShareByPalika(),
+    getMigrationFlowSankey(),
+  ]);
 
   if (data.destinations.length === 0 || data.totalPeople <= 0) {
     return (
@@ -135,6 +141,37 @@ export default async function MigrationPage() {
           Absent population by destination region — {data.censusYearAd} census
         </h2>
         <DestinationBarChart destinations={data.destinations} />
+      </section>
+
+      {/* The Flow — origin province → destination region Sankey (Atlas Fig 6). */}
+      <section aria-labelledby="flow-heading" className="mt-10">
+        <h2
+          id="flow-heading"
+          className="mb-1 text-base font-semibold text-zinc-700 dark:text-zinc-300"
+        >
+          The flow — from origin province to destination region
+        </h2>
+        <p className="mb-4 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">
+          The {data.censusYearAd} absent population, traced from each migrant&apos;s home province
+          to where they went. A headcount of <span className="font-medium">people</span> — the
+          census complement to the labour-permit flow.
+        </p>
+        {flowResult.ok ? (
+          <MigrationFlowSankey graph={flowResult.value} />
+        ) : (
+          <div
+            role="status"
+            aria-live="polite"
+            className="rounded-lg border border-zinc-200 bg-zinc-50 p-8 text-center dark:border-zinc-700 dark:bg-zinc-900"
+          >
+            <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+              Origin → destination flow not available yet
+            </p>
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
+              The province-to-region Sankey appears here once the census origin slice is loaded.
+            </p>
+          </div>
+        )}
       </section>
 
       {/* View B — where the absent population comes FROM, by palika (choropleth). */}

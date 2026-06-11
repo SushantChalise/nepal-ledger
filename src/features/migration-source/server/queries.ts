@@ -42,6 +42,8 @@ import { db } from '@/lib/db/client';
 import { safeQuery } from '@/lib/db/safe-query';
 import { err, ok, type Result } from '@/lib/errors';
 
+import { buildMigrationFlowGraph, type MigrationFlowGraph } from '../flow-graph';
+
 /** Census source table id for the absent-population-by-country table. */
 export const ABSENT_POPN_SOURCE_TABLE_ID = 'Hhld19_AbsentPopnByCountry';
 
@@ -352,4 +354,77 @@ export async function getAbsenteeShareByPalika(): Promise<Result<AbsenteeShareBy
     palikaCount,
     censusYearAd: '2021',
   });
+}
+
+// ---------------------------------------------------------------------------
+// The Flow — origin province → destination region Sankey (Atlas Fig 6)
+// ---------------------------------------------------------------------------
+
+// The node/link model + the pure roll-up live in `../flow-graph` (a plain,
+// non-server module so they can be unit tested without the server-only DB
+// client). This file owns only the SQL + the DB boundary.
+const FlowRowSchema = z.object({
+  district: z.string().nullable(),
+  region_code: z.string(),
+  people: z.string(),
+});
+
+/**
+ * Build the origin-province → destination-region flow (the Atlas's Figure 6),
+ * rolled up from palika-grain census absentees: the same non-double-counting
+ * slice as View A, grouped by the originating local level's district (resolved
+ * to a province via the authoritative `DISTRICT_TO_PROVINCE` map) and by the
+ * consolidated destination region. Returns NotFound when the census table has
+ * no rows; never throws.
+ */
+export async function getMigrationFlowSankey(): Promise<Result<MigrationFlowGraph>> {
+  const rowtotalSlug = `${MARGINAL_SLICE_PREFIX}rowtotal`;
+  const likePattern = `${MARGINAL_SLICE_PREFIX}%`;
+
+  const rawResult = await safeQuery(() =>
+    db().execute(
+      sql`
+        SELECT
+          e.metadata->>'district_en'                            AS district,
+          replace(cf.indicator_slug, ${MARGINAL_SLICE_PREFIX}, '') AS region_code,
+          SUM(cf.value)::text                                   AS people
+        FROM census_facts cf
+        JOIN entities e ON e.id = cf.entity_id
+        WHERE cf.source_table_id = ${ABSENT_POPN_SOURCE_TABLE_ID}
+          AND cf.indicator_slug LIKE ${likePattern}
+          AND cf.indicator_slug <> ${rowtotalSlug}
+          AND e.kind = 'local_level'
+        GROUP BY e.metadata->>'district_en', region_code
+      `,
+    ),
+  );
+
+  if (!rawResult.ok) return rawResult;
+
+  const parsed = z.array(FlowRowSchema).safeParse(rawResult.value);
+  if (!parsed.success) {
+    return err({
+      kind: 'QueryFailed',
+      detail: `migration-flow query returned unexpected row shape: ${parsed.error.message}`,
+    });
+  }
+  if (parsed.data.length === 0) {
+    return err({
+      kind: 'NotFound',
+      resource: 'census_facts',
+      id: `source_table_id=${ABSENT_POPN_SOURCE_TABLE_ID} (flow)`,
+    });
+  }
+
+  const graph = buildMigrationFlowGraph(
+    parsed.data.map((r) => ({
+      district: r.district,
+      regionCode: r.region_code,
+      people: Number(r.people),
+    })),
+  );
+  if (graph === null) {
+    return err({ kind: 'QueryFailed', detail: 'getMigrationFlowSankey: no finite flows found' });
+  }
+  return ok(graph);
 }
