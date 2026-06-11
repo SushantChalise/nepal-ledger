@@ -2,7 +2,10 @@
 
 `source_id: oag-audit-reports` · doctrine: [ADR-0003](../../docs/decisions/0003-ai-assisted-parsing-policy.md) (deterministic Python), [ADR-0024](../../docs/decisions/0024-government-audit-fact-domain.md) (audit fact domain) · recon: [docs/research/oag-audit-reports-audit.md](../../docs/research/oag-audit-reports-audit.md)
 
-Acquires the Office of the Auditor General's consolidated **Annual Report** PDFs, content-addresses them, and writes an append-only provenance manifest. This is the **acquisition** stage only — it downloads + hashes + provenances; it does **not** parse PDFs (that's the future parser PR).
+Acquires the Office of the Auditor General's consolidated **Annual Report** PDFs, content-addresses them, writes an append-only provenance manifest, **and** parses the English edition's headline aggregate tables into the audit fact-domain contract.
+
+- **Acquisition** (`discover.py` / `sources.py` / `archive.py` / `cli.py`): downloads + hashes + provenances report PDFs.
+- **Parsing** (`parser.py`): deterministic Tier-0 extraction of the English edition's class aggregates (audited amounts, beruju by category × tier, settlement/cumulative) → `AuditParserOutput` JSON.
 
 ## Why a curated catalog, not a crawler
 
@@ -35,15 +38,43 @@ Idempotent: re-running skips reports whose content hash is already archived. `--
 
 **Legacy historical URLs** live on `old.oag.gov.np/uploads/...` (e.g. older Report Summaries). That domain's TLS cert is expired — fetch those via a browser and re-host, or add explicit insecure handling before scripting them. The default scraper does **not** disable TLS verification.
 
+## Parser (English edition, Tier 0)
+
+`parser.py` extracts the report's headline **class aggregates** (the English edition carries no per-entity detail — that needs the Nepali edition) and emits the [`AuditParserOutput`](../../src/lib/ingestion/audit-types.ts) contract:
+
+```bash
+# prints AuditParserOutput JSON to stdout; pdfplumber required
+python -m oag_audit_reports.parser <report.pdf> <source_document_id> [--]
+```
+
+Three printed tables are located **by content** (robust to page-number drift), not by fixed page:
+
+| Source table | → contract rows |
+|---|---|
+| Ch.1 "Details of Audited Entities" (NRs **billions**) | per-class `audited_amount` + entity count |
+| Ch.2 "Status of Irregularity" — classification × tier (NRs **millions**) | `audit_beruju_lines`, `amount_basis=current_year_raised`, per class × `beruju_category` |
+| Ch.2 settlement/lifecycle table | per-class `settled_this_year` + `cumulative_outstanding` |
+
+Design notes:
+
+- **Audited FY** comes from the title's **edition ordinal** (spelled-out "Fifty-Eighth" or "58th") via `discover.audited_fy_for_edition` — never the cover/publish year (title-year trap). The orchestrator may pass `fiscal_year_bs` to override.
+- **Category mapping:** leaf rows only (parent "To be regularized" and `3.x` advance sub-rows are skipped to avoid double-counting); the leaves sum to the printed grand total. `Balance not brought forward → responsibility_not_transferred`, `Reimbursements not received → revenue_arrears`.
+- **Raw-when-amount:** every `*_npr` is canonical full NPR and carries its printed `*_raw`. Summary `source_unit` is null because the row mixes billions (audited) with millions (beruju) — per-amount scale is implicit in `npr`/`raw`.
+- **Reconciliation:** the summed category lines are checked against the report's printed "Total irregularity" row per class; any non-zero variance → a `ReconciliationFailed` entry in `errors[]` and `status='partial'`. The 58th edition reconciles to the rupee (Σ = NRs 104,384.3 M; cumulative = NRs 418.85 bn).
+
+Per ADR-0003 this is **deterministic** Python (no LLM at parse time). The pure table-row functions are unit-tested without a PDF (`tests/test_parser.py`, fixtures are the real 58th-edition rows).
+
 ## Layout
 
 | File | Role |
 |---|---|
 | `sources.py` | `ReportRef` + the curated `KNOWN_REPORTS` catalog + `select_reports()` |
+| `discover.py` | fetch the `/api/front/annual-reports` JSON API → `ReportRef`; edition-ordinal → audited FY |
 | `archive.py` | stream-download → sha256 → `<sha256>.pdf` + sidecar; idempotent; `ArchiveError` on 4xx/5xx |
 | `manifest.py` | append-only JSONL provenance log |
 | `cli.py` | `argparse` entry point (`--output-dir`, `--edition`, `--language`, `--dry-run`, `--max-docs`) |
-| `tests/` | pytest (mocked `httpx`, no network) |
+| `parser.py` | deterministic Tier-0 PDF → `AuditParserOutput`; pure table-row logic + `pdfplumber` wrapper |
+| `tests/` | pytest (mocked `httpx` / real-row fixtures, no network) |
 
 ## Tests
 

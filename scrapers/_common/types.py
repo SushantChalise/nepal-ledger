@@ -13,6 +13,14 @@ from typing import Any, Literal
 
 ParserStatus = Literal["success", "partial", "failure"]
 ConfidenceGrade = Literal["A", "B", "C"]
+# Epistemic status, orthogonal to confidence. Default "actual". See ADR-0025.
+ObservationType = Literal[
+    "actual",
+    "projection",
+    "interpolated",
+    "estimate",
+    "provisional",
+]
 ReportingPeriodType = Literal[
     "monthly",
     "quarterly",
@@ -54,6 +62,7 @@ class StagingRowDraft:
     fiscal_year_bs: str
     fiscal_year_ad_label: str
     confidence_grade_proposed: ConfidenceGrade
+    observation_type: ObservationType = "actual"
     parser_notes: str | None = None
 
     def to_json_dict(self) -> dict[str, Any]:
@@ -75,6 +84,7 @@ class StagingRowDraft:
             "fiscal_year_bs": self.fiscal_year_bs,
             "fiscal_year_ad_label": self.fiscal_year_ad_label,
             "confidence_grade_proposed": self.confidence_grade_proposed,
+            "observation_type": self.observation_type,
             "parser_notes": self.parser_notes,
         }
 

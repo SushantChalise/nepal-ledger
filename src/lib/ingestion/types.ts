@@ -51,6 +51,16 @@ const ReportingPeriodTypeSchema = z.enum([
 
 const ConfidenceGradeSchema = z.enum(['A', 'B', 'C']);
 
+// Epistemic status (ADR-0025). Parsers that omit it default to 'actual', so
+// every existing parser's output validates unchanged.
+const ObservationTypeSchema = z.enum([
+  'actual',
+  'projection',
+  'interpolated',
+  'estimate',
+  'provisional',
+]);
+
 export const StagingRowDraftSchema = z.object({
   indicator_slug_raw: z.string().min(1),
   value: z.number(),
@@ -64,6 +74,7 @@ export const StagingRowDraftSchema = z.object({
   fiscal_year_bs: z.string().min(1),
   fiscal_year_ad_label: z.string().min(1),
   confidence_grade_proposed: ConfidenceGradeSchema,
+  observation_type: ObservationTypeSchema.default('actual'),
   parser_notes: z.string().nullable().optional(),
 });
 

@@ -984,6 +984,73 @@ const ROWS: readonly NewSourceRegistryRow[] = [
       'current-account balance, remittances (USD + % GDP). Cross-checks dne-gdp-* and dne-inflation-rate.',
   },
   {
+    sourceId: 'imf-weo',
+    agency: 'International Monetary Fund',
+    agencyShort: 'IMF',
+    datasetName: 'World Economic Outlook (WEO) — Nepal',
+    sourceUrl: 'https://www.imf.org/external/datamapper/api/v1',
+    publicationFrequency: 'annual',
+    expectedReleaseWindow: 'Twice yearly (April + October WEO vintages)',
+    reportingPeriodType: 'annual',
+    fileFormat: 'json',
+    requiresTableExtraction: false,
+    historicalCoverage: '1980 onward (Nepal reliable ~1990); each vintage projects 5 years forward',
+    licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/imf_weo/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Each WEO vintage (Apr/Oct) revises both history and the forecast path; ingest the new vintage as a fresh snapshot — prior approved rows bump via revision_number. The projection boundary (projection_from_year) is vintage-specific and supplied at download time.',
+    knownBreakageModes: [
+      'datamapper-api-does-not-flag-projection-vs-actual',
+      'projection-boundary-must-be-supplied-per-vintage',
+      'date-field-is-fy-start-year-for-nepal',
+      'imf-may-omit-recent-years-for-sparse-series-eg-LUR',
+    ],
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'International benchmark + the only source of forward PROJECTIONS (ADR-0025). ' +
+      '13 indicators: GDP (current USD, real growth, per-capita, PPP), inflation, current-account, ' +
+      'govt revenue/fiscal-balance/gross-debt (% GDP), savings, investment, unemployment, population. ' +
+      'Projections marked observation_type=projection. Cross-checks dne-gdp-real-growth + wdi-gdp-*.',
+  },
+  {
+    sourceId: 'wb-pip',
+    agency: 'World Bank',
+    agencyShort: 'WB',
+    datasetName: 'Poverty and Inequality Platform (PIP) — Nepal',
+    sourceUrl: 'https://api.worldbank.org/pip/v1/pip',
+    publicationFrequency: 'ad_hoc',
+    expectedReleaseWindow: 'Updated when a new survey enters PIP (NLSS-IV/LSS-IV added Oct 2024)',
+    reportingPeriodType: 'annual',
+    fileFormat: 'json',
+    requiresTableExtraction: false,
+    historicalCoverage:
+      '5 survey rounds 1984–2022 (MHBS, LSS I–IV) with full distribution; $3.65 headcount filled 1981–present',
+    licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/wb_pip/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'PIP revises when surveys are re-estimated or PPPs update; ingest is a full snapshot — prior approved rows bump via revision_number. Survey anchors (actual) and the filled trend (interpolated/projected) carry distinct observation_type.',
+    knownBreakageModes: [
+      'api-intermittently-returns-empty-or-000-retry',
+      'distributional-fields-null-except-survey-years',
+      'reporting-year-is-calendar-not-fiscal',
+      'welfare-type-differs-income-pre1995-consumption-after',
+    ],
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'Distributional poverty layer (ADR-0025 observation_type). 10 indicators: poverty headcount ' +
+      'at $2.15/$3.65/$6.85, poverty gap + severity, Gini, mean + median consumption, bottom/top decile share. ' +
+      'Survey anchors = actual/conf-A; the $3.65 filled trend = interpolated/projected/conf-B. ' +
+      'pip-gini cross-checks wdi-gini-index (same 0–100 scale).',
+  },
+  {
     sourceId: 'imf-article-iv',
     agency: 'International Monetary Fund',
     agencyShort: 'IMF',
@@ -1051,6 +1118,42 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     tier: 1,
     notes:
       'Ingest source for scrapers/nrb_dne (ingest:dne). Long-formats wide period-column XLSX into staging. No real files downloaded yet (2026-06). Subsumes nrb-db-external/fiscal/real/financial-sector catalog rows.',
+  },
+  {
+    // Historical BoP back-series (BPM5 methodology) from nrb_dne_historical corpus.
+    // Parser: scrapers/nrb_bop/parser.py → remittance-inflow-bpm5 (annual).
+    // CRITICAL: BPM5 ≠ BPM6. Do NOT splice onto dne-remittance-inflow (BPM6).
+    // Any joined chart must show a methodology break at FY2069/70 (AD2012/13).
+    sourceId: 'nrb-bop',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName: "Balance of Payments — Historical Back-Series (BPM5)",
+    sourceUrl: 'https://www.nrb.org.np/database-on-nepalese-economy/',
+    publicationFrequency: 'annual',
+    expectedReleaseWindow: 'Static historical corpus; update when NRB publishes a new edition',
+    reportingPeriodType: 'annual',
+    fileFormat: 'xlsx',
+    requiresTableExtraction: false,
+    historicalCoverage: 'FY 2000/01 (BS 2057/58) → FY 2023/24P (BS 2080/81)',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb_bop/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Static historical corpus; trailing years carry R (revised) or P (provisional) suffix. NRB updates the file when revisions are finalised.',
+    knownBreakageModes: [
+      'two-panel-layout',
+      'formula-precision-in-xlsx',
+      'revision-suffix-in-year-labels',
+    ],
+    confidenceDefault: 'B',
+    status: 'active',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    notes:
+      'Money In back-series. Extends remittance inflow to FY2000/01 (23 years vs current 3-FY BPM6 series). ' +
+      'BPM5 methodology — NOT spliced onto dne-remittance-inflow (BPM6). Indicator: remittance-inflow-bpm5. ' +
+      'File: Financial Data/nrb_dne_historical/Trade-and-Balance-of-Payments.xlsx, sheet BOP 2000-. ' +
+      'NRB adopted BPM6 ~FY2069/70 (AD2012/13); charts must show the break.',
   },
   {
     // NRB audit #1 — highest-priority NRB gap: BoP, forex, remittance, trade
