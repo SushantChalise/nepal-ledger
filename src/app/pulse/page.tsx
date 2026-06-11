@@ -5,6 +5,7 @@ import type { ApprovedIndicatorWithMeta } from '@/lib/db/repositories/approved-i
 import { formatAppError } from '@/lib/errors';
 import { KpiCard } from '@/features/pulse/components/KpiCard';
 import { KpiGroup } from '@/features/pulse/components/KpiGroup';
+import { formatIndicatorValue } from '@/lib/format/indicator-units';
 
 export const metadata: Metadata = {
   title: 'Pulse — Nepal Ledger',
@@ -68,63 +69,6 @@ const GROUP_META: Record<PulseGroupKey, { title: string; description: string }> 
 };
 
 const GROUP_ORDER: PulseGroupKey[] = ['prices', 'money-in', 'money-out', 'government', 'monetary'];
-
-// ---------------------------------------------------------------------------
-// Value formatting
-// ---------------------------------------------------------------------------
-
-/**
- * Convert the raw numeric string stored in approved_indicator_values to a
- * human-readable display pair [formattedValue, unitLabel].
- *
- * Unit strings are the canonical vocabulary from indicator_units.
- * We handle the seven units present in the first batch; unknown units fall
- * back to the raw string + the unit slug.
- */
-function formatValue(rawValue: string, unitSlug: string): { display: string; unit: string } {
-  const num = parseFloat(rawValue);
-  if (isNaN(num)) return { display: rawValue, unit: unitSlug };
-
-  switch (unitSlug) {
-    case 'NPR_billion':
-    case 'npr_billion': {
-      const formatted = num.toLocaleString('en-IN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-      return { display: `NPR ${formatted} B`, unit: '' };
-    }
-    case 'percent_yoy':
-    case 'percent': {
-      return {
-        display: num.toLocaleString('en-IN', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }),
-        unit: '%',
-      };
-    }
-    case 'months_of_imports':
-    case 'months': {
-      return {
-        display: num.toLocaleString('en-IN', {
-          minimumFractionDigits: 1,
-          maximumFractionDigits: 1,
-        }),
-        unit: 'months',
-      };
-    }
-    default: {
-      return {
-        display: num.toLocaleString('en-IN', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }),
-        unit: unitSlug,
-      };
-    }
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Page
@@ -209,7 +153,7 @@ export default async function PulsePage() {
           return (
             <KpiGroup key={groupKey} title={meta.title} description={meta.description}>
               {groupRows.map((row) => {
-                const { display, unit } = formatValue(row.value.value, row.indicator.unit);
+                const { display, unit } = formatIndicatorValue(row.value.value, row.indicator.unit);
                 return (
                   <KpiCard
                     key={row.value.id}
@@ -231,7 +175,7 @@ export default async function PulsePage() {
             description="Additional approved indicators not yet categorised into a Pulse group."
           >
             {overflow.map((row) => {
-              const { display, unit } = formatValue(row.value.value, row.indicator.unit);
+              const { display, unit } = formatIndicatorValue(row.value.value, row.indicator.unit);
               return (
                 <KpiCard
                   key={row.value.id}
