@@ -784,6 +784,167 @@ def _extract_cereal_by_district(text: str) -> tuple[list[DimensionalRowDraft], l
 
 
 # ---------------------------------------------------------------------------
+# District cross-sections (FY 2080/81) — "DISTRICT × measure" matrices
+# ---------------------------------------------------------------------------
+#
+# These multi-page district tables share two hazards the national tables don't:
+#   1. The next table's heading is sometimes "4.4 Milking …" (no "Table" prefix),
+#      so the generic _slice boundary misses it — _slice_to_heading bounds on any
+#      "<n>.<n>" / "Table <n>.<n>" heading instead.
+#   2. National + province SUBTOTAL rows are interleaved with district rows and
+#      must be dropped (kept only for reconciliation) — _is_aggregate_name().
+
+# Matches a new table heading at a line start: "Table 4.4 …" or "4.4 …" or "2.".
+_HEADING_RE: Final[re.Pattern[str]] = re.compile(
+    r"(?m)^\s*(?:Table\s+)?\d{1,2}\.\d{1,2}\b|^\s*\d{1,2}\.\s+[A-Z]"
+)
+# Running page footer ("Statistic al Information on Nepalese Agriculture, 2080/81 51");
+# its trailing page number would otherwise parse as a district data row.
+_FOOTER_RE: Final[re.Pattern[str]] = re.compile(
+    r"Information on Nepalese Agriculture", re.IGNORECASE
+)
+
+
+def _slice_to_heading(text: str, anchor: str, *, max_chars: int = 16000) -> str | None:
+    """Window from ``anchor`` to the next table heading (or ``max_chars``).
+
+    Unlike _slice, the boundary matches both "Table 4.5 …" and the prefix-less
+    "4.4 Milking …" headings the district section uses."""
+    pos = text.find(anchor)
+    if pos == -1:
+        return None
+    start = pos + len(anchor)
+    tail = text[start : start + max_chars]
+    m = _HEADING_RE.search(tail)
+    return tail[: m.start()] if m else tail
+
+
+def _is_aggregate_name(name: str) -> bool:
+    """True for a 'NEPAL' / province-name row (a subtotal, not a district)."""
+    key = re.sub(r"[^a-z]", "", name.lower())
+    return key == "nepal" or key in _PROVINCES or key in _PROVINCE_ALIASES
+
+
+def _split_leading_name(toks: list[str]) -> tuple[list[str], list[float | None]]:
+    """Split a row into (leading non-numeric name tokens, trailing numbers)."""
+    di = 0
+    name_parts: list[str] = []
+    while di < len(toks) and not _NUM_TOKEN_RE.match(toks[di]) and toks[di] != "-":
+        name_parts.append(toks[di])
+        di += 1
+    return name_parts, _row_tokens(" ".join(toks[di:]))
+
+
+_LIVESTOCK_POP_DIST_CATEGORIES: Final[tuple[tuple[str, str], ...]] = (
+    ("cattle", "Cattle"), ("buffaloes", "Buffaloes"), ("sheep", "Sheep"),
+    ("goat", "Goat"), ("pigs", "Pigs"), ("fowl", "Fowl"), ("duck", "Duck"),
+)
+
+
+def _extract_livestock_pop_by_district(
+    text: str,
+) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Table 4.3 — livestock population per district × category (FY 2080/81).
+
+    Composite dimension ``district__category``. A trailing missing column (DUCK)
+    is left-aligned (the dropped cell is always the last one). NEPAL/province
+    subtotal rows are skipped; district sums reconcile to the national 4.1 values.
+    """
+    rows: list[DimensionalRowDraft] = []
+    errors: list[ParserError] = []
+    anchor = "DISTRICT BY PROVINCE CATTLE BUFFALOES SHEEP GOAT PIGS FOWL DUCK"
+    section = _slice_to_heading(text, anchor)
+    if section is None:
+        return rows, [ParserError("RegexMismatch", "Table 4.3: anchor not found", None)]
+    n_cat = len(_LIVESTOCK_POP_DIST_CATEGORIES)
+    seen: set[str] = set()
+    for line in section.splitlines():
+        if _FOOTER_RE.search(line):
+            continue
+        toks = line.split()
+        name_parts, nums = _split_leading_name(toks)
+        if not name_parts or not nums or len(nums) > n_cat:
+            continue
+        if _is_aggregate_name(name_parts[0]):
+            continue  # NEPAL / province subtotal
+        district = _district_slug(" ".join(name_parts))
+        if not district or district in seen:
+            continue
+        seen.add(district)
+        label = " ".join(name_parts).title()
+        for (cat_slug, cat_label), val in zip(
+            _LIVESTOCK_POP_DIST_CATEGORIES, nums, strict=False
+        ):
+            if val is None:
+                continue
+            rows.append(_annual_row(
+                "agri-livestock-population", "Livestock population",
+                "district-livestock-category", f"{district}__{cat_slug}",
+                f"{label} - {cat_label}", val, _NUMBER, _FY_LATEST_BS,
+            ))
+    if not rows:
+        errors.append(ParserError("RegexMismatch", "Table 4.3: no district rows matched", None))
+    return rows, errors
+
+
+# Fertilizer 9.2 column layout: AICL(u,d,p,total) STCL(u,d,p,total) Grand(u,d,p,total).
+_FERT_DIST_COLS: Final[int] = 12
+_FERT_GRAND_OFFSET: Final[int] = 8  # index of Grand-Total urea in the 12-number row
+_FERT_DIST_TYPES: Final[tuple[tuple[str, str], ...]] = (
+    ("urea", "Urea"), ("dap", "DAP"), ("potash", "Potash"),
+)
+
+
+def _extract_fertilizer_by_district(
+    text: str,
+) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Table 9.2 — fertilizer sales per district × type (FY 2080/81).
+
+    Emits the GRAND-total (AICL + STCL) urea/dap/potash per district as a
+    composite ``district__fertilizer`` dimension. Per-supplier (AICL/STCL) and
+    per-section totals are derivable and omitted. Province subtotal rows (a
+    province name with no district) are skipped; district sums reconcile to 9.1.
+    """
+    rows: list[DimensionalRowDraft] = []
+    errors: list[ParserError] = []
+    anchor = "Urea DAP Potash Total Urea DAP Potash Total Urea DAP Potash"
+    section = _slice_to_heading(text, anchor)
+    if section is None:
+        return rows, [ParserError("RegexMismatch", "Table 9.2: anchor not found", None)]
+    seen: set[str] = set()
+    for line in section.splitlines():
+        if _FOOTER_RE.search(line):
+            continue
+        toks = line.split()
+        if not toks:
+            continue
+        prov = _province_slug(toks[0])
+        if prov is None:
+            continue
+        name_parts, nums = _split_leading_name(toks[1:])
+        if not name_parts or len(nums) != _FERT_DIST_COLS:
+            continue  # province subtotal (no district name) or malformed
+        district = _district_slug(" ".join(name_parts))
+        key = f"{prov}/{district}"
+        if not district or key in seen:
+            continue
+        seen.add(key)
+        label = " ".join(name_parts).title()
+        for i, (fert_slug, fert_label) in enumerate(_FERT_DIST_TYPES):
+            val = nums[_FERT_GRAND_OFFSET + i]
+            if val is None:
+                continue
+            rows.append(_annual_row(
+                "agri-fertilizer-sales", "Chemical fertilizer sales",
+                "district-fertilizer-type", f"{district}__{fert_slug}",
+                f"{label} - {fert_label}", val, _MT, _FY_LATEST_BS,
+            ))
+    if not rows:
+        errors.append(ParserError("RegexMismatch", "Table 9.2: no district rows matched", None))
+    return rows, errors
+
+
+# ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
 
@@ -832,6 +993,8 @@ _SINGLETON_EXTRACTORS: Final[tuple[_Extractor, ...]] = (
     _extract_cashcrop_by_province,
     _extract_vegetable_by_province,
     _extract_cereal_by_district,
+    _extract_livestock_pop_by_district,
+    _extract_fertilizer_by_district,
 )
 
 

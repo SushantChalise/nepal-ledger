@@ -73,7 +73,7 @@ def test_parser_version(result: AgriResult) -> None:
 
 def test_total_row_count(rows: list) -> None:
     # Locked to the reconciled full-PDF == fixture count.
-    assert len(rows) == 1546
+    assert len(rows) == 2298
 
 
 def test_all_periods_annual(rows: list) -> None:
@@ -101,6 +101,7 @@ def test_dimension_kinds(rows: list) -> None:
     assert {r.dimension_kind for r in rows} == {
         "crop_type", "livestock_category", "livestock_product",
         "fertilizer_type", "province-crop", "province", "district",
+        "district-livestock-category", "district-fertilizer-type",
     }
 
 
@@ -192,8 +193,8 @@ def test_pulse_no_total_pseudo_crop(rows: list) -> None:
 
 
 def test_livestock_population_count(rows: list) -> None:
-    # 11 categories × 10 years
-    assert len(_for(rows, "agri-livestock-population")) == 110
+    # 11 categories × 10 years (national series only; district rows share the slug)
+    assert len(_for(rows, "agri-livestock-population", "livestock_category")) == 110
 
 
 def test_livestock_cattle_recent(rows: list) -> None:
@@ -284,8 +285,8 @@ def test_vegetable_recent(rows: list) -> None:
 
 
 def test_fertilizer_count(rows: list) -> None:
-    # 4 types × 14 years
-    assert len(_for(rows, "agri-fertilizer-sales")) == 56
+    # 4 types × 14 years (national series only; district rows share the slug)
+    assert len(_for(rows, "agri-fertilizer-sales", "fertilizer_type")) == 56
 
 
 def test_fertilizer_urea_recent(rows: list) -> None:
@@ -386,6 +387,79 @@ def test_no_province_subtotal_in_districts(rows: list) -> None:
         "karnali", "sudurpaschim", "nepal",
     }
     assert not districts & aggregates
+
+
+# ---------------------------------------------------------------------------
+# Table 4.3 — livestock population by district (composite dimension)
+# ---------------------------------------------------------------------------
+
+
+def _dist_set(rows: list, dim_kind: str) -> set[str]:
+    return {r.dimension_value.split("__")[0] for r in rows if r.dimension_kind == dim_kind}
+
+
+def test_livestock_district_count_77(rows: list) -> None:
+    assert len(_dist_set(rows, "district-livestock-category")) == 77
+
+
+def test_livestock_district_jhapa_cattle(rows: list) -> None:
+    val = _val(rows, "agri-livestock-population", "district-livestock-category", "jhapa__cattle")
+    assert val == pytest.approx(214_096)
+
+
+def test_livestock_district_chitwan_fowl(rows: list) -> None:
+    val = _val(rows, "agri-livestock-population", "district-livestock-category", "chitwan__fowl")
+    assert val == pytest.approx(10_852_500)
+
+
+def test_livestock_district_missing_trailing_column(rows: list) -> None:
+    # Syangja's row drops the trailing DUCK column → no duck fact, others present.
+    kind = "district-livestock-category"
+    assert _val(rows, "agri-livestock-population", kind, "syangja__duck") is None
+    assert _val(rows, "agri-livestock-population", kind, "syangja__cattle") == pytest.approx(12_704)
+
+
+def test_livestock_district_reconciles(rows: list) -> None:
+    # Sum of every district's cattle == the national 4.1 FY2080/81 value (exact).
+    lp = _for(rows, "agri-livestock-population", "district-livestock-category")
+    for cat, national in [
+        ("cattle", 5_198_388), ("buffaloes", 3_307_031), ("goat", 15_289_954),
+        ("fowl", 56_916_567), ("duck", 796_758),
+    ]:
+        total = sum(r.value for r in lp if r.dimension_value.endswith(f"__{cat}"))
+        assert total == pytest.approx(national, abs=1), cat
+
+
+def test_no_aggregate_rows_in_livestock_districts(rows: list) -> None:
+    aggregates = {
+        "koshi", "madhesh", "bagmati", "gandaki", "lumbini",
+        "karnali", "sudurpaschim", "nepal",
+    }
+    assert not _dist_set(rows, "district-livestock-category") & aggregates
+
+
+# ---------------------------------------------------------------------------
+# Table 9.2 — fertilizer by district (grand-total per type, composite dimension)
+# ---------------------------------------------------------------------------
+
+
+def test_fertilizer_district_siraha_urea(rows: list) -> None:
+    val = _val(rows, "agri-fertilizer-sales", "district-fertilizer-type", "siraha__urea")
+    assert val == pytest.approx(9_404.95)
+
+
+def test_fertilizer_district_dash_cell_skipped(rows: list) -> None:
+    # Manang's Grand-Total Potash is '-' → no fact emitted for it.
+    val = _val(rows, "agri-fertilizer-sales", "district-fertilizer-type", "manang__potash")
+    assert val is None
+
+
+def test_fertilizer_district_reconciles(rows: list) -> None:
+    # Sum of district grand-total urea/dap == the national 9.1 FY2080/81 values.
+    fd = _for(rows, "agri-fertilizer-sales", "district-fertilizer-type")
+    for fert, national in [("urea", 259_542), ("dap", 184_046), ("potash", 14_730)]:
+        total = sum(r.value for r in fd if r.dimension_value.endswith(f"__{fert}"))
+        assert total == pytest.approx(national, abs=1), fert
 
 
 # ---------------------------------------------------------------------------
