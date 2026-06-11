@@ -39,12 +39,15 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import {
+  aggregationRoleEnum,
   auditAmountBasisEnum,
+  auditParagraphStatusEnum,
+  auditStockTypeEnum,
   auditSubjectClassEnum,
-  berujuCategoryEnum,
   confidenceGradeEnum,
   extractionMethodEnum,
   reviewStatusEnum,
+  valueOriginEnum,
 } from './enums';
 import { entities } from './entities';
 import { ocrCellExtractions } from './ocr-tracking';
@@ -109,6 +112,29 @@ export const auditEntitySummaries = pgTable(
 export type AuditEntitySummaryRow = typeof auditEntitySummaries.$inferSelect;
 export type NewAuditEntitySummaryRow = typeof auditEntitySummaries.$inferInsert;
 
+// ─── beruju_categories (taxonomy lookup) ────────────────────────────────
+
+/**
+ * The OAG beruju taxonomy as a seeded lookup table, not a pgEnum (ADR-0027):
+ * the Audit Act's 3 main categories × their leaves, carrying bilingual labels +
+ * act references as data. `audit_beruju_lines` / `audit_findings` FK to `code`;
+ * `mainCategory` drives main-level rollup/reconciliation.
+ */
+export const berujuCategories = pgTable('beruju_categories', {
+  // Stable code, e.g. 'tbr_balance_not_brought_forward'. Prefix = main category
+  // (rec_/tbr_/adv_) except the three bare main codes and 'other'.
+  code: text('code').primaryKey(),
+  // 'recoverable' | 'to_be_regularized' | 'advance' | 'other'.
+  mainCategory: text('main_category').notNull(),
+  nameEn: text('name_en').notNull(),
+  nameNe: text('name_ne'),
+  actReference: text('act_reference'),
+  displayOrder: integer('display_order').notNull(),
+});
+
+export type BerujuCategoryRow = typeof berujuCategories.$inferSelect;
+export type NewBerujuCategoryRow = typeof berujuCategories.$inferInsert;
+
 // ─── audit_beruju_lines ─────────────────────────────────────────────────
 
 export const auditBerujuLines = pgTable(
@@ -123,15 +149,28 @@ export const auditBerujuLines = pgTable(
     aggregateScope: text('aggregate_scope'),
     fiscalYearBs: text('fiscal_year_bs').notNull(),
 
-    // For a given (entity/scope, FY), sum(amount_npr) over categories within a
-    // basis must equal the matching summary scalar (reconciliation gate):
-    //   current_year_raised    ↔ beruju_raised_npr
-    //   settled_this_year      ↔ settled_this_year_npr
-    //   cumulative_outstanding ↔ cumulative_outstanding_npr
+    // Reconciliation gate (level-aware, ADR-0027): for a given (entity/scope,
+    // FY, source_table), sum over `detail` rows within a basis equals the
+    // printed `subtotal`/`grand_total` row; main-level rollup uses the lookup's
+    // main_category. current_year_raised ↔ beruju_raised_npr, etc.
     amountBasis: auditAmountBasisEnum('amount_basis').notNull(),
-    berujuCategory: berujuCategoryEnum('beruju_category').notNull(),
-    // Exact Nepali/English label the parser saw — fidelity for `other`.
+    // FK → beruju_categories.code (the OAG taxonomy lookup). NOT NULL: every
+    // line carries a taxonomy code; roll up via the lookup's main_category.
+    berujuCategory: text('beruju_category')
+      .notNull()
+      .references(() => berujuCategories.code, { onDelete: 'restrict' }),
+    // Exact printed labels the parser saw (fidelity).
     berujuCategoryLabelRaw: text('beruju_category_label_raw'),
+    sourceRowLabel: text('source_row_label'),
+
+    // Presentation + value provenance (ADR-0027). Parent/total rows are STORED
+    // (role != 'detail'), not skipped; default analytical sums filter 'detail'.
+    aggregationRole: aggregationRoleEnum('aggregation_role').notNull().default('detail'),
+    valueOrigin: valueOriginEnum('value_origin').notNull().default('printed'),
+    // Which source table the row came from (e.g. 'ch2_irregularity_classification',
+    // 'ch2_settlement', 'ch_federal_by_ministry') — disambiguates the same
+    // category appearing in multiple tables of one report.
+    sourceTableCode: text('source_table_code').notNull(),
 
     amountNpr: numeric('amount_npr', { precision: 20, scale: 2 }).notNull(),
     amountRaw: text('amount_raw'),
@@ -146,14 +185,22 @@ export const auditBerujuLines = pgTable(
     ...auditProvenanceColumns(),
   },
   (table) => [
+    // Collision-proof key (ADR-0027): source_document_id scopes a row to its
+    // report, and aggregation_role + source_table_code separate the same
+    // category appearing across the classification / settlement / ministry
+    // tables. NULLS NOT DISTINCT so a re-parsed aggregate (NULL entity) is a
+    // no-op, not a duplicate.
     unique('audit_beruju_lines_unique')
       .on(
+        table.sourceDocumentId,
         table.auditSubjectClass,
         table.auditedEntityId,
         table.aggregateScope,
         table.fiscalYearBs,
         table.amountBasis,
         table.berujuCategory,
+        table.aggregationRole,
+        table.sourceTableCode,
       )
       .nullsNotDistinct(),
     index('audit_beruju_lines_entity_idx').on(table.auditedEntityId),
@@ -179,7 +226,10 @@ export const auditFindings = pgTable(
     auditSubjectClass: auditSubjectClassEnum('audit_subject_class').notNull(),
     fiscalYearBs: text('fiscal_year_bs').notNull(),
 
-    berujuCategory: berujuCategoryEnum('beruju_category'),
+    // FK → beruju_categories.code (nullable: a finding need not be a beruju).
+    berujuCategory: text('beruju_category').references(() => berujuCategories.code, {
+      onDelete: 'restrict',
+    }),
     amountBasis: auditAmountBasisEnum('amount_basis'),
 
     // Stable parser ordering within (document, entity). Identity, NOT para_ref,
@@ -224,6 +274,125 @@ export const auditFindings = pgTable(
 
 export type AuditFindingRow = typeof auditFindings.$inferSelect;
 export type NewAuditFindingRow = typeof auditFindings.$inferInsert;
+
+// ─── audit_financial_stocks ─────────────────────────────────────────────
+
+/**
+ * OAG "amounts outstanding to be settled" stock table (ADR-0027) — a different
+ * MEASURE from beruju classification. Revenue arrears, foreign-aid
+ * reimbursables, audit backlogs, overdue principal/interest: each a balance
+ * with a lifecycle (closing = opening + addition − settlement ± adjustment).
+ */
+export const auditFinancialStocks = pgTable(
+  'audit_financial_stocks',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+
+    auditedEntityId: uuid('audited_entity_id').references(() => entities.id, {
+      onDelete: 'restrict',
+    }),
+    auditSubjectClass: auditSubjectClassEnum('audit_subject_class').notNull(),
+    aggregateScope: text('aggregate_scope'),
+    fiscalYearBs: text('fiscal_year_bs').notNull(),
+
+    stockType: auditStockTypeEnum('stock_type').notNull(),
+
+    // Reconciliation identity: closing = opening + addition − settlement ±
+    // adjustment. Each normalized NPR paired with its printed raw expression.
+    openingNpr: numeric('opening_npr', { precision: 20, scale: 2 }),
+    openingRaw: text('opening_raw'),
+    additionNpr: numeric('addition_npr', { precision: 20, scale: 2 }),
+    additionRaw: text('addition_raw'),
+    settlementNpr: numeric('settlement_npr', { precision: 20, scale: 2 }),
+    settlementRaw: text('settlement_raw'),
+    adjustmentNpr: numeric('adjustment_npr', { precision: 20, scale: 2 }),
+    adjustmentRaw: text('adjustment_raw'),
+    closingNpr: numeric('closing_npr', { precision: 20, scale: 2 }),
+    closingRaw: text('closing_raw'),
+
+    sourceUnit: text('source_unit'),
+    sourceScale: numeric('source_scale', { precision: 20, scale: 6 }),
+    sourceTableCode: text('source_table_code').notNull(),
+    sourceRowLabel: text('source_row_label'),
+    sourcePage: integer('source_page'),
+    sourceTableRef: text('source_table_ref'),
+    sourceCellRef: text('source_cell_ref'),
+
+    ...auditProvenanceColumns(),
+  },
+  (table) => [
+    unique('audit_financial_stocks_unique')
+      .on(
+        table.sourceDocumentId,
+        table.auditSubjectClass,
+        table.auditedEntityId,
+        table.aggregateScope,
+        table.fiscalYearBs,
+        table.stockType,
+      )
+      .nullsNotDistinct(),
+    index('audit_financial_stocks_fy_idx').on(table.fiscalYearBs),
+    index('audit_financial_stocks_type_idx').on(table.stockType),
+    index('audit_financial_stocks_entity_idx').on(table.auditedEntityId),
+  ],
+);
+
+export type AuditFinancialStockRow = typeof auditFinancialStocks.$inferSelect;
+export type NewAuditFinancialStockRow = typeof auditFinancialStocks.$inferInsert;
+
+// ─── audit_paragraph_metrics ────────────────────────────────────────────
+
+/**
+ * Section-38 record reconciliation (ADR-0027) — COUNTS of audit paragraphs by
+ * lifecycle status (issued / settled-on-response / carried-forward / remaining)
+ * per subject class, with an optional amount. Not money classified by type, so
+ * it is neither a beruju line nor a stock balance.
+ */
+export const auditParagraphMetrics = pgTable(
+  'audit_paragraph_metrics',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+
+    auditedEntityId: uuid('audited_entity_id').references(() => entities.id, {
+      onDelete: 'restrict',
+    }),
+    auditSubjectClass: auditSubjectClassEnum('audit_subject_class').notNull(),
+    aggregateScope: text('aggregate_scope'),
+    fiscalYearBs: text('fiscal_year_bs').notNull(),
+
+    paragraphStatus: auditParagraphStatusEnum('paragraph_status').notNull(),
+    paragraphCount: integer('paragraph_count'),
+    amountNpr: numeric('amount_npr', { precision: 20, scale: 2 }),
+    amountRaw: text('amount_raw'),
+
+    sourceUnit: text('source_unit'),
+    sourceScale: numeric('source_scale', { precision: 20, scale: 6 }),
+    sourceTableCode: text('source_table_code').notNull(),
+    sourceRowLabel: text('source_row_label'),
+    sourcePage: integer('source_page'),
+    sourceTableRef: text('source_table_ref'),
+    sourceCellRef: text('source_cell_ref'),
+
+    ...auditProvenanceColumns(),
+  },
+  (table) => [
+    unique('audit_paragraph_metrics_unique')
+      .on(
+        table.sourceDocumentId,
+        table.auditSubjectClass,
+        table.auditedEntityId,
+        table.aggregateScope,
+        table.fiscalYearBs,
+        table.paragraphStatus,
+      )
+      .nullsNotDistinct(),
+    index('audit_paragraph_metrics_fy_idx').on(table.fiscalYearBs),
+    index('audit_paragraph_metrics_entity_idx').on(table.auditedEntityId),
+  ],
+);
+
+export type AuditParagraphMetricRow = typeof auditParagraphMetrics.$inferSelect;
+export type NewAuditParagraphMetricRow = typeof auditParagraphMetrics.$inferInsert;
 
 // ─── Shared provenance ──────────────────────────────────────────────────
 

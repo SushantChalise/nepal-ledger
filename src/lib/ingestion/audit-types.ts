@@ -29,15 +29,10 @@ const AuditSubjectClassSchema = z.enum([
   'other_institution',
 ]);
 
-const BerujuCategorySchema = z.enum([
-  'recoverable',
-  'irregular',
-  'evidence_not_submitted',
-  'advance_outstanding',
-  'revenue_arrears',
-  'responsibility_not_transferred',
-  'other',
-]);
+// beruju_category is a FK to the beruju_categories lookup (ADR-0027): a stable
+// taxonomy code string (e.g. 'tbr_balance_not_brought_forward'), validated
+// against the lookup at insert time, not a closed enum here.
+const BerujuCategoryCode = z.string().min(1);
 
 const AuditAmountBasisSchema = z.enum([
   'current_year_raised',
@@ -46,6 +41,24 @@ const AuditAmountBasisSchema = z.enum([
   'opening_outstanding',
   'adjustment',
   'other',
+]);
+
+const AggregationRoleSchema = z.enum(['detail', 'subtotal', 'grand_total']);
+const ValueOriginSchema = z.enum(['printed', 'computed']);
+const AuditStockTypeSchema = z.enum([
+  'audit_backlog',
+  'revenue_arrears',
+  'foreign_grant_reimbursable',
+  'foreign_loan_reimbursable',
+  'overdue_principal',
+  'overdue_interest',
+  'other',
+]);
+const AuditParagraphStatusSchema = z.enum([
+  'issued',
+  'settled_on_response',
+  'carried_forward',
+  'remaining',
 ]);
 
 const ExtractionMethodSchema = z.enum(['text_layer', 'preeti_fix', 'surya_ocr', 'manual_review']);
@@ -127,8 +140,16 @@ export const AuditBerujuLineDraftSchema = z.object({
   fiscal_year_bs: z.string().min(1),
 
   amount_basis: AuditAmountBasisSchema,
-  beruju_category: BerujuCategorySchema,
+  beruju_category: BerujuCategoryCode,
   beruju_category_label_raw: z.string().nullable().optional(),
+  source_row_label: z.string().nullable().optional(),
+
+  // Presentation + value provenance (ADR-0027). Parent/total rows are emitted
+  // with role != 'detail'; source_table_code disambiguates same-category rows
+  // across the classification / settlement / ministry tables.
+  aggregation_role: AggregationRoleSchema.default('detail'),
+  value_origin: ValueOriginSchema.default('printed'),
+  source_table_code: z.string().min(1),
 
   amount_npr: DecimalStr, // NOT NULL in the DB
   amount_raw: z.string().min(1), // always present — amount_npr is always present
@@ -151,7 +172,7 @@ export const AuditFindingDraftSchema = z
     audit_subject_class: AuditSubjectClassSchema,
     fiscal_year_bs: z.string().min(1),
 
-    beruju_category: BerujuCategorySchema.nullable().optional(),
+    beruju_category: BerujuCategoryCode.nullable().optional(),
     amount_basis: AuditAmountBasisSchema.nullable().optional(),
 
     finding_ordinal: z.number().int().nonnegative(),
@@ -188,6 +209,96 @@ export const AuditFindingDraftSchema = z
 
 export type AuditFindingDraft = z.infer<typeof AuditFindingDraftSchema>;
 
+// ─── audit_financial_stocks draft ───────────────────────────────────────
+
+export const AuditFinancialStockDraftSchema = z
+  .object({
+    audited_entity_id: z.string().uuid().nullable(),
+    audit_subject_class: AuditSubjectClassSchema,
+    aggregate_scope: z.string().nullable().optional(),
+    fiscal_year_bs: z.string().min(1),
+
+    stock_type: AuditStockTypeSchema,
+
+    opening_npr: DecimalStr.nullable().optional(),
+    opening_raw: z.string().nullable().optional(),
+    addition_npr: DecimalStr.nullable().optional(),
+    addition_raw: z.string().nullable().optional(),
+    settlement_npr: DecimalStr.nullable().optional(),
+    settlement_raw: z.string().nullable().optional(),
+    adjustment_npr: DecimalStr.nullable().optional(),
+    adjustment_raw: z.string().nullable().optional(),
+    closing_npr: DecimalStr.nullable().optional(),
+    closing_raw: z.string().nullable().optional(),
+
+    source_unit: z.string().nullable().optional(),
+    source_scale: DecimalStr.nullable().optional(),
+    source_table_code: z.string().min(1),
+    source_row_label: z.string().nullable().optional(),
+    source_page: z.number().int().nullable().optional(),
+    source_table_ref: z.string().nullable().optional(),
+    source_cell_ref: z.string().nullable().optional(),
+
+    ...coreProvenanceShape,
+  })
+  .superRefine((row, ctx) => {
+    // Every non-null normalized amount carries its raw printed expression.
+    const pairs = [
+      ['opening_npr', 'opening_raw'],
+      ['addition_npr', 'addition_raw'],
+      ['settlement_npr', 'settlement_raw'],
+      ['adjustment_npr', 'adjustment_raw'],
+      ['closing_npr', 'closing_raw'],
+    ] as const;
+    for (const [nprKey, rawKey] of pairs) {
+      if (row[nprKey] != null && row[rawKey] == null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [rawKey],
+          message: `${rawKey} is required when ${nprKey} is present`,
+        });
+      }
+    }
+  });
+
+export type AuditFinancialStockDraft = z.infer<typeof AuditFinancialStockDraftSchema>;
+
+// ─── audit_paragraph_metrics draft ──────────────────────────────────────
+
+export const AuditParagraphMetricDraftSchema = z
+  .object({
+    audited_entity_id: z.string().uuid().nullable(),
+    audit_subject_class: AuditSubjectClassSchema,
+    aggregate_scope: z.string().nullable().optional(),
+    fiscal_year_bs: z.string().min(1),
+
+    paragraph_status: AuditParagraphStatusSchema,
+    paragraph_count: z.number().int().nullable().optional(),
+    amount_npr: DecimalStr.nullable().optional(),
+    amount_raw: z.string().nullable().optional(),
+
+    source_unit: z.string().nullable().optional(),
+    source_scale: DecimalStr.nullable().optional(),
+    source_table_code: z.string().min(1),
+    source_row_label: z.string().nullable().optional(),
+    source_page: z.number().int().nullable().optional(),
+    source_table_ref: z.string().nullable().optional(),
+    source_cell_ref: z.string().nullable().optional(),
+
+    ...coreProvenanceShape,
+  })
+  .superRefine((row, ctx) => {
+    if (row.amount_npr != null && row.amount_raw == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['amount_raw'],
+        message: 'amount_raw is required when amount_npr is present',
+      });
+    }
+  });
+
+export type AuditParagraphMetricDraft = z.infer<typeof AuditParagraphMetricDraftSchema>;
+
 // ─── Parser output envelope ─────────────────────────────────────────────
 
 const AuditParserErrorSchema = z.object({
@@ -215,6 +326,8 @@ export const AuditParserOutputSchema = z.object({
   fiscal_year_bs: z.string().min(1),
   summaries: z.array(AuditSummaryDraftSchema),
   beruju_lines: z.array(AuditBerujuLineDraftSchema),
+  financial_stocks: z.array(AuditFinancialStockDraftSchema).default([]),
+  paragraph_metrics: z.array(AuditParagraphMetricDraftSchema).default([]),
   findings: z.array(AuditFindingDraftSchema),
   errors: z.array(AuditParserErrorSchema),
 });

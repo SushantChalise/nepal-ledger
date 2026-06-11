@@ -57,6 +57,20 @@
       "when": 1781152160313,
       "tag": "0007_0008_observation_type",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1781169643233,
+      "tag": "0008_0009_audit_data_model_v2",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1781169725188,
+      "tag": "0009_0010_drop_legacy_beruju_category_enum",
+      "breakpoints": true
     }
   ]
 }

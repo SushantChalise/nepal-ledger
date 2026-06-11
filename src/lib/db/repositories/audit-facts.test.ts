@@ -23,13 +23,17 @@ vi.mock('@/lib/db/client', () => ({
 import type {
   NewAuditBerujuLineRow,
   NewAuditEntitySummaryRow,
+  NewAuditFinancialStockRow,
   NewAuditFindingRow,
+  NewAuditParagraphMetricRow,
 } from '@/lib/db/schema/audit-facts';
 
 import {
   bulkInsertAuditFindings,
   bulkUpsertBerujuLines,
   bulkUpsertAuditSummaries,
+  bulkUpsertFinancialStocks,
+  bulkUpsertParagraphMetrics,
 } from './audit-facts';
 
 type ConflictArg = {
@@ -59,8 +63,40 @@ const lineRow: NewAuditBerujuLineRow = {
   fiscalYearBs: '2079/80',
   amountBasis: 'current_year_raised',
   berujuCategory: 'recoverable',
+  sourceTableCode: 'ch2_irregularity_classification',
   amountNpr: '193000000000.00',
   amountRaw: '१९३ अर्ब',
+  sourceDocumentId: '00000000-0000-0000-0000-000000000001',
+  sourcePrecedence: 1,
+  extractionMethod: 'text_layer',
+  confidenceGrade: 'A',
+  promotedBy: 'test',
+};
+
+const stockRow: NewAuditFinancialStockRow = {
+  auditSubjectClass: 'federal_government',
+  auditedEntityId: null,
+  aggregateScope: 'all_federal_offices',
+  fiscalYearBs: '2079/80',
+  stockType: 'revenue_arrears',
+  closingNpr: '215568700000.00',
+  closingRaw: '215,568.7',
+  sourceTableCode: 'ch_outstanding_stock',
+  sourceDocumentId: '00000000-0000-0000-0000-000000000001',
+  sourcePrecedence: 1,
+  extractionMethod: 'text_layer',
+  confidenceGrade: 'A',
+  promotedBy: 'test',
+};
+
+const metricRow: NewAuditParagraphMetricRow = {
+  auditSubjectClass: 'federal_government',
+  auditedEntityId: null,
+  aggregateScope: 'all_federal_offices',
+  fiscalYearBs: '2079/80',
+  paragraphStatus: 'issued',
+  paragraphCount: 8149,
+  sourceTableCode: 'ch4_section38',
   sourceDocumentId: '00000000-0000-0000-0000-000000000001',
   sourcePrecedence: 1,
   extractionMethod: 'text_layer',
@@ -172,25 +208,82 @@ describe('bulkUpsertAuditSummaries', () => {
 });
 
 describe('bulkUpsertBerujuLines', () => {
-  it('upserts on the 6-column natural key with a precedence guard', async () => {
+  it('upserts on the collision-proof 9-column key (doc + role + source_table) with a precedence guard', async () => {
     const chain = mockUpdateChain([{ id: 'a' }]);
     const result = await bulkUpsertBerujuLines([lineRow]);
     expect(result.ok).toBe(true);
     expect(chain.captured?.target.map((c) => c.name)).toEqual([
+      'source_document_id',
       'audit_subject_class',
       'audited_entity_id',
       'aggregate_scope',
       'fiscal_year_bs',
       'amount_basis',
       'beruju_category',
+      'aggregation_role',
+      'source_table_code',
     ]);
     expect(chain.captured?.setWhere).toBeDefined();
     expect(chain.captured?.set).toHaveProperty('amountNpr');
+    expect(chain.captured?.set).toHaveProperty('valueOrigin');
+    // Key columns are never overwritten from excluded.
     expect(chain.captured?.set).not.toHaveProperty('berujuCategory');
+    expect(chain.captured?.set).not.toHaveProperty('aggregationRole');
+    expect(chain.captured?.set).not.toHaveProperty('sourceTableCode');
   });
 
   it('empty input short-circuits', async () => {
     const result = await bulkUpsertBerujuLines([]);
+    expect(result.ok).toBe(true);
+    expect(dbMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('bulkUpsertFinancialStocks', () => {
+  it('upserts on the document-scoped stock key with a precedence guard', async () => {
+    const chain = mockUpdateChain([{ id: 'a' }]);
+    const result = await bulkUpsertFinancialStocks([stockRow]);
+    expect(result.ok).toBe(true);
+    expect(chain.captured?.target.map((c) => c.name)).toEqual([
+      'source_document_id',
+      'audit_subject_class',
+      'audited_entity_id',
+      'aggregate_scope',
+      'fiscal_year_bs',
+      'stock_type',
+    ]);
+    expect(chain.captured?.setWhere).toBeDefined();
+    expect(chain.captured?.set).toHaveProperty('closingNpr');
+    expect(chain.captured?.set).not.toHaveProperty('stockType');
+  });
+
+  it('empty input short-circuits', async () => {
+    const result = await bulkUpsertFinancialStocks([]);
+    expect(result.ok).toBe(true);
+    expect(dbMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('bulkUpsertParagraphMetrics', () => {
+  it('upserts on the document-scoped paragraph-status key with a precedence guard', async () => {
+    const chain = mockUpdateChain([{ id: 'a' }]);
+    const result = await bulkUpsertParagraphMetrics([metricRow]);
+    expect(result.ok).toBe(true);
+    expect(chain.captured?.target.map((c) => c.name)).toEqual([
+      'source_document_id',
+      'audit_subject_class',
+      'audited_entity_id',
+      'aggregate_scope',
+      'fiscal_year_bs',
+      'paragraph_status',
+    ]);
+    expect(chain.captured?.setWhere).toBeDefined();
+    expect(chain.captured?.set).toHaveProperty('paragraphCount');
+    expect(chain.captured?.set).not.toHaveProperty('paragraphStatus');
+  });
+
+  it('empty input short-circuits', async () => {
+    const result = await bulkUpsertParagraphMetrics([]);
     expect(result.ok).toBe(true);
     expect(dbMock).not.toHaveBeenCalled();
   });

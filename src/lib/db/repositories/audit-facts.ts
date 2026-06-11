@@ -21,10 +21,14 @@ import { safeQuery } from '@/lib/db/safe-query';
 import {
   auditBerujuLines,
   auditEntitySummaries,
+  auditFinancialStocks,
   auditFindings,
+  auditParagraphMetrics,
   type NewAuditBerujuLineRow,
   type NewAuditEntitySummaryRow,
+  type NewAuditFinancialStockRow,
   type NewAuditFindingRow,
+  type NewAuditParagraphMetricRow,
 } from '@/lib/db/schema/audit-facts';
 import { ok, type Result } from '@/lib/errors';
 
@@ -112,16 +116,21 @@ export async function bulkUpsertBerujuLines(
       .values([...rows])
       .onConflictDoUpdate({
         target: [
+          auditBerujuLines.sourceDocumentId,
           auditBerujuLines.auditSubjectClass,
           auditBerujuLines.auditedEntityId,
           auditBerujuLines.aggregateScope,
           auditBerujuLines.fiscalYearBs,
           auditBerujuLines.amountBasis,
           auditBerujuLines.berujuCategory,
+          auditBerujuLines.aggregationRole,
+          auditBerujuLines.sourceTableCode,
         ],
         setWhere: sql`excluded.source_precedence >= ${auditBerujuLines.sourcePrecedence}`,
         set: {
           berujuCategoryLabelRaw: sql`excluded.beruju_category_label_raw`,
+          sourceRowLabel: sql`excluded.source_row_label`,
+          valueOrigin: sql`excluded.value_origin`,
           amountNpr: sql`excluded.amount_npr`,
           amountRaw: sql`excluded.amount_raw`,
           sourceUnit: sql`excluded.source_unit`,
@@ -161,6 +170,91 @@ export async function bulkInsertAuditFindings(
   );
   if (!inserted.ok) return inserted;
   return ok(summarize(rows.length, inserted.value.length));
+}
+
+/**
+ * Precedence-guarded bulk upsert into `audit_financial_stocks` (ADR-0027 stock
+ * balances — arrears, reimbursables, backlogs). Document-scoped key.
+ */
+export async function bulkUpsertFinancialStocks(
+  rows: readonly NewAuditFinancialStockRow[],
+): Promise<Result<BulkUpsertSummary>> {
+  if (rows.length === 0) return ok({ attempted: 0, upserted: 0, skipped: 0 });
+
+  const upserted = await safeQuery(() =>
+    db()
+      .insert(auditFinancialStocks)
+      .values([...rows])
+      .onConflictDoUpdate({
+        target: [
+          auditFinancialStocks.sourceDocumentId,
+          auditFinancialStocks.auditSubjectClass,
+          auditFinancialStocks.auditedEntityId,
+          auditFinancialStocks.aggregateScope,
+          auditFinancialStocks.fiscalYearBs,
+          auditFinancialStocks.stockType,
+        ],
+        setWhere: sql`excluded.source_precedence >= ${auditFinancialStocks.sourcePrecedence}`,
+        set: {
+          openingNpr: sql`excluded.opening_npr`,
+          openingRaw: sql`excluded.opening_raw`,
+          additionNpr: sql`excluded.addition_npr`,
+          additionRaw: sql`excluded.addition_raw`,
+          settlementNpr: sql`excluded.settlement_npr`,
+          settlementRaw: sql`excluded.settlement_raw`,
+          adjustmentNpr: sql`excluded.adjustment_npr`,
+          adjustmentRaw: sql`excluded.adjustment_raw`,
+          closingNpr: sql`excluded.closing_npr`,
+          closingRaw: sql`excluded.closing_raw`,
+          sourceUnit: sql`excluded.source_unit`,
+          sourceScale: sql`excluded.source_scale`,
+          sourceRowLabel: sql`excluded.source_row_label`,
+          ...provenanceUpdateSet,
+        },
+      })
+      .returning({ id: auditFinancialStocks.id }),
+  );
+  if (!upserted.ok) return upserted;
+  return ok(summarize(rows.length, upserted.value.length));
+}
+
+/**
+ * Precedence-guarded bulk upsert into `audit_paragraph_metrics` (ADR-0027
+ * Section-38 paragraph counts). Document-scoped key.
+ */
+export async function bulkUpsertParagraphMetrics(
+  rows: readonly NewAuditParagraphMetricRow[],
+): Promise<Result<BulkUpsertSummary>> {
+  if (rows.length === 0) return ok({ attempted: 0, upserted: 0, skipped: 0 });
+
+  const upserted = await safeQuery(() =>
+    db()
+      .insert(auditParagraphMetrics)
+      .values([...rows])
+      .onConflictDoUpdate({
+        target: [
+          auditParagraphMetrics.sourceDocumentId,
+          auditParagraphMetrics.auditSubjectClass,
+          auditParagraphMetrics.auditedEntityId,
+          auditParagraphMetrics.aggregateScope,
+          auditParagraphMetrics.fiscalYearBs,
+          auditParagraphMetrics.paragraphStatus,
+        ],
+        setWhere: sql`excluded.source_precedence >= ${auditParagraphMetrics.sourcePrecedence}`,
+        set: {
+          paragraphCount: sql`excluded.paragraph_count`,
+          amountNpr: sql`excluded.amount_npr`,
+          amountRaw: sql`excluded.amount_raw`,
+          sourceUnit: sql`excluded.source_unit`,
+          sourceScale: sql`excluded.source_scale`,
+          sourceRowLabel: sql`excluded.source_row_label`,
+          ...provenanceUpdateSet,
+        },
+      })
+      .returning({ id: auditParagraphMetrics.id }),
+  );
+  if (!upserted.ok) return upserted;
+  return ok(summarize(rows.length, upserted.value.length));
 }
 
 function summarize(attempted: number, affected: number): BulkUpsertSummary {

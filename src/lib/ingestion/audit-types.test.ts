@@ -10,7 +10,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   AuditBerujuLineDraftSchema,
+  AuditFinancialStockDraftSchema,
   AuditFindingDraftSchema,
+  AuditParagraphMetricDraftSchema,
   AuditParserOutputSchema,
   AuditSummaryDraftSchema,
   AuditValidationReportSchema,
@@ -43,9 +45,33 @@ const validLine = {
   aggregate_scope: 'all_local_levels',
   fiscal_year_bs: '2079/80',
   amount_basis: 'current_year_raised',
-  beruju_category: 'recoverable',
+  beruju_category: 'recoverable', // FK code into beruju_categories (ADR-0027)
+  source_table_code: 'ch2_irregularity_classification',
   amount_npr: '193000000000.00',
   amount_raw: '१९३ अर्ब',
+  ...baseProvenance,
+};
+
+const validStock = {
+  audited_entity_id: null,
+  audit_subject_class: 'federal_government',
+  aggregate_scope: 'all_federal_offices',
+  fiscal_year_bs: '2079/80',
+  stock_type: 'revenue_arrears',
+  closing_npr: '215568700000.00',
+  closing_raw: '215,568.7',
+  source_table_code: 'ch_outstanding_stock',
+  ...baseProvenance,
+};
+
+const validMetric = {
+  audited_entity_id: null,
+  audit_subject_class: 'federal_government',
+  aggregate_scope: 'all_federal_offices',
+  fiscal_year_bs: '2079/80',
+  paragraph_status: 'issued',
+  paragraph_count: 8149,
+  source_table_code: 'ch4_section38',
   ...baseProvenance,
 };
 
@@ -111,6 +137,60 @@ describe('AuditBerujuLineDraftSchema', () => {
       AuditBerujuLineDraftSchema.safeParse({ ...validLine, amount_npr: 'रु. हजार' }).success,
     ).toBe(false);
   });
+
+  it('requires source_table_code', () => {
+    const noTable: Record<string, unknown> = { ...validLine };
+    delete noTable['source_table_code'];
+    expect(AuditBerujuLineDraftSchema.safeParse(noTable).success).toBe(false);
+  });
+
+  it('defaults aggregation_role=detail and value_origin=printed', () => {
+    const r = AuditBerujuLineDraftSchema.safeParse(validLine);
+    expect(r.success).toBe(true);
+    if (!r.success) return;
+    expect(r.data.aggregation_role).toBe('detail');
+    expect(r.data.value_origin).toBe('printed');
+  });
+
+  it('rejects an unknown aggregation_role', () => {
+    expect(
+      AuditBerujuLineDraftSchema.safeParse({ ...validLine, aggregation_role: 'nope' }).success,
+    ).toBe(false);
+  });
+});
+
+describe('AuditFinancialStockDraftSchema', () => {
+  it('accepts a well-formed stock balance', () => {
+    expect(AuditFinancialStockDraftSchema.safeParse(validStock).success).toBe(true);
+  });
+
+  it('rejects a normalized amount without its raw expression', () => {
+    const noRaw: Record<string, unknown> = { ...validStock };
+    delete noRaw['closing_raw'];
+    const r = AuditFinancialStockDraftSchema.safeParse(noRaw);
+    expect(r.success).toBe(false);
+    if (r.success) return;
+    expect(r.error.issues.some((i) => i.path.includes('closing_raw'))).toBe(true);
+  });
+
+  it('rejects an unknown stock_type', () => {
+    expect(
+      AuditFinancialStockDraftSchema.safeParse({ ...validStock, stock_type: 'nope' }).success,
+    ).toBe(false);
+  });
+});
+
+describe('AuditParagraphMetricDraftSchema', () => {
+  it('accepts a well-formed paragraph metric', () => {
+    expect(AuditParagraphMetricDraftSchema.safeParse(validMetric).success).toBe(true);
+  });
+
+  it('rejects an unknown paragraph_status', () => {
+    expect(
+      AuditParagraphMetricDraftSchema.safeParse({ ...validMetric, paragraph_status: 'nope' })
+        .success,
+    ).toBe(false);
+  });
 });
 
 describe('AuditFindingDraftSchema', () => {
@@ -139,10 +219,31 @@ describe('AuditParserOutputSchema', () => {
       fiscal_year_bs: '2079/80',
       summaries: [validSummary],
       beruju_lines: [validLine],
+      financial_stocks: [validStock],
+      paragraph_metrics: [validMetric],
       findings: [validFinding],
       errors: [],
     };
     expect(AuditParserOutputSchema.safeParse(out).success).toBe(true);
+  });
+
+  it('defaults financial_stocks + paragraph_metrics to empty arrays when omitted', () => {
+    const out = {
+      status: 'success',
+      parser_version: '0.1.0',
+      source_id: 'oag-audit-reports',
+      source_document_id: DOC,
+      fiscal_year_bs: '2079/80',
+      summaries: [validSummary],
+      beruju_lines: [validLine],
+      findings: [validFinding],
+      errors: [],
+    };
+    const r = AuditParserOutputSchema.safeParse(out);
+    expect(r.success).toBe(true);
+    if (!r.success) return;
+    expect(r.data.financial_stocks).toEqual([]);
+    expect(r.data.paragraph_metrics).toEqual([]);
   });
 });
 

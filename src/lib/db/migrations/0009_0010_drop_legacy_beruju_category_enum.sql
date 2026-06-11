@@ -1,0 +1,1 @@
+DROP TYPE "public"."beruju_category";

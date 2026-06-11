@@ -258,20 +258,14 @@ export const auditSubjectClassEnum = pgEnum('audit_subject_class', [
 export type AuditSubjectClass = (typeof auditSubjectClassEnum.enumValues)[number];
 
 /**
- * OAG's classification of an irregularity (beruju). Canonical Nepali audit
- * taxonomy; `other` is the escape hatch for labels not yet mapped (the exact
- * source label is preserved in `beruju_category_label_raw`). Extending = ADR.
+ * The OAG beruju taxonomy is NOT a pgEnum — it lives in the `beruju_categories`
+ * lookup table (ADR-0027). The old `beruju_category` enum conflated the OAG's
+ * 3-main/10-sub Audit-Act taxonomy and held two mis-mapped values
+ * (`revenue_arrears`, `responsibility_not_transferred`); it is dropped.
+ * `audit_beruju_lines` / `audit_findings` reference the lookup `code` via a
+ * text FK, and roll up by the lookup's `main_category`.
+ *
  */
-export const berujuCategoryEnum = pgEnum('beruju_category', [
-  'recoverable', // असुल उपर गर्नुपर्ने (incl. embezzlement, loss/damage)
-  'irregular', // अनियमित (to-regularize: irregular)
-  'evidence_not_submitted', // प्रमाण कागजात पेश नभएको
-  'advance_outstanding', // पेश्की बाँकी (peski)
-  'revenue_arrears', // राजस्व / धरौटी बक्यौता
-  'responsibility_not_transferred', // जिम्मेवारी नसारिएको
-  'other',
-]);
-export type BerujuCategory = (typeof berujuCategoryEnum.enumValues)[number];
 
 /**
  * WHICH amount a beruju line/finding describes. A single category can recur
@@ -312,3 +306,53 @@ export const reviewStatusEnum = pgEnum('review_status', [
   'flagged',
 ]);
 export type ReviewStatus = (typeof reviewStatusEnum.enumValues)[number];
+
+// ─── Added in migration 0008 — audit data model v2 (ADR-0027) ───────────
+
+/**
+ * The presentation level of a beruju line within its source table. Parent /
+ * total rows are STORED (not skipped) so source fidelity is preserved and
+ * "printed subtotal == Σ leaves" can be reconciled. Default analytical sums
+ * filter `detail` only.
+ */
+export const aggregationRoleEnum = pgEnum('aggregation_role', [
+  'detail', // a leaf row
+  'subtotal', // a printed main-category / group subtotal
+  'grand_total', // a printed grand total
+]);
+export type AggregationRole = (typeof aggregationRoleEnum.enumValues)[number];
+
+/**
+ * Whether a row's amount was lifted from the report (`printed`) or derived by
+ * the parser (`computed`). Lets reconciliation compare the two independently.
+ */
+export const valueOriginEnum = pgEnum('value_origin', ['printed', 'computed']);
+export type ValueOrigin = (typeof valueOriginEnum.enumValues)[number];
+
+/**
+ * Kind of outstanding-balance stock tracked in `audit_financial_stocks`
+ * (OAG "amounts to be settled" table — distinct from beruju classification).
+ * `revenue_arrears` lives HERE, never as a beruju category (ADR-0027).
+ */
+export const auditStockTypeEnum = pgEnum('audit_stock_type', [
+  'audit_backlog', // लेखापरीक्षण बाँकी
+  'revenue_arrears', // राजस्व बक्यौता
+  'foreign_grant_reimbursable', // सोधभर्ना हुन बाँकी वैदेशिक अनुदान
+  'foreign_loan_reimbursable', // सोधभर्ना हुन बाँकी वैदेशिक ऋण
+  'overdue_principal', // भाखा नाघेको साँवा
+  'overdue_interest', // भाखा नाघेको ब्याज
+  'other',
+]);
+export type AuditStockType = (typeof auditStockTypeEnum.enumValues)[number];
+
+/**
+ * Lifecycle status of an audit paragraph (Section-38 record reconciliation) in
+ * `audit_paragraph_metrics` — counts of paragraphs, not money by category.
+ */
+export const auditParagraphStatusEnum = pgEnum('audit_paragraph_status', [
+  'issued', // प्रारम्भिक प्रतिवेदनमा जारी
+  'settled_on_response', // जवाफबाट फर्स्यौट
+  'carried_forward', // सम्परीक्षण हुन बाँकी
+  'remaining', // यथावत बाँकी
+]);
+export type AuditParagraphStatus = (typeof auditParagraphStatusEnum.enumValues)[number];
