@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Seed the indicator catalogue + controlled unit vocabulary.
  *
  * Three tables, in dependency order:
@@ -39,6 +39,7 @@ const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const WDI_SOURCE_ID = 'wb-wdi';
 const FCS_SOURCE_ID = 'nrb-financial-corporations-survey';
 const WB_KNOMAD_SOURCE_ID = 'wb-knomad-bilateral-remittance';
+const DOFE_SOURCE_ID = 'dofe-labour-migration';
 
 // NRB Financial Corporations Survey (FCS) -- IMF MFSM 2016 methodology.
 // Consolidated balance sheet: Central Bank + BFIs + OFCs. Quarterly XLSX.
@@ -484,6 +485,111 @@ const WB_KNOMAD_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+
+// ─── DoFE Labour Migration corridor indicators (parser dofe_labour_migration v0.1.0) ─
+// Monthly worker departure counts by destination country.
+// Best available monthly proxy for remittance corridor magnitude.
+// Unit: count (number of workers). Confidence A (official govt data). Monthly.
+// Source: https://dofe.gov.np/api/category/monthly (GIWMS API, PDF uploads).
+// "Total with ReEntry" column = all approved departure categories.
+const DOFE_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'dofe-departures-malaysia-monthly',
+    nameEn: 'Migrant Worker Departures — Malaysia (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+  {
+    slug: 'dofe-departures-qatar-monthly',
+    nameEn: 'Migrant Worker Departures — Qatar (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+  {
+    slug: 'dofe-departures-uae-monthly',
+    nameEn: 'Migrant Worker Departures — UAE (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+  {
+    slug: 'dofe-departures-saudi-arabia-monthly',
+    nameEn: 'Migrant Worker Departures — Saudi Arabia (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+  {
+    slug: 'dofe-departures-kuwait-monthly',
+    nameEn: 'Migrant Worker Departures — Kuwait (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+  {
+    slug: 'dofe-departures-bahrain-monthly',
+    nameEn: 'Migrant Worker Departures — Bahrain (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+  {
+    slug: 'dofe-departures-oman-monthly',
+    nameEn: 'Migrant Worker Departures — Oman (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+  {
+    slug: 'dofe-departures-korea-monthly',
+    nameEn: 'Migrant Worker Departures — South Korea (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+  {
+    slug: 'dofe-departures-japan-monthly',
+    nameEn: 'Migrant Worker Departures — Japan (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+  {
+    slug: 'dofe-departures-israel-monthly',
+    nameEn: 'Migrant Worker Departures — Israel (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+  {
+    slug: 'dofe-departures-australia-monthly',
+    nameEn: 'Migrant Worker Departures — Australia (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+  {
+    slug: 'dofe-departures-total-monthly',
+    nameEn: 'Migrant Worker Departures — All Countries Total (Monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Department of Foreign Employment',
+  },
+];
 // ─── Controlled unit vocabulary ────────────────────────────────────────────
 const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'npr_billion', displayEn: 'NPR billion', dimension: 'currency' },
@@ -1572,6 +1678,37 @@ async function persist(): Promise<void> {
     knomadLinked += 1;
   }
   log(`indicator_source_map: ${knomadLinked} links ensured → ${WB_KNOMAD_SOURCE_ID}`);
+  // 18. DoFE Labour Migration corridor departure counts (parser v0.1.0).
+  // Monthly count of approved worker departures by destination ("Total with ReEntry").
+  const dofeInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...DOFE_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!dofeInsertResult.ok)
+    throw new Error(`DoFE indicators insert failed: ${JSON.stringify(dofeInsertResult.error)}`);
+  log(
+    `indicators (DoFE): ${dofeInsertResult.value.length} inserted ` +
+      `(of ${DOFE_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 19. DoFE source map links.
+  let dofeLinked = 0;
+  for (const ind of DOFE_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok)
+      throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      DOFE_SOURCE_ID,
+      'DoFE monthly corridor departure counts (v0.1.0)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    dofeLinked += 1;
+  }
+  log(`indicator_source_map: ${dofeLinked} links ensured → ${DOFE_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1584,6 +1721,7 @@ async function main(): Promise<void> {
   log(`indicators (NCPI)    = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
   log(`indicators (WDI)     = ${WDI_INDICATORS.length}, source = ${WDI_SOURCE_ID}`);
   log(`indicators (KNOMAD)  = ${WB_KNOMAD_INDICATORS.length}, source = ${WB_KNOMAD_SOURCE_ID}`);
+  log(`indicators (DoFE)    = ${DOFE_INDICATORS.length}, source = ${DOFE_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');
