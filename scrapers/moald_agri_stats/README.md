@@ -1,7 +1,7 @@
 # MoALD Statistical Information on Nepalese Agriculture — Parser
 
 **Source ID:** `moald-agri-stats`
-**Parser version:** 0.2.0
+**Parser version:** 0.3.0
 **Output table:** `dne_facts` (ADR-0015 dimensional facts)
 
 ## Source
@@ -41,19 +41,33 @@ Distinct from `moald-crop-production` (seasonal crop bulletins, variable format)
 | Table 2.2 | `agri-cashcrop-{area,production,yield}` | `province-crop` | oilseed/sugarcane/potato × 7 provinces |
 | Table 7.2 | `agri-vegetable-{area,production,yield}` | `province` | 7 provinces |
 
-### District cross-section (FY 2080/81)
+### District cross-section (FY 2080/81) — v0.3.0, all reconcile to national
 
 | Source | Base slug | Dimension | Notes |
 |---|---|---|---|
 | Table 1.3 | `agri-cereal-{area,production,yield}` | `district` | all 77 districts (aggregate cereal) |
+| Table 1.5 | `agri-cereal-{area,production,yield}` | `district-crop` | maize + wheat × 77 districts (`district__crop`) |
+| Table 4.3 | `agri-livestock-population` | `district-livestock-category` | 7 categories × 77 districts (`district__category`) |
+| Table 4.5 | `agri-livestock-production` | `district-livestock-product` | 6 meat types × district |
+| Table 4.6 | `agri-livestock-production` | `district-livestock-product` | laying hen/duck + hen/duck/total egg × district |
+| Table 4.7 | `agri-livestock-production` | `district-livestock-product` | wool (+ wool-flock sheep) × district |
+| Table 9.2 | `agri-fertilizer-sales` | `district-fertilizer-type` | grand-total urea/dap/potash × district |
 
-## Reconciliation (verified)
+Total: **3759 facts** (1546 national/provincial + 2213 district).
+
+## Reconciliation (verified — every district extractor sums to the national series)
 
 - **Province → national**: sum of province cereal production per crop equals the
   national series value for FY 2080/81 (diff ≤ 1 from source rounding).
-- **District → national**: sum of all 77 districts' cereal production = 11,293,843
-  vs the national total 11,293,841 (Δ 2, rounding).
-- **Spot checks**: 25 cross-table value checks pass (see test suite).
+- **District → national (exact to the unit)**:
+  - Cereal aggregate (1.3): 77 districts → 11,293,843 vs national 11,293,841 (Δ 2).
+  - Maize/wheat (1.5): maize 3,193,873 vs 3,193,869; wheat 2,035,564 vs 2,035,559.
+  - Livestock population (4.3): cattle 5,198,388 / goat 15,289,954 / fowl 56,916,567
+    — all exact.
+  - Meat/egg/wool (4.5–4.7): meat-buffalo 138,271, eggs-total 1,645,407, wool
+    389,742 — all match to ±2.
+  - Fertilizer (9.2): urea 259,542 / dap 184,046 — exact.
+- **Spot checks**: cross-table value checks pass (see 62-test suite).
 
 ## Parsing strategy
 
@@ -73,28 +87,44 @@ Distinct from `moald-crop-production` (seasonal crop bulletins, variable format)
 
 ## Test fixture
 
-`tests/fixtures/agri_stats_2080_81_excerpt.pdf` — 11-page extract (orig pages
-9,10,14,15,16,28,48,58,81,103,152) covering every targeted table.
+`tests/fixtures/agri_stats_2080_81_excerpt.pdf` — 25-page extract covering every
+targeted national, provincial, and district table. The parser produces identical
+output (3759 rows, 0 errors) against the fixture and the full 224-page PDF, so the
+committed tests exercise the real reconciliation, not a toy subset.
 
 ## Usage
 
 ```powershell
 $env:PYTHONPATH = "scrapers"
 python scrapers/moald_agri_stats/parser.py "<path-to-agri-pdf>"   # JSON to stdout
-python -m pytest scrapers/moald_agri_stats/tests/ -v               # 46 tests
+python -m pytest scrapers/moald_agri_stats/tests/ -v               # 62 tests
 
 pnpm ingest:moald-agri --input "Financial Data/moald_agri_stats/StatInfo_AgriNepal_2080_81.pdf" --dry-run
 pnpm ingest:moald-agri --input "Financial Data/moald_agri_stats/StatInfo_AgriNepal_2080_81.pdf"
 ```
 
-## Deferred to v0.3.0 (documented, not silently dropped)
+## Still deferred after v0.3.0 (documented, not silently dropped)
 
-- **District matrices**: per-crop districts (1.4–1.6), oilseed-by-commodity (2.4),
-  pulses (3.2), livestock (4.3–4.10), fruits (6.2–6.4), vegetables (7.3 — a
-  40-page commodity×district transpose), fertilizer (9.2), population (8.2).
-- **Macro GDP** (Table 10.x) — overlaps `mof-economic-survey-gva`; needs a
-  canonical-source ADR before ingest to avoid Fact-Ledger double-counting.
+Tables whose source layout cannot be reconstructed from the text layer reliably
+enough to pass the reconciliation gate — emitting them would mean storing wrong
+numbers, which the doctrine forbids:
+
+- **Table 1.6** (millet/buckwheat/barley by district): a minor-cereal column
+  collapses to a single `0.00` MID-row while later crops still have data, so
+  positional alignment breaks (district buckwheat sum ≈ 76 % of national).
+- **Table 3.2** (pulses by district): crops are *omitted* in some rows and
+  *dash-filled* in others — positionally ambiguous, no reliable mapping.
+- **Table 2.13** (spices by district): rotated/garbled column headers.
+- **Tables 2.3 / 2.4** (cash / oilseed by district): collapsing sugarcane column.
+- **Tables 6.2–6.4** (fruit by district), **7.3** (vegetables — 40-pp. transpose).
+- **Table 8.2** (population by district) — overlaps `cbs-nphc-2021` (census).
+
+Tables that overlap another registered source and need a canonical-source ADR
+before ingest (Fact-Ledger double-counting risk):
+
+- **Macro GDP/GVA** (Table 10.x) — overlaps `mof-economic-survey-gva`.
 - **Trade by HS code** (Table 11.x) — overlaps `customs-monthly-trade`.
 - **Agri loans by sector** (Table 14.x) — overlaps NRB banking statistics.
-- **Seed balance** (12.x), **crop/livestock insurance** (13), **commodity →
-  Agri-GVA contribution** (15) — small national tables, low marginal priority.
+
+Low-priority small national tables: seed balance (12.x), crop/livestock
+insurance (13), commodity → Agri-GVA contribution (15).

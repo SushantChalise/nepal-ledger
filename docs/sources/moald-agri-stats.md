@@ -25,7 +25,7 @@ extraction (no OCR — higher fidelity than re-OCR per ADR-0011).
 - Format: PDF (clean text layer, no OCR required)
 - Archive path: `Financial Data/moald_agri_stats/`
 
-## What we extract (v0.2.0) → `dne_facts` (ADR-0015) — 1546 facts
+## What we extract (v0.3.0) → `dne_facts` (ADR-0015) — 3759 facts
 
 ### National time-series (full historical depth)
 
@@ -41,14 +41,29 @@ extraction (no OCR — higher fidelity than re-OCR per ADR-0011).
 | Table 9.1 | `agri-fertilizer-sales` | `fertilizer_type` (urea/dap/potash/total) | 14 (BS 2067/68–2080/81) |
 | §1.6 | `agri-spice-{area,production}` | `crop_type` (large-cardamom/ginger/garlic/turmeric/dry-chili) | 3 |
 
-### Provincial + district cross-sections (FY 2080/81)
+### Provincial cross-section (FY 2080/81)
 
 | Section | Base slug | Dimension | Notes |
 |---|---|---|---|
 | Table 1.2 | `agri-cereal-production` | `province-crop` | composite `province__crop` (ADR-0018) |
 | Table 2.2 | `agri-cashcrop-{area,production,yield}` | `province-crop` | oilseed/sugarcane/potato × 7 provinces |
 | Table 7.2 | `agri-vegetable-{area,production,yield}` | `province` | 7 provinces |
+
+### District cross-section (FY 2080/81) — every extractor reconciles to national
+
+| Section | Base slug | Dimension | Notes |
+|---|---|---|---|
 | Table 1.3 | `agri-cereal-{area,production,yield}` | `district` | all 77 districts (aggregate cereal) |
+| Table 1.5 | `agri-cereal-{area,production,yield}` | `district-crop` | maize + wheat × 77 districts |
+| Table 4.3 | `agri-livestock-population` | `district-livestock-category` | 7 categories × 77 districts |
+| Table 4.5 | `agri-livestock-production` | `district-livestock-product` | 6 meat types × district |
+| Table 4.6 | `agri-livestock-production` | `district-livestock-product` | laying birds + egg production × district |
+| Table 4.7 | `agri-livestock-production` | `district-livestock-product` | wool (+ wool-flock sheep) × district |
+| Table 9.2 | `agri-fertilizer-sales` | `district-fertilizer-type` | grand-total urea/dap/potash × district |
+
+District composites use `district__member` `dimension_value` (ADR-0018). A
+distinct `dimension_kind` per table keeps district rows from colliding with the
+national series that shares the same `base_indicator_slug`.
 
 **Unit semantics** (ADR-0011, read off the source headers): area = `hectare`;
 production = `metric_tonne`; yield = `metric_tonne_per_hectare`; livestock
@@ -60,8 +75,12 @@ values are Mt/Ha (production ÷ area), so they are stored as
 ## Reconciliation (verified at parse time)
 
 - Province cereal-production sums equal the national series per crop (Δ ≤ 1, rounding).
-- District cereal-production sums to 11,293,843 vs national 11,293,841 (Δ 2, rounding).
-- 25 cross-table spot checks pass (test suite).
+- **Every district extractor sums to the national total** (the gate for keeping it):
+  cereal aggregate 11,293,843 vs 11,293,841; maize 3,193,873 vs 3,193,869; cattle
+  5,198,388 (exact); fowl 56,916,567 (exact); meat-buffalo 138,271; eggs-total
+  1,645,407; wool 389,742; urea 259,542 (exact); dap 184,046 (exact).
+- Tables whose district sums did NOT reconcile (e.g. Table 1.6 buckwheat ≈ 76 %
+  of national, due to mid-row column collapse) are deferred, not emitted.
 
 ## Provenance
 
@@ -70,23 +89,33 @@ values are Mt/Ha (production ÷ area), so they are stored as
 - License: gov_open
 - Reporting period type: annual
 
-## Deferred to v0.3.0 (documented, not silently dropped)
+## Still deferred after v0.3.0 (documented, not silently dropped)
 
-- **District matrices**: per-crop districts (1.4–1.6), oilseed-by-commodity (2.4),
-  pulses (3.2), livestock (4.3–4.10), fruits (6.2–6.4), vegetables (7.3, 40-page
-  transpose), fertilizer (9.2), population (8.2).
-- **Macro GDP** (10.x) — overlaps `mof-economic-survey-gva`; needs a
-  canonical-source ADR before ingest (Fact-Ledger double-counting risk).
+Source layout not reliably reconstructable from the text layer (would fail the
+reconciliation gate):
+
+- **Table 1.6** (millet/buckwheat/barley by district): minor-cereal column
+  collapses to a single `0.00` mid-row, breaking positional alignment.
+- **Table 3.2** (pulses by district): crops omitted in some rows, dash-filled in
+  others — positionally ambiguous.
+- **Table 2.13** (spices by district): rotated/garbled headers.
+- **Tables 2.3 / 2.4** (cash / oilseed by district): collapsing sugarcane column.
+- **Tables 6.2–6.4** (fruit by district), **7.3** (vegetables — 40-pp. transpose).
+- **Table 8.2** (population by district) — overlaps `cbs-nphc-2021`.
+
+Overlap another registered source — need a canonical-source ADR before ingest:
+
+- **Macro GDP/GVA** (10.x) — overlaps `mof-economic-survey-gva`.
 - **Trade by HS code** (11.x) — overlaps `customs-monthly-trade`.
 - **Agri loans by sector** (14.x) — overlaps NRB banking statistics.
-- Seed balance (12.x), insurance (13), commodity→Agri-GVA contribution (15).
+- Low priority: seed balance (12.x), insurance (13), commodity→Agri-GVA (15).
 
 ## Parser
 
 - Path: `scrapers/moald_agri_stats/parser.py`
-- Version: 0.2.0 (anchor-driven; identical output on full PDF + fixture)
-- Fixture: `scrapers/moald_agri_stats/tests/fixtures/agri_stats_2080_81_excerpt.pdf` (11 pages)
-- Tests: 46 passing
+- Version: 0.3.0 (anchor-driven; identical output on full PDF + fixture)
+- Fixture: `scrapers/moald_agri_stats/tests/fixtures/agri_stats_2080_81_excerpt.pdf` (25 pages)
+- Tests: 62 passing
 
 ## Archive policy
 

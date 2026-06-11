@@ -261,7 +261,7 @@ Notes:
 
 ### MoALD Agricultural Statistics (moald_agri_stats)
 
-Source ID: `moald-agri-stats` | Parser: `scrapers/moald_agri_stats/parser.py` v0.2.0
+Source ID: `moald-agri-stats` | Parser: `scrapers/moald_agri_stats/parser.py` v0.3.0
 
 Downloads: https://moald.gov.np/publication/statistical-information-on-nepalese-agriculture
 Place the PDF at `Financial Data/moald_agri_stats/StatInfo_AgriNepal_<FY>.pdf`.
@@ -277,12 +277,15 @@ pnpm ingest:moald-agri --dry-run --input "Financial Data/moald_agri_stats/StatIn
 pnpm ingest:moald-agri --input "Financial Data/moald_agri_stats/StatInfo_AgriNepal_2080_81.pdf"
 ```
 
-Expected output: **1546 `dne_facts` rows**, status `success`, 0 parser errors —
+Expected output: **3759 `dne_facts` rows**, status `success`, 0 parser errors —
 national time-series (cereal 11yr / cashcrop 10yr / pulse 12yr / livestock
 population 10yr + products 11yr / fruit 10yr / vegetable 10yr / fertilizer 14yr /
-spice 3yr), provincial cross-sections (cereal/cashcrop/vegetable), and 77-district
-cereal. Confidence grade B (MoALD administrative compilation). Idempotent via the
-`dne_facts` unique index. Province + district sums reconcile to national totals.
+spice 3yr), provincial cross-sections (cereal/cashcrop/vegetable), and the FY
+2080/81 district matrices (cereal aggregate 1.3, maize+wheat 1.5, livestock
+population 4.3, meat 4.5, egg 4.6, wool 4.7, fertilizer 9.2). Confidence grade B
+(MoALD administrative compilation). Idempotent via the `dne_facts` unique index.
+Every province + district extractor sums to its national total (the gate for
+inclusion); tables that did not reconcile are deferred, not emitted.
 
 ---
 

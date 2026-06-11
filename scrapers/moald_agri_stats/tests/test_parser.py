@@ -1,4 +1,4 @@
-"""Tests for the MoALD Agricultural Statistics parser (v0.2.0).
+"""Tests for the MoALD Agricultural Statistics parser (v0.3.0).
 
 Fixture: tests/fixtures/agri_stats_2080_81_excerpt.pdf — an 11-page excerpt of
 the 224-page FY 2080/81 report, carrying every table the parser targets:
@@ -67,13 +67,13 @@ def test_no_errors(result: AgriResult) -> None:
 
 
 def test_parser_version(result: AgriResult) -> None:
-    assert result.parser_version == "0.2.0"
-    assert PARSER_VERSION == "0.2.0"
+    assert result.parser_version == "0.3.0"
+    assert PARSER_VERSION == "0.3.0"
 
 
 def test_total_row_count(rows: list) -> None:
     # Locked to the reconciled full-PDF == fixture count.
-    assert len(rows) == 2298
+    assert len(rows) == 3759
 
 
 def test_all_periods_annual(rows: list) -> None:
@@ -102,6 +102,7 @@ def test_dimension_kinds(rows: list) -> None:
         "crop_type", "livestock_category", "livestock_product",
         "fertilizer_type", "province-crop", "province", "district",
         "district-livestock-category", "district-fertilizer-type",
+        "district-crop", "district-livestock-product",
     }
 
 
@@ -460,6 +461,64 @@ def test_fertilizer_district_reconciles(rows: list) -> None:
     for fert, national in [("urea", 259_542), ("dap", 184_046), ("potash", 14_730)]:
         total = sum(r.value for r in fd if r.dimension_value.endswith(f"__{fert}"))
         assert total == pytest.approx(national, abs=1), fert
+
+
+# ---------------------------------------------------------------------------
+# Table 1.5 — maize + wheat by district (district-crop composite)
+# ---------------------------------------------------------------------------
+
+
+def test_maize_wheat_district_count(rows: list) -> None:
+    assert len(_dist_set(rows, "district-crop")) == 77
+
+
+def test_maize_wheat_district_values(rows: list) -> None:
+    kind = "district-crop"
+    assert _val(rows, "agri-cereal-production", kind, "jhapa__maize") == pytest.approx(260_335)
+    assert _val(rows, "agri-cereal-production", kind, "jhapa__wheat") == pytest.approx(7_950)
+
+
+def test_maize_wheat_district_reconciles(rows: list) -> None:
+    # District sums match the national 1.1 FY2080/81 series (source rounding ≤ 0.01%).
+    dc = _for(rows, "agri-cereal-production", "district-crop")
+    for crop, national in [("maize", 3_193_869), ("wheat", 2_035_559)]:
+        total = sum(r.value for r in dc if r.dimension_value.endswith(f"__{crop}"))
+        assert total == pytest.approx(national, rel=0.001), crop
+
+
+# ---------------------------------------------------------------------------
+# Tables 4.5 / 4.6 / 4.7 — meat / egg / wool by district
+# ---------------------------------------------------------------------------
+
+
+def test_meat_district_value(rows: list) -> None:
+    kind = "district-livestock-product"
+    val = _val(rows, "agri-livestock-production", kind, "morang__meat-chicken")
+    assert val == pytest.approx(4_932)
+
+
+def test_egg_district_value(rows: list) -> None:
+    val = _val(rows, "agri-livestock-production", "district-livestock-product", "jhapa__eggs-total")
+    assert val == pytest.approx(24_625)
+
+
+def test_wool_district_value(rows: list) -> None:
+    val = _val(rows, "agri-livestock-production", "district-livestock-product", "khotang__wool")
+    assert val == pytest.approx(5_609)
+
+
+def test_livestock_product_district_reconciles(rows: list) -> None:
+    # Meat / egg / wool district sums match the national 4.2 FY2080/81 values.
+    lp = _for(rows, "agri-livestock-production", "district-livestock-product")
+    targets = [
+        ("meat-buffalo", 138_271), ("meat-sheep", 2_762), ("meat-goat", 86_280),
+        ("meat-pork", 39_183), ("meat-chicken", 180_076),
+        ("eggs-total", 1_645_407), ("eggs-hen", 1_602_755), ("eggs-duck", 42_652),
+        ("wool", 389_742),
+    ]
+    for suffix, national in targets:
+        total = sum(r.value for r in lp if r.dimension_value.endswith(f"__{suffix}"))
+        assert total == pytest.approx(national, rel=0.002), suffix
 
 
 # ---------------------------------------------------------------------------

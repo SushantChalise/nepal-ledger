@@ -24,19 +24,33 @@ PROVINCIAL CROSS-SECTION (FY 2080/81):
   Table 2.2  cash crop area/production/yield × province_crop
   Table 7.2  vegetable area/production/yield × province
 
-DISTRICT CROSS-SECTION (FY 2080/81):
+DISTRICT CROSS-SECTION (FY 2080/81) — every extractor reconciles to the national
+series (district sums == national totals to the unit, source rounding aside):
   Table 1.3  aggregate cereal area/production/yield × district (all 77 districts)
+  Table 1.5  maize + wheat area/production/yield × district  (district-crop)
+  Table 4.3  livestock population × district × category      (district-livestock-category)
+  Table 4.5  meat production × district × type               (district-livestock-product)
+  Table 4.6  laying birds + egg production × district        (district-livestock-product)
+  Table 4.7  wool production × district                      (district-livestock-product)
+  Table 9.2  fertilizer grand-total × district × type        (district-fertilizer-type)
 
 Period mapping: AD fiscal-year string YYYY/YY → BS (YYYY+57)/(YY+57 % 100).
   e.g. AD 2013/14 → BS 2070/71; AD 2023/24 → BS 2080/81.
 
-DEFERRED to v0.3.0 (documented in README): the transposed multi-page district
-matrices (per-crop districts 1.4–1.6, oilseed-by-commodity 2.4, pulses 3.2,
-livestock 4.3–4.10, fruits 6.2–6.4, vegetables 7.3 [40 pp.], fertilizer 9.2,
-population 8.2); macro GDP (Table 10.x — overlaps mof-economic-survey-gva); trade
-by HS code (Table 11.x — overlaps customs-monthly-trade); agri loans (Table 14.x
-— overlaps nrb banking). The latter three need a canonical-source ADR before
-ingest to avoid Fact-Ledger double-counting.
+DEFERRED (documented in README) — tables whose source layout cannot be
+reconstructed from the text layer reliably enough to pass the reconciliation
+gate, or that overlap another registered source:
+  - Table 1.6 (millet/buckwheat/barley by district): minor-cereal columns
+    collapse to a single "0.00" MID-row, breaking positional alignment.
+  - Table 3.2 (pulses by district): crops are omitted in some rows and dash-
+    filled in others — positionally ambiguous.
+  - Table 2.13 (spices by district): rotated/garbled column headers.
+  - Table 2.3/2.4 (cash/oilseed by district): collapsing sugarcane column.
+  - Tables 6.2–6.4 (fruit by district), 7.3 (vegetables — 40-pp. transpose),
+    8.2 (population — overlaps cbs-nphc-2021).
+  - Macro GDP (10.x — overlaps mof-economic-survey-gva), trade by HS (11.x —
+    overlaps customs-monthly-trade), agri loans (14.x — overlaps nrb banking):
+    need a canonical-source ADR before ingest (Fact-Ledger double-counting).
 
 ADR-0003: deterministic only; no LLM. ADR-0015: dimensional facts.
 ADR-0018: composite dimension_value (``province__crop``) for 2-D slices.
@@ -46,6 +60,10 @@ Version log:
   0.2.0 — full-depth national time-series (cash/pulse/livestock/fruit/veg/fert),
           provincial cross-sections (cereal/cash/veg), cereal-by-district, spices.
           Supersedes the 3-yr summary extractors with authoritative full series.
+  0.3.0 — district matrices that reconcile to national: cereal aggregate (1.3),
+          maize+wheat (1.5), livestock population (4.3), meat (4.5), egg (4.6),
+          wool (4.7), fertilizer (9.2). Heading-aware slicer + footer guard +
+          aggregate-row guard; trailing-dot number tolerance.
 """
 
 from __future__ import annotations
@@ -64,7 +82,7 @@ import pdfplumber
 from _common.periods import fiscal_year_ad_label, fiscal_year_label, mid_month_ad
 from _common.types import ParserError, ParserStatus, ReportingPeriodType
 
-PARSER_VERSION: Final[str] = "0.2.0"
+PARSER_VERSION: Final[str] = "0.3.0"
 SOURCE_ID: Final[str] = "moald-agri-stats"
 _CONF: Final[str] = "B"
 _MIN_CLI_ARGV: Final[int] = 2  # program name + pdf path
@@ -145,7 +163,10 @@ class AgriResult:
 # Shared helpers
 # ---------------------------------------------------------------------------
 
-_NUM_TOKEN_RE: Final[re.Pattern[str]] = re.compile(r"^-?[\d,]+(?:\.\d+)?$")
+# Accepts "1,234", "17.55", and the source's malformed "79." (trailing dot, no
+# decimals) — without the trailing-dot case the cell is dropped and the remaining
+# columns shift, corrupting a district row's crop alignment (Table 1.6).
+_NUM_TOKEN_RE: Final[re.Pattern[str]] = re.compile(r"^-?[\d,]+\.?\d*$")
 _YEAR_RE: Final[re.Pattern[str]] = re.compile(r"^(\d{4})\s*/\s*(\d{2,4})$")
 # Leading fiscal-year token at the start of a data row. Tolerates the source's
 # inconsistent spacing in recent years ("2023 /24" prints with an inner space).
@@ -820,9 +841,17 @@ def _slice_to_heading(text: str, anchor: str, *, max_chars: int = 16000) -> str 
 
 
 def _is_aggregate_name(name: str) -> bool:
-    """True for a 'NEPAL' / province-name row (a subtotal, not a district)."""
-    key = re.sub(r"[^a-z]", "", name.lower())
-    return key == "nepal" or key in _PROVINCES or key in _PROVINCE_ALIASES
+    """True for a 'NEPAL' / province-name row (a subtotal, not a district).
+
+    Pass the FULL row name: this normalizes the spaced grand total 'N E P A L'
+    → 'nepal', strips a trailing 'Province', and matches province-name spelling
+    variants (e.g. the source's 'Madhes') by their 5-char prefix. No real Nepali
+    district name begins with any province's 5-char prefix, so this is collision-
+    free."""
+    key = re.sub(r"[^a-z]", "", name.lower()).removesuffix("province")
+    if key == "nepal" or key in _PROVINCES or key in _PROVINCE_ALIASES:
+        return True
+    return any(key.startswith(prov[:5]) for prov in _PROVINCES)
 
 
 def _split_leading_name(toks: list[str]) -> tuple[list[str], list[float | None]]:
@@ -833,6 +862,91 @@ def _split_leading_name(toks: list[str]) -> tuple[list[str], list[float | None]]
         name_parts.append(toks[di])
         di += 1
     return name_parts, _row_tokens(" ".join(toks[di:]))
+
+
+def _iter_district_rows(
+    section: str, *, prov_prefix: bool,
+) -> list[tuple[str, str, list[float | None]]]:
+    """Yield (district_slug, label, numbers) for each district data row in a
+    'DISTRICT × measure' table, skipping footers, repeated headers, and
+    NEPAL/province subtotal rows. ``prov_prefix`` for tables whose rows lead with
+    a province name (e.g. 'Madhesh Siraha …')."""
+    out: list[tuple[str, str, list[float | None]]] = []
+    seen: set[str] = set()
+    for line in section.splitlines():
+        if _FOOTER_RE.search(line):
+            continue
+        toks = line.split()
+        if not toks:
+            continue
+        if prov_prefix:
+            if _province_slug(toks[0]) is None:
+                continue
+            toks = toks[1:]
+        name_parts, nums = _split_leading_name(toks)
+        name = " ".join(name_parts)
+        if not name_parts or not nums or _is_aggregate_name(name):
+            continue
+        district = _district_slug(name)
+        if not district or district in seen:
+            continue
+        seen.add(district)
+        out.append((district, name.title(), nums))
+    return out
+
+
+def _emit_district_triples(
+    section: str,
+    crops: tuple[tuple[str, str], ...],
+    slug_prefix: str,
+    name_prefix: str,
+    *,
+    prov_prefix: bool = False,
+) -> list[DimensionalRowDraft]:
+    """District rows whose numbers are (area, prod, yield) triples per crop, in
+    ``crops`` column order. Trailing crops with fewer than 3 values (a collapsed
+    '0.00') are skipped. Used by cereal per-crop district tables 1.5 and 1.6."""
+    rows: list[DimensionalRowDraft] = []
+    for district, label, nums in _iter_district_rows(section, prov_prefix=prov_prefix):
+        n_full = len(nums) // _APY
+        for ci in range(min(n_full, len(crops))):
+            crop_slug, crop_label = crops[ci]
+            triple = nums[ci * _APY : ci * _APY + _APY]
+            for val, (suffix, unit) in zip(triple, _AREA_PROD_YIELD, strict=True):
+                if val is None:
+                    continue
+                rows.append(_annual_row(
+                    f"{slug_prefix}-{suffix}", f"{name_prefix} {suffix}",
+                    "district-crop", f"{district}__{crop_slug}",
+                    f"{label} - {crop_label}", val, unit, _FY_LATEST_BS,
+                ))
+    return rows
+
+
+def _emit_district_singles(
+    section: str,
+    columns: tuple[tuple[str, str, str], ...],
+    slug: str,
+    name: str,
+    dim_kind: str,
+    *,
+    prov_prefix: bool = False,
+) -> list[DimensionalRowDraft]:
+    """District rows with one value per named column (meat/egg/wool/etc).
+
+    ``columns`` = (dim_value_suffix, label, unit); a column whose value is None or
+    beyond the row's length is skipped. Composite dimension ``district__suffix``."""
+    rows: list[DimensionalRowDraft] = []
+    for district, label, nums in _iter_district_rows(section, prov_prefix=prov_prefix):
+        for i, (suffix, col_label, unit) in enumerate(columns):
+            val = nums[i] if i < len(nums) else None
+            if val is None:
+                continue
+            rows.append(_annual_row(
+                slug, name, dim_kind, f"{district}__{suffix}",
+                f"{label} - {col_label}", val, unit, _FY_LATEST_BS,
+            ))
+    return rows
 
 
 _LIVESTOCK_POP_DIST_CATEGORIES: Final[tuple[tuple[str, str], ...]] = (
@@ -865,7 +979,7 @@ def _extract_livestock_pop_by_district(
         name_parts, nums = _split_leading_name(toks)
         if not name_parts or not nums or len(nums) > n_cat:
             continue
-        if _is_aggregate_name(name_parts[0]):
+        if _is_aggregate_name(" ".join(name_parts)):
             continue  # NEPAL / province subtotal
         district = _district_slug(" ".join(name_parts))
         if not district or district in seen:
@@ -944,6 +1058,100 @@ def _extract_fertilizer_by_district(
     return rows, errors
 
 
+# Cereal per-crop by district (Table 1.5) — area/prod/yield triples.
+# NOTE: Table 1.6 (millet/buckwheat/barley by district) is deliberately NOT
+# parsed: its minor-cereal columns collapse to a single "0.00" mid-row (a crop
+# zero while a later crop has data), which breaks positional column alignment
+# and cannot be reconstructed from the text layer. Emitting it would fail the
+# reconciliation gate (buckwheat district-sum ≈ 76% of national). Deferred.
+_MAIZE_WHEAT: Final[tuple[tuple[str, str], ...]] = (("maize", "Maize"), ("wheat", "Wheat"))
+
+
+def _extract_maize_wheat_by_district(
+    text: str,
+) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Table 1.5 — maize + wheat area/prod/yield per district (FY 2080/81)."""
+    section = _slice_to_heading(
+        text, "Maize Wheat\nProvince Area Production Yield Area Production Yield"
+    )
+    if section is None:
+        return [], [ParserError("RegexMismatch", "Table 1.5: anchor not found", None)]
+    rows = _emit_district_triples(section, _MAIZE_WHEAT, "agri-cereal", "Cereal")
+    if not rows:
+        return [], [ParserError("RegexMismatch", "Table 1.5: no district rows matched", None)]
+    return rows, []
+
+
+# Meat 4.5: BUFF MUTTON CHEVON PORK CHICKEN DUCK (TOTAL skipped).
+_MEAT_COLUMNS: Final[tuple[tuple[str, str, str], ...]] = (
+    ("meat-buffalo", "Buffalo", _MT), ("meat-sheep", "Mutton (sheep)", _MT),
+    ("meat-goat", "Chevon (goat)", _MT), ("meat-pork", "Pork", _MT),
+    ("meat-chicken", "Chicken", _MT), ("meat-duck", "Duck", _MT),
+)
+
+
+def _extract_meat_by_district(
+    text: str,
+) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Table 4.5 — meat production per district × type (FY 2080/81)."""
+    section = _slice_to_heading(text, "DISTRICT BY BUFF MUTTON CHEVON PORK CHICKEN DUCK TOTAL")
+    if section is None:
+        return [], [ParserError("RegexMismatch", "Table 4.5: anchor not found", None)]
+    rows = _emit_district_singles(
+        section, _MEAT_COLUMNS, "agri-livestock-production",
+        "Livestock production", "district-livestock-product",
+    )
+    if not rows:
+        return [], [ParserError("RegexMismatch", "Table 4.5: no district rows matched", None)]
+    return rows, []
+
+
+# Egg 4.6: LAYING-HEN(no.) LAYING-DUCK(no.) HEN-EGG('000) DUCK-EGG('000) TOTAL('000).
+_EGG_COLUMNS: Final[tuple[tuple[str, str, str], ...]] = (
+    ("laying-hen", "Laying hen", _NUMBER), ("laying-duck", "Laying duck", _NUMBER),
+    ("eggs-hen", "Hen egg", _THOUSAND), ("eggs-duck", "Duck egg", _THOUSAND),
+    ("eggs-total", "Egg production", _THOUSAND),
+)
+
+
+def _extract_egg_by_district(
+    text: str,
+) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Table 4.6 — laying birds + egg production per district (FY 2080/81)."""
+    section = _slice_to_heading(text, "DISTRICT BY PROVINCE HEN EGG ('000) DUCK EGG ('000)")
+    if section is None:
+        return [], [ParserError("RegexMismatch", "Table 4.6: anchor not found", None)]
+    rows = _emit_district_singles(
+        section, _EGG_COLUMNS, "agri-livestock-production",
+        "Livestock production", "district-livestock-product",
+    )
+    if not rows:
+        return [], [ParserError("RegexMismatch", "Table 4.6: no district rows matched", None)]
+    return rows, []
+
+
+# Wool 4.7: No.Sheep, Wool(Kg). The sheep count is wool-flock-specific; emit wool.
+_WOOL_COLUMNS: Final[tuple[tuple[str, str, str], ...]] = (
+    ("wool-sheep", "Wool sheep", _NUMBER), ("wool", "Wool", _KG),
+)
+
+
+def _extract_wool_by_district(
+    text: str,
+) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Table 4.7 — wool production (and wool-flock sheep) per district (FY 2080/81)."""
+    section = _slice_to_heading(text, "District by Province No. Sheep Wool (Kg)")
+    if section is None:
+        return [], [ParserError("RegexMismatch", "Table 4.7: anchor not found", None)]
+    rows = _emit_district_singles(
+        section, _WOOL_COLUMNS, "agri-livestock-production",
+        "Livestock production", "district-livestock-product",
+    )
+    if not rows:
+        return [], [ParserError("RegexMismatch", "Table 4.7: no district rows matched", None)]
+    return rows, []
+
+
 # ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
@@ -995,6 +1203,10 @@ _SINGLETON_EXTRACTORS: Final[tuple[_Extractor, ...]] = (
     _extract_cereal_by_district,
     _extract_livestock_pop_by_district,
     _extract_fertilizer_by_district,
+    _extract_maize_wheat_by_district,
+    _extract_meat_by_district,
+    _extract_egg_by_district,
+    _extract_wool_by_district,
 )
 
 
