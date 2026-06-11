@@ -232,6 +232,33 @@ pnpm ingest:dne --input "<path>" --source-id nrb-db-external-sector
 Source-id to registry reconciliation is pending. Dry-run only until Mother
 resolves the FK question.
 
+### World Bank WDI (World Development Indicators)
+
+Source ID: `wb-wdi` | Parser: `scrapers/wb_wdi/parser.py` v0.1.0 | 15 indicators
+
+```powershell
+# Dry-run against saved fixture (no DB, no network):
+pnpm ingest:wdi --dry-run
+
+# Live ingest from pre-downloaded combined JSON (recommended for reproducibility):
+pnpm ingest:wdi --input "C:\path\to\wdi_npl_2025-06-11.json"
+
+# Download fresh snapshot from WB API then ingest (requires network):
+pnpm ingest:wdi --download
+
+# Download and save to a specific directory without ingesting:
+pnpm ingest:wdi --download --output-dir "C:\Users\ACER\Projects\Economy\Financial Data\wb_wdi"
+```
+
+Notes:
+- Parser reads a single combined JSON blob assembled by the CLI (one `source_documents` row per run).
+- WB year Y = Nepal FY Jul Y – Jul Y+1 = BS FY (Y+57)/(Y+58%100).
+- Poverty headcount and Gini are sparse (1 non-null every 3–5 years); null values are silently skipped.
+- After live ingest, `checkWdiDneDivergence()` auto-runs and writes `ValueOutOfPlausibleRange` warning
+  flags if WDI–DNE divergence exceeds 3 pp (GDP growth, CPI) or 20% relative (GDP per capita).
+- Cross-source divergence flags are warnings only; they never block ingest.
+- No `Financial Data/` junction required — the WB API is network-only or via a local JSON file.
+
 ---
 
 ## Operational Gotchas

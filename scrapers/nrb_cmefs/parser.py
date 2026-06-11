@@ -1,71 +1,69 @@
 """NRB CMEFs English-edition PDF parser — deterministic Python.
 
 Source: NRB "Current Macroeconomic and Financial Situation of Nepal" monthly
-bulletin (English edition only — Path B1, ADR pending). The bundled fixture
-is the nine-month publication for FY 2082/83 (AD 2025/26).
+bulletin (English edition only — Path B1, ADR-0003).
 
 Strategy:
     NRB's CMEFs bulletin re-uses stable narrative phrasings issue after
-    issue ("merchandise exports increased X percent to Rs.Y billion",
-    "Balance of Payments (BOP) remained at a surplus of Rs.Z billion",
-    etc.). The PDF text layer is clean Latin-script — no OCR is needed,
-    no Devanagari is touched. The parser extracts text with ``pdfplumber``
-    and applies anchored regex patterns to lift the seven headline
-    indicators that feed Pulse v0.
+    issue. The PDF text layer is clean Latin-script — no OCR needed. The
+    parser extracts text with ``pdfplumber`` and applies anchored regex
+    patterns to lift indicators from the executive narrative.
 
-    We deliberately match narrative prose rather than tables: tables in
-    this bulletin shift columns and page numbers across FY boundaries
-    (see source profile §"Known breakage modes"), but the prose patterns
-    are stable. When the prose shifts, the parser emits a typed
-    ``PageLayoutChanged`` error for that indicator instead of inventing a
-    value.
+    Prose over tables: tables shift columns at FY boundaries (source
+    profile §"Known breakage modes"); prose phrasings are stable. When a
+    pattern misses, the parser emits a typed ``PageLayoutChanged`` error
+    instead of inventing a value.
 
-Target indicators (v0.1.0, headline set per Path B1 brief):
-    - ``cmefs-ncpi-yoy-overall`` (percent_yoy, end-of-period)
-    - ``cmefs-remittance-inflow-ytd`` (npr_billion, nine_months_cumulative)
-    - ``cmefs-merchandise-imports-ytd`` (npr_billion, nine_months_cumulative)
-    - ``cmefs-trade-deficit-ytd`` (npr_billion, nine_months_cumulative)
-    - ``cmefs-bop-surplus-ytd`` (npr_billion, nine_months_cumulative)
-    - ``cmefs-gross-forex-reserves`` (npr_billion, end-of-period)
-    - ``cmefs-forex-reserves-months-of-import-cover`` (months,
-      end-of-period; "merchandise and services" cover, not the
-      merchandise-only figure)
+Period detection (v0.2.0):
+    The parser reads the bulletin title ("based on N Months of YYYY/YY"
+    or "based on BS_Month BS_Year") to set the reporting period
+    dynamically, replacing the hardcoded FY 2082/83 constants from v0.1.0.
+    This unblocks monthly releases and full back-history ingestion.
 
-Confidence: ``A`` by default. If any value carries an inline ``P``
-(provisional) annotation in the narrative, the parser downgrades that row
-to ``B`` and stamps ``parser_notes`` accordingly. (The provisional flag
-in the current fixture appears only in the bracketed BoP table footer
-``P=Provisional`` — we treat the bulletin's narrative figures as final
-until a future release introduces an inline ``P`` marker, in which case
-the regex below picks it up.)
+Target indicators (v0.2.0):
 
-Period dating:
-    Mid-month placeholders from ``_common.periods``; the TS validator
-    refines (±2 days tolerance). For "end of nine-month period"
-    indicators (NCPI YoY, forex reserves, months of cover), both
-    ``period_ad_start`` and ``period_ad_end`` are anchored to mid-Chait;
-    for ``nine_months_cumulative`` indicators the span runs
-    mid-Shrawan..mid-Chait.
+    Headline (v0.1.0 — stable across FY 2080/81–2082/83):
+        - cmefs-ncpi-yoy-overall              (percent_yoy, end-of-period)
+        - cmefs-remittance-inflow-ytd         (npr_billion, cumulative)
+        - cmefs-merchandise-imports-ytd       (npr_billion, cumulative)
+        - cmefs-trade-deficit-ytd             (npr_billion, cumulative)
+        - cmefs-bop-surplus-ytd               (npr_billion, cumulative)
+        - cmefs-gross-forex-reserves          (npr_billion, end-of-period)
+        - cmefs-forex-reserves-months-of-import-cover (months, end-of-period)
+
+    Extended (v0.2.0):
+        - cmefs-merchandise-exports-ytd       (npr_billion, cumulative)
+        - cmefs-govt-revenue-total-ytd        (npr_billion, cumulative)
+        - cmefs-govt-expenditure-total-ytd    (npr_billion, cumulative)
+        - cmefs-govt-fiscal-balance-ytd       (npr_billion, cumulative; sign in notes)
+        - cmefs-m2-yoy                        (percent_yoy, end-of-period)
+        - cmefs-private-sector-credit-yoy     (percent_yoy, end-of-period)
+        - cmefs-bfi-deposits-yoy              (percent_yoy, end-of-period)
+
+Cross-validation hooks (enforced by the TS validation layer, not this parser):
+    cmefs-ncpi-yoy-overall ↔ ncpi-overall-index-overall-yoy within ±0.01pp.
+    cmefs-govt-revenue-total-ytd ↔ fcgo-total-revenue-outturn-annual (unit-scaled).
+    cmefs-govt-expenditure-total-ytd ↔ fcgo-total-expenditure-outturn-annual.
 
 Versioning:
-    Bump PARSER_VERSION on any behavior change.
+    Bump PARSER_VERSION on any behaviour change.
 """
 
 from __future__ import annotations
 
 import re
 from dataclasses import dataclass, replace
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Final
 
 import pdfplumber
 
 from _common.periods import (
+    BsMonth,
     fiscal_year_ad_label,
     fiscal_year_label,
     mid_month_ad,
-    nine_months_span_ad,
 )
 from _common.types import (
     ConfidenceGrade,
@@ -76,64 +74,174 @@ from _common.types import (
     StagingRowDraft,
 )
 
-PARSER_VERSION: Final[str] = "0.1.0"
+PARSER_VERSION: Final[str] = "0.2.0"
 SOURCE_ID: Final[str] = "nrb-cmefs-monthly"
 
-# Fiscal year and publication anchor for the bundled fixture
-# (Nine-Months FY 2082/83, published May 11, 2026). When the orchestrator
-# wires source-registry metadata through, these will be derived from the
-# release header rather than hard-coded.
-_BS_FY_START: Final[int] = 2082
-_PUBLICATION_DATE_AD: Final[datetime] = datetime(2026, 5, 11, tzinfo=UTC)
-_PUBLICATION_DATE_BS: Final[str] = "2083 Baisakh 28"
-
-# Provisional-marker pattern: bracketed ``P`` or trailing ``P`` after a
-# numeric value in the narrative. Conservative: only single-letter ``P``
-# directly adjacent to a digit, not the ``P=Provisional`` legend itself.
+# Provisional-marker pattern: single ``P`` directly adjacent to a digit.
+# Conservative: excludes ``P=Provisional`` legend and English words starting P.
 _PROVISIONAL_INLINE_RE: Final[re.Pattern[str]] = re.compile(
     r"\d+(?:\.\d+)?\s*[Pp]\b(?!ercent|rovisional|rovincial|aid|er\b)"
 )
 
+# ── Period detection ──────────────────────────────────────────────────────────
+
+_MONTH_ORDINALS: Final[dict[str, int]] = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+    "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+    "eleven": 11, "twelve": 12,
+}
+
+# BS months in fiscal-year order (month 1 = Shrawan, month 12 = Ashadh).
+_FY_ORDINAL_TO_BS_MONTH: Final[tuple[BsMonth, ...]] = (
+    "Shrawan", "Bhadra", "Ashwin", "Kartik", "Mangsir", "Poush",
+    "Magh", "Falgun", "Chait", "Baisakh", "Jestha", "Ashadh",
+)
+
+# Fiscal-year position (1-based) for each BS month name.
+_BS_MONTH_FY_POS: Final[dict[str, int]] = {
+    m: i + 1 for i, m in enumerate(_FY_ORDINAL_TO_BS_MONTH)
+}
+
+# "based on Nine Months of 2025/26"  (simple form)
+# "Based on Nine Months' Data (Ending Mid-April) of 2025/26"  (NRB extended form)
+# The lazy [\s\S]{0,100}? bridges the apostrophe + optional parenthetical clause.
+_TITLE_N_MONTHS_RE: Final[re.Pattern[str]] = re.compile(
+    r"based\s+on\s+(\w+)\s+months?[\s\S]{0,100}?of\s+(\d{4})/\d{2,4}",
+    re.IGNORECASE,
+)
+
+# "based on Magh 2082" — monthly release, BS month + BS year.
+_TITLE_MONTHLY_RE: Final[re.Pattern[str]] = re.compile(
+    r"based\s+on\s+(Shrawan|Bhadra|Ashwin|Kartik|Mangsir|Poush|Magh|"
+    r"Falgun|Chait|Baisakh|Jestha|Ashadh)\s+(\d{4})",
+    re.IGNORECASE,
+)
+
+# Typical NRB publication lag: end-of-period → actual bulletin release.
+# Used only when the orchestrator does not supply the real publication date.
+_NRB_PUB_LAG_DAYS: Final[int] = 45
+
+
+@dataclass(frozen=True)
+class _PeriodInfo:
+    """Reporting-period metadata derived from the bulletin title."""
+
+    bs_fy_start: int        # e.g. 2082 for FY 2082/83
+    end_bs_month: BsMonth   # last BS month of the reporting window
+    end_bs_year: int        # BS year in which end_bs_month falls
+    num_months: int         # 1–12 months covered
+    reporting_period_type: ReportingPeriodType
+    reporting_period_bs: str
+    fiscal_year_bs: str
+    fiscal_year_ad_label: str
+
+
+def _detect_period(text: str, errors: list[ParserError]) -> _PeriodInfo | None:
+    """Detect the reporting period from the bulletin title (first 3000 chars).
+
+    Searches for two NRB title patterns; appends to *errors* and returns
+    None if neither matches or if the period word is unrecognised.
+    """
+    head = text[:3000]
+
+    m_n = _TITLE_N_MONTHS_RE.search(head)
+    if m_n:
+        month_word = m_n.group(1).lower()
+        num_months = _MONTH_ORDINALS.get(month_word)
+        if num_months is None:
+            errors.append(ParserError(
+                error_class="PeriodAmbiguous",
+                error_detail=f"unrecognised month-count word: {m_n.group(1)!r}",
+                source_excerpt=m_n.group(0),
+            ))
+            return None
+        ad_fy_start = int(m_n.group(2))
+        bs_fy_start = ad_fy_start + 57
+        end_bs_month = _FY_ORDINAL_TO_BS_MONTH[num_months - 1]
+        end_bs_year = bs_fy_start if num_months <= 9 else bs_fy_start + 1
+        if num_months == 9:
+            period_type: ReportingPeriodType = "nine_months_cumulative"
+            period_bs = f"FY {fiscal_year_label(bs_fy_start)} 9M"
+        elif num_months == 1:
+            period_type = "monthly"
+            period_bs = f"{end_bs_year}/{(end_bs_year + 1) % 100:02d} {end_bs_month}"
+        else:
+            period_type = "year_to_date"
+            period_bs = f"FY {fiscal_year_label(bs_fy_start)} {num_months}M"
+        return _PeriodInfo(
+            bs_fy_start=bs_fy_start,
+            end_bs_month=end_bs_month,
+            end_bs_year=end_bs_year,
+            num_months=num_months,
+            reporting_period_type=period_type,
+            reporting_period_bs=period_bs,
+            fiscal_year_bs=fiscal_year_label(bs_fy_start),
+            fiscal_year_ad_label=fiscal_year_ad_label(bs_fy_start),
+        )
+
+    m_mon = _TITLE_MONTHLY_RE.search(head)
+    if m_mon:
+        raw_month = m_mon.group(1)
+        end_bs_month = next(
+            (bm for bm in _FY_ORDINAL_TO_BS_MONTH if bm.lower() == raw_month.lower()),
+            None,
+        )
+        if end_bs_month is None:
+            errors.append(ParserError(
+                error_class="PeriodAmbiguous",
+                error_detail=f"unrecognised BS month: {raw_month!r}",
+                source_excerpt=m_mon.group(0),
+            ))
+            return None
+        end_bs_year = int(m_mon.group(2))
+        num_months = _BS_MONTH_FY_POS[end_bs_month]
+        bs_fy_start = end_bs_year if num_months <= 9 else end_bs_year - 1
+        period_bs = f"{end_bs_year}/{(end_bs_year + 1) % 100:02d} {end_bs_month}"
+        return _PeriodInfo(
+            bs_fy_start=bs_fy_start,
+            end_bs_month=end_bs_month,
+            end_bs_year=end_bs_year,
+            num_months=num_months,
+            reporting_period_type="monthly",
+            reporting_period_bs=period_bs,
+            fiscal_year_bs=fiscal_year_label(bs_fy_start),
+            fiscal_year_ad_label=fiscal_year_ad_label(bs_fy_start),
+        )
+
+    errors.append(ParserError(
+        error_class="PeriodAmbiguous",
+        error_detail=(
+            "bulletin title not found in first 3000 chars — "
+            "cannot determine reporting period"
+        ),
+    ))
+    return None
+
+
+# ── Indicator specs ───────────────────────────────────────────────────────────
+
 
 @dataclass(frozen=True)
 class _IndicatorSpec:
-    """How to find one headline indicator in the bulletin text.
+    """Extraction recipe for one indicator in the bulletin text.
 
-    ``pattern`` must contain exactly one capture group: the numeric value
-    (decimal allowed, no thousands separators in the CMEFs prose). The
-    regex is applied against the full document text with
-    ``re.IGNORECASE`` and ``re.DOTALL`` disabled — we want line-locality.
+    ``pattern`` has exactly one numeric capture group. Applied against the
+    full document text. ``end_of_period=True`` → point-in-time (start ==
+    end == end_bs_month mid-date); ``False`` → cumulative span (Shrawan …
+    end_bs_month), or same point if num_months == 1 (monthly release).
     """
 
     slug: str
     unit: str
-    period_type: ReportingPeriodType
     pattern: re.Pattern[str]
-    # When True, the indicator describes the state at end of period
-    # (e.g. NCPI YoY at mid-Chait, forex reserves at mid-Chait). Otherwise
-    # it spans Shrawan..Chait (nine-months cumulative).
     end_of_period: bool
 
 
-# Anchored narrative patterns. Each capture group lifts the numeric value
-# NRB highlights in the executive narrative. The phrasings here have been
-# stable across the FY 2080/81, 2081/82 and 2082/83 nine-month releases.
-# Tolerances: allow 0 or more spaces around punctuation; allow "Rs." with
-# or without trailing space; accept percent values with or without the
-# percent sign (NRB sometimes writes "stood at 4.47 percent" and
-# sometimes uses a chart-only figure).
 _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
+    # ── v0.1.0 headline indicators ────────────────────────────────────────────
     _IndicatorSpec(
         slug="cmefs-ncpi-yoy-overall",
         unit="percent_yoy",
-        period_type="nine_months_cumulative",
-        # NRB phrases this both in para 1 ("The y-o-y consumer price
-        # inflation stood at X percent") and again in para 12 ("The y-o-y
-        # consumer price inflation in Nepal remained at X percent in
-        # mid-Month YYYY"). Para 1 collides with the Chart 1 axis labels
-        # under pdfplumber's column-aware extraction; we anchor on para 12
-        # instead because its line is clean and the phrasing has been
-        # stable across recent FY releases.
         pattern=re.compile(
             r"y-o-y\s+consumer\s+price\s+inflation\s+in\s+Nepal\s+"
             r"remained\s+at\s+(\d+\.\d+)\s*percent",
@@ -144,8 +252,6 @@ _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
     _IndicatorSpec(
         slug="cmefs-remittance-inflow-ytd",
         unit="npr_billion",
-        period_type="nine_months_cumulative",
-        # "Remittance inflows increased 39.1 percent to Rs.1659.41 billion"
         pattern=re.compile(
             r"Remittance\s+inflows\s+(?:increased|decreased)\s+\d+\.\d+\s*percent"
             r"\s+to\s+Rs\.?\s*(\d+\.\d+)\s*billion",
@@ -156,9 +262,7 @@ _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
     _IndicatorSpec(
         slug="cmefs-merchandise-imports-ytd",
         unit="npr_billion",
-        period_type="nine_months_cumulative",
-        # "mercandise imports increased 13.8 percent to Rs.1490.50 billion"
-        # NB: NRB's own copy contains the typo "mercandise"; we accept both.
+        # NRB typo "mercandise" accepted alongside correct spelling.
         pattern=re.compile(
             r"mer[c]?[h]?andise\s+imports\s+(?:increased|decreased)\s+\d+\.\d+\s*percent"
             r"\s+to\s+Rs\.?\s*(\d+\.\d+)\s*billion",
@@ -169,8 +273,6 @@ _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
     _IndicatorSpec(
         slug="cmefs-trade-deficit-ytd",
         unit="npr_billion",
-        period_type="nine_months_cumulative",
-        # "Total trade deficit increased 13.0 percent to Rs.1267.56 billion"
         pattern=re.compile(
             r"Total\s+trade\s+deficit\s+(?:increased|decreased)\s+\d+\.\d+\s*percent"
             r"\s+to\s+Rs\.?\s*(\d+\.\d+)\s*billion",
@@ -181,10 +283,6 @@ _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
     _IndicatorSpec(
         slug="cmefs-bop-surplus-ytd",
         unit="npr_billion",
-        period_type="nine_months_cumulative",
-        # "Balance of Payments (BOP) remained at a surplus of Rs.731.16 billion"
-        # Captures positive; if BOP is in deficit we still capture the magnitude
-        # and stamp parser_notes (handled post-match).
         pattern=re.compile(
             r"Balance\s+of\s+Payments\s+\(BOP\)\s+remained\s+at\s+a\s+"
             r"(?:surplus|deficit)\s+of\s+Rs\.?\s*(\d+\.\d+)\s*billion",
@@ -195,15 +293,7 @@ _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
     _IndicatorSpec(
         slug="cmefs-gross-forex-reserves",
         unit="npr_billion",
-        period_type="nine_months_cumulative",
-        # "Gross foreign exchange reserves increased 30.5 percent to
-        # Rs.3494.73 billion". Under pdfplumber's column-aware extraction
-        # the Chart 3 axis labels and title interleave between
-        # "reserves" and "increased"; we tolerate up to ~250 chars of
-        # chart-noise in between using a non-greedy DOTALL window. The
-        # ``\bChart\b`` and ``(Mid-April)`` tokens we expect in that gap
-        # are harmless because the percent/Rs anchors that bracket the
-        # capture are highly specific.
+        # Chart-axis labels may interleave; tolerate up to ~250 chars of noise.
         pattern=re.compile(
             r"Gross\s+foreign\s+exchange\s+reserves\b.{0,250}?"
             r"(?:increased|decreased)\s+\d+\.\d+\s*percent\s+to\b"
@@ -215,32 +305,103 @@ _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
     _IndicatorSpec(
         slug="cmefs-forex-reserves-months-of-import-cover",
         unit="months",
-        period_type="nine_months_cumulative",
-        # "merchandise and services imports of 18.4 months"
-        # We anchor to "and services imports of N months" to avoid
-        # collision with the bare "merchandise imports of N months" figure.
         pattern=re.compile(
-            r"merchandise\s+and\s+services\s+imports\s+of\s+"
-            r"(\d+\.\d+)\s+months",
+            r"merchandise\s+and\s+services\s+imports\s+of\s+(\d+\.\d+)\s+months",
+            re.IGNORECASE,
+        ),
+        end_of_period=True,
+    ),
+    # ── v0.2.0 extended — external sector ─────────────────────────────────────
+    _IndicatorSpec(
+        slug="cmefs-merchandise-exports-ytd",
+        unit="npr_billion",
+        # NRB typo "mercandise" accepted alongside correct spelling.
+        pattern=re.compile(
+            r"mer[c]?[h]?andise\s+exports\s+(?:increased|decreased)\s+\d+\.\d+\s*percent"
+            r"\s+to\s+Rs\.?\s*(\d+\.\d+)\s*billion",
+            re.IGNORECASE,
+        ),
+        end_of_period=False,
+    ),
+    # ── v0.2.0 extended — government finance ─────────────────────────────────
+    _IndicatorSpec(
+        slug="cmefs-govt-revenue-total-ytd",
+        unit="npr_billion",
+        pattern=re.compile(
+            r"[Tt]otal\s+(?:government\s+)?revenue\s+(?:increased|decreased)\s+\d+\.\d+\s*percent"
+            r"\s+to\s+Rs\.?\s*(\d+\.\d+)\s*billion",
+            re.IGNORECASE,
+        ),
+        end_of_period=False,
+    ),
+    _IndicatorSpec(
+        slug="cmefs-govt-expenditure-total-ytd",
+        unit="npr_billion",
+        pattern=re.compile(
+            r"[Tt]otal\s+(?:government\s+)?expenditure\s+(?:increased|decreased)\s+\d+\.\d+\s*percent"
+            r"\s+to\s+Rs\.?\s*(\d+\.\d+)\s*billion",
+            re.IGNORECASE,
+        ),
+        end_of_period=False,
+    ),
+    _IndicatorSpec(
+        slug="cmefs-govt-fiscal-balance-ytd",
+        unit="npr_billion",
+        # Captures the magnitude; sign (surplus/deficit) recorded in parser_notes.
+        pattern=re.compile(
+            r"[Ff]iscal\s+(?:deficit|surplus)\s+.{0,60}?Rs\.?\s*(\d+\.\d+)\s*billion",
+            re.IGNORECASE | re.DOTALL,
+        ),
+        end_of_period=False,
+    ),
+    # ── v0.2.0 extended — monetary ────────────────────────────────────────────
+    _IndicatorSpec(
+        slug="cmefs-m2-yoy",
+        unit="percent_yoy",
+        pattern=re.compile(
+            r"[Bb]road\s+money\s+\(?M2\)?\s+(?:increased|decreased)\s+(\d+\.\d+)\s*percent",
+            re.IGNORECASE,
+        ),
+        end_of_period=True,
+    ),
+    _IndicatorSpec(
+        slug="cmefs-private-sector-credit-yoy",
+        unit="percent_yoy",
+        pattern=re.compile(
+            r"[Pp]rivate\s+sector\s+credit\s+(?:increased|decreased)\s+(\d+\.\d+)\s*percent",
+            re.IGNORECASE,
+        ),
+        end_of_period=True,
+    ),
+    _IndicatorSpec(
+        slug="cmefs-bfi-deposits-yoy",
+        unit="percent_yoy",
+        pattern=re.compile(
+            r"[Dd]eposits?\s+of\s+BFIs?\s+(?:increased|decreased)\s+(\d+\.\d+)\s*percent",
             re.IGNORECASE,
         ),
         end_of_period=True,
     ),
 )
 
+# v0.1.0 headline slugs — expected to match in every NRB CMEFs edition.
+_HEADLINE_SLUGS: Final[frozenset[str]] = frozenset({
+    "cmefs-ncpi-yoy-overall",
+    "cmefs-remittance-inflow-ytd",
+    "cmefs-merchandise-imports-ytd",
+    "cmefs-trade-deficit-ytd",
+    "cmefs-bop-surplus-ytd",
+    "cmefs-gross-forex-reserves",
+    "cmefs-forex-reserves-months-of-import-cover",
+})
+
 
 def _extract_pdf_text(path: Path) -> str:
-    """Concatenate page text from a PDF. Single space joins; line breaks
-    preserved within pages and ``\\n`` between pages so line-locality is
-    retained for regex matching.
-    """
+    """Concatenate page text from a PDF; collapse soft-hyphenation."""
     parts: list[str] = []
     with pdfplumber.open(str(path)) as pdf:
         for page in pdf.pages:
-            page_text = page.extract_text() or ""
-            parts.append(page_text)
-    # Collapse soft hyphenation NRB occasionally inserts ("merchan-\ndise")
-    # so the regex anchors don't trip on it.
+            parts.append(page.extract_text() or "")
     raw = "\n".join(parts)
     return re.sub(r"-\s*\n\s*", "", raw)
 
@@ -250,41 +411,41 @@ def _is_provisional(window: str) -> bool:
     return bool(_PROVISIONAL_INLINE_RE.search(window))
 
 
-def _period_bounds(
-    bs_fy_start: int, end_of_period: bool
-) -> tuple[datetime, datetime]:
-    """Resolve AD bounds for an indicator's reporting period."""
-    if end_of_period:
-        chait_mid = mid_month_ad("Chait", bs_fy_start)
-        return chait_mid, chait_mid
-    start, _ = nine_months_span_ad(bs_fy_start)
-    return start, mid_month_ad("Chait", bs_fy_start)
+def _period_bounds(period: _PeriodInfo, end_of_period: bool) -> tuple[datetime, datetime]:
+    """Resolve AD date bounds for one indicator given the document period.
+
+    For monthly releases (num_months == 1) both bounds are always the same
+    point regardless of end_of_period, since start == end for a single month.
+    """
+    end = mid_month_ad(period.end_bs_month, period.end_bs_year)
+    if end_of_period or period.num_months == 1:
+        return end, end
+    start = mid_month_ad("Shrawan", period.bs_fy_start)
+    return start, end
 
 
 def parse(source_document_path: str, source_document_id: str) -> ParserResult:
-    """Parse one NRB CMEFs English-edition PDF; emit headline indicators.
+    """Parse one NRB CMEFs English-edition PDF; emit headline + extended indicators.
 
     Arguments:
         source_document_path: filesystem path to the downloaded PDF.
-        source_document_id: opaque ID from ``source_documents``; threaded
-            through for symmetry with the orchestrator contract.
+        source_document_id: opaque FK from ``source_documents``; threaded
+            through for orchestrator symmetry.
 
     Returns:
         ``ParserResult`` with ``status``, ``staging_rows``, ``errors``.
     """
-    _ = source_document_id  # touch for static analysers
+    _ = source_document_id
 
     path = Path(source_document_path)
     if not path.exists():
         return ParserResult(
             status="failure",
             parser_version=PARSER_VERSION,
-            errors=[
-                ParserError(
-                    error_class="Other",
-                    error_detail=f"source file not found: {path}",
-                )
-            ],
+            errors=[ParserError(
+                error_class="Other",
+                error_detail=f"source file not found: {path}",
+            )],
         )
 
     try:
@@ -293,78 +454,82 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
         return ParserResult(
             status="failure",
             parser_version=PARSER_VERSION,
-            errors=[
-                ParserError(
-                    error_class="EncodingError",
-                    error_detail=f"pdf extract failed: {exc}",
-                )
-            ],
+            errors=[ParserError(
+                error_class="EncodingError",
+                error_detail=f"pdf extract failed: {exc}",
+            )],
         )
 
     if not text.strip():
         return ParserResult(
             status="failure",
             parser_version=PARSER_VERSION,
-            errors=[
-                ParserError(
-                    error_class="PageLayoutChanged",
-                    error_detail="pdf yielded no text — possible image-only scan",
-                )
-            ],
+            errors=[ParserError(
+                error_class="PageLayoutChanged",
+                error_detail="pdf yielded no text — possible image-only scan",
+            )],
         )
 
-    ad_start_span, ad_end_span = _period_bounds(_BS_FY_START, end_of_period=False)
-    ad_chait_mid = mid_month_ad("Chait", _BS_FY_START)
+    errors: list[ParserError] = []
+    period = _detect_period(text, errors)
+    if period is None:
+        return ParserResult(
+            status="failure",
+            parser_version=PARSER_VERSION,
+            errors=errors,
+        )
+
+    # Approximate publication date (orchestrator can supply the real one via
+    # source_documents.downloaded_at; this heuristic is used when that path
+    # is unavailable — e.g. during offline testing).
+    pub_ad = mid_month_ad(period.end_bs_month, period.end_bs_year) + timedelta(
+        days=_NRB_PUB_LAG_DAYS
+    )
+    pub_bs = f"~{period.fiscal_year_bs} (heuristic)"
+
+    cumul_start, cumul_end = _period_bounds(period, end_of_period=False)
 
     base = StagingRowDraft(
         indicator_slug_raw="",
         value=0.0,
         unit="",
-        reporting_period_type="nine_months_cumulative",
-        reporting_period_bs=f"FY {fiscal_year_label(_BS_FY_START)} 9M",
-        reporting_period_ad_start=ad_start_span,
-        reporting_period_ad_end=ad_end_span,
-        publication_date_ad=_PUBLICATION_DATE_AD,
-        publication_date_bs=_PUBLICATION_DATE_BS,
-        fiscal_year_bs=fiscal_year_label(_BS_FY_START),
-        fiscal_year_ad_label=fiscal_year_ad_label(_BS_FY_START),
+        reporting_period_type=period.reporting_period_type,
+        reporting_period_bs=period.reporting_period_bs,
+        reporting_period_ad_start=cumul_start,
+        reporting_period_ad_end=cumul_end,
+        publication_date_ad=pub_ad,
+        publication_date_bs=pub_bs,
+        fiscal_year_bs=period.fiscal_year_bs,
+        fiscal_year_ad_label=period.fiscal_year_ad_label,
         confidence_grade_proposed="A",
         parser_notes=None,
     )
 
     staging_rows: list[StagingRowDraft] = []
-    errors: list[ParserError] = []
 
     for spec in _INDICATORS:
         match = spec.pattern.search(text)
         if match is None:
-            errors.append(
-                ParserError(
-                    error_class="PageLayoutChanged",
-                    error_detail=(
-                        f"indicator {spec.slug!r}: narrative anchor not "
-                        f"found — bulletin phrasing may have shifted"
-                    ),
-                )
-            )
+            errors.append(ParserError(
+                error_class="PageLayoutChanged",
+                error_detail=(
+                    f"indicator {spec.slug!r}: narrative anchor not found"
+                    " — bulletin phrasing may have shifted"
+                ),
+            ))
             continue
 
         raw_value = match.group(1)
         try:
             value = float(raw_value)
         except ValueError:
-            errors.append(
-                ParserError(
-                    error_class="ValueUnparseable",
-                    error_detail=(
-                        f"indicator {spec.slug!r}: could not parse {raw_value!r}"
-                    ),
-                    source_excerpt=match.group(0),
-                )
-            )
+            errors.append(ParserError(
+                error_class="ValueUnparseable",
+                error_detail=f"indicator {spec.slug!r}: could not parse {raw_value!r}",
+                source_excerpt=match.group(0),
+            ))
             continue
 
-        # Inspect a 32-char window around the value for an inline provisional flag.
         window_start = max(0, match.start(1) - 4)
         window_end = min(len(text), match.end(1) + 28)
         window = text[window_start:window_end]
@@ -377,45 +542,39 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
             else None
         )
 
-        # BoP can be a surplus or deficit; preserve sign in parser_notes
-        # so downstream consumers can interpret. We always emit the
-        # magnitude; the qualifier is captured in match.group(0).
         if spec.slug == "cmefs-bop-surplus-ytd" and "deficit" in match.group(0).lower():
             notes = (notes + "; " if notes else "") + "BoP in deficit (negative)"
 
-        if spec.end_of_period:
-            row = replace(
-                base,
-                indicator_slug_raw=spec.slug,
-                value=value,
-                unit=spec.unit,
-                reporting_period_ad_start=ad_chait_mid,
-                reporting_period_ad_end=ad_chait_mid,
-                confidence_grade_proposed=confidence,
-                parser_notes=notes,
+        if spec.slug == "cmefs-govt-fiscal-balance-ytd":
+            sign_note = (
+                "fiscal deficit (negative)"
+                if "deficit" in match.group(0).lower()
+                else "fiscal surplus (positive)"
             )
-        else:
-            row = replace(
-                base,
-                indicator_slug_raw=spec.slug,
-                value=value,
-                unit=spec.unit,
-                confidence_grade_proposed=confidence,
-                parser_notes=notes,
-            )
+            notes = (notes + "; " if notes else "") + sign_note
+
+        period_start, period_end = _period_bounds(period, spec.end_of_period)
+
+        row = replace(
+            base,
+            indicator_slug_raw=spec.slug,
+            value=value,
+            unit=spec.unit,
+            reporting_period_ad_start=period_start,
+            reporting_period_ad_end=period_end,
+            confidence_grade_proposed=confidence,
+            parser_notes=notes,
+        )
         staging_rows.append(row)
 
     if not staging_rows:
         return ParserResult(
             status="failure",
             parser_version=PARSER_VERSION,
-            errors=errors
-            or [
-                ParserError(
-                    error_class="PageLayoutChanged",
-                    error_detail="no headline indicators matched",
-                )
-            ],
+            errors=errors or [ParserError(
+                error_class="PageLayoutChanged",
+                error_detail="no indicators matched",
+            )],
         )
 
     status: ParserStatus = "partial" if errors else "success"
@@ -431,19 +590,17 @@ def _main() -> None:
     """CLI entrypoint used by the Node ingestion orchestrator.
 
     Argv: ``parser.py <source_document_path> <source_document_id>``.
-    Writes JSON to stdout via ``dataclasses.asdict`` (mirrors Worker P1's
-    fix; do NOT use ``ParserResult.to_json_dict()`` directly — see brief).
-    Exit codes follow ``src/lib/ingestion/run-parser.ts``:
-      - 0: parser ran (status may still be 'failure'; consumer reads stdout)
-      - 2: usage error
-      - 1: catastrophic crash (let Python propagate)
+    Writes JSON to stdout via ``dataclasses.asdict``.
+    Exit codes:
+      0: parser ran (status may still be 'failure'; consumer reads stdout)
+      2: usage error
+      1: catastrophic crash (let Python propagate)
     """
     import json
     import sys
     from dataclasses import asdict
 
-    expected_argv_count = 3  # progname + source_path + source_doc_id
-    if len(sys.argv) != expected_argv_count:
+    if len(sys.argv) != 3:
         sys.stderr.write(
             "usage: parser.py <source_document_path> <source_document_id>\n"
         )
@@ -451,10 +608,6 @@ def _main() -> None:
 
     result = parse(sys.argv[1], sys.argv[2])
     payload = asdict(result)
-    # Datetime fields under staging_rows aren't JSON-serialisable raw;
-    # walk and ISO-format them (mirrors StagingRowDraft.to_json_dict but
-    # built on asdict so the row dict shape stays in lock-step with the
-    # dataclass).
     for row in payload.get("staging_rows", []):
         for key in (
             "reporting_period_ad_start",
