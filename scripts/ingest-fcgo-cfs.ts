@@ -3,16 +3,15 @@
  *
  * SOURCE_ID: "fcgo-consolidated-financial-statements" (declared in
  * scrapers/fcgo_consolidated/parser.py as
- * SOURCE_ID = "fcgo-consolidated-financial-statements"). The parser is a
- * deterministic pymupdf narrative-prose parser: it scans all pages of the
- * CFS, anchors on the clean forward-text Executive Summary / Treasury-Position
- * prose, and lifts 9 indicators (7 extracted + 2 derived: total
- * revenue/expenditure, recurrent/capital/financing expenditure, provincial &
- * local expenditure, federal expenditure, fiscal balance). All values are
- * npr_million; reporting_period_type is annual; fiscal year is BS 2079/80
- * (AD 2022/23) for the bundled FY 2022/23 publication.
+ * SOURCE_ID = "fcgo-consolidated-financial-statements"). The parser (v1.1.0)
+ * is a deterministic pymupdf parser that extracts:
+ *   - 9 prose indicators (7 extracted + 2 derived) from the Executive Summary
+ *   - 55 table indicators from 5 CFS overview tables (macro, budget ratios,
+ *     COFOG functional expenditure, debt stock, debt ratios), each with up to
+ *     5 FY columns — producing ~248 staging rows total from one PDF.
+ * All values are npr_million or percent; reporting_period_type is annual.
  *
- * The parser (v1.0.0) auto-detects the fiscal year from "FY YYYY/YY" in the
+ * The parser auto-detects the fiscal year from "FY YYYY/YY" in the
  * Executive Summary prose, so no --period flag is needed — the correct BS
  * period is stamped on every staging row regardless of which edition PDF is
  * provided (FY 2018/19 through FY 2023/24 all work).

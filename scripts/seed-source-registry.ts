@@ -1399,7 +1399,7 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     historicalCoverage: 'English: FY 2018/19 (2075/76) onward; Nepali: FY 2074/75 onward',
     licenseStatus: 'gov_open',
     parserOwner: 'scrapers/fcgo_consolidated/parser.py',
-    parserVersion: '1.0.0',
+    parserVersion: '1.1.0',
     revisionPolicy:
       'Annual; published Chaitra of following FY; audited outturn — no subsequent revision expected',
     knownBreakageModes: [
@@ -1411,7 +1411,7 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     ingestionMode: 'manual_upload',
     tier: 1,
     notes:
-      'Audited all-of-government outturn — highest-confidence fiscal data (A). Covers federal + 7 provinces + 753 local govts in consolidated form. English CFS available from FY 2018/19 (2075/76) through FY 2023/24 (2080/81) — 6 editions as of 2026-06-11. PDFs served from giwmscdnone.gov.np CDN. Parser v0.2.0: auto-detects FY from prose, supports all available editions.',
+      'Audited all-of-government outturn — highest-confidence fiscal data (A). Covers federal + 7 provinces + 753 local govts in consolidated form. English CFS available from FY 2018/19 (2075/76) through FY 2023/24 (2080/81) — 6 editions as of 2026-06-11. PDFs served from giwmscdnone.gov.np CDN. Parser v1.1.0: prose (9 indicators) + 5 overview tables (55 indicators × 5 FY = ~240 staging rows).',
   },
   {
     // MoF audit #4 — PDMO monthly government debt stats.

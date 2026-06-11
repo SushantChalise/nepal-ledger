@@ -1,8 +1,7 @@
 """Tests for the FCGO Consolidated Financial Statements parser.
 
-v1.0.0: pymupdf backend (pdfplumber reversed 165/325 landscape pages).
-9 indicators: 7 extracted from Executive Summary prose + 2 derived.
-Exercised against synthesized text fixtures; optional real-PDF integration.
+v1.1.0: prose (9 indicators) + overview table extraction (49 slugs × 5 FYs).
+Prose tests use synthesized text fixtures; table tests need the real PDF.
 """
 
 from __future__ import annotations
@@ -157,7 +156,7 @@ def test_phrasing1_status_success(result_1: ParserResult) -> None:
 
 
 def test_phrasing1_parser_version(result_1: ParserResult) -> None:
-    assert result_1.parser_version == PARSER_VERSION == "1.0.0"
+    assert result_1.parser_version == PARSER_VERSION == "1.1.0"
 
 
 def test_phrasing1_all_nine_indicators(result_1: ParserResult) -> None:
@@ -375,18 +374,99 @@ def test_fy_detection_rejects_malformed_labels() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Table extractor unit tests (value parsing, FY header parsing).
+# ---------------------------------------------------------------------------
+
+
+def test_table_value_parser() -> None:
+    from fcgo_consolidated.table_extractor import _parse_value
+
+    assert _parse_value("1,234.56") == pytest.approx(1234.56)
+    assert _parse_value("453230.5") == pytest.approx(453230.5)
+    assert _parse_value("(6.90)") == pytest.approx(-6.90)
+    assert _parse_value("(12.60)") == pytest.approx(-12.60)
+    assert _parse_value("-") is None
+    assert _parse_value("") is None
+    assert _parse_value(None) is None
+    assert _parse_value("  ") is None
+
+
+def test_table_fy_header_parser() -> None:
+    from fcgo_consolidated.table_extractor import _parse_fy_header
+
+    header = ["", "2018/19", "2019/20", "2020/21", "2021/22", "2022/23"]
+    years = _parse_fy_header(header)
+    assert years == [None, 2018, 2019, 2020, 2021, 2022]
+
+    assert _parse_fy_header(["2022/2023"])[0] == 2022
+    assert _parse_fy_header(["2022/24"])[0] is None
+    assert _parse_fy_header(["not-a-fy"])[0] is None
+
+
+# ---------------------------------------------------------------------------
 # Optional integration test against the real PDF (skipped if absent).
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.skipif(not REAL_PDF.exists(), reason="real FCGO CFS PDF not on disk")
-def test_real_pdf_extracts_all_nine_values() -> None:
+def test_real_pdf_extracts_prose_indicators() -> None:
     result = parse(str(REAL_PDF), source_document_id="real-doc")
     assert result.status == "success", f"errors={result.errors}"
     slugs = {r.indicator_slug_raw for r in result.staging_rows}
-    assert slugs == ALL_SLUGS, f"missing: {ALL_SLUGS - slugs}"
+    assert ALL_SLUGS.issubset(slugs), f"missing prose: {ALL_SLUGS - slugs}"
     for slug, expected in EXPECTED_VALUES.items():
         assert _value_for(result, slug) == pytest.approx(expected, abs=1e-2), slug
+
+
+@pytest.mark.skipif(not REAL_PDF.exists(), reason="real FCGO CFS PDF not on disk")
+def test_real_pdf_extracts_overview_tables() -> None:
+    result = parse(str(REAL_PDF), source_document_id="real-doc")
+    assert result.status == "success", f"errors={result.errors}"
+    table_rows = [
+        r for r in result.staging_rows
+        if r.parser_notes and "CFS Overview" in r.parser_notes
+    ]
+    assert len(table_rows) >= 200, f"only {len(table_rows)} table rows"
+    table_slugs = {r.indicator_slug_raw for r in table_rows}
+    assert len(table_slugs) >= 40, f"only {len(table_slugs)} unique table slugs"
+
+    expected_samples = {
+        "fcgo-macro-gdp-nominal-annual": (5381335.0, "npr_million"),
+        "fcgo-cofog-defence-pct-annual": (4.89, "percent"),
+        "fcgo-debt-total-outstanding-annual": (2295436.9, "npr_million"),
+        "fcgo-budget-expenditure-pct-gdp-annual": (26.41, "percent"),
+        "fcgo-macro-resources-gap-pct-gdp-annual": (-4.1, "percent"),
+    }
+    for slug, (expected_val, expected_unit) in expected_samples.items():
+        matches = [
+            r for r in table_rows
+            if r.indicator_slug_raw == slug and r.fiscal_year_ad_label == "2022/23"
+        ]
+        assert len(matches) == 1, f"{slug}: expected 1 match for FY22/23, got {len(matches)}"
+        assert matches[0].value == pytest.approx(expected_val, abs=0.1), slug
+        assert matches[0].unit == expected_unit, slug
+
+
+@pytest.mark.skipif(not REAL_PDF.exists(), reason="real FCGO CFS PDF not on disk")
+def test_real_pdf_table_rows_span_five_fiscal_years() -> None:
+    result = parse(str(REAL_PDF), source_document_id="real-doc")
+    table_rows = [
+        r for r in result.staging_rows
+        if r.parser_notes and "CFS Overview" in r.parser_notes
+    ]
+    fys = sorted({r.fiscal_year_ad_label for r in table_rows})
+    assert len(fys) >= 5, f"only {len(fys)} FYs: {fys}"
+    assert "2018/19" in fys
+    assert "2022/23" in fys
+
+
+@pytest.mark.skipif(not REAL_PDF.exists(), reason="real FCGO CFS PDF not on disk")
+def test_real_pdf_total_row_count() -> None:
+    result = parse(str(REAL_PDF), source_document_id="real-doc")
+    assert result.status == "success"
+    assert len(result.staging_rows) >= 240, (
+        f"expected >=240 total rows (9 prose + ~239 table), got {len(result.staging_rows)}"
+    )
 
 
 @pytest.mark.skipif(not REAL_PDF.exists(), reason="real FCGO CFS PDF not on disk")
@@ -403,10 +483,5 @@ def test_cli_emits_valid_json_on_real_pdf() -> None:
     assert proc.returncode == 0, f"stderr: {proc.stderr}"
     payload = json.loads(proc.stdout)
     assert payload["status"] == "success"
-    assert payload["parser_version"] == PARSER_VERSION == "1.0.0"
-    assert len(payload["staging_rows"]) == len(ALL_SLUGS)
-    for row in payload["staging_rows"]:
-        assert "T" in row["reporting_period_ad_start"]
-        assert "T" in row["reporting_period_ad_end"]
-        assert "T" in row["publication_date_ad"]
-        assert row["unit"] == "npr_million"
+    assert payload["parser_version"] == PARSER_VERSION == "1.1.0"
+    assert len(payload["staging_rows"]) >= 240

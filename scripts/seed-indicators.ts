@@ -116,6 +116,461 @@ const FCGO_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// FCGO CFS Overview Tables (parser v1.1.0) — 55 indicators from 5 tables,
+// each with 5 FY time series (FY 2018/19–2022/23).
+// Table 28: Macro Economic Indicators (CBS national accounts via FCGO)
+// Table 29: Macro-Level Budget Operation (% of GDP)
+// Table 10: COFOG-wise Expenditure In Percentage
+// Table 16: Outstanding Debt (NPR million)
+// Table 37: Debt Ratio (composition + sustainability)
+const FCGO_TABLE_INDICATORS: readonly SeedIndicator[] = [
+  // ── Table 28: Macro Economic Indicators ───────────────────────────────
+  {
+    slug: 'fcgo-macro-gdp-nominal-annual',
+    nameEn: 'Nominal GDP (FCGO CFS macro table)',
+    category: 'real_sector',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-gni-nominal-annual',
+    nameEn: 'Gross National Income (FCGO CFS macro table)',
+    category: 'real_sector',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-gndi-nominal-annual',
+    nameEn: 'Gross National Disposable Income (FCGO CFS macro table)',
+    category: 'real_sector',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-consumption-pct-gdp-annual',
+    nameEn: 'Final Consumption Expenditure (% of GDP)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-domestic-saving-pct-gdp-annual',
+    nameEn: 'Gross Domestic Saving (% of GDP)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-national-saving-pct-gdp-annual',
+    nameEn: 'Gross National Saving (% of GDP)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-exports-pct-gdp-annual',
+    nameEn: 'Exports of Goods & Services (% of GDP)',
+    category: 'external_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-imports-pct-gdp-annual',
+    nameEn: 'Imports of Goods & Services (% of GDP)',
+    category: 'external_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-gfcf-pct-gdp-annual',
+    nameEn: 'Gross Fixed Capital Formation (% of GDP)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-resources-gap-pct-gdp-annual',
+    nameEn: 'Resources Gap (% of GDP)',
+    category: 'external_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-remittances-pct-gdp-annual',
+    nameEn: 'Workers Remittances (% of GDP)',
+    category: 'external_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-product-tax-pct-gdp-annual',
+    nameEn: 'Product Tax (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-total-tax-pct-gdp-annual',
+    nameEn: 'Total Tax (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-per-capita-gdp-annual',
+    nameEn: 'Per Capita GDP (NPR)',
+    category: 'real_sector',
+    unit: 'npr',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-per-capita-gni-annual',
+    nameEn: 'Per Capita GNI (NPR)',
+    category: 'real_sector',
+    unit: 'npr',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-macro-per-capita-gndi-annual',
+    nameEn: 'Per Capita GNDI (NPR)',
+    category: 'real_sector',
+    unit: 'npr',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  // ── Table 29: Macro-Level Budget Operation (% of GDP) ─────────────────
+  {
+    slug: 'fcgo-budget-expenditure-pct-gdp-annual',
+    nameEn: 'Total Expenditure (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-recurrent-pct-gdp-annual',
+    nameEn: 'Recurrent Expenditure (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-capital-pct-gdp-annual',
+    nameEn: 'Capital Expenditure (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-financing-pct-gdp-annual',
+    nameEn: 'Financing (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-revenue-pct-gdp-annual',
+    nameEn: 'Revenue (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-foreign-grants-pct-gdp-annual',
+    nameEn: 'Foreign Grant Receipt (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-total-debt-received-pct-gdp-annual',
+    nameEn: 'Total Debt Received (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-domestic-loan-pct-gdp-annual',
+    nameEn: 'Domestic Loan Receipt (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-foreign-loan-pct-gdp-annual',
+    nameEn: 'Foreign Loan Receipt (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-outstanding-debt-pct-gdp-annual',
+    nameEn: 'Total Outstanding Debt (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-outstanding-external-debt-pct-gdp-annual',
+    nameEn: 'Outstanding External Debt (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-outstanding-domestic-debt-pct-gdp-annual',
+    nameEn: 'Outstanding Domestic Debt (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-debt-servicing-pct-gdp-annual',
+    nameEn: 'Total Debt Servicing (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-external-debt-repayment-pct-gdp-annual',
+    nameEn: 'External Debt Repayment (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-domestic-debt-repayment-pct-gdp-annual',
+    nameEn: 'Domestic Debt Repayment (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-total-investment-pct-gdp-annual',
+    nameEn: 'Total Investment (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-investment-share-pct-gdp-annual',
+    nameEn: 'Investment — Share (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-budget-investment-loan-pct-gdp-annual',
+    nameEn: 'Investment — Loan (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  // ── Table 10: COFOG-wise Expenditure In Percentage ────────────────────
+  {
+    slug: 'fcgo-cofog-general-public-services-pct-annual',
+    nameEn: 'COFOG: General Public Services (% of total expenditure)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-cofog-defence-pct-annual',
+    nameEn: 'COFOG: Defence (% of total expenditure)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-cofog-public-order-safety-pct-annual',
+    nameEn: 'COFOG: Public Order and Safety (% of total expenditure)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-cofog-economic-affairs-pct-annual',
+    nameEn: 'COFOG: Economic Affairs (% of total expenditure)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-cofog-environmental-protection-pct-annual',
+    nameEn: 'COFOG: Environmental Protection (% of total expenditure)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-cofog-housing-community-pct-annual',
+    nameEn: 'COFOG: Housing and Community Amenities (% of total expenditure)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-cofog-health-pct-annual',
+    nameEn: 'COFOG: Health (% of total expenditure)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-cofog-recreation-culture-pct-annual',
+    nameEn: 'COFOG: Recreation, Culture, and Religion (% of total expenditure)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-cofog-education-pct-annual',
+    nameEn: 'COFOG: Education (% of total expenditure)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-cofog-social-security-pct-annual',
+    nameEn: 'COFOG: Social Security (% of total expenditure)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  // ── Table 16: Outstanding Debt (NPR million) ─────────────────────────
+  {
+    slug: 'fcgo-debt-domestic-outstanding-annual',
+    nameEn: 'Outstanding Domestic Debt (NPR million)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-debt-external-outstanding-annual',
+    nameEn: 'Outstanding External Debt (NPR million)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-debt-total-outstanding-annual',
+    nameEn: 'Total Outstanding Debt (NPR million)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  // ── Table 37: Debt Ratio ──────────────────────────────────────────────
+  {
+    slug: 'fcgo-debt-external-share-pct-annual',
+    nameEn: 'Outstanding External Debt / Total Debt (%)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-debt-domestic-share-pct-annual',
+    nameEn: 'Outstanding Domestic Debt / Total Debt (%)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-debt-total-pct-gdp-annual',
+    nameEn: 'Total Outstanding Debt / GDP (%)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-debt-domestic-pct-gdp-annual',
+    nameEn: 'Outstanding Domestic Debt / GDP (%)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-debt-external-pct-gdp-annual',
+    nameEn: 'Outstanding External Debt / GDP (%)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-debt-servicing-pct-gdp-annual',
+    nameEn: 'Debt Servicing / GDP (%)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-debt-servicing-pct-revenue-annual',
+    nameEn: 'Debt Servicing / Revenue (%)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-debt-servicing-pct-exports-annual',
+    nameEn: 'Debt Servicing / Exports (%)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+];
+
 // MoF Economic Survey — Annex 6.1 (Number of Workers having Foreign Employment
 // Permit), the one cleanly-parseable annex table (ADR-0016; EN 2023/24 edition).
 // The headline macro annex is RTL-mirrored and the Nepali editions are
@@ -1329,6 +1784,37 @@ async function persist(): Promise<void> {
     fcgoLinked += 1;
   }
   log(`indicator_source_map: ${fcgoLinked} links ensured → ${FCGO_SOURCE_ID}`);
+
+  // 9b. FCGO CFS overview table indicators (v1.1.0 — 55 indicators from 5 tables).
+  const fcgoTableInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...FCGO_TABLE_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!fcgoTableInsertResult.ok)
+    throw new Error(
+      `FCGO table indicators insert failed: ${JSON.stringify(fcgoTableInsertResult.error)}`,
+    );
+  log(
+    `indicators (FCGO tables): ${fcgoTableInsertResult.value.length} inserted ` +
+      `(of ${FCGO_TABLE_INDICATORS.length}; existing skipped)`,
+  );
+  let fcgoTableLinked = 0;
+  for (const ind of FCGO_TABLE_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok)
+      throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      FCGO_SOURCE_ID,
+      'FCGO CFS overview tables (v1.1.0)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    fcgoTableLinked += 1;
+  }
+  log(`indicator_source_map: ${fcgoTableLinked} links ensured → ${FCGO_SOURCE_ID} (tables v1.1.0)`);
 
   // 10. MoF Economic Survey Annex-6.1 foreign-employment-permit series (ADR-0016).
   const esInsertResult = await safeQuery(() =>

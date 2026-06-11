@@ -78,7 +78,7 @@ from _common.types import (
     StagingRowDraft,
 )
 
-PARSER_VERSION: Final[str] = "1.0.0"
+PARSER_VERSION: Final[str] = "1.1.0"
 SOURCE_ID: Final[str] = "fcgo-consolidated-financial-statements"
 
 _AD_FY_START: Final[int] = 2022
@@ -405,10 +405,10 @@ def extract_indicators(text: str) -> ParserResult:
 
 
 def parse(source_document_path: str, source_document_id: str) -> ParserResult:
-    """Parse one FCGO CFS English-edition PDF; emit headline aggregates.
+    """Parse one FCGO CFS English-edition PDF.
 
-    v1.0.0: uses pymupdf instead of pdfplumber — correctly reads the
-    165 landscape-rotated table pages that pdfplumber reverses.
+    v1.1.0: prose headline extraction (9 indicators) + overview table
+    extraction (~200 staging rows from 5 key tables with 5-year series).
     """
     _ = source_document_id
 
@@ -426,7 +426,7 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
         )
 
     try:
-        text = _extract_pdf_text(path)
+        doc = pymupdf.open(str(path))
     except (OSError, ValueError, RuntimeError) as exc:
         return ParserResult(
             status="failure",
@@ -434,12 +434,44 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
             errors=[
                 ParserError(
                     error_class="EncodingError",
-                    error_detail=f"pdf extract failed: {exc}",
+                    error_detail=f"pdf open failed: {exc}",
                 )
             ],
         )
 
-    return extract_indicators(text)
+    try:
+        parts: list[str] = []
+        for page in doc:
+            parts.append(page.get_text())
+        raw = "\n".join(parts)
+        text = re.sub(r"-\s*\n\s*", "", raw)
+
+        prose_result = extract_indicators(text)
+
+        ad_fy_start = _detect_ad_fy_start(text) or _AD_FY_START
+
+        from fcgo_consolidated.table_extractor import extract_overview_tables
+
+        table_rows, table_errors = extract_overview_tables(doc, ad_fy_start)
+    finally:
+        doc.close()
+
+    all_rows = prose_result.staging_rows + table_rows
+    all_errors = prose_result.errors + table_errors
+
+    if not all_rows:
+        status: ParserStatus = "failure"
+    elif all_errors:
+        status = "partial"
+    else:
+        status = "success"
+
+    return ParserResult(
+        status=status,
+        parser_version=PARSER_VERSION,
+        staging_rows=all_rows,
+        errors=all_errors,
+    )
 
 
 def _main() -> None:

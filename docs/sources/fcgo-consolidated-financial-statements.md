@@ -1,7 +1,7 @@
 # Source: Financial Comptroller General Office — Consolidated Financial Statements
 
 **source_id:** `fcgo-consolidated-financial-statements`
-**Status:** Active (parser v1.0.0 — pymupdf backend; 9 indicators: 7 extracted + 2 derived; FY 2018/19 → 2023/24 available)
+**Status:** Active (parser v1.1.0 — pymupdf backend; 64 indicators: 9 prose + 55 overview-table; FY 2018/19 → 2023/24 available)
 **Tier:** Tier 1
 **Registered at:** 2026-06-07
 **Last verified:** 2026-06-11 (fcgo.gov.np; FY 2023/24 now available; no monthly CFS found at fcgo.gov.np)
@@ -51,12 +51,50 @@ shown are the verified FY 2022/23 (BS 2079/80) outturn.
 > (NPR 2,079,823.31 million) ≠ total-expenditure (NPR 1,672,128.84 million). The
 > parser records this in each row's `parser_notes`.
 
-> **Extraction strategy (v1.0.0):** pymupdf replaced pdfplumber — pdfplumber
-> reversed text on 165/325 landscape-rotated pages (writing direction 0, −1).
-> pymupdf reads them correctly, unlocking Phase 2 full table extraction. The
-> v1.0.0 parser still anchors on Executive Summary prose (page numbers drift
-> across editions) for the 7 extracted indicators. Two derived indicators
-> (federal expenditure, fiscal balance) are computed from the extracted values.
+> **Extraction strategy (v1.1.0):** pymupdf replaced pdfplumber (v1.0.0) —
+> pdfplumber reversed text on 165/325 landscape-rotated pages. pymupdf reads
+> them correctly, enabling full table extraction. The parser extracts:
+> - **Prose (9 indicators):** anchors on Executive Summary narrative text
+>   (page numbers drift across editions); 7 extracted + 2 derived.
+> - **Overview tables (55 indicators):** pymupdf `find_tables()` extracts 5
+>   overview tables, each with 5 FY columns. Tables are located by text-anchor
+>   matching (not page numbers), with whitespace normalization and TOC
+>   false-match protection. Total: ~248 staging rows from one PDF.
+
+### Overview table indicators (v1.1.0)
+
+**Table 28: Macro Economic Indicators** (16 indicators, CBS national accounts via FCGO)
+- `fcgo-macro-gdp-nominal-annual` — Nominal GDP (npr_million)
+- `fcgo-macro-gni-nominal-annual` — Gross National Income (npr_million)
+- `fcgo-macro-gndi-nominal-annual` — Gross National Disposable Income (npr_million)
+- `fcgo-macro-consumption-pct-gdp-annual` — Final Consumption Expenditure (% of GDP)
+- `fcgo-macro-domestic-saving-pct-gdp-annual` — Gross Domestic Saving (% of GDP)
+- `fcgo-macro-national-saving-pct-gdp-annual` — Gross National Saving (% of GDP)
+- `fcgo-macro-exports-pct-gdp-annual` — Exports of Goods & Services (% of GDP)
+- `fcgo-macro-imports-pct-gdp-annual` — Imports of Goods & Services (% of GDP)
+- `fcgo-macro-gfcf-pct-gdp-annual` — Gross Fixed Capital Formation (% of GDP)
+- `fcgo-macro-resources-gap-pct-gdp-annual` — Resources Gap (% of GDP)
+- `fcgo-macro-remittances-pct-gdp-annual` — Workers Remittances (% of GDP)
+- `fcgo-macro-product-tax-pct-gdp-annual` — Product Tax (% of GDP)
+- `fcgo-macro-total-tax-pct-gdp-annual` — Total Tax (% of GDP)
+- `fcgo-macro-per-capita-gdp-annual` — Per Capita GDP (npr)
+- `fcgo-macro-per-capita-gni-annual` — Per Capita GNI (npr)
+- `fcgo-macro-per-capita-gndi-annual` — Per Capita GNDI (npr)
+
+**Table 29: Macro-Level Budget Operation** (18 indicators, % of GDP)
+- `fcgo-budget-expenditure-pct-gdp-annual` through `fcgo-budget-investment-loan-pct-gdp-annual`
+- Covers: expenditure, recurrent, capital, financing, revenue, grants, debt received/repayment (domestic+external), outstanding debt, total investment (share+loan)
+
+**Table 10: COFOG-wise Expenditure** (10 indicators, % of total)
+- `fcgo-cofog-general-public-services-pct-annual` through `fcgo-cofog-social-security-pct-annual`
+- All 10 COFOG functional sectors
+
+**Table 16: Outstanding Debt** (3 indicators, npr_million)
+- `fcgo-debt-domestic-outstanding-annual`, `fcgo-debt-external-outstanding-annual`, `fcgo-debt-total-outstanding-annual`
+
+**Table 37: Debt Ratio** (8 indicators, percent)
+- `fcgo-debt-external-share-pct-annual` through `fcgo-debt-servicing-pct-exports-annual`
+- Debt composition (external/domestic share) + sustainability ratios (debt/GDP, servicing/GDP, servicing/revenue, servicing/exports)
 
 ## Provenance
 
@@ -82,8 +120,8 @@ a corrected edition, it appears as a new file at the same category URL.
 ## Parser
 
 - Path: `scrapers/fcgo_consolidated/parser.py` (underscore dir — Python-importable; the on-disk folder is NOT the hyphenated profile name)
-- Version: 1.0.0 (2026-06-11 — pymupdf backend; 9 indicators: 7 extracted + 2 derived; FY auto-detection)
-- Owner: Mother Opus (built by Sonnet worker W2, 2026-06-07; v0.2.0 2026-06-11; v1.0.0 2026-06-11)
+- Version: 1.1.0 (2026-06-11 — pymupdf backend; 9 prose + 55 overview-table indicators; FY auto-detection)
+- Owner: Mother Opus (built by Sonnet worker W2, 2026-06-07; v0.2.0 2026-06-11; v1.0.0 2026-06-11; v1.1.0 2026-06-11)
 - Unit: `npr_million`; reporting period: `annual`; confidence: `A`
 - Tested against: `Financial Data/fcgo_consolidated/FCGO_CFS_2022-23.pdf` (FY 2022/23, 325 pp) + synthesized text fixtures in `scrapers/fcgo_consolidated/tests/`; FY 2023/24 variant tested via fixture
 - Period mapping: AD fiscal year → BS via +57 on the lead year (ADR-0013); FY 2022/23 → BS 2079/80; FY 2023/24 → BS 2080/81
