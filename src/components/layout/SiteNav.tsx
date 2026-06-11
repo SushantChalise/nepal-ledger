@@ -22,6 +22,7 @@ type NavItem = {
 const NAV_ITEMS: readonly NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Pulse', href: '/pulse' },
+  { label: 'Verdict', href: '/verdict' },
   { label: 'Money Flow', href: '/money-flow' },
   { label: 'Money Map', href: '/money-map' },
   { label: 'Trade', href: '/trade' },
