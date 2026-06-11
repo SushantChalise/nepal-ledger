@@ -44,6 +44,7 @@ Total registered sources: 70
 | Tier 3 | [doed-project-pipeline](doed-project-pipeline.md) | DoED | Hydropower licence + project pipeline registry | ad_hoc | manual_upload | paused |
 | Tier 3 | [dpm-public-enterprises-annual](dpm-public-enterprises-annual.md) | DPM | Annual Performance Review of Public Enterprises (Yellow Book) | annual | manual_upload | active |
 | Tier 3 | [ird-revenue-monthly](ird-revenue-monthly.md) | IRD | Monthly revenue dashboard | monthly | automated_cron | paused |
+| Tier 3 | [moald-agri-stats](moald-agri-stats.md) | MoALD | Statistical Information on Nepalese Agriculture (Annual) | annual | manual_upload | active |
 | Tier 3 | [moald-crop-production](moald-crop-production.md) | MoALD | Seasonal crop production statistics | seasonal | manual_upload | paused |
 | Tier 3 | [mof-lmbis](mof-lmbis.md) | MoF | Line Ministry Budget Information System (federal budget execution) | monthly | automated_cron | paused |
 | Tier 3 | [mof-sutra](mof-sutra.md) | MoF | Sub-national Treasury Regulatory Application (SuTRA) | monthly | automated_cron | paused |

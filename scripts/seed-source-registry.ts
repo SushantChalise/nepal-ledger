@@ -444,6 +444,29 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     notes: 'Soil Economy. PDF-heavy, variable format; needs Surya stack.',
   },
   {
+    sourceId: 'moald-agri-stats',
+    agency: 'Ministry of Agriculture and Livestock Development',
+    agencyShort: 'MoALD',
+    datasetName: 'Statistical Information on Nepalese Agriculture (Annual)',
+    sourceUrl: 'https://moald.gov.np/publication/statistical-information-on-nepalese-agriculture',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    historicalCoverage:
+      'Table 1.1 cereal crops 10-year series from FY 2070/71 (2013/14 AD); ' +
+      'summary stats (cash crops, pulses, livestock, fertilizer) 3-year rolling window',
+    licenseStatus: 'gov_open',
+    confidenceDefault: 'B',
+    status: 'active',
+    ingestionMode: 'manual_upload',
+    tier: 3,
+    notes:
+      'Annual agricultural statistics compendium; clean Latin-script text layer, pdfplumber text extraction. ' +
+      'Table 1.1 (cereal 10yr), Summary §1.4/§1.5/§2.2/§3 (cash crops/pulses/livestock/fertilizer 3yr). ' +
+      'Emits to dne_facts (ADR-0015). Latest: FY 2080/81 (2023/24 AD). Distinct from moald-crop-production (seasonal).',
+  },
+  {
     sourceId: 'mof-lmbis',
     agency: 'Ministry of Finance',
     agencyShort: 'MoF',

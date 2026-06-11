@@ -259,6 +259,26 @@ Notes:
 - Cross-source divergence flags are warnings only; they never block ingest.
 - No `Financial Data/` junction required — the WB API is network-only or via a local JSON file.
 
+### MoALD Agricultural Statistics (moald_agri_stats)
+
+Source ID: `moald-agri-stats` | Parser: `scrapers/moald_agri_stats/parser.py` v0.1.0
+
+Downloads: https://moald.gov.np/publication/statistical-information-on-nepalese-agriculture
+Place the PDF at `Financial Data/moald_agri_stats/StatInfo_AgriNepal_<FY>.pdf`.
+
+```powershell
+# Dry-run (validates parser output — no DB writes):
+$env:PYTHON = "C:\Users\ACER\Projects\Economy\scrapers\.venv\Scripts\python.exe"
+pnpm ingest:moald-agri --dry-run --input "Financial Data/moald_agri_stats/StatInfo_AgriNepal_2080_81.pdf"
+
+# Live ingest for FY 2080/81:
+pnpm ingest:moald-agri --input "Financial Data/moald_agri_stats/StatInfo_AgriNepal_2080_81.pdf"
+```
+
+Expected output: 327 `dne_facts` rows — 198 cereal (11yr × 6 crops × 3 metrics) +
+30 cash crops + 48 pulses + 39 livestock products + 12 fertilizer types.
+Confidence grade B (MoALD administrative census). Requires `Financial Data/` junction.
+
 ---
 
 ## Operational Gotchas

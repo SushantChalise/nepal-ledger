@@ -43,7 +43,8 @@
     "ingest:wdi": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-wdi.ts",
     "seed:local-levels": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-local-level-entities.ts",
     "seed:indicators": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-indicators.ts",
-    "seed:audit-entities": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-audit-entities.ts"
+    "seed:audit-entities": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-audit-entities.ts",
+    "ingest:moald-agri": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-moald-agri.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
