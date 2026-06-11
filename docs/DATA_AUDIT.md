@@ -31,7 +31,7 @@
 | `dne_facts` | 106,989 | dimensional facts (trade, customs, migrant, provincial GDP, SOE, budget) |
 | `local_government_fiscal_transfers` | 30,104 | **5 FYs** (2078/79–2082/83) — 3 text-layer FYs pending layout adapters + 1 scanned (2077/78) pending OCR |
 | `banking_sector_facts` | 2,088 | 58 months (Ashadh 2078 → Shrawan 2082) |
-| `foreign_aid_facts` | 1,020 | 7 fiscal years (gaps — see §3) |
+| `foreign_aid_facts` | 1,304 | 9 fiscal years (gaps — see §3) |
 | `approved_indicator_values` | 877 | 103 single-series indicators |
 | `entities` | 753 | local levels (palika crosswalk) |
 | `staging_indicator_values` | 739 | in-flight (pre-promotion) |
@@ -57,7 +57,7 @@
 | **Migrant workers** | `dne-migrant-workers` × country | 234 countries, 51 months (Ashadh 2078→Shrawan 2082) | B | ✅ (headcounts, NOT remittance NPR) |
 | **Remittance (NPR)** | `dne-remittance-inflow` | **only 3 FY (2079/80→2081/82)** | B | ⚠️ short — needs historical BoP |
 | **Tourism** | `dne-tourist-arrival` | 407 months (Ashadh 2048→Shrawan 2082) | B | ✅ deep |
-| **Foreign aid** | `foreign_aid_facts` (donor + sector) | **7 FY w/ gaps** (see §3) | B | ⚠️ gaps |
+| **Foreign aid** | `foreign_aid_facts` (donor + sector) | **9 FY w/ gaps** (see §3) | B | ⚠️ gaps |
 | **Public enterprises** | `soe-government-share`, `soe-loan-principal` | **1 FY (2080/81)**, equity+loan only | B | ⚠️ revenue/profit deferred |
 | **Federal budget** | `budget-allocation-{total,recurrent,capital}` × budget-head | **1 FY (2074/75)**, 57 heads | B | ⚠️ single year |
 | **Sectoral GVA** | `economic-survey-gva-current` (`industry` + `province-industry`) | **1 FY (2081/82)**, 18 industries × (national + 7 provinces) = 144 facts | B | ✅ new — Tier-2 OCR, render-verified (ADR-0023) |
@@ -70,13 +70,13 @@
 
 ## 3. Foreign-aid fiscal-year gaps (illustrative completeness analysis)
 
-`foreign_aid_facts` has **7 of ~17** fiscal years since 2062/63:
+`foreign_aid_facts` has **9 of ~17** fiscal years since 2062/63 (updated 2026-06-11):
 
-| Present (AD) | 2008/09 · 2009/10 · 2010/11 · 2013/14 · 2014/15 · 2015/16 · 2020/21 |
+| Present (AD) | 2005/06 · 2007/08 · 2008/09 · 2009/10 · 2010/11 · 2013/14 · 2014/15 · 2015/16 · 2020/21 |
 |---|---|
-| **Missing (gaps)** | 2005/06–2007/08, 2011/12–2012/13, **2016/17–2019/20**, 2021/22–2023/24 |
+| **Missing (gaps)** | 2006/07, 2011/12–2012/13, **2016/17–2019/20** _(confirmed absent from mof.gov.np + IECCD unreachable 2026-06-11 — needs manual re-acquisition)_, 2021/22–2024/25 |
 
-The 2016/17–2019/20 + 2021/22–2024/25 gaps matter most (recent years). Filling them needs the corresponding White Book editions (some Preeti — recoverable via Tier-1a; some may need re-acquisition).
+The 2016/17–2019/20 + 2021/22–2024/25 gaps matter most (recent years). FY 2016/17–2019/20 are **not on mof.gov.np** and require manual re-acquisition from IECCD or a donor archive. FY 2021/22–2024/25 need browser verification of the mof.gov.np whitebook page.
 
 ---
 
