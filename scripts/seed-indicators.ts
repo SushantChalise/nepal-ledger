@@ -37,6 +37,7 @@ const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const WDI_SOURCE_ID = 'wb-wdi';
+const CONCESSIONAL_LOAN_SOURCE_ID = 'nrb-concessional-loan';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -339,10 +340,43 @@ const WDI_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// ─── NRB Concessional Loan indicators (parser nrb_concessional_loan v0.1.0) ──
+// Source: NRB monthly XLSX at https://www.nrb.org.np/category/concessional-loan/
+// Unit: npr_thousand (Rs. Hajar — NPR thousands as published in the source).
+// nrb-concession-sme-outstanding is a proxy (Women Entrepreneur SN=4) because
+// NRB does not publish a dedicated SME sub-total; see parser_notes in the data.
+const NRB_CONCESSIONAL_LOAN_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'nrb-concession-total-outstanding',
+    nameEn: 'Concessional Loan Outstanding — Total (all schemes)',
+    category: 'monetary',
+    unit: 'npr_thousand',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-concession-agriculture-outstanding',
+    nameEn: 'Concessional Loan Outstanding — Agriculture and Livestock',
+    category: 'monetary',
+    unit: 'npr_thousand',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-concession-sme-outstanding',
+    nameEn: 'Concessional Loan Outstanding — SME Proxy (Women Entrepreneur Loan SN=4)',
+    category: 'monetary',
+    unit: 'npr_thousand',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+];
+
 // ─── Controlled unit vocabulary ────────────────────────────────────────────
 const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'npr_billion', displayEn: 'NPR billion', dimension: 'currency' },
   { unit: 'npr_million', displayEn: 'NPR million', dimension: 'currency' },
+  { unit: 'npr_thousand', displayEn: 'NPR thousand (Rs. Hajar)', dimension: 'currency' },
   { unit: 'npr_crore', displayEn: 'NPR crore', dimension: 'currency' },
   { unit: 'npr_lakh', displayEn: 'NPR lakh', dimension: 'currency' },
   { unit: 'npr', displayEn: 'NPR', dimension: 'currency' },
@@ -1361,6 +1395,39 @@ async function persist(): Promise<void> {
     wdiLinked += 1;
   }
   log(`indicator_source_map: ${wdiLinked} links ensured → ${WDI_SOURCE_ID}`);
+
+  // 14. NRB concessional loan indicators (parser nrb_concessional_loan v0.1.0).
+  const concessionalInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...NRB_CONCESSIONAL_LOAN_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!concessionalInsertResult.ok)
+    throw new Error(
+      `NRB concessional loan indicators insert failed: ${JSON.stringify(concessionalInsertResult.error)}`,
+    );
+  log(
+    `indicators (NRB concessional loan): ${concessionalInsertResult.value.length} inserted ` +
+      `(of ${NRB_CONCESSIONAL_LOAN_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 15. NRB concessional loan source map links.
+  let concessionalLinked = 0;
+  for (const ind of NRB_CONCESSIONAL_LOAN_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok)
+      throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      CONCESSIONAL_LOAN_SOURCE_ID,
+      'NRB concessional loan monthly XLSX (v0.1.0)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    concessionalLinked += 1;
+  }
+  log(`indicator_source_map: ${concessionalLinked} links ensured → ${CONCESSIONAL_LOAN_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
