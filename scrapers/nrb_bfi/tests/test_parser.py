@@ -17,6 +17,7 @@ from _common.types import ParserError
 from nrb_bfi import PARSER_VERSION, parse
 from nrb_bfi.parser import (
     _C5_INDICATORS,
+    _C7_INDICATORS,
     _LATEST_VALUE_COL_BY_CLASS,
     BankingSectorFactRow,
     ParserResult,
@@ -28,52 +29,55 @@ FIXTURE = FIXTURE_DIR / "bhadau_2082.xlsx"
 
 
 def _build_fixture(path: Path, filename_stem: str | None = None) -> None:
-    """Build a trimmed XLSX that matches the real C5 layout structurally.
+    """Build a trimmed XLSX that matches the real C5 + C7 layout structurally.
 
-    Layout per real corpus:
-      row 0..3: header rows (period labels, year labels)
-      row 4..:  data rows; label in col 2, values at cols 7/15/23/31 for
-                system_total / commercial / development / finance.
+    C5 layout (label in col 2, values at cols 7/15/23/31):
+      system_total base=1000, commercial=700, development=200, finance=100.
+
+    C7 layout (label in col 1, values at cols 6/14/22/30 — 0-indexed):
+      system_total base=5000, commercial=4000, development=700, finance=300.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     wb = openpyxl.Workbook()
-    # Default sheet -> rename to C5; add a couple of stub sheets for sheet
-    # name fidelity.
     default = wb.active
     if default is None:
         raise RuntimeError("openpyxl returned no default sheet")
     default.title = "C5"
     wb.create_sheet("C1")
     wb.create_sheet("C6")
+    wb.create_sheet("C7")
 
     ws = wb["C5"]
-
-    # Header rows. openpyxl is 1-indexed.
     ws.cell(row=2, column=2, value="Liabilities")
-    # period label row
     ws.cell(row=4, column=4, value="Mid-July ")
     ws.cell(row=4, column=7, value="Mid-Aug")
     ws.cell(row=4, column=8, value="Mid-Sept")
     ws.cell(row=4, column=16, value="Mid-Sept")
     ws.cell(row=4, column=24, value="Mid-Sept")
     ws.cell(row=4, column=32, value="Mid-Sept")
-    # year row
     for c in (4, 5, 6, 7, 8):
         ws.cell(row=5, column=c, value=2022 + (c - 4))
-
-    # Body rows. Use synthetic values that are recognisable per-class so we
-    # can assert column wiring is correct: system_total = 1000.x,
-    # commercial = 700.x, development = 200.x, finance = 100.x where .x
-    # is a small offset per indicator.
-    body_start = 7  # 1-indexed Excel row
+    body_start = 7
     for offset, (label, _slug) in enumerate(_C5_INDICATORS):
         r = body_start + offset
-        ws.cell(row=r, column=3, value=label)  # col index 2 in 0-based
-        # Cell column = openpyxl 1-based; map 0-based col 7 -> col 8 etc.
-        ws.cell(row=r, column=8, value=1000 + offset + 0.5)  # system_total
-        ws.cell(row=r, column=16, value=700 + offset + 0.5)  # commercial
-        ws.cell(row=r, column=24, value=200 + offset + 0.5)  # development
-        ws.cell(row=r, column=32, value=100 + offset + 0.5)  # finance
+        ws.cell(row=r, column=3, value=label)   # 0-based col 2
+        ws.cell(row=r, column=8, value=1000 + offset + 0.5)   # system_total (col 7)
+        ws.cell(row=r, column=16, value=700 + offset + 0.5)   # commercial (col 15)
+        ws.cell(row=r, column=24, value=200 + offset + 0.5)   # development (col 23)
+        ws.cell(row=r, column=32, value=100 + offset + 0.5)   # finance (col 31)
+
+    # C7: label in col 1 (openpyxl col 2), latest value in cols 6/14/22/30
+    # (openpyxl cols 7/15/23/31). Values use distinct bases (5000/4000/700/300)
+    # so column-wiring assertions can't accidentally pass on the wrong column.
+    ws7 = wb["C7"]
+    c7_body_start = 7
+    for offset, (label, _slug) in enumerate(_C7_INDICATORS):
+        r = c7_body_start + offset
+        ws7.cell(row=r, column=2, value=label)              # 0-based col 1
+        ws7.cell(row=r, column=7, value=5000 + offset + 0.5)    # system_total (col 6)
+        ws7.cell(row=r, column=15, value=4000 + offset + 0.5)   # commercial (col 14)
+        ws7.cell(row=r, column=23, value=700 + offset + 0.5)    # development (col 22)
+        ws7.cell(row=r, column=31, value=300 + offset + 0.5)    # finance (col 30)
 
     wb.save(str(path))
 
@@ -107,11 +111,12 @@ def test_status_success(result: ParserResult) -> None:
 
 
 def test_parser_version(result: ParserResult) -> None:
-    assert result.parser_version == PARSER_VERSION == "0.2.0"
+    assert result.parser_version == PARSER_VERSION == "0.3.0"
 
 
 def test_row_count(result: ParserResult) -> None:
-    expected = len(_C5_INDICATORS) * len(_LATEST_VALUE_COL_BY_CLASS)
+    n_classes = len(_LATEST_VALUE_COL_BY_CLASS)
+    expected = (len(_C5_INDICATORS) + len(_C7_INDICATORS)) * n_classes
     assert len(result.fact_rows) == expected
 
 
@@ -119,15 +124,16 @@ def test_bank_classes_balanced(result: ParserResult) -> None:
     per_class: dict[str, int] = dict.fromkeys(_LATEST_VALUE_COL_BY_CLASS.keys(), 0)
     for row in result.fact_rows:
         per_class[row.bank_class] += 1
-    assert per_class == {k: len(_C5_INDICATORS) for k in _LATEST_VALUE_COL_BY_CLASS}
+    expected_per_class = len(_C5_INDICATORS) + len(_C7_INDICATORS)
+    assert per_class == {k: expected_per_class for k in _LATEST_VALUE_COL_BY_CLASS}
 
 
 def test_required_fields_populated(result: ParserResult) -> None:
     for row in result.fact_rows:
         assert isinstance(row, BankingSectorFactRow)
-        assert row.indicator_slug.startswith("bfi-c5-")
+        assert row.indicator_slug.startswith("bfi-c5-") or row.indicator_slug.startswith("bfi-c7-")
         assert row.unit == "npr_million"
-        assert row.source_sheet == "C5"
+        assert row.source_sheet in ("C5", "C7")
         assert row.reporting_period_type == "monthly"
         assert row.reporting_period_bs == "Bhadra 2082"
         assert row.fiscal_year_bs == "2082/83"
@@ -177,6 +183,83 @@ def test_missing_file_returns_failure() -> None:
 
 def test_no_unexpected_errors(result: ParserResult) -> None:
     assert result.errors == [], f"unexpected errors: {result.errors}"
+
+
+# ---------------------------------------------------------------------------
+# C7 sector-loan tests
+# ---------------------------------------------------------------------------
+
+def test_c7_row_count(result: ParserResult) -> None:
+    c7_rows = [r for r in result.fact_rows if r.source_sheet == "C7"]
+    expected = len(_C7_INDICATORS) * len(_LATEST_VALUE_COL_BY_CLASS)
+    assert len(c7_rows) == expected, f"expected {expected} C7 rows, got {len(c7_rows)}"
+
+
+def test_c7_slugs_correct_prefix(result: ParserResult) -> None:
+    for row in result.fact_rows:
+        if row.source_sheet == "C7":
+            assert row.indicator_slug.startswith("bfi-c7-")
+
+
+def test_c7_deprived_sector_system_total_value(result: ParserResult) -> None:
+    """Deprived Sector Loan system_total should match the synthetic fixture value."""
+    offset = next(i for i, (lbl, _) in enumerate(_C7_INDICATORS) if lbl == "Deprived Sector Loan")
+    expected = 5000 + offset + 0.5
+    row = next(
+        (r for r in result.fact_rows if r.source_sheet == "C7"
+         and r.indicator_slug == "bfi-c7-system-total-deprived-sector"
+         and r.bank_class == "system_total"),
+        None,
+    )
+    # slug is bfi-c7-{class}-{stem}, stem="deprived-sector"
+    row = next(
+        (r for r in result.fact_rows if r.source_sheet == "C7"
+         and r.bank_class == "system_total"
+         and r.indicator_slug.endswith("-deprived-sector")),
+        None,
+    )
+    assert row is not None, "deprived-sector system_total row not found"
+    assert row.value == pytest.approx(expected)
+
+
+def test_c7_agriculture_commercial_value(result: ParserResult) -> None:
+    """Agriculture-forest commercial bank value wired to col 14 (0-indexed)."""
+    offset = next(i for i, (lbl, _) in enumerate(_C7_INDICATORS)
+                  if lbl == "Agricultural and Forest Related")
+    expected = 4000 + offset + 0.5  # commercial base in fixture
+    row = next(
+        (r for r in result.fact_rows if r.source_sheet == "C7"
+         and r.bank_class == "commercial"
+         and r.indicator_slug.endswith("-agriculture-forest")),
+        None,
+    )
+    assert row is not None, "agriculture-forest commercial row not found"
+    assert row.value == pytest.approx(expected)
+
+
+def test_c7_missing_sheet_yields_partial(tmp_path: Path) -> None:
+    """A file with no C7 sheet should parse C5 successfully but mark partial."""
+    fixture = tmp_path / "Bhadau_2082_Publish.xlsx"
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    if ws is None:
+        raise RuntimeError("no active sheet")
+    ws.title = "C5"
+    # Minimal C5 data
+    body_start = 7
+    for offset, (label, _slug) in enumerate(_C5_INDICATORS):
+        ws.cell(row=body_start + offset, column=3, value=label)
+        ws.cell(row=body_start + offset, column=8, value=1000.0 + offset)
+        ws.cell(row=body_start + offset, column=16, value=700.0 + offset)
+        ws.cell(row=body_start + offset, column=24, value=200.0 + offset)
+        ws.cell(row=body_start + offset, column=32, value=100.0 + offset)
+    wb.save(str(fixture))
+
+    res = parse(str(fixture), source_document_id="x")
+    assert res.status == "partial"
+    c5_rows = [r for r in res.fact_rows if r.source_sheet == "C5"]
+    assert len(c5_rows) == len(_C5_INDICATORS) * len(_LATEST_VALUE_COL_BY_CLASS)
+    assert any(e.error_class == "PageLayoutChanged" for e in res.errors)
 
 
 def test_json_serialisable(result: ParserResult) -> None:

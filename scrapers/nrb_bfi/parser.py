@@ -54,7 +54,7 @@ import openpyxl
 from _common.periods import BS_MONTHS, BsMonth, fiscal_year_label, mid_month_ad
 from _common.types import ParserError, ParserStatus
 
-PARSER_VERSION: Final[str] = "0.2.0"
+PARSER_VERSION: Final[str] = "0.3.0"
 SOURCE_ID: Final[str] = "nrb-bfi-monthly-xlsx"
 
 BankClass = Literal["commercial", "development", "finance", "system_total"]
@@ -86,6 +86,39 @@ _C5_INDICATORS: Final[tuple[tuple[str, str], ...]] = (
 )
 
 _UNIT: Final[str] = "npr_million"
+
+# ---------------------------------------------------------------------------
+# C7 sheet constants — Statement of Loans & Advances by sector.
+#
+# Label (sector name) lives in col 1 (NOT col 2 as in C5). The four
+# side-by-side bank-class sub-tables each carry 8 columns (5 value columns +
+# 3 % change columns), identical stride to C5/C6.
+# Latest-period (Mid-Sept for Bhadau 2082) value column indices (0-based):
+# ---------------------------------------------------------------------------
+_C7_LABEL_COL: Final[int] = 1
+_C7_LATEST_VALUE_COL_BY_CLASS: Final[dict[BankClass, int]] = {
+    "system_total": 6,
+    "commercial": 14,
+    "development": 22,
+    "finance": 30,
+}
+# Productive-sector and key structural rows.
+# IMPORTANT: "TOTAL" matches the Sectorwise sub-total (row 21); "Total"
+# (different casing) is the Productwise sub-total (row 35) — norm_label is
+# case-preserving, so the two are distinct.
+# "Tourism Service**" gained the ** suffix after NRB's 2080-04-12 circular;
+# older files emit RegexMismatch → parse status becomes "partial" (expected).
+_C7_INDICATORS: Final[tuple[tuple[str, str], ...]] = (
+    ("Agricultural and Forest Related", "agriculture-forest"),
+    ("Electricity,Gas and Water", "electricity-gas-water"),
+    ("Tourism Service**", "tourism"),
+    ("Construction", "construction"),
+    ("Wholesaler & Retailer", "wholesale-retail"),
+    ("Finance, Insurance and Real Estate", "finance-insurance-realestate"),
+    ("Consumption Loans", "consumption"),
+    ("TOTAL", "total"),
+    ("Deprived Sector Loan", "deprived-sector"),
+)
 
 # ---------------------------------------------------------------------------
 # BS month-name → canonical BsMonth map.
@@ -259,10 +292,15 @@ class ParserResult:
         }
 
 
-def _load_c5_sheet(
+def _load_sheet(
     path: Path,
+    sheet_name: str,
+    label_col: int,
 ) -> tuple[list[tuple[object, ...]], dict[str, int]] | ParserError:
-    """Open the XLSX, locate sheet C5, and return (rows, label_to_row_index).
+    """Open the XLSX, locate the named sheet, and return (rows, label_to_row).
+
+    ``label_col`` is the 0-based column index that holds the descriptive
+    label (C5: col 2; C7: col 1).
 
     Returns a ``ParserError`` on any failure so the caller branch count stays
     within ruff's PLR0912 limit.
@@ -275,20 +313,20 @@ def _load_c5_sheet(
             error_detail=f"openpyxl could not open {path.name}: {exc}",
         )
 
-    if "C5" not in wb.sheetnames:
+    if sheet_name not in wb.sheetnames:
         return ParserError(
             error_class="PageLayoutChanged",
-            error_detail=f"expected sheet C5 not present in {path.name}",
+            error_detail=f"expected sheet {sheet_name} not present in {path.name}",
         )
 
-    ws = wb["C5"]
+    ws = wb[sheet_name]
     rows: list[tuple[object, ...]] = list(ws.iter_rows(values_only=True))
 
     label_to_row: dict[str, int] = {}
     for r_idx, row in enumerate(rows):
-        if len(row) <= _LABEL_COL:
+        if len(row) <= label_col:
             continue
-        lbl = _norm_label(row[_LABEL_COL])
+        lbl = _norm_label(row[label_col])
         if lbl and lbl not in label_to_row:
             label_to_row[lbl] = r_idx
 
@@ -377,7 +415,7 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
     publication_date_ad = datetime(_pub_year, _pub_month, 15, tzinfo=UTC)
     publication_date_bs = f"{bs_year} {bs_month} (approx +6wk)"
 
-    sheet_result = _load_c5_sheet(path)
+    sheet_result = _load_sheet(path, "C5", _LABEL_COL)
     if isinstance(sheet_result, ParserError):
         return ParserResult(
             status="failure",
@@ -446,6 +484,73 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
                     parser_notes=None,
                 )
             )
+
+    # --- Extract C7 (sector-wise loans) ---
+    # C7 is present only in the 25-sheet format (files from ~Chaitra 2079
+    # onward); older 14-sheet files emit a PageLayoutChanged error and the
+    # parse returns "partial" rather than "failure".
+    c7_result = _load_sheet(path, "C7", _C7_LABEL_COL)
+    if isinstance(c7_result, ParserError):
+        errors.append(c7_result)
+    else:
+        c7_rows, c7_label_to_row = c7_result
+        for label, slug_stem in _C7_INDICATORS:
+            r_idx = c7_label_to_row.get(label)
+            if r_idx is None:
+                errors.append(
+                    ParserError(
+                        error_class="RegexMismatch",
+                        error_detail=f"C7 label not found: {label!r}",
+                        source_excerpt=label,
+                    )
+                )
+                continue
+            c7_row = c7_rows[r_idx]
+            for bank_class, col_idx in _C7_LATEST_VALUE_COL_BY_CLASS.items():
+                if col_idx >= len(c7_row):
+                    errors.append(
+                        ParserError(
+                            error_class="ColumnMissing",
+                            error_detail=(
+                                f"C7 row {r_idx} ({label!r}/{bank_class}): "
+                                f"value column {col_idx} out of range (row len {len(c7_row)})"
+                            ),
+                            source_excerpt=label,
+                        )
+                    )
+                    continue
+                value = _safe_float(c7_row[col_idx])
+                if value is None:
+                    errors.append(
+                        ParserError(
+                            error_class="ValueUnparseable",
+                            error_detail=(
+                                f"C7 row {r_idx} ({label!r}/{bank_class}): "
+                                f"could not parse {c7_row[col_idx]!r} as float"
+                            ),
+                            source_excerpt=label,
+                        )
+                    )
+                    continue
+                fact_rows.append(
+                    BankingSectorFactRow(
+                        bank_class=bank_class,
+                        bank_entity_id=None,
+                        source_sheet="C7",
+                        indicator_slug=f"bfi-c7-{bank_class.replace('_', '-')}-{slug_stem}",
+                        value=value,
+                        unit=_UNIT,
+                        reporting_period_type="monthly",
+                        reporting_period_bs=reporting_period_bs,
+                        reporting_period_ad_start=ad_start,
+                        reporting_period_ad_end=ad_end,
+                        publication_date_ad=publication_date_ad,
+                        publication_date_bs=publication_date_bs,
+                        fiscal_year_bs=fy_bs,
+                        confidence_grade="A",
+                        parser_notes=None,
+                    )
+                )
 
     if not fact_rows:
         return ParserResult(
