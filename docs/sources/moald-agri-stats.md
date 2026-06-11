@@ -109,7 +109,7 @@ reconciliation gate):
 is a single middle crop bracketed by two near-universal ones, so it reconciles.)
 
 Republish another agency's data — **cross-reference only, NOT ingested**, per
-[ADR-0025](../decisions/0025-agri-stats-overlapping-tables-cross-reference-only.md):
+[ADR-0026](../decisions/0026-agri-stats-overlapping-tables-cross-reference-only.md):
 
 - **Macro GDP/GVA** (10.x) — NSO national accounts (held via Economic Survey).
 - **Trade by HS code** (11.x) — Customs (held via `customs-monthly-trade`).

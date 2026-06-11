@@ -51,7 +51,7 @@ gate, or that overlap another registered source:
     layout; 7.3 (vegetables — 40-pp. transpose); 8.2 (population — overlaps
     cbs-nphc-2021).
   - Macro GDP (10.x), trade by HS (11.x), agri loans (14.x): republished from
-    NSO/Customs/NRB — cross-reference only, NOT ingested, per ADR-0025.
+    NSO/Customs/NRB — cross-reference only, NOT ingested, per ADR-0026.
 
 ADR-0003: deterministic only; no LLM. ADR-0015: dimensional facts.
 ADR-0018: composite dimension_value (``province__crop``) for 2-D slices.
@@ -65,7 +65,7 @@ Version log:
           maize+wheat (1.5), cash crops (2.3, collapsing-sugarcane heuristic),
           livestock population (4.3), meat (4.5), egg (4.6), wool (4.7),
           fertilizer (9.2). Heading-aware slicer + footer guard + aggregate-row
-          guard; trailing-dot number tolerance. ADR-0025: overlapping macro/
+          guard; trailing-dot number tolerance. ADR-0026: overlapping macro/
           trade/loan tables (10.x/11.x/14.x) are cross-reference only.
 """
 

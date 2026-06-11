@@ -470,7 +470,7 @@ const ROWS: readonly NewSourceRegistryRow[] = [
       'cash crops 2.3, livestock population 4.3, meat 4.5, egg 4.6, wool 4.7, fertilizer 9.2 — each ' +
       'reconciles to national). Latest FY 2080/81. Deferred: district matrices whose source layout breaks ' +
       'positional alignment (1.6/3.2/2.13/2.4/6.x/7.3) + population 8.2 (overlaps census); macro GDP (10.x), ' +
-      'trade (11.x), agri loans (14.x) republish NSO/Customs/NRB — cross-reference only per ADR-0025. ' +
+      'trade (11.x), agri loans (14.x) republish NSO/Customs/NRB — cross-reference only per ADR-0026. ' +
       'Distinct from moald-crop-production (seasonal).',
   },
   {

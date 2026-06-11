@@ -17,7 +17,7 @@ URL: https://moald.gov.np/publication/statistical-information-on-nepalese-agricu
 
 Distinct from `moald-crop-production` (seasonal crop bulletins, variable format).
 
-## What is extracted (v0.2.0) — 1546 facts
+## What is extracted (v0.3.0) — 4383 facts
 
 ### National time-series (full historical depth)
 
@@ -70,14 +70,14 @@ Total: **4383 facts** (1546 national/provincial + 2837 district).
   - Meat/egg/wool (4.5–4.7): meat-buffalo 138,271, eggs-total 1,645,407, wool
     389,742 — all match to ±2.
   - Fertilizer (9.2): urea 259,542 / dap 184,046 — exact.
-- **Spot checks**: cross-table value checks pass (see 62-test suite).
+- **Spot checks**: cross-table value checks pass (see 66-test suite).
 
 ## Parsing strategy
 
 - **Anchor-driven**: each table is located by a body-unique header string, then
   sliced to the next table heading (case-insensitive — the source mixes
   `Table 2.2` with `TABLE 2.3`). Identical output against the full PDF and the
-  11-page test fixture (both 1546 rows, 0 errors).
+  28-page test fixture (both 4383 rows, 0 errors).
 - **Year-token spacing**: recent years print with an inner space (`2023 /24`);
   a space-tolerant leading-year regex handles both forms.
 - **Right-alignment** for transposed tables (livestock, fertilizer): a row with
@@ -90,9 +90,9 @@ Total: **4383 facts** (1546 national/provincial + 2837 district).
 
 ## Test fixture
 
-`tests/fixtures/agri_stats_2080_81_excerpt.pdf` — 25-page extract covering every
+`tests/fixtures/agri_stats_2080_81_excerpt.pdf` — 28-page extract covering every
 targeted national, provincial, and district table. The parser produces identical
-output (3759 rows, 0 errors) against the fixture and the full 224-page PDF, so the
+output (4383 rows, 0 errors) against the fixture and the full 224-page PDF, so the
 committed tests exercise the real reconciliation, not a toy subset.
 
 ## Usage
@@ -100,7 +100,7 @@ committed tests exercise the real reconciliation, not a toy subset.
 ```powershell
 $env:PYTHONPATH = "scrapers"
 python scrapers/moald_agri_stats/parser.py "<path-to-agri-pdf>"   # JSON to stdout
-python -m pytest scrapers/moald_agri_stats/tests/ -v               # 62 tests
+python -m pytest scrapers/moald_agri_stats/tests/ -v               # 66 tests
 
 pnpm ingest:moald-agri --input "Financial Data/moald_agri_stats/StatInfo_AgriNepal_2080_81.pdf" --dry-run
 pnpm ingest:moald-agri --input "Financial Data/moald_agri_stats/StatInfo_AgriNepal_2080_81.pdf"
@@ -128,7 +128,7 @@ sparse column is a single middle crop (sugarcane) bracketed by two near-universa
 crops, so the heuristic reconciles — that's why it ships and these don't.
 
 Tables that **republish another agency's data** — cross-reference only, NOT
-ingested, per [ADR-0025](../../docs/decisions/0025-agri-stats-overlapping-tables-cross-reference-only.md):
+ingested, per [ADR-0026](../../docs/decisions/0026-agri-stats-overlapping-tables-cross-reference-only.md):
 
 - **Macro GDP/GVA** (Table 10.x) — NSO national accounts; held via Economic Survey.
 - **Trade by HS code** (Table 11.x) — Customs; held via `customs-monthly-trade`.

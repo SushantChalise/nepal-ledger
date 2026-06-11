@@ -1,8 +1,8 @@
-# ADR-0025: MoALD Agri-Stats overlapping macro/trade/loan tables are cross-reference only (not ingested)
+# ADR-0026: MoALD Agri-Stats overlapping macro/trade/loan tables are cross-reference only (not ingested)
 
-- **Status:** Accepted (user-approved 2026-06-11)
+- **Status:** Proposed (pending user ratification on PR #58 review)
 - **Date:** 2026-06-11
-- **Deciders:** Mother Opus, user
+- **Deciders:** Mother Opus (proposed); user (to ratify)
 - **Tags:** data-pipeline, fact-ledger, double-counting, moald-agri-stats, source-of-truth
 
 ## Context
