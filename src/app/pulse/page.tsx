@@ -17,16 +17,28 @@ export const metadata: Metadata = {
 // Slugs that do not match any bucket fall into "Other Indicators".
 // ---------------------------------------------------------------------------
 
-type PulseGroupKey = 'prices' | 'money-in' | 'money-out';
+type PulseGroupKey = 'prices' | 'money-in' | 'money-out' | 'government' | 'monetary';
 
 const SLUG_TO_GROUP: Record<string, PulseGroupKey> = {
+  // Prices
   'cmefs-ncpi-yoy-overall': 'prices',
+  // Money In
   'cmefs-remittance-inflow-ytd': 'money-in',
+  'cmefs-merchandise-exports-ytd': 'money-in',
   'cmefs-bop-surplus-ytd': 'money-in',
   'cmefs-gross-forex-reserves': 'money-in',
   'cmefs-forex-reserves-months-of-import-cover': 'money-in',
+  // Money Out / Trade
   'cmefs-merchandise-imports-ytd': 'money-out',
   'cmefs-trade-deficit-ytd': 'money-out',
+  // Government Finance
+  'cmefs-govt-revenue-total-ytd': 'government',
+  'cmefs-govt-expenditure-total-ytd': 'government',
+  'cmefs-govt-fiscal-balance-ytd': 'government',
+  // Monetary
+  'cmefs-m2-yoy': 'monetary',
+  'cmefs-private-sector-credit-yoy': 'monetary',
+  'cmefs-bfi-deposits-yoy': 'monetary',
 };
 
 const GROUP_META: Record<PulseGroupKey, { title: string; description: string }> = {
@@ -37,15 +49,25 @@ const GROUP_META: Record<PulseGroupKey, { title: string; description: string }> 
   'money-in': {
     title: 'Money In',
     description:
-      'Remittances, balance of payments surplus, and foreign-exchange reserves flowing into Nepal.',
+      'Remittances, exports, balance of payments surplus, and foreign-exchange reserves flowing into Nepal.',
   },
   'money-out': {
     title: 'Money Out / Trade',
     description: 'Merchandise imports and the trade deficit represent money leaving Nepal.',
   },
+  government: {
+    title: 'Government Finance',
+    description:
+      'Fiscal position: government revenue, expenditure, and the resulting surplus or deficit.',
+  },
+  monetary: {
+    title: 'Monetary',
+    description:
+      'Money supply growth (M2), private-sector credit, and BFI deposit trends on a year-on-year basis.',
+  },
 };
 
-const GROUP_ORDER: PulseGroupKey[] = ['prices', 'money-in', 'money-out'];
+const GROUP_ORDER: PulseGroupKey[] = ['prices', 'money-in', 'money-out', 'government', 'monetary'];
 
 // ---------------------------------------------------------------------------
 // Value formatting
@@ -156,6 +178,8 @@ export default async function PulsePage() {
     prices: [],
     'money-in': [],
     'money-out': [],
+    government: [],
+    monetary: [],
   };
   const overflow: ApprovedIndicatorWithMeta[] = [];
 
