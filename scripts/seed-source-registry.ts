@@ -1085,6 +1085,38 @@ const ROWS: readonly NewSourceRegistryRow[] = [
       'participation. Nepal HDI 2023 = 0.622. hdr-gii complements pip/wdi inequality series.',
   },
   {
+    sourceId: 'wb-ids',
+    agency: 'World Bank',
+    agencyShort: 'WB',
+    datasetName: 'International Debt Statistics (IDS) — Nepal',
+    sourceUrl: 'https://api.worldbank.org/v2/sources/6/country/NPL',
+    publicationFrequency: 'annual',
+    expectedReleaseWindow: 'Annual IDS release (December); debt stocks reported with ~1 year lag',
+    reportingPeriodType: 'annual',
+    fileFormat: 'json',
+    requiresTableExtraction: false,
+    historicalCoverage: '1970 onward; creditor breakdown for PPG bilateral + multilateral debt',
+    licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/wb_ids/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'IDS revises debt stocks as creditors report; each ingest is a full snapshot — prior approved rows bump via revision_number. Uses the sources/6 counterpart-area route (the /indicator/?source=6 route 404s for IDS series).',
+    knownBreakageModes: [
+      'ids-uses-sources-6-counterpart-area-route-not-indicator-route',
+      'counterpart-area-names-have-trailing-nbsp-garbage-use-ids',
+      'creditor-coverage-changes-as-loans-are-repaid',
+    ],
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'External debt by creditor (Money Out / Borrowed Time). 12 indicators: total external debt, ' +
+      'debt-to-GNI, debt service, short-term debt, PPG bilateral + multilateral totals, and per-creditor ' +
+      'stocks — bilateral Japan/India/China/Korea, multilateral World-Bank-IDA/ADB. ' +
+      'Nepal 2023: total $9.98B (24% of GNI); IDA $4.37B + ADB $2.99B dominate; Japan>India>China bilateral.',
+  },
+  {
     sourceId: 'imf-article-iv',
     agency: 'International Monetary Fund',
     agencyShort: 'IMF',

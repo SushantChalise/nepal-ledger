@@ -347,6 +347,35 @@ Notes:
 - **The UNDP CSV URL path changes each vintage** (`2025_HDR/HDR25_…`) — update the CLI constant + registry URL when bumping.
 - No `Financial Data/` junction required.
 
+### WB IDS (International Debt Statistics — debt by creditor)
+
+Source ID: `wb-ids` | Parser: `scrapers/wb_ids/parser.py` v0.1.0 | 12 indicators
+
+```powershell
+# Dry-run against saved fixture (no DB, no network):
+pnpm ingest:ids --dry-run
+
+# Download fresh from the IDS API (6 series, creditor extraction), then ingest:
+pnpm ingest:ids --download
+
+# Download/save without ingesting:
+pnpm ingest:ids --download --output-dir "C:\IDS"
+
+# Live ingest from a pre-downloaded combined JSON:
+pnpm ingest:ids --input "C:\IDS\ids_npl_2026-06-11.json"
+```
+
+Notes:
+- **IDS uses the `sources/6` counterpart-area route**, NOT `/indicator/?source=6` (the latter 404s for IDS series):
+  `api.worldbank.org/v2/sources/6/country/NPL/series/<CODE>/counterpart-area/all/time/all`.
+- The CLI runs 6 series queries (DECT.CD, DECT.GN.ZS, TDS.DECT.CD, DSTC.CD, BLAT.CD, MLAT.CD), extracts the
+  World aggregate (`WLD`) + named counterparts (Japan 701, India 646, China 730, Korea 742, IDA 905, ADB 915)
+  into pre-resolved `ids-*` slugs. Keys on counterpart **id** (names carry trailing nbsp garbage).
+- Creditors are **slug-encoded** (`ids-debt-bilateral-china-usd`) — no partner-dimension schema/ADR for this set.
+- USD stocks ÷1e6 → `usd_million` (matches wb-wdi); debt-to-GNI in `percent`. All `observation_type='actual'`, conf A.
+- Year mapped onto Nepal FY via the shared `nepal_wb_year_period` helper (Y → BS Y+57).
+- No `Financial Data/` junction required.
+
 ---
 
 ## Operational Gotchas

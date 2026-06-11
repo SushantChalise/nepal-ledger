@@ -40,6 +40,7 @@ const WDI_SOURCE_ID = 'wb-wdi';
 const WEO_SOURCE_ID = 'imf-weo';
 const PIP_SOURCE_ID = 'wb-pip';
 const HDR_SOURCE_ID = 'hdr-composite';
+const IDS_SOURCE_ID = 'wb-ids';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -695,6 +696,109 @@ const HDR_INDICATORS: readonly SeedIndicator[] = [
     unit: 'percent',
     nativeFrequency: 'annual',
     sourceAgency: 'UNDP',
+  },
+];
+
+// ─── WB IDS indicators (parser wb_ids v0.1.0) ───────────────────────────────
+// 12 World Bank International Debt Statistics series for Nepal. External debt by
+// creditor (Money Out / Borrowed Time). USD stocks/service in usd_million
+// (parser ÷1e6); debt-to-GNI in percent. All observation_type 'actual', conf A.
+const IDS_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'ids-external-debt-total-usd',
+    nameEn: 'External debt stocks, total (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'ids-external-debt-pct-gni',
+    nameEn: 'External debt stocks (% of GNI)',
+    category: 'external_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'ids-debt-service-total-usd',
+    nameEn: 'Total debt service (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'ids-short-term-debt-usd',
+    nameEn: 'Short-term external debt (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'ids-ppg-bilateral-total-usd',
+    nameEn: 'PPG external debt, bilateral total (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'ids-ppg-multilateral-total-usd',
+    nameEn: 'PPG external debt, multilateral total (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'ids-debt-bilateral-japan-usd',
+    nameEn: 'PPG bilateral debt owed to Japan (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'ids-debt-bilateral-india-usd',
+    nameEn: 'PPG bilateral debt owed to India (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'ids-debt-bilateral-china-usd',
+    nameEn: 'PPG bilateral debt owed to China (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'ids-debt-bilateral-korea-usd',
+    nameEn: 'PPG bilateral debt owed to Korea, Rep. (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'ids-debt-multilateral-worldbank-ida-usd',
+    nameEn: 'PPG multilateral debt owed to World Bank-IDA (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'ids-debt-multilateral-adb-usd',
+    nameEn: 'PPG multilateral debt owed to Asian Development Bank (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
   },
 ];
 
@@ -1801,6 +1905,31 @@ async function persist(): Promise<void> {
     hdrLinked += 1;
   }
   log(`indicator_source_map: ${hdrLinked} links ensured → ${HDR_SOURCE_ID}`);
+
+  // 20. WB IDS indicators — 12 external-debt-by-creditor series.
+  const idsInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...IDS_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!idsInsertResult.ok)
+    throw new Error(`IDS indicators insert failed: ${JSON.stringify(idsInsertResult.error)}`);
+  log(
+    `indicators (IDS): ${idsInsertResult.value.length} inserted (of ${IDS_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 21. IDS source map links.
+  let idsLinked = 0;
+  for (const ind of IDS_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(found.value.id, IDS_SOURCE_ID, 'WB IDS Nepal debt by creditor');
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    idsLinked += 1;
+  }
+  log(`indicator_source_map: ${idsLinked} links ensured → ${IDS_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1815,6 +1944,7 @@ async function main(): Promise<void> {
   log(`indicators (WEO)   = ${WEO_INDICATORS.length}, source = ${WEO_SOURCE_ID}`);
   log(`indicators (PIP)   = ${PIP_INDICATORS.length}, source = ${PIP_SOURCE_ID}`);
   log(`indicators (HDR)   = ${HDR_INDICATORS.length}, source = ${HDR_SOURCE_ID}`);
+  log(`indicators (IDS)   = ${IDS_INDICATORS.length}, source = ${IDS_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');

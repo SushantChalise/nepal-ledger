@@ -79,6 +79,29 @@ def fiscal_year_ad_label(bs_start_year: int) -> str:
     return f"{ad_start}/{(ad_start + 1) % 100:02d}"
 
 
+_WB_BS_AD_OFFSET = 57
+
+
+def nepal_wb_year_period(ad_year: int) -> tuple[str, str, datetime, datetime]:
+    """Map a World-Bank-family AD year to Nepal's fiscal-year period contract.
+
+    The World Bank, IMF (DataMapper), and PIP all date Nepal annual series on
+    the July-starting fiscal year: year ``Y`` → FY beginning Shrawan of BS year
+    ``Y + 57``. Returns ``(fy_bs, fy_ad_label, ad_start, ad_end)`` with the
+    mid-month-15 placeholder bounds the TS validator tolerates (±2 days).
+
+    Shared by the international parsers (wb_wdi/imf_weo/wb_pip/hdr_composite
+    inline an identical helper; new sources should call this one).
+    """
+    bs_start = ad_year + _WB_BS_AD_OFFSET
+    return (
+        fiscal_year_label(bs_start),
+        fiscal_year_ad_label(bs_start),
+        datetime(ad_year, 7, 15, tzinfo=UTC),
+        datetime(ad_year + 1, 7, 15, tzinfo=UTC),
+    )
+
+
 def mid_month_ad(bs_month: BsMonth, bs_year: int) -> datetime:
     """Return a UTC datetime at the 15th of the AD month that approximates
     mid-``bs_month`` ``bs_year``. Lightweight placeholder; refined downstream.

@@ -44,6 +44,7 @@
     "ingest:imf-weo": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-imf-weo.ts",
     "ingest:pip": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-pip.ts",
     "ingest:hdr": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-hdr.ts",
+    "ingest:ids": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-ids.ts",
     "seed:local-levels": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-local-level-entities.ts",
     "seed:indicators": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-indicators.ts",
     "seed:audit-entities": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-audit-entities.ts"
