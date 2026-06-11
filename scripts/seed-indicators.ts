@@ -37,6 +37,7 @@ const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const WDI_SOURCE_ID = 'wb-wdi';
+const NRB_DB_FINSEC_SOURCE_ID = 'nrb-db-financial-sector';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -354,6 +355,7 @@ const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'months', displayEn: 'months', dimension: 'duration' },
   { unit: 'count', displayEn: 'count', dimension: 'count' },
   { unit: 'ratio', displayEn: 'ratio', dimension: 'ratio' },
+  { unit: 'percent_per_annum', displayEn: 'percent per annum', dimension: 'ratio' },
   { unit: 'metric_tonnes', displayEn: 'metric tonnes', dimension: 'mass' },
   { unit: 'kg_per_capita', displayEn: 'kg per capita', dimension: 'mass' },
   { unit: 'gigawatt_hours', displayEn: 'GWh', dimension: 'energy' },
@@ -1145,6 +1147,79 @@ const NCPI_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// ─── NRB DB Financial Sector indicators (parser nrb_db_financial_sector v0.1.0) ──
+// Tier 1 XLSX datasets from NRB's Financial Sector database page.
+// Covers loans by sector (agriculture, manufacturing, real estate), monetary
+// aggregates (M1, M2), interest rates (deposit, lending), and NEPSE index.
+// All monthly. Unit: npr_million for loan/monetary series, percent_per_annum for
+// rates, index_points for NEPSE.
+const NRB_FINSEC_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'nrb-finsec-loans-agriculture-monthly',
+    nameEn: 'BFI Loans — Agriculture Sector',
+    category: 'monetary',
+    unit: 'npr_million',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-finsec-loans-manufacturing-monthly',
+    nameEn: 'BFI Loans — Productions/Manufacturing Sector',
+    category: 'monetary',
+    unit: 'npr_million',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-finsec-loans-realestate-monthly',
+    nameEn: 'BFI Loans — Real Estate Sub-sector',
+    category: 'monetary',
+    unit: 'npr_million',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-finsec-m1-level-monthly',
+    nameEn: 'Narrow Money Supply (M1)',
+    category: 'monetary',
+    unit: 'npr_million',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-finsec-m2-level-monthly',
+    nameEn: 'Broad Money Supply (M2)',
+    category: 'monetary',
+    unit: 'npr_million',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-finsec-deposit-rate-monthly',
+    nameEn: 'Weighted Average Deposit Rate (Commercial Banks)',
+    category: 'monetary',
+    unit: 'percent_per_annum',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-finsec-lending-rate-monthly',
+    nameEn: 'Weighted Average Lending Rate (Commercial Banks)',
+    category: 'monetary',
+    unit: 'percent_per_annum',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-finsec-nepse-index-monthly',
+    nameEn: 'NEPSE Index (Month End)',
+    category: 'capital_markets',
+    unit: 'index_points',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+];
+
 function log(msg: string): void {
   process.stdout.write(`[seed-indicators] ${msg}\n`);
 }
@@ -1361,6 +1436,38 @@ async function persist(): Promise<void> {
     wdiLinked += 1;
   }
   log(`indicator_source_map: ${wdiLinked} links ensured → ${WDI_SOURCE_ID}`);
+
+  // 14. NRB Financial Sector indicators (parser nrb_db_financial_sector v0.1.0).
+  const finsecInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...NRB_FINSEC_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!finsecInsertResult.ok)
+    throw new Error(
+      `NRB FinSec indicators insert failed: ${JSON.stringify(finsecInsertResult.error)}`,
+    );
+  log(
+    `indicators (NRB FinSec): ${finsecInsertResult.value.length} inserted (of ${NRB_FINSEC_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 15. NRB Financial Sector source map links.
+  let finsecLinked = 0;
+  for (const ind of NRB_FINSEC_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok)
+      throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      NRB_DB_FINSEC_SOURCE_ID,
+      'NRB Financial Sector XLSX (loans, monetary, rates, NEPSE)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    finsecLinked += 1;
+  }
+  log(`indicator_source_map: ${finsecLinked} links ensured → ${NRB_DB_FINSEC_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
