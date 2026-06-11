@@ -32,10 +32,13 @@ from mof_whitebook.parser import (
     _SECTOR_SPEC,
     DimensionalRowDraft,
     _expand_merged_row,
+    _find_total_anchors,
+    _ModernAnchors,
     _parse_value,
     detect_ad_fiscal_year,
     detect_unit,
     extract_dimensional_rows,
+    extract_dimensional_rows_modern,
 )
 
 PERIOD_TOLERANCE = timedelta(days=40)  # mid-month AD approximation slack
@@ -57,6 +60,9 @@ REAL_PDF_2070 = (
     _WHITEBOOK_DIR
     / "आर्थिक बर्ष २०७० - ७१ को वैदेशिक सहायता आयोजनाहरुको स्रोत पुस्तिका_hlihgjf.pdf"
 )
+# FY 2023/24 (BS 2080/81) MODERN edition (merged code+name, word-positional path).
+# Published under the MoF IERD "Source Book / सेतो किताब" section (v0.3.0).
+REAL_PDF_2080 = _WHITEBOOK_DIR / "Source_Book _2080_81_vliuqxp.pdf"
 
 
 # ---------------------------------------------------------------------------
@@ -215,6 +221,184 @@ def test_sector_does_not_read_gon_budget_as_grant(sector_rows: list[DimensionalR
     grants = _facts_for(sector_rows, "foreign-aid-grant")
     assert grants["Ministry of Finance"] == pytest.approx(68543.0)
     assert grants["Ministry of Finance"] != pytest.approx(127340.0)
+
+
+# ---------------------------------------------------------------------------
+# MODERN layout (FY 2023/24+) — WORD-POSITIONAL extraction (v0.3.0).
+#
+# The modern summary rows have MERGED code+name and right-aligned values with no
+# row rules, so the core reads pre-clustered "word lines" and anchors the two
+# columns it emits on the 'Total Grant' / 'Total Loan' header right edges. These
+# synthesized word-dicts reproduce the real FY 2023/24 ministrywise geometry:
+# right edges GoN~261, Total Grant~533, loan-cash~713, Total Loan~759, Total
+# Budget~811 (verified column positions, see parser STEP-0 note 4).
+# ---------------------------------------------------------------------------
+
+# Column right-edge x1 positions from the real FY 2023/24 ministrywise page.
+_MOD_X_GON = 261.0
+_MOD_X_GRANT_DIRECT = 430.0
+_MOD_X_TOTAL_GRANT = 533.0
+_MOD_X_LOAN_CASH = 713.0
+_MOD_X_TOTAL_LOAN = 759.0
+_MOD_X_TOTAL_BUDGET = 811.0
+_MOD_ANCHORS = _ModernAnchors(grant_x1=_MOD_X_TOTAL_GRANT, loan_x1=_MOD_X_TOTAL_LOAN)
+
+
+def _w(text: str, x1: float) -> dict[str, object]:
+    """A minimal pdfplumber-style word dict (right edge x1; x0 a nominal width)."""
+    return {"text": text, "x0": x1 - 12.0, "x1": x1, "top": 0.0}
+
+
+def _name_words(start_x0: float, *names: str) -> list[dict[str, object]]:
+    """Left-aligned member-name words (their exact x is irrelevant to the reader —
+    only that they are non-numeric and precede the value block)."""
+    out: list[dict[str, object]] = []
+    x = start_x0
+    for n in names:
+        out.append({"text": n, "x0": x, "x1": x + 10.0, "top": 0.0})
+        x += 15.0
+    return out
+
+
+# 305 Ministry of Finance: GoN 84721 | Total Grant 88276 | Total Loan 6208 |
+# Total Budget 94484 — grant 88276 + loan 6208 == 94484 (reconciles).
+_MOD_ROW_MOF: list[dict[str, object]] = [
+    _w("305", 40.0),
+    *_name_words(44.0, "Ministry", "of", "Finance"),
+    _w("84721", _MOD_X_GON),
+    _w("88276", _MOD_X_GRANT_DIRECT),
+    _w("88276", _MOD_X_TOTAL_GRANT),
+    _w("6208", _MOD_X_LOAN_CASH),
+    _w("6208", _MOD_X_TOTAL_LOAN),
+    _w("94484", _MOD_X_TOTAL_BUDGET),
+]
+# 301 OPMCM: Total Grant 1363 | Total Loan 0 (a genuine zero, preserved).
+_MOD_ROW_OPMCM: list[dict[str, object]] = [
+    _w("301", 40.0),
+    *_name_words(44.0, "Office", "of", "PM"),
+    _w("53897", _MOD_X_GON),
+    _w("1363", _MOD_X_TOTAL_GRANT),
+    _w("0", _MOD_X_TOTAL_LOAN),
+    _w("1363", _MOD_X_TOTAL_BUDGET),
+]
+# 325 grant-only ministry: Total Grant 600, NO word near the Total-Loan anchor →
+# loan is None (no loan fact emitted).
+_MOD_ROW_GRANT_ONLY: list[dict[str, object]] = [
+    _w("325", 40.0),
+    *_name_words(44.0, "Ministry", "of", "Culture"),
+    _w("43287", _MOD_X_GON),
+    _w("600", _MOD_X_TOTAL_GRANT),
+    _w("600", _MOD_X_TOTAL_BUDGET),
+]
+# Header / sub-header / Total rows — no leading CODE word → all skipped.
+_MOD_HEADER_1: list[dict[str, object]] = [
+    _w("Ministry", 120.0), _w("GoN", 245.0), _w("Total", 790.0), _w("Budget", 811.0),
+]
+_MOD_SUBHEADER: list[dict[str, object]] = [
+    _w("Cash", 299.0), _w("Total", 515.0), _w("Grant", _MOD_X_TOTAL_GRANT),
+    _w("Total", 743.0), _w("Loan", _MOD_X_TOTAL_LOAN),
+]
+_MOD_TOTAL_ROW: list[dict[str, object]] = [
+    _w("Total", 171.0),
+    _w("499430", _MOD_X_TOTAL_GRANT),
+    _w("2127491", _MOD_X_TOTAL_LOAN),
+]
+
+_MOD_LINES: list[list[dict[str, object]]] = [
+    _MOD_HEADER_1, _MOD_SUBHEADER,
+    _MOD_ROW_MOF, _MOD_ROW_OPMCM, _MOD_ROW_GRANT_ONLY,
+    _MOD_TOTAL_ROW,
+]
+
+
+@pytest.fixture(scope="module")
+def modern_sector_rows() -> list[DimensionalRowDraft]:
+    out, errors = extract_dimensional_rows_modern(
+        _MOD_LINES, _MOD_ANCHORS, "sector", "npr_lakh", BS_FY_2077_START
+    )
+    assert errors == [], f"unexpected errors: {errors}"
+    return out
+
+
+def test_modern_grant_uses_total_grant_anchor(
+    modern_sector_rows: list[DimensionalRowDraft],
+) -> None:
+    grants = _facts_for(modern_sector_rows, "foreign-aid-grant")
+    assert grants["Ministry of Finance"] == pytest.approx(88276.0)
+    # Must NOT pick the GoN-Budget (84721) or the grant sub-column nearest noise.
+    assert grants["Ministry of Finance"] != pytest.approx(84721.0)
+
+
+def test_modern_loan_uses_total_loan_anchor(
+    modern_sector_rows: list[DimensionalRowDraft],
+) -> None:
+    loans = _facts_for(modern_sector_rows, "foreign-aid-loan")
+    assert loans["Ministry of Finance"] == pytest.approx(6208.0)
+
+
+def test_modern_reconciles_grant_plus_loan(
+    modern_sector_rows: list[DimensionalRowDraft],
+) -> None:
+    """MoF grant 88276 + loan 6208 == the printed Total Budget 94484."""
+    grants = _facts_for(modern_sector_rows, "foreign-aid-grant")
+    loans = _facts_for(modern_sector_rows, "foreign-aid-loan")
+    assert grants["Ministry of Finance"] + loans["Ministry of Finance"] == pytest.approx(
+        94484.0
+    )
+
+
+def test_modern_zero_loan_preserved(
+    modern_sector_rows: list[DimensionalRowDraft],
+) -> None:
+    loans = _facts_for(modern_sector_rows, "foreign-aid-loan")
+    assert loans["Office of PM"] == pytest.approx(0.0)
+
+
+def test_modern_blank_column_emits_no_fact(
+    modern_sector_rows: list[DimensionalRowDraft],
+) -> None:
+    """A member with no value word at the Total-Loan anchor yields no loan fact."""
+    loans = _facts_for(modern_sector_rows, "foreign-aid-loan")
+    grants = _facts_for(modern_sector_rows, "foreign-aid-grant")
+    assert "Ministry of Culture" not in loans
+    assert grants["Ministry of Culture"] == pytest.approx(600.0)
+
+
+def test_modern_header_and_total_rows_skipped(
+    modern_sector_rows: list[DimensionalRowDraft],
+) -> None:
+    labels = {r.dimension_label for r in modern_sector_rows}
+    assert labels == {"Ministry of Finance", "Office of PM", "Ministry of Culture"}
+    assert all(not lbl.lower().startswith("total") for lbl in labels)
+
+
+def test_modern_dimension_kind_threaded(
+    modern_sector_rows: list[DimensionalRowDraft],
+) -> None:
+    for r in modern_sector_rows:
+        assert r.dimension_kind == "sector"
+        assert r.unit == "npr_lakh"
+
+
+def test_find_total_anchors_reads_header_right_edges() -> None:
+    anchors = _find_total_anchors([_MOD_HEADER_1, _MOD_SUBHEADER, _MOD_ROW_MOF])
+    assert anchors is not None
+    assert anchors.grant_x1 == pytest.approx(_MOD_X_TOTAL_GRANT)
+    assert anchors.loan_x1 == pytest.approx(_MOD_X_TOTAL_LOAN)
+
+
+def test_find_total_anchors_none_without_header() -> None:
+    """A caption-less continuation page (data rows only) yields no anchors, so the
+    caller reuses the caption page's anchors."""
+    assert _find_total_anchors([_MOD_ROW_MOF, _MOD_ROW_OPMCM]) is None
+
+
+def test_modern_donor_kind_threaded() -> None:
+    out, errors = extract_dimensional_rows_modern(
+        [_MOD_ROW_MOF], _MOD_ANCHORS, "donor", "npr_lakh", BS_FY_2077_START
+    )
+    assert errors == []
+    assert all(r.dimension_kind == "donor" for r in out)
 
 
 # ---------------------------------------------------------------------------
@@ -413,7 +597,7 @@ def test_idempotent() -> None:
 
 
 def test_parser_version() -> None:
-    assert PARSER_VERSION == "0.2.1"
+    assert PARSER_VERSION == "0.3.0"
 
 
 def test_missing_file_returns_failure() -> None:
@@ -530,3 +714,38 @@ def test_real_pdf_2070_donor_equals_sector() -> None:
     for r in result.dimensional_rows:
         assert r.unit == "npr_thousand"  # FY2013/14 annotation = "(NRs'000s)"
         assert r.fiscal_year_bs == "2070/71"
+
+
+# ---------------------------------------------------------------------------
+# Optional integration against the real FY 2023/24 MODERN edition (word path).
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.skipif(not REAL_PDF_2080.exists(), reason="FY2023/24 White Book PDF not on disk")
+def test_real_pdf_2080_modern_donor_equals_sector() -> None:
+    """The modern (FY 2023/24) word-positional path must reconcile donor==sector.
+    The donor summary spans two pages — the continuation donors are only captured
+    when the unit + anchors persist past the caption page. Published totals:
+    grant 499,430 + loan 2,127,491 lakh."""
+    result = parse_whitebook(str(REAL_PDF_2080), "real-doc-2080")
+    assert result.status in ("success", "partial"), f"errors={result.errors}"
+
+    def _total(kind: str, slug: str) -> float:
+        return sum(
+            r.value
+            for r in result.dimensional_rows
+            if r.dimension_kind == kind and r.base_indicator_slug == slug
+        )
+
+    donor_grant = _total("donor", "foreign-aid-grant")
+    sector_grant = _total("sector", "foreign-aid-grant")
+    donor_loan = _total("donor", "foreign-aid-loan")
+    sector_loan = _total("sector", "foreign-aid-loan")
+    assert donor_grant == pytest.approx(sector_grant)
+    assert donor_loan == pytest.approx(sector_loan)
+    assert sector_grant == pytest.approx(499_430.0)
+    assert sector_loan == pytest.approx(2_127_491.0)
+    for r in result.dimensional_rows:
+        assert r.unit == "npr_lakh"  # "(Rs. in '00000')"
+        assert r.fiscal_year_bs == "2080/81"
+        assert r.fiscal_year_ad_label == "2023/24"

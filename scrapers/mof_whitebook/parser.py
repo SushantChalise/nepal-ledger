@@ -46,6 +46,15 @@ indices):
          is actually the **Intergovernmental Fiscal Transfer** book (Devanagari)
          and is **CID-broken** (``(cid:N)`` glyphs, no ToUnicode). Not a White
          Book; **deferred** (it belongs to a different source).
+      4. MODERN editions (FY 2023/24 / BS 2080/81 onward, hosted under the new MoF
+         IERD "Source Book / सेतो किताब" division section): clean English, but the
+         summary tables changed shape — the member code+name are MERGED into one
+         cell and the value rows have no horizontal rules, so pdfplumber collapses
+         them. Handled by a WORD-POSITIONAL reader (``_parse_modern_edition`` /
+         ``extract_dimensional_rows_modern``) that anchors columns on the
+         "Total Grant" / "Total Loan" header labels (v0.3.0). Verified donor==
+         sector on FY 2023/24, 2024/25, 2025/26. Unit is "(Rs. in '00000')" →
+         npr_lakh.
 
 Unit (ADR-0011 — DON'T fuzzy-match; READ the annotation on the table page):
     The unit is stamped on each summary-table page and VARIES BY EDITION:
@@ -115,7 +124,7 @@ from _common.periods import (
 from _common.preeti import legacy_font_for, to_unicode
 from _common.types import ParserError, ParserStatus, ReportingPeriodType
 
-PARSER_VERSION: Final[str] = "0.2.1"
+PARSER_VERSION: Final[str] = "0.3.0"
 # Registered source id. PROPOSED this batch — Mother seeds the registry row
 # (`mof-whitebook-foreign-aid`); not yet present in seed-source-registry.ts.
 SOURCE_ID: Final[str] = "mof-whitebook-foreign-aid"
@@ -333,6 +342,68 @@ _SECTOR_SPEC: Final = _TableSpec(
     grant_col=_SECTOR_TOTAL_GRANT_COL,
     loan_col=_SECTOR_TOTAL_LOAN_COL,
 )
+
+# ---------------------------------------------------------------------------
+# MODERN layout (FY 2023/24 / BS 2080/81 onward) — added v0.3.0.
+#
+# From the FY 2023/24 edition the summary tables changed shape (verified on FY
+# 2023/24, 2024/25, 2025/26 — all reconcile donor==sector to the rupee):
+#   1. The member CODE and NAME are MERGED ("301 Office of Prime Minister...",
+#      "2101001 ADB - General") — older editions split them into two cells.
+#   2. The summary pages carry ruled VERTICAL column lines but NO horizontal row
+#      rules, so pdfplumber's table extraction collapses every right-aligned VALUE
+#      into one cell — the header row splits cleanly but the data rows do not.
+#
+# So the modern path is WORD-POSITIONAL, not table-based: cluster the page's words
+# into visual lines, anchor the two columns we emit on the UNIQUE "Total Grant" /
+# "Total Loan" sub-header labels (their right-edge x), and match each data row's
+# right-aligned numeric words to those anchors by nearest right edge. This needs
+# no hardcoded x-coordinates — the anchors are read from each table's own header,
+# so it survives the small per-edition column drift (anchors ranged 517–533 for
+# the grant column, 729–759 for the loan column across the three editions).
+#
+# The trailing value block is Cash | Reimbursable | Direct Payment | Commodity |
+# TOTAL GRANT | Direct Payment | Reimbursable | Cash | TOTAL LOAN | Total Budget;
+# the ministrywise table additionally carries a leading GoN-Budget column. We emit
+# only the two headline totals, so the block's internal columns are never read.
+#
+# The donor summary may span several pages; only the FIRST carries the caption +
+# sub-header. A continuation page has no header, so its anchors are inherited from
+# the caption page (the column x-positions are identical across a table's pages).
+# The summary section ends at the first "Details of Sources" detail page.
+
+# A member CODE is a standalone digit word (donor codes like "2101001"; budget
+# heads like "301"). Reuses the same shape as `_CODE_RE` / `_is_code`.
+_MODERN_CODE_RE: Final = re.compile(r"^\d{2,8}$")
+
+# A value word: an Arabic-digit run with optional thousands commas / decimal /
+# sign. Same shape as `_MONEY_TOKEN_RE`; named here for the word-positional reader.
+_MODERN_VALUE_RE: Final = re.compile(r"^-?\d[\d,]*(?:\.\d+)?$")
+
+# A data row's value words are right-aligned; a value belongs to the Total-Grant
+# (or Total-Loan) column when its right edge is within this many points of that
+# header label's right edge. Columns are ~56 pt apart, so 25 pt is a safe margin.
+_MODERN_ANCHOR_TOL: Final[float] = 25.0
+
+# Words within this vertical distance share a visual line (font is ~9 pt; rows are
+# ~12 pt apart). Used to cluster `extract_words()` output into table rows.
+_MODERN_LINE_TOL: Final[float] = 3.0
+
+# The per-project detail section opens "Details of Sources for Projects Financed
+# with Foreign Assistance" — a modern-edition marker absent from the clean/legacy
+# editions. It bounds the summary section (the donor summary may run several
+# caption-less pages before it).
+_DETAILS_RE: Final = re.compile(r"Details\s+of\s+Sources", re.IGNORECASE)
+
+
+@dataclass(frozen=True)
+class _ModernAnchors:
+    """Right-edge x of the 'Total Grant' and 'Total Loan' header labels for one
+    modern summary table. Read from the table's caption page, reused on its
+    caption-less continuation pages."""
+
+    grant_x1: float
+    loan_x1: float
 
 
 # ---------------------------------------------------------------------------
@@ -663,6 +734,113 @@ def extract_dimensional_rows(
     return rows, errors
 
 
+def _nearest_value(
+    value_words: list[tuple[str, float]], anchor_x1: float
+) -> float | None:
+    """Return the parsed value whose right edge is nearest ``anchor_x1`` within
+    ``_MODERN_ANCHOR_TOL``, else None (the column is blank for this row).
+
+    ``value_words`` is ``[(text, x1), ...]`` for the numeric words on one row.
+    """
+    best: float | None = None
+    best_dist = _MODERN_ANCHOR_TOL
+    for text, x1 in value_words:
+        dist = abs(x1 - anchor_x1)
+        if dist < best_dist:
+            best_dist = dist
+            best = _parse_value(text)
+    return best
+
+
+def extract_dimensional_rows_modern(
+    word_lines: list[list[dict[str, object]]],
+    anchors: _ModernAnchors,
+    kind: str,
+    unit: str,
+    bs_fy_start: int,
+) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """MODERN-layout core (FY 2023/24+) — WORD-POSITIONAL, no table grid.
+
+    ``word_lines`` is the page clustered into visual lines (``_word_lines``); each
+    word is a pdfplumber dict with ``text`` / ``x0`` / ``x1``. A data row starts
+    with a standalone digit CODE word, followed by the member-NAME words, then the
+    right-aligned numeric value words. The Total-Grant / Total-Loan values are the
+    numeric words whose right edge is nearest the ``anchors`` (read from the
+    table's header). A real ``0`` is kept; a blank column yields None and emits no
+    fact; the caption / header / Total rows (no leading code word) are skipped. A
+    code-led row that has value words but matches NEITHER anchor surfaces one
+    ``ValueUnparseable`` so data loss stays visible (Rule 6). Never raises.
+    """
+    ad_start, ad_end = _annual_span(bs_fy_start)
+    rows: list[DimensionalRowDraft] = []
+    errors: list[ParserError] = []
+    seen: set[tuple[str, str]] = set()
+
+    for words in word_lines:
+        if not words:
+            continue
+        head = _norm(words[0].get("text"))
+        if not _MODERN_CODE_RE.match(head):
+            # Header / caption / sub-header / Total row: no leading code word.
+            continue
+        # Name = leading non-numeric words; values = the numeric words after them.
+        name_parts: list[str] = []
+        value_words: list[tuple[str, float]] = []
+        for w in words[1:]:
+            text = _norm(w.get("text"))
+            if _MODERN_VALUE_RE.match(text):
+                x1 = w.get("x1")
+                if isinstance(x1, (int, float)):
+                    value_words.append((text, float(x1)))
+            elif not value_words:
+                name_parts.append(text)
+            # A non-numeric word AFTER the value block began (e.g. a wrapped name
+            # fragment trailing the row) is ignored — names never interleave.
+        name = " ".join(name_parts).strip()
+        if not name or _is_total_row(name):
+            continue
+
+        grant = _nearest_value(value_words, anchors.grant_x1)
+        loan = _nearest_value(value_words, anchors.loan_x1)
+        if grant is None and loan is None:
+            if value_words:  # had numbers but neither hit an anchor → visible
+                errors.append(
+                    ParserError(
+                        error_class="ValueUnparseable",
+                        error_detail=(
+                            f"{kind} {name!r}: value words present but none aligned "
+                            f"to the Total-Grant/Total-Loan columns "
+                            f"(values={[t for t, _ in value_words]})"
+                        ),
+                        source_excerpt=f"{head} | {name}",
+                    )
+                )
+            continue
+
+        if grant is not None:
+            key = (_GRANT_SLUG, _slugify_member(name))
+            if key not in seen:
+                seen.add(key)
+                rows.append(
+                    _make_row(
+                        _GRANT_SLUG, _GRANT_NAME, kind, name, grant,
+                        unit, bs_fy_start, ad_start, ad_end,
+                    )
+                )
+        if loan is not None:
+            key = (_LOAN_SLUG, _slugify_member(name))
+            if key not in seen:
+                seen.add(key)
+                rows.append(
+                    _make_row(
+                        _LOAN_SLUG, _LOAN_NAME, kind, name, loan,
+                        unit, bs_fy_start, ad_start, ad_end,
+                    )
+                )
+
+    return rows, errors
+
+
 # ---------------------------------------------------------------------------
 # PDF reading — locate the two summary tables and feed them to the core.
 # ---------------------------------------------------------------------------
@@ -764,6 +942,201 @@ def _transliterate_label_columns(
     return out
 
 
+# ---------------------------------------------------------------------------
+# Modern-edition reading (FY 2023/24+) — merged code+name, lines-v/text-h grid.
+# ---------------------------------------------------------------------------
+
+
+def _word_top(w: dict[str, object]) -> float | None:
+    top = w.get("top")
+    return float(top) if isinstance(top, (int, float)) else None
+
+
+def _word_x0(w: dict[str, object]) -> float:
+    x0 = w.get("x0")
+    return float(x0) if isinstance(x0, (int, float)) else 0.0
+
+
+def _word_lines(page: object) -> list[list[dict[str, object]]]:
+    """Cluster a page's words into visual lines (rows), each sorted left→right.
+
+    Words are grouped by vertical proximity: a word joins the current line while
+    its ``top`` is within ``_MODERN_LINE_TOL`` of the line's first word; otherwise
+    a new line starts. Proximity clustering (not fixed buckets) avoids splitting a
+    single visual line across a rounding boundary. Returns lines top-to-bottom;
+    each word is the pdfplumber dict (``text`` / ``x0`` / ``x1`` / ``top``).
+    """
+    words: list[dict[str, object]] = page.extract_words(  # type: ignore[attr-defined]
+        use_text_flow=False, keep_blank_chars=False
+    )
+    # Pair each word with its resolved top, dropping words without a numeric top,
+    # then sort by (top, x0). Keeping top alongside the word avoids re-deriving it
+    # (and an Optional in the sort key).
+    placed: list[tuple[float, dict[str, object]]] = sorted(
+        ((top, w) for w in words if (top := _word_top(w)) is not None),
+        key=lambda pair: (pair[0], _word_x0(pair[1])),
+    )
+    lines: list[list[dict[str, object]]] = []
+    line_top: float | None = None
+    for top, w in placed:
+        if line_top is None or top - line_top > _MODERN_LINE_TOL:
+            lines.append([w])
+            line_top = top
+        else:
+            lines[-1].append(w)
+    for line in lines:
+        line.sort(key=_word_x0)
+    return lines
+
+
+def _find_total_anchors(word_lines: list[list[dict[str, object]]]) -> _ModernAnchors | None:
+    """Read the 'Total Grant' / 'Total Loan' header anchors from a summary page.
+
+    Scans for the sub-header line where "Total" is immediately followed by "Grant"
+    and (on the same or another line) by "Loan", taking the right edge of the
+    "Grant" / "Loan" word as each column's anchor. Returns None when either label
+    is absent (a caption-less continuation page — the caller reuses the caption
+    page's anchors).
+    """
+    grant_x1: float | None = None
+    loan_x1: float | None = None
+    for words in word_lines:
+        for i in range(len(words) - 1):
+            if _norm(words[i].get("text")) != "Total":
+                continue
+            following = _norm(words[i + 1].get("text"))
+            x1 = words[i + 1].get("x1")
+            if not isinstance(x1, (int, float)):
+                continue
+            if following == "Grant":
+                grant_x1 = float(x1)
+            elif following == "Loan":
+                loan_x1 = float(x1)
+    if grant_x1 is None or loan_x1 is None:
+        return None
+    return _ModernAnchors(grant_x1=grant_x1, loan_x1=loan_x1)
+
+
+def _is_modern_edition(pages: list[object], page_texts: list[str]) -> bool:
+    """STRUCTURAL detection: does this edition use the MODERN merged-code+name
+    layout? Decided on the FIRST summary page (caption + unit) by whether its
+    pdfplumber table isolates the member CODE in its own cell.
+
+    The "Details of Sources" detail section is NOT a reliable modern marker — the
+    clean FY 2020/21 and FY 2070/71 editions carry it too. The reliable signal is
+    the summary table's geometry: clean/legacy editions put the bare code in col 0
+    (``"2101001"`` | ``"ADB - General"``); modern editions merge it with the name
+    (``"301 Office of Prime Minister..."``), so the default table has no
+    bare-code-led row. Returns False on any ambiguity so the established
+    clean/legacy path remains the default.
+    """
+    for pidx, text in enumerate(page_texts):
+        if _DETAILS_RE.search(text):
+            break  # reached the detail section without a modern summary → not modern
+        if not (_MINISTRYWISE_RE.search(text) or _PARTNERWISE_RE.search(text)):
+            continue
+        if detect_unit(text) is None:
+            continue  # a Table-of-Contents page (caption but no unit annotation)
+        tables: list[list[list[object]]] = pages[pidx].extract_tables()  # type: ignore[attr-defined]
+        largest = max(tables, key=len) if tables else []
+        if any(row and _is_code(_norm(row[0])) for row in largest):
+            return False  # bare code isolated in col 0 → clean/legacy geometry
+        # No isolated code: confirm the modern merged signature in the page words —
+        # a code word immediately followed on the same line by a NON-numeric name
+        # word. Guards against treating an unreadable page as "modern".
+        for line in _word_lines(pages[pidx]):
+            if (
+                len(line) >= 2
+                and _MODERN_CODE_RE.match(_norm(line[0].get("text")))
+                and not _MODERN_VALUE_RE.match(_norm(line[1].get("text")))
+            ):
+                return True
+        return False
+    return False
+
+
+def _parse_modern_edition(
+    pages: list[object],
+    page_texts: list[str],
+    bs_fy_start: int | None,
+) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Parse a MODERN-layout edition (FY 2023/24+); return ``([], [])`` when the
+    edition is not modern so the caller falls back to the clean/legacy reader.
+
+    The summary section is the page span before the first "Details of Sources"
+    detail page. Within it the ministrywise summary comes first, then the donor
+    summary, which may run across several caption-less continuation pages. A page
+    is classified by its caption when it has one and otherwise inherits the
+    current table kind + anchors (the column x-positions are identical across a
+    table's pages). The modern path only fires when a summary page actually yields
+    Total-Grant/Total-Loan anchors, so it never mis-handles a clean/legacy edition
+    (which has no "Details of Sources" section anyway).
+    """
+    detail_start = next(
+        (i for i, t in enumerate(page_texts) if _DETAILS_RE.search(t)), None
+    )
+    # No detail section, or it is the very first page → not a modern White Book.
+    if not detail_start:
+        return [], []
+
+    # The unit annotation ("(Rs. in '00000')") is uniform across the summary
+    # section and stamped only on the caption pages, not the continuation pages.
+    # Detect it ONCE so continuation donors are not skipped for lack of a stamp.
+    unit: str | None = None
+    for text in page_texts[:detail_start]:
+        unit = detect_unit(text)
+        if unit is not None:
+            break
+    if unit is None:
+        return [], []
+
+    rows: list[DimensionalRowDraft] = []
+    errors: list[ParserError] = []
+    matched_modern = False
+    kind: str | None = None
+    anchors: _ModernAnchors | None = None
+
+    for pidx in range(detail_start):
+        text = page_texts[pidx]
+        # A caption opens a new table: switch kind and reset the anchors so they
+        # are re-read from THIS table's own header. The kind + anchors then PERSIST
+        # onto the caption-less continuation pages (the donor summary overflows
+        # several pages; only the first carries the caption + header).
+        if _MINISTRYWISE_RE.search(text):
+            kind, anchors = _KIND_SECTOR, None
+        elif _PARTNERWISE_RE.search(text):
+            kind, anchors = _KIND_DONOR, None
+        if kind is None:
+            continue  # a pre-summary page (cover / ToC) before the first caption
+
+        lines = _word_lines(pages[pidx])
+        if anchors is None:
+            anchors = _find_total_anchors(lines)
+        if anchors is None:
+            continue  # header not yet seen for this table → cannot place columns
+        matched_modern = True
+        if bs_fy_start is None:
+            errors.append(
+                ParserError(
+                    error_class="PeriodAmbiguous",
+                    error_detail=(
+                        "modern summary table found but no 'Fiscal Year YYYY/YY' "
+                        "label located in the document — cannot date the facts"
+                    ),
+                )
+            )
+            continue
+        page_rows, page_errors = extract_dimensional_rows_modern(
+            lines, anchors, kind, unit, bs_fy_start
+        )
+        rows.extend(page_rows)
+        errors.extend(page_errors)
+
+    if not matched_modern:
+        return [], []
+    return rows, errors
+
+
 def parse_whitebook(source_document_path: str, source_document_id: str) -> WhitebookResult:
     """Parse one White Book PDF → foreign-aid dimensional facts (ADR-0017).
 
@@ -839,6 +1212,24 @@ def parse_whitebook(source_document_path: str, source_document_id: str) -> White
                     if bs_fy is not None:
                         bs_fy_start_doc = bs_fy
                         break
+
+            # MODERN path (FY 2023/24+): word-positional summary reader, gated on a
+            # STRUCTURAL check so it never hijacks a clean/legacy edition (both of
+            # which also carry a "Details of Sources" section). ADR-0011 — read the
+            # document's actual geometry, don't guess from the fiscal year.
+            pages_list = list(pdf.pages)
+            if _is_modern_edition(pages_list, page_texts):
+                modern_rows, modern_errors = _parse_modern_edition(
+                    pages_list, page_texts, bs_fy_start_doc
+                )
+                if modern_rows:
+                    status_m: ParserStatus = "partial" if modern_errors else "success"
+                    return WhitebookResult(
+                        status=status_m,
+                        parser_version=PARSER_VERSION,
+                        dimensional_rows=modern_rows,
+                        errors=modern_errors,
+                    )
 
             # Second pass: extract the summary tables (clean and legacy paths).
             for page, raw, decoded, font in zip(

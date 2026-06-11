@@ -71,7 +71,13 @@ BS 2077/78. The AD start/end bound the BS-fiscal-year span (mid-Shrawan..mid-Ash
   (donor==sector reconciliation ✅ on both — see "Recent ingests").
 - **A mislabelled CID-broken file** — `Source Book  White Book FY 2021-22_azz4yjf.pdf`
   is actually the **Intergovernmental Fiscal Transfer** book (Devanagari, CID-broken,
-  `(cid:N)` glyphs). Not a White Book; belongs to a different source.
+  `(cid:N)` glyphs). Not a White Book; belongs to a different source. **This is the
+  only "FY 2021/22" file online — a genuine White Book for FY 2021/22 was never
+  published to mof.gov.np** (the IERD listing skips FY 2020/21 → FY 2023/24).
+- **FY 2022/23 (BS 2079/80) gap** — **genuine publication gap** (confirmed 2026-06-11):
+  absent from both the old whitebook listing and the new IERD Source Book section,
+  coinciding with the 2022 government transitions. IERD `news/1703` holds only a
+  "Foreign Aid Commitments" summary, not the project-level Source Book.
 - **FY 2016/17–2019/20 gap** — these editions are **not on mof.gov.np** (confirmed
   2026-06-11: site skips from FY 2015/16 directly to FY 2020/21). IECCD
   (ieccd.gov.np) was unreachable. Flag for manual re-acquisition.
@@ -126,15 +132,22 @@ revised edition's facts coexist with the prior edition's.
 
 - Path: `scrapers/mof_whitebook/parser.py` (underscore dir — Python-importable; the
   on-disk folder is NOT the hyphenated profile name)
-- Version: 0.2.1
-- Owner: Mother Opus (built by Sonnet worker, batch #12, 2026-06-07)
+- Version: 0.3.0
+- Owner: Mother Opus (built by Sonnet worker, batch #12, 2026-06-07; modern-layout
+  word-positional path added 2026-06-11)
 - Output: ADR-0017 dimensional facts → `foreign_aid_facts` (emits `dimensional_rows`)
-- Tested against: 4 clean English editions in
-  `Financial Data/mof_documents/whitebook/` + synthesized donor/sector table
-  fixtures in `scrapers/mof_whitebook/tests/`. Bundled real-PDF integration target:
-  `Source Book White Book FY 2020-21_dkjqgrt.pdf` (176 pp → 134 facts).
-- Ingest CLI: `scripts/ingest-whitebook.ts` (`pnpm ingest:whitebook` — script line
-  pending Mother)
+- Three layout paths (auto-detected per edition):
+  1. **Clean English** (FY 2013/14–2020/21) — pdfplumber tables, fixed 12-/13-col geometry.
+  2. **Legacy Preeti/Siddhi** (FY 2062/63–2067/68) — Tier-1a transliteration of label cells.
+  3. **Modern** (FY 2023/24+, hosted under the MoF IERD "Source Book / सेतो किताब"
+     section) — code+name are MERGED and the value rows have no horizontal rules, so a
+     **word-positional** reader anchors the Total-Grant / Total-Loan columns on those
+     header labels' right edges. The donor summary spans several pages; the unit +
+     anchors persist past the caption page onto the continuation pages.
+- Tested against: synthesized donor/sector + modern word-line fixtures in
+  `scrapers/mof_whitebook/tests/`; optional real-PDF integration targets gated on the
+  corpus (`Source Book White Book FY 2020-21_dkjqgrt.pdf`; `Source_Book _2080_81_vliuqxp.pdf`).
+- Ingest CLI: `scripts/ingest-whitebook.ts` (`pnpm ingest:whitebook`)
 
 ## Archive policy
 
@@ -145,7 +158,17 @@ revised edition's facts coexist with the prior edition's.
 
 ## Recent ingests
 
-| Date       | Edition      | FY (AD)  | Rows | Status        |
-|------------|--------------|----------|------|---------------|
-| 2026-06-11 | BS 2062/63   | 2005/06  | 148  | ✅ reconciled |
-| 2026-06-11 | BS 2064/65   | 2007/08  | 136  | ✅ reconciled |
+| Date       | Edition      | FY (AD)  | Rows | Layout  | Status        |
+|------------|--------------|----------|------|---------|---------------|
+| 2026-06-11 | BS 2062/63   | 2005/06  | 148  | Preeti  | ✅ reconciled |
+| 2026-06-11 | BS 2064/65   | 2007/08  | 136  | Preeti  | ✅ reconciled |
+| 2026-06-11 | BS 2080/81   | 2023/24  | 140  | Modern  | ✅ reconciled |
+| 2026-06-11 | BS 2081/82   | 2024/25  | 148  | Modern  | ✅ reconciled |
+| 2026-06-11 | BS 2082/83   | 2025/26  | 158  | Modern  | ✅ reconciled |
+
+**Acquisition note (2026-06-11):** the FY 2023/24–2025/26 editions were found under the
+new MoF **IERD "Source Book / सेतो किताब"** division section
+(`mof.gov.np/divisions/ierd/category/ierd--sourcebook--seto-kitab/`), NOT the old
+`/category/whitebook/` listing (which dead-ends at FY 2021/22). Direct CDN PDFs:
+`giwmscdnone.gov.np/media/pdf_upload/Source_Book%20_<BS>_<suffix>.pdf`.
+FY 2021/22 and FY 2022/23 are NOT available online (see "What we DEFER").

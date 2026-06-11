@@ -31,7 +31,7 @@
 | `dne_facts` | 106,989 | dimensional facts (trade, customs, migrant, provincial GDP, SOE, budget) |
 | `local_government_fiscal_transfers` | 30,104 | **5 FYs** (2078/79–2082/83) — 3 text-layer FYs pending layout adapters + 1 scanned (2077/78) pending OCR |
 | `banking_sector_facts` | 2,088 | 58 months (Ashadh 2078 → Shrawan 2082) |
-| `foreign_aid_facts` | 1,304 | 9 fiscal years (gaps — see §3) |
+| `foreign_aid_facts` | 1,750 | 12 fiscal years (gaps — see §3) |
 | `approved_indicator_values` | 877 | 103 single-series indicators |
 | `entities` | 753 | local levels (palika crosswalk) |
 | `staging_indicator_values` | 739 | in-flight (pre-promotion) |
@@ -70,13 +70,19 @@
 
 ## 3. Foreign-aid fiscal-year gaps (illustrative completeness analysis)
 
-`foreign_aid_facts` has **9 of ~17** fiscal years since 2062/63 (updated 2026-06-11):
+`foreign_aid_facts` has **12 of ~18** fiscal years since 2062/63 (updated 2026-06-11):
 
-| Present (AD) | 2005/06 · 2007/08 · 2008/09 · 2009/10 · 2010/11 · 2013/14 · 2014/15 · 2015/16 · 2020/21 |
+| Present (AD) | 2005/06 · 2007/08 · 2008/09 · 2009/10 · 2010/11 · 2013/14 · 2014/15 · 2015/16 · 2020/21 · **2023/24** · **2024/25** · **2025/26** |
 |---|---|
-| **Missing (gaps)** | 2006/07, 2011/12–2012/13, **2016/17–2019/20** _(confirmed absent from mof.gov.np + IECCD unreachable 2026-06-11 — needs manual re-acquisition)_, 2021/22–2024/25 |
+| **Missing (gaps)** | 2006/07, 2011/12–2012/13, **2016/17–2019/20**, **2021/22–2022/23** |
 
-The 2016/17–2019/20 + 2021/22–2024/25 gaps matter most (recent years). FY 2016/17–2019/20 are **not on mof.gov.np** and require manual re-acquisition from IECCD or a donor archive. FY 2021/22–2024/25 need browser verification of the mof.gov.np whitebook page.
+The recent editions FY **2023/24, 2024/25, 2025/26** were acquired 2026-06-11 from the MoF **IERD "Source Book / सेतो किताब"** division section (`mof.gov.np/divisions/ierd/category/ierd--sourcebook--seto-kitab/`) — the White Book moved off the old `/category/whitebook/` listing (which dead-ends at FY 2021/22), which is why earlier catalog audits missed them. They use a new merged-code+name layout; parser v0.3.0 reads it via a word-positional path (donor==sector reconciled to the rupee).
+
+Remaining gaps and why:
+- **FY 2021/22 (BS 2078/79)** — no genuine White Book online; the only file under that label (`...FY 2021-22_azz4yjf.pdf`) is the mislabelled Intergovernmental Fiscal Transfer book. The IERD listing skips from FY 2020/21 to FY 2023/24.
+- **FY 2022/23 (BS 2079/80)** — genuine publication gap; absent from the IERD listing (coincides with the 2022 government transitions). IERD `news/1703` holds only a "Foreign Aid Commitments" summary, not the project Source Book.
+- **FY 2016/17–2019/20** — not on mof.gov.np (site skips FY 2015/16 → FY 2020/21); IECCD unreachable 2026-06-11. Need manual re-acquisition from IECCD or a donor archive.
+- **FY 2006/07, 2011/12–2012/13** — older gaps; lower priority.
 
 ---
 
@@ -96,7 +102,7 @@ These are the cross-checks that prove a number is trustworthy. **All pass except
 | Provincial GDP Σ vs national nominal GDP (FY2081/82) | 6,107,221 npr_M vs 6,107 npr_B | ✅ exact |
 | Customs cross-tab (composite) Σ vs single-dim total (imports 2081/82) | 1,804,122,731.4 vs .5 | ✅ exact (rounding) |
 | Redbook recurrent+capital = stated total (per head) | matches every head | ✅ exact |
-| Foreign-aid donor-total = sector-total (per FY) | **all 7 FYs match exactly** | ✅ |
+| Foreign-aid donor-total = sector-total (per FY) | **all 12 FYs match exactly** (incl. modern FY 2023/24–2025/26, parser v0.3.0 word path) | ✅ |
 | Intergovernmental transfers Σ(753 local levels) vs printed `स्थानीय तह` doc total | FY2078/79 2,830,147 lakh = printed; FY2079/80 3,003,716 lakh = printed | ✅ exact (to the rupee) |
 | Economic Survey GVA Σ(province-industry) vs national `industry` per sector (FY2081/82, G5) | worst residual 2 npr_crore; 0 of 18 sectors >±9 | ✅ within rounding |
 | Economic Survey GVA national GDP vs `dne-gdp-nominal` (FY2081/82) | 610,722 npr_crore = 6,107.221 npr_billion | ✅ exact (to the rupee) |
@@ -105,8 +111,9 @@ These are the cross-checks that prove a number is trustworthy. **All pass except
 > (113,240,000 vs 95,934,658) was a pdfplumber row-merge artifact — 2 ministries whose
 > names wrap to a 2nd line were dropped from the sector table (their totals = 17,305,342
 > = exactly the gap). Fixed by deterministic wrapped-name recovery (mof_whitebook v0.2.1,
-> no AI/OCR); re-ingested (154→158 rows); donor==sector==113,240,000 now. All 14 White
-> Book editions reconcile; no value was fabricated.
+> no AI/OCR); re-ingested (154→158 rows); donor==sector==113,240,000 now. Every White
+> Book edition reconciles (clean, Preeti, and the modern FY 2023/24+ word path); no value
+> was fabricated.
 
 ---
 
