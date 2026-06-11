@@ -259,6 +259,36 @@ Notes:
 - Cross-source divergence flags are warnings only; they never block ingest.
 - No `Financial Data/` junction required — the WB API is network-only or via a local JSON file.
 
+### IMF WEO (World Economic Outlook)
+
+Source ID: `imf-weo` | Parser: `scrapers/imf_weo/parser.py` v0.1.0 | 13 indicators (actuals + projections)
+
+```powershell
+# Dry-run against saved fixture (no DB, no network):
+pnpm ingest:imf-weo --dry-run
+
+# Download fresh from the IMF DataMapper API, marking forecast years, then ingest:
+pnpm ingest:imf-weo --download --projection-from-year 2025
+
+# Download/save without ingesting (inspect first):
+pnpm ingest:imf-weo --download --projection-from-year 2025 --output-dir "C:\WEO"
+
+# Live ingest from a pre-downloaded combined JSON:
+pnpm ingest:imf-weo --input "C:\WEO\weo_npl_2026-06-11.json"
+```
+
+Notes:
+- Parser reads a single combined JSON blob assembled by the CLI (one `source_documents` row per run).
+- API: `https://www.imf.org/external/datamapper/api/v1/<code>/NPL` — no auth, one GET per code.
+- WEO year Y = Nepal FY Jul Y – Jul Y+1 = BS FY (Y+57)/(Y+58%100) — same convention as WDI.
+- **Projections (ADR-0025):** the DataMapper API does not flag forecast years. Supply
+  `--projection-from-year <YEAR>` (the vintage's first forecast year, e.g. 2025 for the Apr-2026 WEO).
+  Years ≥ that become `observation_type='projection'`; omit the flag and every row is `'actual'`.
+  Re-confirm the boundary each April/October vintage.
+- USD/PPP levels are published in billions; the parser scales ×1000 → `usd_million` / `intl_dollar_million`
+  (matches `wb-wdi` so the two benchmark in one unit).
+- No `Financial Data/` junction required.
+
 ---
 
 ## Operational Gotchas

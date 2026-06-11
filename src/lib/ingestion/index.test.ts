@@ -68,6 +68,7 @@ const STAGING_ROW = {
   fiscal_year_bs: '2082/83',
   fiscal_year_ad_label: '2025/26',
   confidence_grade_proposed: 'A' as const,
+  observation_type: 'actual' as const,
   parser_notes: null,
 };
 

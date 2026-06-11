@@ -23,6 +23,7 @@ import {
   confidenceGradeEnum,
   dataQualityFlagTypeEnum,
   flagSeverityEnum,
+  observationTypeEnum,
   reportingPeriodTypeEnum,
 } from './enums';
 import { indicators } from './indicators';
@@ -68,6 +69,8 @@ export const stagingIndicatorValues = pgTable(
     fiscalYearAdLabel: text('fiscal_year_ad_label').notNull(),
 
     confidenceGradeProposed: confidenceGradeEnum('confidence_grade_proposed').notNull(),
+    // Epistemic status (ADR-0025) — orthogonal to confidence. Default 'actual'.
+    observationType: observationTypeEnum('observation_type').notNull().default('actual'),
     parserNotes: text('parser_notes'),
 
     insertedAt: timestamp('inserted_at', { withTimezone: true }).notNull().defaultNow(),
@@ -116,6 +119,8 @@ export const approvedIndicatorValues = pgTable(
     fiscalYearAdLabel: text('fiscal_year_ad_label').notNull(),
 
     confidenceGrade: confidenceGradeEnum('confidence_grade').notNull(),
+    // Epistemic status (ADR-0025) — orthogonal to confidence. Default 'actual'.
+    observationType: observationTypeEnum('observation_type').notNull().default('actual'),
     revisionNumber: integer('revision_number').notNull().default(0),
 
     promotedAt: timestamp('promoted_at', { withTimezone: true }).notNull().defaultNow(),
