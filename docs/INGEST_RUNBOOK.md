@@ -219,15 +219,6 @@ pnpm ingest:imf-article-iv --dry-run --input "<path-to-article-iv.pdf>"
 pnpm ingest:imf-article-iv --input "<path-to-article-iv.pdf>"
 ```
 
-**Note:** The ingest CLI is not yet wired (pending a thin CLI wrapper following
-the `ingest:dne` pattern). Until then, run the parser directly and inspect its
-JSON output:
-
-```powershell
-cd scrapers
-python -m imf_article_iv.parser "<path-to-pdf>" "manual-doc-id"
-```
-
 ### ADB ADO Nepal (Selected Economic Indicators)
 
 Source ID: `adb-ado-nepal` | Parser: `scrapers/adb_ado/parser.py` v0.1.0
@@ -245,11 +236,29 @@ pnpm ingest:adb-ado --dry-run --input "<path-to-ado-nepal.pdf>"
 pnpm ingest:adb-ado --input "<path-to-ado-nepal.pdf>"
 ```
 
-**Note:** Same as IMF — CLI wrapper pending. Run parser directly for now:
+### World Bank WDI (Historical Macro Baseline)
+
+Source ID: `wb-wdi` | Fetcher: `scrapers/wb_wdi/fetch.py` | Parser: `scrapers/wb_wdi/parser.py` v0.1.0
+
+Two-step process: fetch the JSON snapshot from the WB API, then ingest the snapshot.
+Emits 6 WDI indicator slugs (historical calendar-year outturns mapped to Nepal FY, no
+forecasts). Used as retrospective accuracy baseline for IMF/ADB projections.
 
 ```powershell
-cd scrapers
-python -m adb_ado.parser "<path-to-pdf>" "manual-doc-id"
+# Step 1 — download JSON snapshot (requires internet, ~5 seconds):
+$date = Get-Date -Format 'yyyy-MM-dd'
+python -m scrapers.wb_wdi.fetch --output "wb_wdi_snapshot_$date.json"
+
+# Step 2 — dry-run (validate shape, no DB writes):
+pnpm ingest:wdi --dry-run --input "wb_wdi_snapshot_$date.json"
+
+# Step 2 — live ingest:
+pnpm ingest:wdi --input "wb_wdi_snapshot_$date.json"
+```
+
+Optional year range filter when fetching:
+```powershell
+python -m scrapers.wb_wdi.fetch --output snapshot.json --year-from 2000 --year-to 2024
 ```
 
 ---

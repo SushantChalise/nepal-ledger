@@ -37,6 +37,7 @@ const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const IMF_SOURCE_ID = 'imf-article-iv';
+const WDI_SOURCE_ID = 'wb-wdi';
 const ADB_SOURCE_ID = 'adb-ado-nepal';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
@@ -1147,6 +1148,59 @@ const ADB_ADO_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// World Bank WDI — historical calendar-year actuals mapped to Nepal FY.
+// No forecast rows: WDI provides confirmed outturns only.
+const WDI_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'wdi-gdp-real-growth',
+    nameEn: 'Real GDP Growth — WDI Historical Outturn',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-cpi-inflation-avg',
+    nameEn: 'CPI Inflation, Annual Average — WDI Historical Outturn',
+    category: 'price',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-fiscal-balance-pct-gdp',
+    nameEn: 'Fiscal Balance (% of GDP) — WDI Historical Outturn',
+    category: 'fiscal',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-current-account-pct-gdp',
+    nameEn: 'Current Account Balance (% of GDP) — WDI Historical Outturn',
+    category: 'external_sector',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-public-debt-pct-gdp',
+    nameEn: 'Central Government Debt (% of GDP) — WDI Historical Outturn',
+    category: 'fiscal',
+    unit: 'percent_gdp',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gross-reserves-months',
+    nameEn: 'Gross Reserves (months of imports) — WDI Historical Outturn',
+    category: 'external_sector',
+    unit: 'months',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+];
+
 function log(msg: string): void {
   process.stdout.write(`[seed-indicators] ${msg}\n`);
 }
@@ -1363,6 +1417,35 @@ async function persist(): Promise<void> {
     adbLinked += 1;
   }
   log(`indicator_source_map: ${adbLinked} links ensured → ${ADB_SOURCE_ID}`);
+
+  // 14. World Bank WDI — historical macro baseline (calendar-year outturns, CC-BY).
+  const wdiInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...WDI_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!wdiInsertResult.ok)
+    throw new Error(`WDI indicators insert failed: ${JSON.stringify(wdiInsertResult.error)}`);
+  log(
+    `indicators (WDI): ${wdiInsertResult.value.length} inserted (of ${WDI_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 15. WDI source map links.
+  let wdiLinked = 0;
+  for (const ind of WDI_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      WDI_SOURCE_ID,
+      'WDI historical calendar-year outturns mapped to Nepal FY',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    wdiLinked += 1;
+  }
+  log(`indicator_source_map: ${wdiLinked} links ensured → ${WDI_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1375,6 +1458,7 @@ async function main(): Promise<void> {
   log(`indicators (NCPI)  = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
   log(`indicators (IMF)   = ${IMF_INDICATORS.length}, source = ${IMF_SOURCE_ID}`);
   log(`indicators (ADB)   = ${ADB_ADO_INDICATORS.length}, source = ${ADB_SOURCE_ID}`);
+  log(`indicators (WDI)   = ${WDI_INDICATORS.length}, source = ${WDI_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');

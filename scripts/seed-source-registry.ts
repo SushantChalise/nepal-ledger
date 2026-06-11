@@ -965,9 +965,18 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     licenseStatus: 'cc_by',
     confidenceDefault: 'A',
     status: 'active',
-    ingestionMode: 'reference_only',
-    tier: null,
-    notes: 'International benchmark. Continuous availability via API.',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    parserOwner: 'scrapers/wb_wdi/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Annual WDI update cycle. Re-fetch snapshot and re-ingest; historical values are stable after ~2 year lag.',
+    knownBreakageModes: [
+      'api-response-shape-may-change-between-wdi-versions',
+      'recent-years-may-be-null-pending-official-data',
+    ],
+    notes:
+      'Two-step ingest: (1) python -m scrapers.wb_wdi.fetch --output snapshot.json; (2) pnpm ingest:wdi --input snapshot.json. Historical baseline for IMF/ADB projection-accuracy scoring.',
   },
   {
     sourceId: 'imf-article-iv',
