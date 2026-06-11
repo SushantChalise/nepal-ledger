@@ -97,7 +97,10 @@ function logErr(msg: string): void {
 async function runParser(inputPath: string): Promise<z.infer<typeof ParserOutputSchema>> {
   const python = process.env['PYTHON'] ?? (process.platform === 'win32' ? 'python' : 'python3');
   return new Promise((resolvePromise, reject) => {
-    const child = nodeSpawn(python, [PARSER_PATH, inputPath, 'whitebook'], { shell: false });
+    const child = nodeSpawn(python, [PARSER_PATH, inputPath, 'whitebook'], {
+      shell: false,
+      env: { ...process.env, PYTHONPATH: path.join(REPO_ROOT, 'scrapers') },
+    });
     const out: Buffer[] = [];
     const err: Buffer[] = [];
     const timer = setTimeout(() => {
@@ -171,8 +174,8 @@ async function main(): Promise<void> {
   for (const e of output.errors.slice(0, 5)) log(`  err ${e.error_class}: ${e.error_detail}`);
   if (output.dimensional_rows.length === 0) {
     logErr(
-      'parser emitted 0 dimensional_rows — is this a clean English White Book edition ' +
-        '(FY2015/16, FY2020/21, FY2013/14, FY2014/15)? Preeti/CID editions are deferred (ADR-0017).',
+      'parser emitted 0 dimensional_rows — is this a supported White Book edition? ' +
+        'Clean English and legacy Preeti/Siddhi editions are both parseable; CID-broken editions are not (ADR-0017).',
     );
     process.exit(1);
   }

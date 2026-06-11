@@ -23,7 +23,14 @@ let cached: SupabaseClient | undefined;
 export function getSupabaseClient(): SupabaseClient {
   if (cached) return cached;
   const env = serverEnv();
-  cached = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+  const url = env.SUPABASE_URL;
+  const key = env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error(
+      'SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required when SOURCE_ARCHIVE_DIR is not set',
+    );
+  }
+  cached = createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   return cached;

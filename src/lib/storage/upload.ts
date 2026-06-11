@@ -19,6 +19,7 @@
 import { err, ok, type Result } from '@/lib/errors';
 
 import { sha256OfBuffer } from './hash';
+import { uploadSourceDocumentLocally } from './local-upload';
 import { getSupabaseClient } from './supabase-client';
 import {
   isNotFoundStorageError,
@@ -87,6 +88,12 @@ export async function uploadSourceDocument(
   const cleanName = sanitizeFileName(input.fileName);
   if (cleanName.length === 0 || cleanName === '_'.repeat(cleanName.length)) {
     return err({ kind: 'Validation', field: 'fileName', reason: 'sanitizes to empty' });
+  }
+
+  // ─── Local FS route (ADR-0006) ─────────────────────────────────
+  const archiveDir = process.env['SOURCE_ARCHIVE_DIR'];
+  if (archiveDir) {
+    return uploadSourceDocumentLocally(input, archiveDir);
   }
 
   const storageKey = `${input.sourceId}/${yyyymmdd}/${cleanName}`;

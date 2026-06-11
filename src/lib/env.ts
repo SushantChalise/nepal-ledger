@@ -13,14 +13,16 @@
 import { z } from 'zod';
 
 const ServerEnvSchema = z.object({
-  // ─── Supabase (database + storage) ────────────────────────────
-  SUPABASE_URL: z.string().url(),
-  SUPABASE_ANON_KEY: z.string().min(1),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  // ─── Supabase (database + storage) — optional when SOURCE_ARCHIVE_DIR is set ──
+  SUPABASE_URL: z.string().url().optional(),
+  SUPABASE_ANON_KEY: z.string().min(1).optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   DATABASE_URL: z.string().url(),
   // Direct connection bypasses the pooler — used by drizzle-kit migrations.
   DIRECT_URL: z.string().url().optional(),
   SUPABASE_STORAGE_BUCKET: z.string().default('source-archive'),
+  // ─── Local FS archive (ADR-0006) — set instead of Supabase in dev ─
+  SOURCE_ARCHIVE_DIR: z.string().optional(),
 
   // ─── Sentry (server) ──────────────────────────────────────────
   SENTRY_DSN: z.string().url().optional(),

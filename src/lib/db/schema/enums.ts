@@ -25,7 +25,7 @@ export type ReportingPeriodType = (typeof reportingPeriodTypeEnum.enumValues)[nu
 export const confidenceGradeEnum = pgEnum('confidence_grade', ['A', 'B', 'C']);
 export type ConfidenceGrade = (typeof confidenceGradeEnum.enumValues)[number];
 
-export const storageProviderEnum = pgEnum('storage_provider', ['supabase', 'r2']);
+export const storageProviderEnum = pgEnum('storage_provider', ['supabase', 'r2', 'local']);
 export type StorageProvider = (typeof storageProviderEnum.enumValues)[number];
 
 export const publicationFrequencyEnum = pgEnum('publication_frequency', [

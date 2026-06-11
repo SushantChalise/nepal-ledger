@@ -1,10 +1,10 @@
 # Source: Ministry of Finance — White Book (Source Book for Projects Financed with Foreign Assistance)
 
 **source_id:** `mof-whitebook-foreign-aid`
-**Status:** PROPOSED — registry row pending Mother (see "FOR MOTHER" / the parser docstring). Parser v0.2.1 built + run against the clean English + Preeti/Siddhi editions.
+**Status:** ACTIVE — source_registry seeded; FY 2062/63 (148 rows) + FY 2064/65 (136 rows) ingested 2026-06-11.
 **Tier:** 1 (Money In — external financing spine)
-**Registered at:** _pending Mother seeds the row_
-**Last verified:** 2026-06-08 (FY2070/71 donor==sector reconciliation fixed in v0.2.1 — wrapped-name row recovery; see "Known breakage modes")
+**Registered at:** 2026-06-11 (seeded via `scripts/seed-source-registry.ts`)
+**Last verified:** 2026-06-11 (FY 2062/63 + FY 2064/65 Preeti editions — donor==sector reconciliation ✅)
 
 ## What this is
 
@@ -65,13 +65,16 @@ BS 2077/78. The AD start/end bound the BS-fiscal-year span (mid-Shrawan..mid-Ash
   contract.
 - **Project-level detail tables** (per-budget-head project lists) — large and
   heterogeneous; deferred.
-- **Preeti-encoded editions** — FY 2062/63, 2064/65, 2065/66, 2067/68. Their text
-  layer is a legacy Preeti font byte-map (e.g. `dGqfnout` = "मन्त्रालयगत"), not
-  Unicode. Un-mapping it is reverse-engineering a font (the OCR/translit ADR-0003
-  forbids).
+- **CID-broken Preeti editions** — FY 2065/66, 2067/68 remain unverified; if their
+  text layer is broken `(cid:N)` rather than valid Preeti bytes the parser will
+  emit `status=failure`. FY 2062/63 and FY 2064/65 are **parseable and ingested**
+  (donor==sector reconciliation ✅ on both — see "Recent ingests").
 - **A mislabelled CID-broken file** — `Source Book  White Book FY 2021-22_azz4yjf.pdf`
   is actually the **Intergovernmental Fiscal Transfer** book (Devanagari, CID-broken,
   `(cid:N)` glyphs). Not a White Book; belongs to a different source.
+- **FY 2016/17–2019/20 gap** — these editions are **not on mof.gov.np** (confirmed
+  2026-06-11: site skips from FY 2015/16 directly to FY 2020/21). IECCD
+  (ieccd.gov.np) was unreachable. Flag for manual re-acquisition.
 
 The parser scans every page and emits typed `PageLayoutChanged` / `PeriodAmbiguous`
 diagnostics for these, with `status=failure` — a documented infeasibility, not a
@@ -107,8 +110,10 @@ value.
   printed **113,240,000** npr_thousand (= the donor total). The source is internally
   consistent — both the donor and sector printed Totals are 113,240,000 — so this
   was a parse bug, not a source-level difference.
-- `preeti-and-cid-editions-unparseable` — pre-2013 editions render in Preeti/CID;
-  deferred (ADR-0003).
+- `preeti-editions-parseable-cid-editions-are-not` — FY 2062/63 and FY 2064/65
+  are legacy Preeti/Siddhi font editions and ARE parseable by the parser's
+  `_common/preeti.py` transliteration (ADR-0003 permits deterministic font-map
+  reversal). CID-broken editions (`(cid:N)` glyphs) are still infeasible.
 
 ## Revision policy
 
@@ -133,11 +138,14 @@ revised edition's facts coexist with the prior edition's.
 
 ## Archive policy
 
-- All downloaded files stored in Supabase Storage bucket `source-archive`
-  ([ADR-0004](../decisions/0004-supabase-storage-instead-of-r2.md)) under key
-  `mof-whitebook-foreign-aid/<yyyy-mm-dd>/<original-filename>`.
-- Hash + downloaded URL recorded in `source_documents`. Never overwritten.
+- Files stored under `$SOURCE_ARCHIVE_DIR/mof-whitebook-foreign-aid/<yyyy-mm-dd>/<sanitized-filename>`
+  (local filesystem, [ADR-0006](../decisions/0006-local-storage-year1.md); Supabase
+  Storage is wired when `SUPABASE_URL` is set instead).
+- Hash + file URL recorded in `source_documents`. Never overwritten.
 
 ## Recent ingests
 
-_Auto-populated once `parser_runs` is wired to a monitoring view._
+| Date       | Edition      | FY (AD)  | Rows | Status        |
+|------------|--------------|----------|------|---------------|
+| 2026-06-11 | BS 2062/63   | 2005/06  | 148  | ✅ reconciled |
+| 2026-06-11 | BS 2064/65   | 2007/08  | 136  | ✅ reconciled |
