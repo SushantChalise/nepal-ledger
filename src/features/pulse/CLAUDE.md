@@ -1,10 +1,12 @@
 # Pulse — feature context
 
-**Live macro KPI cards** showing Nepal's latest approved economic indicators grouped by Prices, Money In, and Money Out / Trade.
+**Live macro KPI cards** — two sections:
+1. **Current Flow** (NRB CMEFs, 9-months YTD/YoY): Prices · Money In · Money Out · Fiscal · Banking
+2. **Structural Benchmarks** (World Bank WDI, annual): Economy · Inequality · Fiscal Ratios
 
-Lens / pillar: Lens 1 — The Pulse (default lens); serves all 5 Public Pillars but primarily Pillar 1 "Money In" and Pillar 2 "Money Out"
+Lens / pillar: Lens 1 — The Pulse; serves all 5 Public Pillars
 Route(s): `/pulse`
-Status: live · NRB CMEFs (85 indicators: 7 macro + 78 NCPI inflation categories)
+Status: live · CMEFs v0.2.0 (14 indicators) + WDI v0.1.0 (15 indicators)
 
 ## Data in
 - `approved_indicator_values` joined to `indicators` and `source_documents`, via `listApprovedWithIndicator()` (`src/lib/db/repositories/approved-indicator-values.ts`)
@@ -17,15 +19,16 @@ Status: live · NRB CMEFs (85 indicators: 7 macro + 78 NCPI inflation categories
 
 ## Invariants (don't break these)
 - No `'use client'` in this feature. KpiCard and KpiGroup are pure Server Components.
-- Unit slug mapping is inline in `page.tsx` (`formatValue()`). Handled slugs: `NPR_billion` / `npr_billion` → "NPR X.XX B"; `percent_yoy` / `percent` → "%"; `months_of_imports` / `months` → "months". Unknown slugs fall back to raw slug as the unit label — add new slugs here when new indicator units arrive.
-- Indicators not in `SLUG_TO_GROUP` fall into an "Other Indicators" overflow group rather than being silently dropped. Extending the display groups means adding an entry to `SLUG_TO_GROUP` and `GROUP_META` and optionally `GROUP_ORDER` in `page.tsx`.
+- Unit slug mapping is inline in `page.tsx` (`formatValue()`). Handled: `npr_billion` → "NPR B"; `percent_yoy`/`percent` → "%"; `months_of_imports` → "months"; `usd_million` → "USD M/B" (auto-scales ≥ 1 000 M); `usd` → raw USD; `index_points` → Gini. Unknown slugs fall back to raw slug.
+- Two separate SLUG maps: `FLOW_SLUG_TO_GROUP` (CMEFs → FlowGroupKey) and `BENCHMARK_SLUG_TO_GROUP` (WDI → BenchmarkGroupKey). When a new source arrives, add its slugs to the appropriate map; don't conflate flow (YTD) and benchmark (annual) data in the same section.
+- Indicators not in either map fall into an "Other Indicators" overflow group — they are never dropped silently.
 - Typed empty state (`rows.length === 0`) and typed error state (`!result.ok`) are both rendered — never throw from the page component.
 - `listApprovedWithIndicator()` orders by `indicators.category` then `indicators.slug` — presentation order is DB-driven; do not sort client-side.
 
 ## Gotchas
 - The page currently shows all rows from `approved_indicator_values` in a single pass. If the indicator count grows large (hundreds), consider adding a category filter or pagination — the current JOIN fetches everything.
 - `formatValue()` lives inline in `page.tsx` (not in a shared module). If Money Map or other features need the same NPR-billion / percent / months formatting, extract to `src/lib/format/indicator-units.ts` to avoid drift — currently not shared.
-- `reportingPeriod` and `sourceAgency` in the header are taken from the first row returned. If the dataset mixes multiple reporting periods, the header label will be misleading. Currently homogeneous (all NRB CMEFs nine-month batch).
+- `flowPeriod` is derived from the first CMEFs row; `benchmarkPeriod` from the first WDI row. Each section shows its own period label so mixed-vintage data is accurately represented.
 
 ## Related
 - ADRs: ADR-0003 (no API parsing — data arrives only via approved ingest pipeline)

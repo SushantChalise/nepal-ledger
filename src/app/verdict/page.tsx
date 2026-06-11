@@ -96,14 +96,23 @@ const EDITION_1: VerdictEdition = {
 // Slugs shown in the KPI strip — same as Pulse for consistency.
 // ---------------------------------------------------------------------------
 
+// All 14 NRB CMEFs slugs (9-months flow data). WDI annual benchmarks are
+// excluded from the Verdict strip — their FY label would differ from CMEFs.
 const PULSE_SLUGS = new Set([
   'cmefs-ncpi-yoy-overall',
   'cmefs-remittance-inflow-ytd',
   'cmefs-bop-surplus-ytd',
   'cmefs-gross-forex-reserves',
   'cmefs-forex-reserves-months-of-import-cover',
+  'cmefs-merchandise-exports-ytd',
   'cmefs-merchandise-imports-ytd',
   'cmefs-trade-deficit-ytd',
+  'cmefs-govt-revenue-total-ytd',
+  'cmefs-govt-expenditure-total-ytd',
+  'cmefs-govt-fiscal-balance-ytd',
+  'cmefs-m2-yoy',
+  'cmefs-private-sector-credit-yoy',
+  'cmefs-bfi-deposits-yoy',
 ]);
 
 // ---------------------------------------------------------------------------

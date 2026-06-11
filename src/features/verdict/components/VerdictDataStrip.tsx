@@ -11,6 +11,9 @@ const UNIT_LABEL: Record<string, string> = {
   percent: '%',
   months_of_imports: 'months',
   months: 'months',
+  usd_million: 'USD M',
+  usd: 'USD',
+  index_points: 'Gini',
 };
 
 function formatStrip(
