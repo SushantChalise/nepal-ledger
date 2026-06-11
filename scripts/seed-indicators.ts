@@ -36,6 +36,7 @@ const NCPI_SOURCE_ID = 'nrb-ncpi-table';
 const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
+const WDI_SOURCE_ID = 'wb-wdi';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -205,6 +206,136 @@ const DNE_INDICATORS: readonly SeedIndicator[] = [
     unit: 'npr_million',
     nativeFrequency: 'annual',
     sourceAgency: 'Nepal Rastra Bank',
+  },
+];
+
+// ─── WDI indicators (parser wb_wdi v0.1.0) ──────────────────────────────────
+// 15 WB indicator codes for Nepal. All annual, confidence A.
+// Cross-checks: wdi-gdp-growth-annual-pct ↔ dne-gdp-real-growth;
+//               wdi-cpi-inflation-annual-pct ↔ dne-inflation-rate;
+//               wdi-gdp-per-capita-current-usd ↔ dne-gdp-per-capita-usd.
+// USD level indicators (GDP, GNI, remittances) stored in usd_million (÷1e6).
+// Per-capita indicators stored in usd (no scaling).
+const WDI_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'wdi-gdp-current-usd',
+    nameEn: 'GDP (current US$)',
+    category: 'real_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gdp-constant-2015-usd',
+    nameEn: 'GDP (constant 2015 US$)',
+    category: 'real_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gdp-growth-annual-pct',
+    nameEn: 'GDP growth (annual %)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gdp-per-capita-current-usd',
+    nameEn: 'GDP per capita (current US$)',
+    category: 'real_sector',
+    unit: 'usd',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gdp-per-capita-growth-pct',
+    nameEn: 'GDP per capita growth (annual %)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-cpi-inflation-annual-pct',
+    nameEn: 'Inflation, consumer prices (annual %)',
+    category: 'price',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-remittances-received-usd',
+    nameEn: 'Personal remittances received (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-remittances-pct-gdp',
+    nameEn: 'Personal remittances received (% of GDP)',
+    category: 'external_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gni-current-usd',
+    nameEn: 'GNI (current US$)',
+    category: 'real_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gni-per-capita-current-usd',
+    nameEn: 'GNI per capita (current US$)',
+    category: 'real_sector',
+    unit: 'usd',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-poverty-headcount-national-pct',
+    nameEn: 'Poverty headcount ratio at national poverty lines (% of population)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gini-index',
+    nameEn: 'Gini index',
+    category: 'demographic',
+    unit: 'index_points',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gross-capital-formation-pct-gdp',
+    nameEn: 'Gross capital formation (% of GDP)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-central-govt-debt-pct-gdp',
+    nameEn: 'Central government debt, total (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-current-account-balance-pct-gdp',
+    nameEn: 'Current account balance (% of GDP)',
+    category: 'external_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
   },
 ];
 
@@ -1205,6 +1336,31 @@ async function persist(): Promise<void> {
     esLinked += 1;
   }
   log(`indicator_source_map: ${esLinked} links ensured → ${ECONOMIC_SURVEY_SOURCE_ID}`);
+
+  // 12. WDI (World Bank) indicators — 15 annual benchmark series.
+  const wdiInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...WDI_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!wdiInsertResult.ok)
+    throw new Error(`WDI indicators insert failed: ${JSON.stringify(wdiInsertResult.error)}`);
+  log(
+    `indicators (WDI): ${wdiInsertResult.value.length} inserted (of ${WDI_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 13. WDI source map links.
+  let wdiLinked = 0;
+  for (const ind of WDI_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(found.value.id, WDI_SOURCE_ID, 'WB WDI Nepal annual');
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    wdiLinked += 1;
+  }
+  log(`indicator_source_map: ${wdiLinked} links ensured → ${WDI_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1215,6 +1371,7 @@ async function main(): Promise<void> {
       `indicators (CMEFs) = ${INDICATORS.length}, source = ${CMEFS_SOURCE_ID}`,
   );
   log(`indicators (NCPI)  = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
+  log(`indicators (WDI)   = ${WDI_INDICATORS.length}, source = ${WDI_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');

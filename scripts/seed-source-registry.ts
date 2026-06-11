@@ -959,15 +959,29 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     datasetName: 'World Development Indicators (WDI) — Nepal',
     sourceUrl: 'https://databank.worldbank.org/source/world-development-indicators',
     publicationFrequency: 'annual',
+    expectedReleaseWindow: 'Mid-year update (typically June–July); data lags 1–2 FYs',
     reportingPeriodType: 'annual',
     fileFormat: 'json',
     requiresTableExtraction: false,
+    historicalCoverage: '1960 onward (most series; poverty/Gini sparse)',
     licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/wb_wdi/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'WB revises historical data when national offices submit corrections; revisions reflected in API without explicit versioning. Each ingest downloads a full snapshot — prior approved rows are bumped via revision_number.',
+    knownBreakageModes: [
+      'api-may-return-null-for-recent-years',
+      'poverty-gini-only-measured-every-3-5-years',
+      'date-field-is-fy-start-year-for-nepal',
+    ],
     confidenceDefault: 'A',
     status: 'active',
-    ingestionMode: 'reference_only',
-    tier: null,
-    notes: 'International benchmark. Continuous availability via API.',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'International benchmark. 15 indicators: GDP (current/constant USD, growth, per-capita), ' +
+      'GNI, CPI inflation, poverty headcount, Gini, gross capital formation, govt debt, ' +
+      'current-account balance, remittances (USD + % GDP). Cross-checks dne-gdp-* and dne-inflation-rate.',
   },
   {
     sourceId: 'imf-article-iv',
