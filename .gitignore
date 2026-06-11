@@ -69,6 +69,15 @@ yarn-error.log*
 .pnpm-debug.log*
 *.log
 
+# ─── python (scrapers local dev env + tool caches) ────────────────
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
 # ─── editor / OS ──────────────────────────────────────────────────
 .DS_Store
 Thumbs.db

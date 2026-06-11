@@ -13,7 +13,7 @@ Total registered sources: 70
 | Tier 0 | [nrb-cmefs-monthly](nrb-cmefs-monthly.md) | NRB | Current Macroeconomic and Financial Situation | monthly | manual_upload | active |
 | Tier 0 | [nrb-ncpi-table](nrb-ncpi-table.md) | NRB | NCPI Table 2(B) | monthly | manual_upload | active |
 | Tier 1 | [customs-monthly-trade](customs-monthly-trade.md) | Customs | Monthly trade statistics (imports + exports) | monthly | automated_cron | active |
-| Tier 1 | [fcgo-consolidated-financial-statements](fcgo-consolidated-financial-statements.md) | FCGO | Consolidated Financial Statements (CFS) — Nepali + English | annual | manual_upload | paused |
+| Tier 1 | [fcgo-consolidated-financial-statements](fcgo-consolidated-financial-statements.md) | FCGO | Consolidated Financial Statements (CFS) — Nepali + English | annual | manual_upload | active |
 | Tier 1 | [fcgo-daily](fcgo-daily.md) | FCGO | Daily revenue + expenditure (preliminary) | daily | automated_cron | paused |
 | Tier 1 | [kalimati-daily-prices](kalimati-daily-prices.md) | Kalimati | Daily wholesale fruit & vegetable prices | daily | automated_cron | paused |
 | Tier 1 | [local-fiscal-transfers-cleaned](local-fiscal-transfers-cleaned.md) | MoF | Federal fiscal transfers to 753 local levels, FY 2082/83 (pre-cleaned XLSX) | annual | manual_upload | active |
@@ -39,6 +39,7 @@ Total registered sources: 70
 | Tier 2 | [ntb-tourism-monthly](ntb-tourism-monthly.md) | NTB | Monthly arrivals + receipts | monthly | automated_cron | paused |
 | Tier 2 | [pdmo-debt-bulletin](pdmo-debt-bulletin.md) | PDMO | Quarterly public debt bulletin | quarterly | manual_upload | paused |
 | Tier 2 | [pdmo-monthly-debt-statistics](pdmo-monthly-debt-statistics.md) | PDMO | Monthly Government Debt Statistics (मासिक सरकारी ऋण तथ्याङ्क) | monthly | manual_upload | paused |
+| Tier 2 | [wb-wdi](wb-wdi.md) | WB | World Development Indicators (WDI) — Nepal | annual | automated_cron | active |
 | Tier 3 | [coops-regulatory-status](coops-regulatory-status.md) | DoC | Cooperative regulatory status + Sahakari Bibhag directory | ad_hoc | manual_upload | paused |
 | Tier 3 | [doed-project-pipeline](doed-project-pipeline.md) | DoED | Hydropower licence + project pipeline registry | ad_hoc | manual_upload | paused |
 | Tier 3 | [dpm-public-enterprises-annual](dpm-public-enterprises-annual.md) | DPM | Annual Performance Review of Public Enterprises (Yellow Book) | annual | manual_upload | active |
@@ -79,4 +80,3 @@ Total registered sources: 70
 | Reference | nlss-survey | NSO | Nepal Living Standards Survey (NLSS) | ad_hoc | reference_only | active |
 | Reference | npc-16th-plan | NPC | 16th Five-Year Plan (FY 2081/82–2085/86) | ad_hoc | reference_only | active |
 | Reference | pdmo-mtds | PDMO | Medium-Term Debt Management Strategy (MTDS) | annual | reference_only | paused |
-| Reference | wb-wdi | WB | World Development Indicators (WDI) — Nepal | annual | reference_only | active |

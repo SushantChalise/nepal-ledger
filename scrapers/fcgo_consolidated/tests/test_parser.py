@@ -24,7 +24,7 @@ import pytest
 
 from _common.types import ParserResult, StagingRowDraft
 from fcgo_consolidated import PARSER_VERSION, parse
-from fcgo_consolidated.parser import extract_indicators
+from fcgo_consolidated.parser import _detect_ad_fy_start, extract_indicators
 
 PERIOD_TOLERANCE = timedelta(days=40)  # mid-month AD approximation slack
 
@@ -144,7 +144,7 @@ def test_phrasing1_status_success(result_1: ParserResult) -> None:
 
 
 def test_phrasing1_parser_version(result_1: ParserResult) -> None:
-    assert result_1.parser_version == PARSER_VERSION == "0.1.0"
+    assert result_1.parser_version == PARSER_VERSION == "0.2.0"
 
 
 def test_phrasing1_all_six_indicators(result_1: ParserResult) -> None:
@@ -311,6 +311,40 @@ def test_ad_fy_to_bs_roundtrip() -> None:
 
 
 # ---------------------------------------------------------------------------
+# FY auto-detection (v0.2.0 — dynamic period metadata).
+# ---------------------------------------------------------------------------
+
+
+def test_fy_detected_from_phrasing1() -> None:
+    """v0.2.0: FY 2022/23 is auto-detected; period metadata is BS 2079/80."""
+    assert _detect_ad_fy_start(TEXT_PHRASING_1) == 2022
+    result = extract_indicators(TEXT_PHRASING_1)
+    assert result.status == "success"
+    for row in result.staging_rows:
+        assert row.reporting_period_bs == "FY 2079/80"
+        assert row.fiscal_year_ad_label == "2022/23"
+
+
+def test_fy_2324_variant_produces_correct_period() -> None:
+    """FY 2023/24 prose produces BS 2080/81 period metadata without code change."""
+    text_2324 = TEXT_PHRASING_1.replace("FY 2022/23", "FY 2023/24")
+    assert _detect_ad_fy_start(text_2324) == 2023
+    result = extract_indicators(text_2324)
+    assert result.status == "success"
+    assert len(result.staging_rows) == len(EXPECTED_SLUGS)
+    for row in result.staging_rows:
+        assert row.reporting_period_bs == "FY 2080/81"
+        assert row.fiscal_year_bs == "2080/81"
+        assert row.fiscal_year_ad_label == "2023/24"
+
+
+def test_fy_detection_rejects_malformed_labels() -> None:
+    assert _detect_ad_fy_start("FY 2022/24") is None  # suffix mismatch
+    assert _detect_ad_fy_start("FY 2000/01") is None  # before 2018 cutoff
+    assert _detect_ad_fy_start("no fy label here") is None
+
+
+# ---------------------------------------------------------------------------
 # Optional integration test against the real PDF (skipped if absent).
 # ---------------------------------------------------------------------------
 
@@ -340,7 +374,7 @@ def test_cli_emits_valid_json_on_real_pdf() -> None:
     assert proc.returncode == 0, f"stderr: {proc.stderr}"
     payload = json.loads(proc.stdout)
     assert payload["status"] == "success"
-    assert payload["parser_version"] == PARSER_VERSION
+    assert payload["parser_version"] == PARSER_VERSION == "0.2.0"
     assert len(payload["staging_rows"]) == len(EXPECTED_SLUGS)
     for row in payload["staging_rows"]:
         assert "T" in row["reporting_period_ad_start"]

@@ -96,25 +96,25 @@ from _common.types import (
     StagingRowDraft,
 )
 
-PARSER_VERSION: Final[str] = "0.1.0"
+PARSER_VERSION: Final[str] = "0.2.0"
 SOURCE_ID: Final[str] = "fcgo-consolidated-financial-statements"
 
-# Fiscal year for the bundled publication, expressed as the AD lead year.
-# FY 2022/23 → AD lead 2022 → BS lead 2079 (see ADR-0013). When the
-# orchestrator threads source-registry metadata through, this will be
-# derived from the release header rather than hard-coded.
+# Fallback AD fiscal-year lead year used only when auto-detection fails.
+# v0.2.0: the parser detects the FY from "FY YYYY/YY" in the Executive
+# Summary prose instead of relying on this constant.  It remains here as a
+# safety net for edge-cases (e.g. stripped / image-only PDFs).
 _AD_FY_START: Final[int] = 2022
-
-# Publication anchor. FCGO publishes the CFS approximately in Poush of the
-# following fiscal year; the FY 2022/23 audit opinion bound into the
-# document is dated May 26, 2024. We use that audited-publication date.
-_PUBLICATION_DATE_AD: Final[datetime] = datetime(2024, 5, 26, tzinfo=UTC)
-_PUBLICATION_DATE_BS: Final[str] = "2081 Jestha 13"
 
 # AD → BS fiscal-year offset on the lead year (mid-July → mid-July fiscal
 # year; AD 2022/23 == BS 2079/80). ADR-0013 §"AD → BS via the fiscal-year
 # offset" pins this to the period helpers' +57 rather than a bare literal.
 _AD_TO_BS_FY_OFFSET: Final[int] = 57
+
+# Pattern to detect the AD fiscal-year label from the CFS Executive Summary.
+# The revenue sentence always names the FY: "...for FY 2022/23 amounts to..."
+# We extract the lead year (≥ 2018 for any real CFS edition) and validate
+# that the trailing two digits equal (lead+1) mod 100.
+_FY_LABEL_RE: Final[re.Pattern[str]] = re.compile(r"\bFY\s+(\d{4})/(\d{2})\b")
 
 
 def _ad_fy_to_bs_start(ad_fy_start: int) -> int:
@@ -129,6 +129,47 @@ def _ad_fy_to_bs_start(ad_fy_start: int) -> int:
     (which subtracts 57 to go BS → AD); a unit test asserts the round-trip.
     """
     return ad_fy_start + _AD_TO_BS_FY_OFFSET
+
+
+def _detect_ad_fy_start(text: str) -> int | None:
+    """Extract the AD fiscal-year lead year from CFS Executive Summary prose.
+
+    Scans for the first ``FY YYYY/YY`` occurrence (e.g. ``FY 2022/23``).
+    Validates that the two-digit suffix equals ``(lead+1) mod 100``.
+    Returns ``None`` on mismatch, no match, or implausible year (< 2018).
+
+    Called by ``extract_indicators`` before constructing staging rows so
+    every edition (FY 2018/19 → present) stamps correct period metadata
+    without operator intervention.
+    """
+    match = _FY_LABEL_RE.search(text)
+    if match is None:
+        return None
+    lead = int(match.group(1))
+    suffix = int(match.group(2))
+    if suffix != (lead + 1) % 100:
+        return None
+    if lead < 2018:
+        return None
+    return lead
+
+
+def _approx_publication_date(ad_fy_start: int) -> tuple[datetime, str]:
+    """Approximate FCGO CFS publication date: Jestha 15 of BS year (bs_start+2).
+
+    FCGO publishes the audited CFS approximately in Jestha of the year
+    following the FY close.  E.g. FY 2022/23 (BS 2079/80) audit opinion:
+    May 26, 2024 (BS 2081 Jestha 13) — our approximation Jestha 15 of 2081
+    lands May 15, 2024, within 11 days.
+
+    Returns: ``(publication_date_ad, publication_date_bs)``
+    """
+    bs_fy_start = _ad_fy_to_bs_start(ad_fy_start)
+    pub_bs_year = bs_fy_start + 2
+    pub_ad_year = ad_fy_start + 2  # same arithmetic: ad_fy_start + 57 + 2 - 57
+    pub_ad = datetime(pub_ad_year, 5, 15, tzinfo=UTC)
+    pub_bs = f"{pub_bs_year} Jestha 15"
+    return pub_ad, pub_bs
 
 
 @dataclass(frozen=True)
@@ -305,13 +346,19 @@ def extract_indicators(text: str) -> ParserResult:
             ],
         )
 
-    bs_fy_start = _ad_fy_to_bs_start(_AD_FY_START)
-    # Annual span: mid-Shrawan (FY open) .. mid-Ashadh (FY close) of the BS
-    # fiscal year. mid_month_ad maps Ashadh to AD year + 1, i.e. mid-July of
-    # the following AD year — the mid-July fiscal close.
+    # Auto-detect the AD fiscal-year lead from the Executive Summary prose.
+    # Falls back to _AD_FY_START (2022) when the FY label is absent — this
+    # covers the miss/partial-text test fixtures and any genuinely stripped
+    # PDFs, but the caller should treat a fallback as a quality signal.
+    ad_fy_start = _detect_ad_fy_start(text) or _AD_FY_START
+    bs_fy_start = _ad_fy_to_bs_start(ad_fy_start)
+
+    # Annual span: mid-Shrawan (FY open) .. mid-Ashadh (FY close).
     period_start = mid_month_ad("Shrawan", bs_fy_start)
     period_end = mid_month_ad("Ashadh", bs_fy_start)
     period_type: ReportingPeriodType = "annual"
+
+    pub_ad, pub_bs = _approx_publication_date(ad_fy_start)
 
     base = StagingRowDraft(
         indicator_slug_raw="",
@@ -321,8 +368,8 @@ def extract_indicators(text: str) -> ParserResult:
         reporting_period_bs=f"FY {fiscal_year_label(bs_fy_start)}",
         reporting_period_ad_start=period_start,
         reporting_period_ad_end=period_end,
-        publication_date_ad=_PUBLICATION_DATE_AD,
-        publication_date_bs=_PUBLICATION_DATE_BS,
+        publication_date_ad=pub_ad,
+        publication_date_bs=pub_bs,
         fiscal_year_bs=fiscal_year_label(bs_fy_start),
         fiscal_year_ad_label=fiscal_year_ad_label(bs_fy_start),
         confidence_grade_proposed="A",
