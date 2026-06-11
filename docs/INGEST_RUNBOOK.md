@@ -319,6 +319,34 @@ Notes:
 - `pip-gini` is stored ×100 (`index_points`) to match `wdi-gini-index`.
 - No `Financial Data/` junction required.
 
+### UNDP HDR Composite Indices
+
+Source ID: `hdr-composite` | Parser: `scrapers/hdr_composite/parser.py` v0.1.0 | 18 indicators
+
+```powershell
+# Dry-run against saved fixture (no DB, no network):
+pnpm ingest:hdr --dry-run
+
+# Download the HDR 2025 CSV, then ingest:
+pnpm ingest:hdr --download
+
+# Download/save without ingesting:
+pnpm ingest:hdr --download --output-dir "C:\HDR"
+
+# Live ingest from a pre-downloaded CSV:
+pnpm ingest:hdr --input "C:\HDR\HDR25_Composite_indices_complete_time_series.csv"
+```
+
+Notes:
+- The parser reads the UNDP "complete time series" **CSV directly** (one wide row per country); the CLI just
+  downloads it and passes the path — no JSON assembly.
+- **The CSV is Latin-1 (cp1252)**, not UTF-8 — the parser reads it as Latin-1; the CLI streams bytes verbatim.
+- Wide format: ~1,112 `<metric>_<year>` columns; exact-prefix matching means `hdi` ignores `hdi_rank`/`hdi_f`.
+- HDR year is calendar; mapped onto Nepal FY via the WDI convention (Y → BS Y+57). Nepal HDI 2023 = 0.622.
+- All rows `observation_type='actual'`, confidence A. Publication date is pinned to the HDR vintage in the parser.
+- **The UNDP CSV URL path changes each vintage** (`2025_HDR/HDR25_…`) — update the CLI constant + registry URL when bumping.
+- No `Financial Data/` junction required.
+
 ---
 
 ## Operational Gotchas

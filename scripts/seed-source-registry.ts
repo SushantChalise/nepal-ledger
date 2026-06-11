@@ -1051,6 +1051,40 @@ const ROWS: readonly NewSourceRegistryRow[] = [
       'pip-gini cross-checks wdi-gini-index (same 0–100 scale).',
   },
   {
+    sourceId: 'hdr-composite',
+    agency: 'United Nations Development Programme',
+    agencyShort: 'UNDP',
+    datasetName: 'Human Development Report — Composite Indices Time Series (Nepal)',
+    sourceUrl:
+      'https://hdr.undp.org/sites/default/files/2025_HDR/HDR25_Composite_indices_complete_time_series.csv',
+    publicationFrequency: 'annual',
+    expectedReleaseWindow: 'Annual HDR release (HDR 2025 launched May 2025; data through 2023)',
+    reportingPeriodType: 'annual',
+    fileFormat: 'csv',
+    requiresTableExtraction: false,
+    historicalCoverage: '1990 onward (composites IHDI/inequality from 2010); HDR 2025 vintage through 2023',
+    licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/hdr_composite/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Each annual HDR re-estimates the full back-series; ingest the new vintage as a full snapshot — prior approved rows bump via revision_number. Parser structure is version-pinned to the HDR 2025 CSV (Latin-1, wide format).',
+    knownBreakageModes: [
+      'csv-is-latin1-not-utf8',
+      'wide-format-metric_year-columns',
+      'undp-changes-csv-url-path-each-vintage',
+      'composite-indices-start-1990-but-ihdi-inequality-from-2010',
+    ],
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'Human-development layer (Where Money Becomes Wealth). 18 indicators: HDI (+female/male), ' +
+      'IHDI, GII, GDI, PHDI, life expectancy, expected/mean years schooling, GNI per capita (PPP), ' +
+      'coefficient of human inequality, IHDI loss, inequality in edu/income/life-exp, M/F labour-force ' +
+      'participation. Nepal HDI 2023 = 0.622. hdr-gii complements pip/wdi inequality series.',
+  },
+  {
     sourceId: 'imf-article-iv',
     agency: 'International Monetary Fund',
     agencyShort: 'IMF',

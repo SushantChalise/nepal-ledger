@@ -39,6 +39,7 @@ const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const WDI_SOURCE_ID = 'wb-wdi';
 const WEO_SOURCE_ID = 'imf-weo';
 const PIP_SOURCE_ID = 'wb-pip';
+const HDR_SOURCE_ID = 'hdr-composite';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -545,6 +546,158 @@ const PIP_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// ─── UNDP HDR composite indices (parser hdr_composite v0.1.0) ────────────────
+// 18 Human Development Report series for Nepal, 1990–2023 (composites from
+// 2010). All observation_type 'actual', confidence A. HDI-family composites are
+// unitless [0,1] indices (index_0_1); schooling/longevity in years; GNI per
+// capita in 2021-PPP intl_dollar; inequality losses + participation in percent.
+const HDR_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'hdr-hdi',
+    nameEn: 'Human Development Index (HDI)',
+    category: 'composite',
+    unit: 'index_0_1',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-hdi-female',
+    nameEn: 'Human Development Index — female',
+    category: 'composite',
+    unit: 'index_0_1',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-hdi-male',
+    nameEn: 'Human Development Index — male',
+    category: 'composite',
+    unit: 'index_0_1',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-ihdi',
+    nameEn: 'Inequality-adjusted Human Development Index (IHDI)',
+    category: 'composite',
+    unit: 'index_0_1',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-gii',
+    nameEn: 'Gender Inequality Index (GII)',
+    category: 'composite',
+    unit: 'index_0_1',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-gdi',
+    nameEn: 'Gender Development Index (GDI)',
+    category: 'composite',
+    unit: 'index_0_1',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-phdi',
+    nameEn: 'Planetary pressures-adjusted HDI (PHDI)',
+    category: 'composite',
+    unit: 'index_0_1',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-life-expectancy',
+    nameEn: 'Life expectancy at birth',
+    category: 'demographic',
+    unit: 'years',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-expected-years-schooling',
+    nameEn: 'Expected years of schooling',
+    category: 'demographic',
+    unit: 'years',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-mean-years-schooling',
+    nameEn: 'Mean years of schooling',
+    category: 'demographic',
+    unit: 'years',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-gni-per-capita-ppp',
+    nameEn: 'GNI per capita (2021 PPP $)',
+    category: 'real_sector',
+    unit: 'intl_dollar',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-coefficient-human-inequality',
+    nameEn: 'Coefficient of human inequality',
+    category: 'composite',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-ihdi-overall-loss',
+    nameEn: 'Overall loss in HDI due to inequality (IHDI)',
+    category: 'composite',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-inequality-education',
+    nameEn: 'Inequality in education',
+    category: 'composite',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-inequality-income',
+    nameEn: 'Inequality in income',
+    category: 'composite',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-inequality-life-expectancy',
+    nameEn: 'Inequality in life expectancy',
+    category: 'composite',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-labour-force-participation-female',
+    nameEn: 'Labour force participation rate — female',
+    category: 'labour',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+  {
+    slug: 'hdr-labour-force-participation-male',
+    nameEn: 'Labour force participation rate — male',
+    category: 'labour',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'UNDP',
+  },
+];
+
 // ─── Controlled unit vocabulary ────────────────────────────────────────────
 const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'npr_billion', displayEn: 'NPR billion', dimension: 'currency' },
@@ -556,7 +709,10 @@ const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'usd', displayEn: 'USD', dimension: 'currency' },
   { unit: 'intl_dollar_million', displayEn: 'international $ million (PPP)', dimension: 'currency' },
   { unit: 'intl_dollar_per_day', displayEn: 'international $ per day (PPP)', dimension: 'currency' },
+  { unit: 'intl_dollar', displayEn: 'international $ (PPP)', dimension: 'currency' },
   { unit: 'persons_million', displayEn: 'persons (millions)', dimension: 'count' },
+  { unit: 'index_0_1', displayEn: 'index (0–1)', dimension: 'index' },
+  { unit: 'years', displayEn: 'years', dimension: 'duration' },
   { unit: 'percent', displayEn: 'percent', dimension: 'ratio' },
   { unit: 'percent_yoy', displayEn: 'percent (year-on-year)', dimension: 'ratio' },
   { unit: 'index_points', displayEn: 'index points', dimension: 'index' },
@@ -1620,6 +1776,31 @@ async function persist(): Promise<void> {
     pipLinked += 1;
   }
   log(`indicator_source_map: ${pipLinked} links ensured → ${PIP_SOURCE_ID}`);
+
+  // 18. UNDP HDR composite indices — 18 human-development series.
+  const hdrInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...HDR_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!hdrInsertResult.ok)
+    throw new Error(`HDR indicators insert failed: ${JSON.stringify(hdrInsertResult.error)}`);
+  log(
+    `indicators (HDR): ${hdrInsertResult.value.length} inserted (of ${HDR_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 19. HDR source map links.
+  let hdrLinked = 0;
+  for (const ind of HDR_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(found.value.id, HDR_SOURCE_ID, 'UNDP HDR Nepal composite');
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    hdrLinked += 1;
+  }
+  log(`indicator_source_map: ${hdrLinked} links ensured → ${HDR_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1633,6 +1814,7 @@ async function main(): Promise<void> {
   log(`indicators (WDI)   = ${WDI_INDICATORS.length}, source = ${WDI_SOURCE_ID}`);
   log(`indicators (WEO)   = ${WEO_INDICATORS.length}, source = ${WEO_SOURCE_ID}`);
   log(`indicators (PIP)   = ${PIP_INDICATORS.length}, source = ${PIP_SOURCE_ID}`);
+  log(`indicators (HDR)   = ${HDR_INDICATORS.length}, source = ${HDR_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');

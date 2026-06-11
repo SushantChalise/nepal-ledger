@@ -6,7 +6,7 @@ Generated from `scripts/seed-source-registry.ts` (the canonical seed).
 For schema + workflow, see [`../SOURCE_REGISTRY.md`](../SOURCE_REGISTRY.md).
 For the lifetime contract, see [ADR-0009](../decisions/0009-source-registry-single-source-of-truth.md).
 
-Total registered sources: 72
+Total registered sources: 73
 
 | Tier | Source ID | Agency | Dataset | Frequency | Mode | Status |
 |---|---|---|---|---|---|---|
@@ -26,6 +26,7 @@ Total registered sources: 72
 | Tier 1 | [nrb-dne-xlsx](nrb-dne-xlsx.md) | NRB | Database on Nepalese Economy — structured time-series XLSX (all sectors) | monthly | manual_upload | active |
 | Tier 1 | [nrb-reserves-daily](nrb-reserves-daily.md) | NRB | Daily foreign exchange reserve disclosure | daily | automated_cron | paused |
 | Tier 2 | [dofe-labour-migration](dofe-labour-migration.md) | DoFE | Monthly labour permits + airport-records | monthly | manual_upload | paused |
+| Tier 2 | [hdr-composite](hdr-composite.md) | UNDP | Human Development Report — Composite Indices Time Series (Nepal) | annual | automated_cron | active |
 | Tier 2 | [imf-weo](imf-weo.md) | IMF | World Economic Outlook (WEO) — Nepal | annual | automated_cron | active |
 | Tier 2 | [mof-budget-speech](mof-budget-speech.md) | MoF | Budget Speech (बजेट वक्तव्य) | annual | manual_upload | paused |
 | Tier 2 | [nrb-banking-stats](nrb-banking-stats.md) | NRB | Banking and Financial Statistics (quarterly bulletin) | quarterly | manual_upload | paused |
