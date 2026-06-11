@@ -38,6 +38,7 @@ const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const WDI_SOURCE_ID = 'wb-wdi';
 const WEO_SOURCE_ID = 'imf-weo';
+const PIP_SOURCE_ID = 'wb-pip';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -454,6 +455,96 @@ const WEO_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// ─── WB PIP indicators (parser wb_pip v0.1.0) ───────────────────────────────
+// 10 World Bank Poverty & Inequality Platform series for Nepal. Survey anchors
+// (5 rounds 1984–2022) are confidence A / observation_type 'actual'; the $3.65
+// filled trend is conf B / interpolated|projected (ADR-0025).
+// Headcount/gap/severity/decile shares stored ×100 → percent; Gini ×100 →
+// index_points (matches wdi-gini-index for cross-check); mean/median in
+// intl_dollar_per_day (2017-PPP daily consumption).
+const PIP_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'pip-poverty-headcount-215',
+    nameEn: 'Poverty headcount ratio at $2.15/day (2017 PPP)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-poverty-headcount-365',
+    nameEn: 'Poverty headcount ratio at $3.65/day (2017 PPP)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-poverty-headcount-685',
+    nameEn: 'Poverty headcount ratio at $6.85/day (2017 PPP)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-poverty-gap-365',
+    nameEn: 'Poverty gap at $3.65/day (2017 PPP)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-poverty-severity-365',
+    nameEn: 'Poverty severity (squared gap) at $3.65/day (2017 PPP)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-gini',
+    nameEn: 'Gini index (consumption/income)',
+    category: 'demographic',
+    unit: 'index_points',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-mean-consumption',
+    nameEn: 'Mean daily consumption per capita (2017 PPP)',
+    category: 'demographic',
+    unit: 'intl_dollar_per_day',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-median-consumption',
+    nameEn: 'Median daily consumption per capita (2017 PPP)',
+    category: 'demographic',
+    unit: 'intl_dollar_per_day',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-decile1-share',
+    nameEn: 'Consumption share of the bottom decile',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-decile10-share',
+    nameEn: 'Consumption share of the top decile',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+];
+
 // ─── Controlled unit vocabulary ────────────────────────────────────────────
 const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'npr_billion', displayEn: 'NPR billion', dimension: 'currency' },
@@ -464,6 +555,7 @@ const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'usd_million', displayEn: 'USD million', dimension: 'currency' },
   { unit: 'usd', displayEn: 'USD', dimension: 'currency' },
   { unit: 'intl_dollar_million', displayEn: 'international $ million (PPP)', dimension: 'currency' },
+  { unit: 'intl_dollar_per_day', displayEn: 'international $ per day (PPP)', dimension: 'currency' },
   { unit: 'persons_million', displayEn: 'persons (millions)', dimension: 'count' },
   { unit: 'percent', displayEn: 'percent', dimension: 'ratio' },
   { unit: 'percent_yoy', displayEn: 'percent (year-on-year)', dimension: 'ratio' },
@@ -1503,6 +1595,31 @@ async function persist(): Promise<void> {
     weoLinked += 1;
   }
   log(`indicator_source_map: ${weoLinked} links ensured → ${WEO_SOURCE_ID}`);
+
+  // 16. WB PIP indicators — 10 poverty/inequality series.
+  const pipInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...PIP_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!pipInsertResult.ok)
+    throw new Error(`PIP indicators insert failed: ${JSON.stringify(pipInsertResult.error)}`);
+  log(
+    `indicators (PIP): ${pipInsertResult.value.length} inserted (of ${PIP_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 17. PIP source map links.
+  let pipLinked = 0;
+  for (const ind of PIP_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(found.value.id, PIP_SOURCE_ID, 'WB PIP Nepal poverty');
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    pipLinked += 1;
+  }
+  log(`indicator_source_map: ${pipLinked} links ensured → ${PIP_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1515,6 +1632,7 @@ async function main(): Promise<void> {
   log(`indicators (NCPI)  = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
   log(`indicators (WDI)   = ${WDI_INDICATORS.length}, source = ${WDI_SOURCE_ID}`);
   log(`indicators (WEO)   = ${WEO_INDICATORS.length}, source = ${WEO_SOURCE_ID}`);
+  log(`indicators (PIP)   = ${PIP_INDICATORS.length}, source = ${PIP_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');
