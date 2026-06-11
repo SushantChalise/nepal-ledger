@@ -454,17 +454,21 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     fileFormat: 'pdf',
     requiresTableExtraction: true,
     historicalCoverage:
-      'Table 1.1 cereal crops 10-year series from FY 2070/71 (2013/14 AD); ' +
-      'summary stats (cash crops, pulses, livestock, fertilizer) 3-year rolling window',
+      'Cereal 11yr (BS 2070/71–2080/81), cash crops 10yr, pulses 12yr, livestock pop 10yr + ' +
+      'products 11yr, fruit 10yr, vegetable 10yr, fertilizer 14yr (BS 2067/68–2080/81); ' +
+      'provincial + 77-district cereal cross-sections for FY 2080/81',
     licenseStatus: 'gov_open',
     confidenceDefault: 'B',
     status: 'active',
     ingestionMode: 'manual_upload',
     tier: 3,
     notes:
-      'Annual agricultural statistics compendium; clean Latin-script text layer, pdfplumber text extraction. ' +
-      'Table 1.1 (cereal 10yr), Summary §1.4/§1.5/§2.2/§3 (cash crops/pulses/livestock/fertilizer 3yr). ' +
-      'Emits to dne_facts (ADR-0015). Latest: FY 2080/81 (2023/24 AD). Distinct from moald-crop-production (seasonal).',
+      'Annual agricultural statistics compendium; born-digital clean text layer (no OCR — pdfplumber). ' +
+      'Parser v0.2.0 → dne_facts (ADR-0015): 1546 facts across national time-series (cereal/cashcrop/pulse/' +
+      'livestock/fruit/vegetable/fertilizer/spice), provincial (cereal/cashcrop/vegetable, composite ' +
+      'province__crop per ADR-0018) + 77-district cereal. Reconciles province+district sums to national. ' +
+      'Latest FY 2080/81. Deferred (v0.3.0): district crop matrices, macro GDP (10.x), trade (11.x), agri ' +
+      'loans (14.x) — last three overlap other sources, need canonical-source ADR. Distinct from moald-crop-production (seasonal).',
   },
   {
     sourceId: 'mof-lmbis',

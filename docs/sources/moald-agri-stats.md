@@ -8,13 +8,15 @@
 
 ## What this is
 
-Annual compendium of Nepalese agricultural statistics published by MoALD. Contains
-time-series data on cereal crops, cash crops, pulses, other crops, livestock, fisheries,
-and agri-inputs (fertilizer). The FY 2080/81 edition covers data up to 2023/24 AD.
+Annual compendium of Nepalese agricultural statistics published by MoALD: crop,
+livestock, fisheries, horticulture, and agri-input time-series plus district- and
+province-level cross-sections, agricultural trade, and macro/GVA tables. The
+FY 2080/81 edition covers data through 2023/24 AD.
 
-Distinct from [`moald-crop-production`](moald-crop-production.md) which is the
-seasonal crop bulletin (variable format, Surya OCR required). This publication has
-a clean Latin-script text layer suitable for pdfplumber text extraction.
+Distinct from [`moald-crop-production`](moald-crop-production.md) — the seasonal
+crop bulletin (variable format, Surya OCR required). This publication is a
+**born-digital clean text layer**, so it is parsed with pdfplumber text
+extraction (no OCR — higher fidelity than re-OCR per ADR-0011).
 
 ## Publication
 
@@ -23,56 +25,73 @@ a clean Latin-script text layer suitable for pdfplumber text extraction.
 - Format: PDF (clean text layer, no OCR required)
 - Archive path: `Financial Data/moald_agri_stats/`
 
-## What we extract
+## What we extract (v0.2.0) → `dne_facts` (ADR-0015) — 1546 facts
 
-Parser: `scrapers/moald_agri_stats/parser.py` v0.1.0 → `dne_facts` (ADR-0015)
+### National time-series (full historical depth)
 
-| Section | Pages | Base Indicator Slug | Dimension Kind | Dimension Values | Unit | Years |
-|---|---|---|---|---|---|---|
-| Table 1.1 | p14 | `agri-cereal-area` | `crop_type` | paddy/maize/millet/buckwheat/wheat/barley | hectare | 11yr |
-| Table 1.1 | p14 | `agri-cereal-production` | `crop_type` | (same 6) | metric_tonne | 11yr |
-| Table 1.1 | p14 | `agri-cereal-yield` | `crop_type` | (same 6) | metric_tonne_per_hectare | 11yr |
-| §1.4 Summary | p9 | `agri-cashcrop-area` | `crop_type` | oilseeds/potato/sugarcane/jute/cotton | hectare | 3yr |
-| §1.4 Summary | p9 | `agri-cashcrop-production` | `crop_type` | (same 5) | metric_tonne | 3yr |
-| §1.5 Summary | p9–10 | `agri-pulse-area` | `crop_type` | lentil/chickpea/pigeon-pea/black-gram/grass-pea/horse-gram/soyabean/others | hectare | 3yr |
-| §1.5 Summary | p9–10 | `agri-pulse-production` | `crop_type` | (same 8) | metric_tonne | 3yr |
-| §2.2 Summary | p10–11 | `agri-livestock-production` | `livestock_product` | milk-total/milk-cow/milk-buffalo/meat-total/meat-buffalo/meat-sheep/meat-goat/meat-pork/meat-chicken/eggs-total/eggs-hen/eggs-duck/wool | mixed | 3yr |
-| §3 Summary | p11 | `agri-fertilizer-sales` | `fertilizer_type` | urea/dap/potash/total | metric_tonne | 3yr |
+| Section | Base slug(s) | Dimension | Years |
+|---|---|---|---|
+| Table 1.1 | `agri-cereal-{area,production,yield}` | `crop_type` (paddy/maize/millet/buckwheat/wheat/barley) | 11 (BS 2070/71–2080/81) |
+| Table 2.1 | `agri-cashcrop-{area,production,yield}` | `crop_type` (oilseed/potato/sugarcane/jute/cotton) | 10 (BS 2071/72–2080/81) |
+| Table 3.1 | `agri-pulse-{area,production,yield}` | `crop_type` (lentil/chickpea/pigeon-pea/black-gram/grass-pea/horse-gram/soyabean/himili-bean/others) | 12 (BS 2069/70–2080/81) |
+| Table 4.1 | `agri-livestock-population` | `livestock_category` (cattle/buffaloes/sheep/goat/pigs/fowl/duck/milking-cow/milking-buffalo/laying-hen/laying-duck) | 10 |
+| Table 4.2 | `agri-livestock-production` | `livestock_product` (milk/meat/eggs/wool/fish, 15 series) | 11 |
+| Table 6.1 | `agri-fruit-{total-area,productive-area,production,yield}` | `crop_type` (citrus/winter/summer/total-fruit) | 10 |
+| Table 7.1 | `agri-vegetable-{area,production,yield}` | `crop_type` (fresh-vegetable) | 10 |
+| Table 9.1 | `agri-fertilizer-sales` | `fertilizer_type` (urea/dap/potash/total) | 14 (BS 2067/68–2080/81) |
+| §1.6 | `agri-spice-{area,production}` | `crop_type` (large-cardamom/ginger/garlic/turmeric/dry-chili) | 3 |
 
-**Livestock units:** milk/meat = metric_tonne; eggs = thousand_units; wool = kg
+### Provincial + district cross-sections (FY 2080/81)
 
-**Table 1.1 note:** The table is titled "Last Ten Years" but covers 11 rows
-(AD 2013/14 through 2023/24 inclusive). The BS FY mapping is `AD YYYY → BS (YYYY+57)`.
+| Section | Base slug | Dimension | Notes |
+|---|---|---|---|
+| Table 1.2 | `agri-cereal-production` | `province-crop` | composite `province__crop` (ADR-0018) |
+| Table 2.2 | `agri-cashcrop-{area,production,yield}` | `province-crop` | oilseed/sugarcane/potato × 7 provinces |
+| Table 7.2 | `agri-vegetable-{area,production,yield}` | `province` | 7 provinces |
+| Table 1.3 | `agri-cereal-{area,production,yield}` | `district` | all 77 districts (aggregate cereal) |
 
-## Period coverage
+**Unit semantics** (ADR-0011, read off the source headers): area = `hectare`;
+production = `metric_tonne`; yield = `metric_tonne_per_hectare`; livestock
+population = `number`; eggs = `thousand_units`; wool = `kg`; fertilizer =
+`metric_tonne`. The pulses table header mislabels yield "Kg./Ha" but the printed
+values are Mt/Ha (production ÷ area), so they are stored as
+`metric_tonne_per_hectare`.
 
-- **Table 1.1 (cereal):** BS 2070/71 (AD 2013/14) through BS 2080/81 (AD 2023/24) — 11 years
-- **Summary §1.4–§3:** BS 2078/79 / BS 2079/80 / BS 2080/81 — rolling 3-year window
+## Reconciliation (verified at parse time)
+
+- Province cereal-production sums equal the national series per crop (Δ ≤ 1, rounding).
+- District cereal-production sums to 11,293,843 vs national 11,293,841 (Δ 2, rounding).
+- 25 cross-table spot checks pass (test suite).
 
 ## Provenance
 
-- Confidence default: B (MoALD administrative census of district-level reports; not independently audited)
+- Confidence default: **B** — MoALD compiles from provincial/local administrative
+  reports; not independently audited (cf. FCGO/customs grade A).
 - License: gov_open
 - Reporting period type: annual
 
-## Known issues / deferred
+## Deferred to v0.3.0 (documented, not silently dropped)
 
-- **§1.5 Pulses:** "Himali bean" row has no FY 2078/79 data — skipped in v0.1.0; deferred to v0.2.0.
-- **§1.6 Other Crops:** Fruits/vegetables/spices — sparse rows (Honey, Fish, Mushroom lack area); deferred to v0.2.0.
-- **Table 1.2:** Provincial breakdown for FY 2080/81 only — deferred to v0.2.0.
-- **Tables 2–15:** District-level, export/import commodity breakdown — out of scope Year 1.
+- **District matrices**: per-crop districts (1.4–1.6), oilseed-by-commodity (2.4),
+  pulses (3.2), livestock (4.3–4.10), fruits (6.2–6.4), vegetables (7.3, 40-page
+  transpose), fertilizer (9.2), population (8.2).
+- **Macro GDP** (10.x) — overlaps `mof-economic-survey-gva`; needs a
+  canonical-source ADR before ingest (Fact-Ledger double-counting risk).
+- **Trade by HS code** (11.x) — overlaps `customs-monthly-trade`.
+- **Agri loans by sector** (14.x) — overlaps NRB banking statistics.
+- Seed balance (12.x), insurance (13), commodity→Agri-GVA contribution (15).
 
 ## Parser
 
 - Path: `scrapers/moald_agri_stats/parser.py`
-- Version: 0.1.0
-- Fixture: `scrapers/moald_agri_stats/tests/fixtures/agri_stats_2080_81_excerpt.pdf` (4 pages)
-- Tests: 36 passing
+- Version: 0.2.0 (anchor-driven; identical output on full PDF + fixture)
+- Fixture: `scrapers/moald_agri_stats/tests/fixtures/agri_stats_2080_81_excerpt.pdf` (11 pages)
+- Tests: 46 passing
 
 ## Archive policy
 
 Files stored in `Financial Data/moald_agri_stats/` (local filesystem per ADR-0006).
-Filename convention: `StatInfo_AgriNepal_<FY_BS>.pdf`, e.g. `StatInfo_AgriNepal_2080_81.pdf`.
+Filename convention: `StatInfo_AgriNepal_<FY_BS>.pdf` (e.g. `StatInfo_AgriNepal_2080_81.pdf`).
 
 ## Recent ingests
 
