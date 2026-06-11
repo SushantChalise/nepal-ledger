@@ -972,10 +972,12 @@ def _word_lines(page: object) -> list[list[dict[str, object]]]:
     # Pair each word with its resolved top, dropping words without a numeric top,
     # then sort by (top, x0). Keeping top alongside the word avoids re-deriving it
     # (and an Optional in the sort key).
-    placed: list[tuple[float, dict[str, object]]] = sorted(
-        ((top, w) for w in words if (top := _word_top(w)) is not None),
-        key=lambda pair: (pair[0], _word_x0(pair[1])),
-    )
+    placed: list[tuple[float, dict[str, object]]] = []
+    for w in words:
+        top = _word_top(w)
+        if top is not None:
+            placed.append((top, w))
+    placed.sort(key=lambda pair: (pair[0], _word_x0(pair[1])))
     lines: list[list[dict[str, object]]] = []
     line_top: float | None = None
     for top, w in placed:
@@ -1037,14 +1039,15 @@ def _is_modern_edition(pages: list[object], page_texts: list[str]) -> bool:
             continue
         if detect_unit(text) is None:
             continue  # a Table-of-Contents page (caption but no unit annotation)
-        tables: list[list[list[object]]] = pages[pidx].extract_tables()  # type: ignore[attr-defined]
+        page = pages[pidx]
+        tables: list[list[list[object]]] = page.extract_tables()  # type: ignore[attr-defined]
         largest = max(tables, key=len) if tables else []
         if any(row and _is_code(_norm(row[0])) for row in largest):
             return False  # bare code isolated in col 0 → clean/legacy geometry
         # No isolated code: confirm the modern merged signature in the page words —
         # a code word immediately followed on the same line by a NON-numeric name
         # word. Guards against treating an unreadable page as "modern".
-        for line in _word_lines(pages[pidx]):
+        for line in _word_lines(page):
             if (
                 len(line) >= 2
                 and _MODERN_CODE_RE.match(_norm(line[0].get("text")))
