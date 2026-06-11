@@ -8,6 +8,32 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-11 — Migration Atlas Phase 2: two deterministic parsers (remittance backfill + DoFE migrant-worker permits)
+
+**What changed:** Two parallel-built deterministic Python parsers (ADR-0003: pure openpyxl, no LLM/network, byte-identical output) extracting real migration data from on-disk NRB workbooks. **Parsers + verification + tests only — ingestion deferred** (the local DB is empty on this branch; ingest is the operator runbook step). One built by Mother, one by a scope-fenced worker.
+
+> Environment note: the local Postgres here is empty (the prior data lived in the retired Supabase, ADR-0006), so end-to-end ingestion can't be verified in this worktree. Both parsers are verified against the **real source files** instead.
+
+### `nrb_remittance_history` — long remittance series (the Atlas's Fig 13)
+
+- Extracts the **BPM5 "Workers' remittances"** annual series from `Trade-and-Balance-of-Payments.xlsx` sheet `BOP 2000-` → indicator `dne-remittance-workers-historical` (`npr_million`, annual, grade B). **FY 2000/01 → 2020/21, 21 points** (47,216 → 961,055 M, incl. the FY2019/20 COVID dip).
+- Emits the idiomatic `ParserResult`/`StagingRowDraft` (staging-pipeline contract). AD→BS via +57 (ADR-0013).
+- **Data Continuity Protocol:** this BPM5 concept is *distinct* from the BPM6 `dne-remittance-inflow`; it ends at FY2020/21 where NRB switched to BPM6, so the two **dovetail** (never spliced) into the full long trend. Seeded as its own slug; 7 tests (synthetic fixture, no committed binary).
+
+### `dofe_migrant_workers` — granular permit counts → `migration_permit_facts`
+
+- Extracts migrant-worker **counts** from `Migrant-Workers-Remittance.xlsx` (mislabelled — it's counts, not rupees): by **origin district** × month × sex, by **destination country** × month × sex, and monthly **new/renew** outflow (permit category). **44,891 rows** matching the `migration_permit_facts` Zod contract (ADR-0026).
+- **Reconciliation gate (the correctness proof):** for each month, Σ district-total == Σ country-total == migrant-worker total — *exact* on the sample months (25,428 / 36,040 / 39,671) and 46/51 months exact (rest ≤6, source rounding). One in-progress-FY month flagged as a documented source-side column-misalignment, not a parse bug. 14 tests.
+
+### Verification / gates
+
+- `tsc` ✓ · `eslint` ✓ · **21 new Python tests** ✓ (`pytest`) · `check:source-registry` (73) ✓ · both parsers `--verify`/`--reconcile` against the real files. (ruff/mypy run in CI — not installed in this shell.)
+- Documentation Gate: each parser has a README; the remittance indicator is seeded; both test dirs registered in `scrapers/pyproject.toml`.
+
+**Next (operator step):** ingest both against a populated DB — remittance via the staging→approved pipeline; permits via a `migration_permit_facts` ingest CLI (resolves origin-district names → `origin_entity_id`) — then flip `dofe-labour-migration` active.
+
+---
+
 ## 2026-06-11 — Migration Atlas Phase 2/3: origin→destination Sankey + DoFE permit fact domain
 
 **What changed:** Two parallel-built features (one Mother-built, one delegated to a scope-fenced worker — disjoint file scopes). **(1)** A live **origin-province → destination-region Sankey** (the Atlas's Figure 6) on `/migration`. **(2)** The **`migration_permit_facts`** fact-domain foundation (ADR-0026) for the DoFE labour-permit corpus. All gates green: typecheck · lint · **219 tests** · `next build` · `drizzle-kit check` · `check:source-registry`.

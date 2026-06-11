@@ -207,6 +207,19 @@ const DNE_INDICATORS: readonly SeedIndicator[] = [
     nativeFrequency: 'annual',
     sourceAgency: 'Nepal Rastra Bank',
   },
+  // Historical long annual series (BPM5 "Workers' remittances", FY 2000/01–2020/21)
+  // from the Trade-and-Balance-of-Payments workbook. A DISTINCT concept from the
+  // BPM6 dne-remittance-inflow above — it dovetails with it at the 2020/21→2021/22
+  // BPM5→BPM6 break (Data Continuity Protocol: labelled, never spliced). parser
+  // nrb_remittance_history v0.1.0. Reproduces the Atlas's Figure 13 long trend.
+  {
+    slug: 'dne-remittance-workers-historical',
+    nameEn: "Workers' Remittances (BPM5, historical long series)",
+    category: 'external_sector',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
 ];
 
 // ─── WDI indicators (parser wb_wdi v0.1.0) ──────────────────────────────────
@@ -1207,8 +1220,7 @@ async function persist(): Promise<void> {
   let cmefs02Linked = 0;
   for (const ind of CMEFS_V02_INDICATORS) {
     const found = await findIndicatorBySlug(ind.slug);
-    if (!found.ok)
-      throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
     const link = await linkIndicatorToSource(
       found.value.id,
       CMEFS_SOURCE_ID,
