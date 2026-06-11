@@ -37,6 +37,7 @@ const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const WDI_SOURCE_ID = 'wb-wdi';
+const NRB_EXTSEC_SOURCE_ID = 'nrb-db-external-sector';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -336,6 +337,38 @@ const WDI_INDICATORS: readonly SeedIndicator[] = [
     unit: 'percent',
     nativeFrequency: 'annual',
     sourceAgency: 'World Bank',
+  },
+];
+
+// ─── NRB DB External Sector indicators (parser nrb_db_external_sector v0.1.0) ─
+// Three files: MIgrant-Workers_.xlsx, Tourist-arrivals.xlsx,
+// Balance-of-Payments-BPM6.xlsx (updated in-place monthly, Jan 2026).
+// Data-honesty note: remittance corridor slugs (India / Gulf) are NOT
+// available in these files — they are intentionally absent (scout ADR-0011).
+const NRB_EXTSEC_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'nrb-ext-migrant-departures-monthly',
+    nameEn: 'Migrant Worker Departures — Total Outflow (monthly)',
+    category: 'labour',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-ext-tourist-arrivals-monthly',
+    nameEn: 'Tourist Arrivals (monthly)',
+    category: 'tourism',
+    unit: 'count',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-ext-bop-remittance-workers-monthly',
+    nameEn: "Workers' Remittances — BOP BPM6 Credit (cumulative monthly, NPR million)",
+    category: 'external_sector',
+    unit: 'npr_million',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
   },
 ];
 
@@ -1361,6 +1394,40 @@ async function persist(): Promise<void> {
     wdiLinked += 1;
   }
   log(`indicator_source_map: ${wdiLinked} links ensured → ${WDI_SOURCE_ID}`);
+
+  // 12. NRB DB External Sector indicators (migrant departures, tourist arrivals,
+  //     BOP workers remittances). parser nrb_db_external_sector v0.1.0.
+  const extSecInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...NRB_EXTSEC_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!extSecInsertResult.ok)
+    throw new Error(
+      `NRB External Sector indicators insert failed: ${JSON.stringify(extSecInsertResult.error)}`,
+    );
+  log(
+    `indicators (NRB External Sector): ${extSecInsertResult.value.length} inserted ` +
+      `(of ${NRB_EXTSEC_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 13. NRB External Sector source map links.
+  let extSecLinked = 0;
+  for (const ind of NRB_EXTSEC_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok)
+      throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      NRB_EXTSEC_SOURCE_ID,
+      'NRB DB External Sector XLSX (migrant/tourist/BOP)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    extSecLinked += 1;
+  }
+  log(`indicator_source_map: ${extSecLinked} links ensured → ${NRB_EXTSEC_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1372,12 +1439,17 @@ async function main(): Promise<void> {
   );
   log(`indicators (NCPI)  = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
   log(`indicators (WDI)   = ${WDI_INDICATORS.length}, source = ${WDI_SOURCE_ID}`);
+  log(
+    `indicators (NRB Ext Sector) = ${NRB_EXTSEC_INDICATORS.length}, source = ${NRB_EXTSEC_SOURCE_ID}`,
+  );
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');
     for (const i of INDICATORS) log(`  - ${i.slug} (${i.category}, ${i.unit})`);
     log('dry-run: would upsert the following indicator slugs (NCPI):');
     for (const i of NCPI_INDICATORS) log(`  - ${i.slug} (${i.category}, ${i.unit})`);
+    log('dry-run: would upsert the following indicator slugs (NRB External Sector):');
+    for (const i of NRB_EXTSEC_INDICATORS) log(`  - ${i.slug} (${i.category}, ${i.unit})`);
     log('dry-run complete — no DB writes performed');
     return;
   }
