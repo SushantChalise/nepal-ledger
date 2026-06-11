@@ -37,6 +37,7 @@ const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const WDI_SOURCE_ID = 'wb-wdi';
+const FSR_SOURCE_ID = 'nrb-financial-stability-report';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -336,6 +337,37 @@ const WDI_INDICATORS: readonly SeedIndicator[] = [
     unit: 'percent',
     nativeFrequency: 'annual',
     sourceAgency: 'World Bank',
+  },
+];
+
+// ─── NRB Financial Stability Report — annual BFI financial soundness indicators ─
+// Table 2.3 "Financial Soundness Indicators of BFIs" Overall column.
+// Source: nrb-financial-stability-report (Tier 3), parser v0.1.0.
+// Verified FY2023/24 (mid-July 2024): NPL=3.86, CAR=12.92, CDR=79.09.
+const NRB_FSR_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'nrb-fsr-npl-ratio-annual',
+    nameEn: 'Non-Performing Loan Ratio — BFIs Overall (Annual)',
+    category: 'monetary',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-fsr-capital-adequacy-annual',
+    nameEn: 'Capital Adequacy Ratio (Tier 1 & Tier 2 / RWE) — BFIs Overall (Annual)',
+    category: 'monetary',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-fsr-credit-deposit-ratio-annual',
+    nameEn: 'Credit-to-Deposit Ratio — BFIs Overall (Annual)',
+    category: 'monetary',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
   },
 ];
 
@@ -1361,6 +1393,35 @@ async function persist(): Promise<void> {
     wdiLinked += 1;
   }
   log(`indicator_source_map: ${wdiLinked} links ensured → ${WDI_SOURCE_ID}`);
+
+  // 14. NRB Financial Stability Report — annual BFI financial soundness indicators.
+  const fsrInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...NRB_FSR_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!fsrInsertResult.ok)
+    throw new Error(`FSR indicators insert failed: ${JSON.stringify(fsrInsertResult.error)}`);
+  log(
+    `indicators (FSR): ${fsrInsertResult.value.length} inserted (of ${NRB_FSR_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 15. FSR source map links.
+  let fsrLinked = 0;
+  for (const ind of NRB_FSR_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      FSR_SOURCE_ID,
+      'NRB FSR Table 2.3 Overall financial soundness indicators',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    fsrLinked += 1;
+  }
+  log(`indicator_source_map: ${fsrLinked} links ensured → ${FSR_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
