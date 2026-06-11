@@ -13,7 +13,7 @@ Total registered sources: 70
 | Tier 0 | [nrb-cmefs-monthly](nrb-cmefs-monthly.md) | NRB | Current Macroeconomic and Financial Situation | monthly | manual_upload | active |
 | Tier 0 | [nrb-ncpi-table](nrb-ncpi-table.md) | NRB | NCPI Table 2(B) | monthly | manual_upload | active |
 | Tier 1 | [customs-monthly-trade](customs-monthly-trade.md) | Customs | Monthly trade statistics (imports + exports) | monthly | automated_cron | active |
-| Tier 1 | [fcgo-consolidated-financial-statements](fcgo-consolidated-financial-statements.md) | FCGO | Consolidated Financial Statements (CFS) — Nepali + English | annual | manual_upload | paused |
+| Tier 1 | [fcgo-consolidated-financial-statements](fcgo-consolidated-financial-statements.md) | FCGO | Consolidated Financial Statements (CFS) — Nepali + English | annual | manual_upload | active |
 | Tier 1 | [fcgo-daily](fcgo-daily.md) | FCGO | Daily revenue + expenditure (preliminary) | daily | automated_cron | paused |
 | Tier 1 | [kalimati-daily-prices](kalimati-daily-prices.md) | Kalimati | Daily wholesale fruit & vegetable prices | daily | automated_cron | paused |
 | Tier 1 | [local-fiscal-transfers-cleaned](local-fiscal-transfers-cleaned.md) | MoF | Federal fiscal transfers to 753 local levels, FY 2082/83 (pre-cleaned XLSX) | annual | manual_upload | active |

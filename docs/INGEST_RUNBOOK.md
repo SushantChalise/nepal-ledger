@@ -183,6 +183,36 @@ Self-archives bytes to Supabase Storage and inserts `source_documents` row via
 `scripts/_lib/archive-source-document.ts` (mirrors BFI pattern). Parser is
 spawned as a module (`python -m scrapers.cbs_nphc.parser`) for relative imports.
 
+### FCGO Consolidated Financial Statements
+
+Source ID: `fcgo-consolidated-financial-statements` | Parser: `scrapers/fcgo_consolidated/parser.py` v0.2.0
+
+Audited all-of-government outturn (revenue + expenditure, 6 headline aggregates). Annual.
+English CFS available FY 2018/19 → 2023/24 (6 editions). Parser auto-detects the fiscal year
+from "FY YYYY/YY" in Executive Summary prose — no `--period` flag needed.
+
+Requires a `Financial Data/` junction (§"Directory junction" above). Download the PDF from
+https://fcgo.gov.np/category/consolidated-us and place it under
+`Financial Data/fcgo_consolidated/` before running.
+
+```powershell
+# Dry-run (validates parser output shape — no DB writes):
+$env:PYTHON = "C:\Users\ACER\Projects\Economy\scrapers\.venv\Scripts\python.exe"
+pnpm ingest:fcgo-cfs --dry-run --input "C:\Users\ACER\Projects\Economy\Financial Data\fcgo_consolidated\FCGO_CFS_2022-23.pdf"
+
+# Live ingest for FY 2022/23 (BS 2079/80):
+pnpm ingest:fcgo-cfs --input "C:\Users\ACER\Projects\Economy\Financial Data\fcgo_consolidated\FCGO_CFS_2022-23.pdf"
+
+# Live ingest for FY 2023/24 (BS 2080/81) — newest edition as of 2026-06-11:
+pnpm ingest:fcgo-cfs --input "C:\Users\ACER\Projects\Economy\Financial Data\fcgo_consolidated\FCGO_CFS_2023-24.pdf"
+```
+
+Expected output: 6 staging rows, status `success`, all 6 promote to `approved_indicator_values`
+(requires indicator slugs seeded via `pnpm seed:indicators`). Confidence grade A (audited outturn).
+
+Cross-validate: total revenue for FY 2022/23 ≈ NPR 1,506,321.46 million; total expenditure ≈ NPR 1,672,128.84 million.
+Compare against NRB CMEFs Table 9 "Government Finance" — should align within 1% (NRB sources from FCGO/MoF).
+
 ### DNE XLSX (NRB Database on Nepalese Economy)
 
 Source ID: `nrb-dne-xlsx` (umbrella; see source-registry reconciliation note in
