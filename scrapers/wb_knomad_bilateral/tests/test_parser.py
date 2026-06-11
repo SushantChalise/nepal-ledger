@@ -31,7 +31,7 @@ from wb_knomad_bilateral.tests.conftest import (
 
 
 def test_parser_version() -> None:
-    assert PARSER_VERSION == "0.1.0"
+    assert PARSER_VERSION == "0.2.0"
 
 
 def test_source_id() -> None:
@@ -253,3 +253,90 @@ def test_year_inferred_from_sheet_content(tmp_path: pathlib.Path) -> None:
     # Year found in sheet → no PeriodAmbiguous; should succeed or partial
     assert result.status in ("success", "partial")
     assert result.staging_rows[0].fiscal_year_bs == "2080/81"
+
+
+# ── 5. Real fixture tests (skipped if file not present) ───────────────────
+
+REAL_FIXTURE_2021 = (
+    pathlib.Path(__file__).resolve().parent
+    / "fixtures"
+    / "bilateral_remittance_matrix_2021.xlsx"
+)
+
+
+@pytest.mark.skipif(
+    not REAL_FIXTURE_2021.exists(),
+    reason="real KNOMAD 2021 fixture not downloaded (run archive.org recovery)",
+)
+def test_real_fixture_2021_success() -> None:
+    """Parser must return success against the real 2021 KNOMAD matrix."""
+    res = parse(str(REAL_FIXTURE_2021), "real-2021")
+    assert res.status == "success", f"Expected success, got {res.status}: {res.errors}"
+    assert res.parser_version == PARSER_VERSION
+    assert len(res.errors) == 0
+
+
+@pytest.mark.skipif(
+    not REAL_FIXTURE_2021.exists(),
+    reason="real KNOMAD 2021 fixture not downloaded",
+)
+def test_real_fixture_2021_nepal_india_value() -> None:
+    """India corridor value from real 2021 matrix must be > 1000 USD million.
+
+    Verified against raw cell value in the KNOMAD Dec-2022 release:
+    India -> Nepal = 1583.40 USD million (CY2021).
+    """
+    res = parse(str(REAL_FIXTURE_2021), "real-2021")
+    india = next(
+        (r for r in res.staging_rows if r.indicator_slug_raw == "knomad-remittance-to-nepal-from-india-annual"),
+        None,
+    )
+    assert india is not None, "India corridor not found in real 2021 fixture"
+    assert india.value == pytest.approx(1583.40, rel=0.01), (
+        f"India->Nepal 2021 value {india.value} outside expected range"
+    )
+    assert india.unit == "usd_million"
+
+
+@pytest.mark.skipif(
+    not REAL_FIXTURE_2021.exists(),
+    reason="real KNOMAD 2021 fixture not downloaded",
+)
+def test_real_fixture_2021_total_plausible() -> None:
+    """World-row total (Nepal inflows) from CY2021 must be in [5000, 12000] USD million."""
+    res = parse(str(REAL_FIXTURE_2021), "real-2021")
+    total = next(
+        (r for r in res.staging_rows if r.indicator_slug_raw == "knomad-remittance-to-nepal-total-annual"),
+        None,
+    )
+    assert total is not None, "Total row not found in real 2021 fixture"
+    assert 5000 < total.value < 12000, f"Total {total.value} outside plausible range [5000, 12000]"
+
+
+@pytest.mark.skipif(
+    not REAL_FIXTURE_2021.exists(),
+    reason="real KNOMAD 2021 fixture not downloaded",
+)
+def test_real_fixture_2021_fiscal_year_bs() -> None:
+    """CY2021 must map to BS FY 2078/79."""
+    res = parse(str(REAL_FIXTURE_2021), "real-2021")
+    assert res.staging_rows[0].fiscal_year_bs == "2078/79"
+
+
+@pytest.mark.skipif(
+    not REAL_FIXTURE_2021.exists(),
+    reason="real KNOMAD 2021 fixture not downloaded",
+)
+def test_real_fixture_2021_no_romania_false_positive() -> None:
+    """Romania must NOT appear as an 'oman' corridor row (substring guard)."""
+    res = parse(str(REAL_FIXTURE_2021), "real-2021")
+    slugs = [r.indicator_slug_raw for r in res.staging_rows]
+    # Oman row in real 2021 data is None, so it should be absent
+    # but critically: Romania must not appear as oman
+    oman_rows = [r for r in res.staging_rows if "oman" in r.indicator_slug_raw]
+    for row in oman_rows:
+        # If an oman row exists, it must come from a value > 10 USD million
+        # (Romania->Nepal ~4.3 USD million in 2021; real Oman->Nepal is None)
+        assert row.value > 10.0, (
+            f"Suspicious low oman value {row.value} - likely Romania false positive"
+        )

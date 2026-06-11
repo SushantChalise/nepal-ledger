@@ -1,7 +1,7 @@
 # Source: World Bank / KNOMAD — Bilateral Remittance Estimates
 
 **source_id:** `wb-knomad-bilateral-remittance`
-**Status:** Active (parser v0.1.0) — manual upload required
+**Status:** Active (parser v0.2.0) — manual upload required; archive.org recovery used for CY2021 fixture
 **Tier:** 2
 **Registered at:** 2026-06-11
 **Last verified:** 2026-06-11
@@ -100,9 +100,9 @@ subsequent year's release confirms them.
 ## Parser
 
 - Path: `scrapers/wb_knomad_bilateral/parser.py`
-- Version: 0.1.0
+- Version: 0.2.0
 - Owner: Mother Opus
-- Tested against: synthetic XLSX fixture (`scrapers/wb_knomad_bilateral/tests/conftest.py`)
+- Tested against: synthetic XLSX fixture () AND real CY2021 fixture ()
 
 ## Archive policy
 
@@ -114,4 +114,15 @@ subsequent year's release confirms them.
 
 ## Recent ingests
 
-_Auto-populated once `parser_runs` is wired to a monitoring view._
+_Auto-populated once  is wired to a monitoring view._
+
+### CY2021 fixture recovery (2026-06-11)
+
+- Source: archive.org snapshot 20230804120528 of KNOMAD Dec-2022 release
+- File:  (301 KB)
+- Sheet:  (single sheet, no "bilateral" in name — parser uses single-sheet fallback)
+- Header structure: row 0 = title "Bilateral Remittance", row 1 = country headers (parser v0.2.0 scans up to 5 rows)
+- Nepal column: index 136 of 217 columns
+- India→Nepal: 1,583.40 USD million
+- Total Nepal inflow (World row): 8,203.26 USD million
+- FY mapping: CY2021 → BS FY 2078/79

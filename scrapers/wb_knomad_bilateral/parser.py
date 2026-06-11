@@ -72,7 +72,7 @@ import openpyxl
 from _common.periods import fiscal_year_ad_label, fiscal_year_label
 from _common.types import ParserError, ParserResult, StagingRowDraft
 
-PARSER_VERSION: Final[str] = "0.1.0"
+PARSER_VERSION: Final[str] = "0.2.0"
 SOURCE_ID: Final[str] = "wb-knomad-bilateral-remittance"
 
 # Source countries we track (substring match, case-insensitive).
@@ -134,19 +134,27 @@ def _infer_year_from_filename(path: Path) -> int | None:
     return None
 
 
-def _infer_year_from_sheet(ws: openpyxl.worksheet.worksheet.Worksheet) -> int | None:
-    """Scan the first row and column A for a 4-digit year cell."""
-    for row in ws.iter_rows(max_row=3, max_col=10, values_only=True):
-        for cell in row:
-            if cell is not None:
-                m = re.search(r"(20\d{2})", str(cell))
-                if m:
-                    return int(m.group(1))
+def _find_header_row(all_rows):
+    for row_idx, row in enumerate(all_rows[:5]):
+        col = _find_nepal_col(row)
+        if col is not None:
+            return row_idx, col
     return None
 
 
+def _infer_year_from_rows(all_rows):
+    import re as _re
+    for row in all_rows[:5]:
+        for cell in row[:10]:
+            if cell is not None:
+                m = _re.search(r"(20[0-9]{2})", str(cell))
+                if m:
+                    return int(m.group(1))
+    return None
 def _match_source_country(name: str) -> str | None:
     """Return slug suffix if *name* matches a tracked source country, else None."""
+    if len(name) > 80:
+        return None
     lower = name.lower().strip()
     # Total / World row
     if lower in ("world", "total", "grand total"):
@@ -156,6 +164,9 @@ def _match_source_country(name: str) -> str | None:
         if pattern in lower:
             # Extra guard: reject "north korea" matching "korea"
             if slug == "korea" and "north" in lower:
+                continue
+            # Extra guard: reject "romania" matching "oman"
+            if slug == "oman" and not (lower.startswith("oman") or lower == "oman"):
                 continue
             return slug
     return None
@@ -237,25 +248,21 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
             )],
         )
 
-    header_row = all_rows[0]
-    nepal_col = _find_nepal_col(header_row)
-    if nepal_col is None:
+    header_result = _find_header_row(all_rows)
+    if header_result is None:
         return ParserResult(
             status="failure",
             parser_version=PARSER_VERSION,
             errors=[ParserError(
                 error_class="ColumnMissing",
-                error_detail=(
-                    "Nepal not found in header row — column header may have changed. "
-                    f"Header (first 20 cols): {[str(v)[:20] if v else None for v in header_row[:20]]}"
-                ),
+                error_detail="Nepal not found in first 5 rows of the bilateral sheet.",
             )],
         )
-
+    header_row_idx, nepal_col = header_result
     # Infer calendar year from filename first, then sheet content
     ad_year = _infer_year_from_filename(path)
     if ad_year is None:
-        ad_year = _infer_year_from_sheet(ws)  # type: ignore[arg-type]
+        ad_year = _infer_year_from_rows(all_rows)
     if ad_year is None:
         return ParserResult(
             status="failure",
@@ -279,7 +286,7 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
     errors: list[ParserError] = []
     staging_rows: list[StagingRowDraft] = []
 
-    for row in all_rows[1:]:  # skip header row
+    for row in all_rows[header_row_idx + 1:]:  # skip header + any title rows above
         if not row:
             continue
         sending_country_raw = row[0]
