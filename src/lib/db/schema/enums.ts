@@ -25,6 +25,26 @@ export type ReportingPeriodType = (typeof reportingPeriodTypeEnum.enumValues)[nu
 export const confidenceGradeEnum = pgEnum('confidence_grade', ['A', 'B', 'C']);
 export type ConfidenceGrade = (typeof confidenceGradeEnum.enumValues)[number];
 
+/**
+ * Epistemic status of an indicator value — orthogonal to confidence_grade
+ * (which is about source authority). A WEO debt forecast is confidence A AND
+ * observation_type 'projection'. Default 'actual' for every directly published
+ * value. See ADR-0025.
+ *   - actual        — directly published / measured
+ *   - projection    — forward-looking forecast (IMF WEO out-years)
+ *   - interpolated  — filled between observed anchors (WB PIP fill_gaps)
+ *   - estimate      — model-derived where no direct observation (ILO modelled)
+ *   - provisional   — published but flagged by source as subject to revision
+ */
+export const observationTypeEnum = pgEnum('observation_type', [
+  'actual',
+  'projection',
+  'interpolated',
+  'estimate',
+  'provisional',
+]);
+export type ObservationType = (typeof observationTypeEnum.enumValues)[number];
+
 export const storageProviderEnum = pgEnum('storage_provider', ['supabase', 'r2']);
 export type StorageProvider = (typeof storageProviderEnum.enumValues)[number];
 

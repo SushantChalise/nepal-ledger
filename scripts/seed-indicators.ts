@@ -37,6 +37,7 @@ const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const WDI_SOURCE_ID = 'wb-wdi';
+const WEO_SOURCE_ID = 'imf-weo';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -339,6 +340,120 @@ const WDI_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// ─── IMF WEO indicators (parser imf_weo v0.1.0) ─────────────────────────────
+// 13 IMF World Economic Outlook codes for Nepal. All annual, confidence A.
+// The ONLY source of forward projections (ADR-0025: observation_type).
+// USD/PPP levels stored ÷ in *_million (WEO publishes billions → parser ×1000),
+// matching wb_wdi's usd_million so the two benchmark in one unit.
+// Cross-checks: weo-gdp-real-growth-pct ↔ dne-gdp-real-growth / wdi-gdp-growth-annual-pct;
+//               weo-inflation-avg-pct ↔ wdi-cpi-inflation-annual-pct.
+const WEO_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'weo-gdp-current-usd',
+    nameEn: 'GDP, current prices (US$)',
+    category: 'real_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-gdp-real-growth-pct',
+    nameEn: 'Real GDP growth (annual %)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-gdp-per-capita-current-usd',
+    nameEn: 'GDP per capita, current prices (US$)',
+    category: 'real_sector',
+    unit: 'usd',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-gdp-ppp-intl-dollar',
+    nameEn: 'GDP, PPP valuation (international $)',
+    category: 'real_sector',
+    unit: 'intl_dollar_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-inflation-avg-pct',
+    nameEn: 'Inflation, average consumer prices (annual %)',
+    category: 'price',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-current-account-pct-gdp',
+    nameEn: 'Current account balance (% of GDP)',
+    category: 'external_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-govt-revenue-pct-gdp',
+    nameEn: 'General government revenue (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-fiscal-balance-pct-gdp',
+    nameEn: 'General government net lending/borrowing (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-govt-gross-debt-pct-gdp',
+    nameEn: 'General government gross debt (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-gross-national-savings-pct-gdp',
+    nameEn: 'Gross national savings (% of GDP)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-total-investment-pct-gdp',
+    nameEn: 'Total investment (% of GDP)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-unemployment-rate-pct',
+    nameEn: 'Unemployment rate (% of total labour force)',
+    category: 'labour',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-population',
+    nameEn: 'Population',
+    category: 'demographic',
+    unit: 'persons_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+];
+
 // ─── Controlled unit vocabulary ────────────────────────────────────────────
 const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'npr_billion', displayEn: 'NPR billion', dimension: 'currency' },
@@ -348,6 +463,8 @@ const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'npr', displayEn: 'NPR', dimension: 'currency' },
   { unit: 'usd_million', displayEn: 'USD million', dimension: 'currency' },
   { unit: 'usd', displayEn: 'USD', dimension: 'currency' },
+  { unit: 'intl_dollar_million', displayEn: 'international $ million (PPP)', dimension: 'currency' },
+  { unit: 'persons_million', displayEn: 'persons (millions)', dimension: 'count' },
   { unit: 'percent', displayEn: 'percent', dimension: 'ratio' },
   { unit: 'percent_yoy', displayEn: 'percent (year-on-year)', dimension: 'ratio' },
   { unit: 'index_points', displayEn: 'index points', dimension: 'index' },
@@ -1361,6 +1478,31 @@ async function persist(): Promise<void> {
     wdiLinked += 1;
   }
   log(`indicator_source_map: ${wdiLinked} links ensured → ${WDI_SOURCE_ID}`);
+
+  // 14. IMF WEO indicators — 13 annual benchmark + projection series.
+  const weoInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...WEO_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!weoInsertResult.ok)
+    throw new Error(`WEO indicators insert failed: ${JSON.stringify(weoInsertResult.error)}`);
+  log(
+    `indicators (WEO): ${weoInsertResult.value.length} inserted (of ${WEO_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 15. WEO source map links.
+  let weoLinked = 0;
+  for (const ind of WEO_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(found.value.id, WEO_SOURCE_ID, 'IMF WEO Nepal annual');
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    weoLinked += 1;
+  }
+  log(`indicator_source_map: ${weoLinked} links ensured → ${WEO_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1372,6 +1514,7 @@ async function main(): Promise<void> {
   );
   log(`indicators (NCPI)  = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
   log(`indicators (WDI)   = ${WDI_INDICATORS.length}, source = ${WDI_SOURCE_ID}`);
+  log(`indicators (WEO)   = ${WEO_INDICATORS.length}, source = ${WEO_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');

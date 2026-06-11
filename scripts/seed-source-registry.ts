@@ -984,6 +984,39 @@ const ROWS: readonly NewSourceRegistryRow[] = [
       'current-account balance, remittances (USD + % GDP). Cross-checks dne-gdp-* and dne-inflation-rate.',
   },
   {
+    sourceId: 'imf-weo',
+    agency: 'International Monetary Fund',
+    agencyShort: 'IMF',
+    datasetName: 'World Economic Outlook (WEO) — Nepal',
+    sourceUrl: 'https://www.imf.org/external/datamapper/api/v1',
+    publicationFrequency: 'annual',
+    expectedReleaseWindow: 'Twice yearly (April + October WEO vintages)',
+    reportingPeriodType: 'annual',
+    fileFormat: 'json',
+    requiresTableExtraction: false,
+    historicalCoverage: '1980 onward (Nepal reliable ~1990); each vintage projects 5 years forward',
+    licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/imf_weo/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Each WEO vintage (Apr/Oct) revises both history and the forecast path; ingest the new vintage as a fresh snapshot — prior approved rows bump via revision_number. The projection boundary (projection_from_year) is vintage-specific and supplied at download time.',
+    knownBreakageModes: [
+      'datamapper-api-does-not-flag-projection-vs-actual',
+      'projection-boundary-must-be-supplied-per-vintage',
+      'date-field-is-fy-start-year-for-nepal',
+      'imf-may-omit-recent-years-for-sparse-series-eg-LUR',
+    ],
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'International benchmark + the only source of forward PROJECTIONS (ADR-0025). ' +
+      '13 indicators: GDP (current USD, real growth, per-capita, PPP), inflation, current-account, ' +
+      'govt revenue/fiscal-balance/gross-debt (% GDP), savings, investment, unemployment, population. ' +
+      'Projections marked observation_type=projection. Cross-checks dne-gdp-real-growth + wdi-gdp-*.',
+  },
+  {
     sourceId: 'imf-article-iv',
     agency: 'International Monetary Fund',
     agencyShort: 'IMF',

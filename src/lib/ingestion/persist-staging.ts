@@ -106,6 +106,7 @@ function toStagingInsert(
     fiscalYearBs: draft.fiscal_year_bs,
     fiscalYearAdLabel: draft.fiscal_year_ad_label,
     confidenceGradeProposed: draft.confidence_grade_proposed,
+    observationType: draft.observation_type,
     parserNotes: draft.parser_notes ?? null,
   };
 }
