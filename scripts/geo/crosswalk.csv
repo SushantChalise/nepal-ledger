@@ -1,0 +1,754 @@
+federal_code,name_en,name_ne,district_en,local_level_type
+80101101,Phungling Municipality,फुङलिङ नगरपालिका,Taplejung,municipality
+80101301,Aathrai Tribeni Rural Municipality,आठराई त्रिवेणी गाउँपालिका,Taplejung,rural_municipality
+80101302,Phaktanglung Rural Municipality,फक्ताङलुङ गाउँपालिका,Taplejung,rural_municipality
+80101303,Mikwakhola Rural Municipality,मिक्वाखोला गाउँपालिका,Taplejung,rural_municipality
+80101304,Meringden Rural Municipality,मेरिङदेन गाउँपालिका,Taplejung,rural_municipality
+80101305,Maiwakhola Rural Municipality,मैवाखोला गाउँपालिका,Taplejung,rural_municipality
+80101306,Pathibhara Yangwarak Rural Municipality,पाथिभरा याङ्वरक गाउँपालिका,Taplejung,rural_municipality
+80101307,Sidingwa Rural Municipality,सिदिङ्‌वा गाउँपालिका,Taplejung,rural_municipality
+80101308,Sirijangha Rural Municipality,सिरीजङ्गा गाउँपालिका,Taplejung,rural_municipality
+80101102,Phidim Municipality,फिदिम नगरपालिका,Panchthar,municipality
+80101309,Kummayak Rural Municipality,कुम्मायक गाउँपालिका,Panchthar,rural_municipality
+80101310,Tumbewa Rural Municipality,तुम्वेवा गाउँपालिका,Panchthar,rural_municipality
+80101311,Phalelung Rural Municipality,फालेलुङ गाउँपालिका,Panchthar,rural_municipality
+80101312,Phalgunanda Rural Municipality,फाल्गुनन्द गाउँपालिका,Panchthar,rural_municipality
+80101313,Miklajung Rural Municipality,मिक्लाजुङ गाउँपालिका,Panchthar,rural_municipality
+80101314,Yangwarak Rural Municipality,याङवरक गाउँपालिका,Panchthar,rural_municipality
+80101315,Hilihang Rural Municipality,हिलिहाङ गाउँपालिका,Panchthar,rural_municipality
+80101103,Ilam Municipality,ईलाम नगरपालिका,Ilam,municipality
+80101104,Deumai Municipality,देउमाई नगरपालिका,Ilam,municipality
+80101105,Mai Municipality,माई नगरपालिका,Ilam,municipality
+80101106,Suryodaya Municipality,सूर्योदय नगरपालिका,Ilam,municipality
+80101316,Chulachuli Rural Municipality,चुलाचुली गाउँपालिका,Ilam,rural_municipality
+80101317,Phakphokthum Rural Municipality,फाकफोकथुम गाउँपालिका,Ilam,rural_municipality
+80101318,Maijogmai Rural Municipality,माईजोगमाई गाउँपालिका,Ilam,rural_municipality
+80101319,Mangsebung Rural Municipality,माङसेबुङ गाउँपालिका,Ilam,rural_municipality
+80101320,Rong Rural Municipality,रोङ गाउँपालिका,Ilam,rural_municipality
+80101321,Sandakpur Rural Municipality,सन्दकपुर गाउँपालिका,Ilam,rural_municipality
+80101115,Khandbari Municipality,खाँदवारी नगरपालिका,Sankhuwasabha,municipality
+80101116,Chainpur Municipality,चैनपुर नगरपालिका,Sankhuwasabha,municipality
+80101117,Dharmadevi Municipality,धर्मदेवी नगरपालिका,Sankhuwasabha,municipality
+80101118,Panchkhapan Municipality,पाँचखपन नगरपालिका,Sankhuwasabha,municipality
+80101119,Madi Municipality,मादी नगरपालिका,Sankhuwasabha,municipality
+80101329,Chichila Rural Municipality,चिचिला गाउँपालिका,Sankhuwasabha,rural_municipality
+80101330,Bhotkhola Rural Municipality,भोटखोला गाउँपालिका,Sankhuwasabha,rural_municipality
+80101331,Makalu Rural Municipality,मकालु गाउँपालिका,Sankhuwasabha,rural_municipality
+80101332,Sabhapokhari Rural Municipality,सभापोखरी गाउँपालिका,Sankhuwasabha,rural_municipality
+80101333,Silichong Rural Municipality,सिलीचोङ गाउँपालिका,Sankhuwasabha,rural_municipality
+80101120,Myanglung Municipality,म्याङलुङ नगरपालिका,Tehrathum,municipality
+80101121,Laligurans Municipality,लालीगुराँस नगरपालिका,Tehrathum,municipality
+80101334,Aathrai Rural Municipality,आठराई गाउँपालिका,Tehrathum,rural_municipality
+80101335,Chhathar Rural Municipality,छथर गाउँपालिका,Tehrathum,rural_municipality
+80101336,Phedap Rural Municipality,फेदाप गाउँपालिका,Tehrathum,rural_municipality
+80101337,Menchhayayem Rural Municipality,मेन्छयायेम गाउँपालिका,Tehrathum,rural_municipality
+80101124,Dhankuta Municipality,धनकुटा नगरपालिका,Dhankuta,municipality
+80101125,Pakhribas Municipality,पाख्रिवास नगरपालिका,Dhankuta,municipality
+80101126,Mahalaxmi Municipality,महालक्ष्मी नगरपालिका,Dhankuta,municipality
+80101345,Shahidbhumi Rural Municipality,शहिदभूमि गाउँपालिका,Dhankuta,rural_municipality
+80101346,Chaubise Rural Municipality,चौबिसे गाउँपालिका,Dhankuta,rural_municipality
+80101347,Chhathar Jorpati Rural Municipality,छथर जोरपाटी गाउँपालिका,Dhankuta,rural_municipality
+80101348,Sangurigadhi Rural Municipality,साँगुरीगढी गाउँपालिका,Dhankuta,rural_municipality
+80101122,Bhojpur Municipality,भोजपुर नगरपालिका,Bhojpur,municipality
+80101123,Shadananda Municipality,षडानन्द नगरपालिका,Bhojpur,municipality
+80101338,Arun Rural Municipality,अरुण गाउँपालिका,Bhojpur,rural_municipality
+80101339,Aamchok Rural Municipality,आमचोक गाउँपालिका,Bhojpur,rural_municipality
+80101340,Tyamkemaiyung Rural Municipality,ट्याम्केमैयुङ गाउँपालिका,Bhojpur,rural_municipality
+80101341,Pauwadungma Rural Municipality,पौवादुङमा गाउँपालिका,Bhojpur,rural_municipality
+80101342,Ramprasad Rai Rural Municipality,रामप्रसाद राई गाउँपालिका,Bhojpur,rural_municipality
+80101343,Salpasilichho Rural Municipality,साल्पासिलिछो गाउँपालिका,Bhojpur,rural_municipality
+80101344,Hatuwagadhi Rural Municipality,हतुवागढी गाउँपालिका,Bhojpur,rural_municipality
+80101140,Diktel Rupakot Majhuwagadhi Municipality,दिक्तेल रुपाकोट मझुवागढी नगरपालिका,Khotang,municipality
+80101141,Halesi Tuwachung Municipality,हलेसी तुवाचुङ नगरपालिका,Khotang,municipality
+80101370,Aiselukharka Rural Municipality,ऐसेलुखर्क गाउँपालिका,Khotang,rural_municipality
+80101371,Kepilasgadhi Rural Municipality,केपिलासगढी गाउँपालिका,Khotang,rural_municipality
+80101372,Khotehang Rural Municipality,खोटेहाङ गाउँपालिका,Khotang,rural_municipality
+80101373,Jantedhunga Rural Municipality,जन्तेढुंगा गाउँपालिका,Khotang,rural_municipality
+80101374,Diprung Chuichumma Rural Municipality,दिप्रुङ चुइचुम्मा गाउँपालिका,Khotang,rural_municipality
+80101375,Rawabesi Rural Municipality,रावा बेसी गाउँपालिका,Khotang,rural_municipality
+80101376,Barahapokhari Rural Municipality,वराहपोखरी गाउँपालिका,Khotang,rural_municipality
+80101377,Sakela Rural Municipality,साकेला गाउँपालिका,Khotang,rural_municipality
+80101139,Solududhkunda Municipality,सोलुदुधकुण्ड नगरपालिका,Solukhumbu,municipality
+80101363,Khumbu Pasang Lhamu Rural Municipality,खुम्बु पासाङल्हामु गाउँपालिका,Solukhumbu,rural_municipality
+80101364,Mapya Dudhkoshi Rural Municipality,माप्य दुधकोशी गाउँपालिका,Solukhumbu,rural_municipality
+80101365,Thulung Dudhkoshi Rural Municipality,थुलुङ दुधकोशी गाउँपालिका,Solukhumbu,rural_municipality
+80101366,Nechasalyan Rural Municipality,नेचासल्यान गाउँपालिका,Solukhumbu,rural_municipality
+80101367,Mahakulung Rural Municipality,महाकुलुङ गाउँपालिका,Solukhumbu,rural_municipality
+80101368,Likhupike Rural Municipality,लिखुपिके गाउँपालिका,Solukhumbu,rural_municipality
+80101369,Sotang Rural Municipality,सोताङ गाउँपालिका,Solukhumbu,rural_municipality
+80101146,Siddhicharan Municipality,सिद्धिचरण नगरपालिका,Okhaldhunga,municipality
+80101382,Khijidemba Rural Municipality,खिजीदेम्बा गाउँपालिका,Okhaldhunga,rural_municipality
+80101383,Champadevi Rural Municipality,चम्पादेवी गाउँपालिका,Okhaldhunga,rural_municipality
+80101384,Chisankhugadhi Rural Municipality,चिशंखुगढी गाउँपालिका,Okhaldhunga,rural_municipality
+80101385,Manebhanjyang Rural Municipality,मानेभञ्याङ गाउँपालिका,Okhaldhunga,rural_municipality
+80101386,Molung Rural Municipality,मोलुङ गाउँपालिका,Okhaldhunga,rural_municipality
+80101387,Likhu Rural Municipality,लिखु गाउँपालिका,Okhaldhunga,rural_municipality
+80101388,Sunkoshi Rural Municipality,सुनकोशी गाउँपालिका,Okhaldhunga,rural_municipality
+80101142,Katari Municipality,कटारी नगरपालिका,Udayapur,municipality
+80101143,Chaudandigadhi Municipality,चौदण्डीगढी नगरपालिका,Udayapur,municipality
+80101144,Triyuga Municipality,त्रियुगा नगरपालिका,Udayapur,municipality
+80101145,Belaka Municipality,बेलका नगरपालिका,Udayapur,municipality
+80101378,Udayapurgadhi Rural Municipality,उदयपुरगढी गाउँपालिका,Udayapur,rural_municipality
+80101379,Tapli Rural Municipality,ताप्ली गाउँपालिका,Udayapur,rural_municipality
+80101380,Rautamai Rural Municipality,रौतामाई गाउँपालिका,Udayapur,rural_municipality
+80101381,Limchungbung Rural Municipality,लिम्चुङवुङ गाउँपालिका,Udayapur,rural_municipality
+80101107,Arjundhara Municipality,अर्जुनधारा नगरपालिका,Jhapa,municipality
+80101108,Kankai Municipality,कन्काई नगरपालिका,Jhapa,municipality
+80101109,Gauradaha Municipality,गौरादह नगरपालिका,Jhapa,municipality
+80101110,Damak Municipality,दमक नगरपालिका,Jhapa,municipality
+80101111,Birtamod Municipality,विर्तामोड नगरपालिका,Jhapa,municipality
+80101112,Bhadrapur Municipality,भद्रपुर नगरपालिका,Jhapa,municipality
+80101113,Mechinagar Municipality,मेचीनगर नगरपालिका,Jhapa,municipality
+80101114,Shivasataxi Municipality,शिवसताक्षी नगरपालिका,Jhapa,municipality
+80101322,Kachankawal Rural Municipality,कचनकवल गाउँपालिका,Jhapa,rural_municipality
+80101323,Kamal Rural Municipality,कमल गाउँपालिका,Jhapa,rural_municipality
+80101324,Gauriganj Rural Municipality,गौरिगंज गाउँपालिका,Jhapa,rural_municipality
+80101325,Jhapa Rural Municipality,झापा गाउँपालिका,Jhapa,rural_municipality
+80101326,Barhadashi Rural Municipality,वाह्रदशी गाउँपालिका,Jhapa,rural_municipality
+80101327,Buddhashanti Rural Municipality,बुद्धशान्ति गाउँपालिका,Jhapa,rural_municipality
+80101328,Haldivari Rural Municipality,हल्दिवारी गाउँपालिका,Jhapa,rural_municipality
+80101011,Biratnagar Metropolitan City,विराटनगर महानगरपालिका,Morang,metropolitan_city
+80101131,Urlabari Municipality,उर्लाबारी नगरपालिका,Morang,municipality
+80101132,Pathari Shanishchare Municipality,पथरी शनिश्चरे नगरपालिका,Morang,municipality
+80101133,Belbari Municipality,बेलवारी नगरपालिका,Morang,municipality
+80101134,Rangeli Municipality,रंगेली नगरपालिका,Morang,municipality
+80101135,Ratuwamai Municipality,रतुवामाई नगरपालिका,Morang,municipality
+80101136,Letang Municipality,लेटाङ नगरपालिका,Morang,municipality
+80101137,Sunbarshi Municipality,सुनवर्षी नगरपालिका,Morang,municipality
+80101138,Sundarharaicha Municipality,सुन्दरहरैचा नगरपालिका,Morang,municipality
+80101355,Katahari Rural Municipality,कटहरी गाउँपालिका,Morang,rural_municipality
+80101356,Kanepokhari Rural Municipality,कानेपोखरी गाउँपालिका,Morang,rural_municipality
+80101357,Kerabari Rural Municipality,केराबारी गाउँपालिका,Morang,rural_municipality
+80101358,Gramthan Rural Municipality,ग्रामथान गाउँपालिका,Morang,rural_municipality
+80101359,Jahada Rural Municipality,जहदा गाउँपालिका,Morang,rural_municipality
+80101360,Dhanpalthan Rural Municipality,धनपालथान गाउँपालिका,Morang,rural_municipality
+80101361,Budhiganga Rural Municipality,बुढीगंगा गाउँपालिका,Morang,rural_municipality
+80101362,Miklajung Rural Municipality,मिक्लाजुङ गाउँपालिका,Morang,rural_municipality
+80101031,Itahari Sub-Metropolitan City,इटहरी उप-महानगरपालिका,Sunsari,sub_metropolitan_city
+80101032,Dharan Sub-Metropolitan City,धरान उप-महानगरपालिका,Sunsari,sub_metropolitan_city
+80101127,Inaruwa Municipality,इनरुवा नगरपालिका,Sunsari,municipality
+80101128,Duhabi Municipality,दुहवी नगरपालिका,Sunsari,municipality
+80101129,Barahachhetra Municipality,बराह क्षेत्र नगरपालिका,Sunsari,municipality
+80101130,Ramdhuni Municipality,रामधुनी नगरपालिका,Sunsari,municipality
+80101349,Koshi Rural Municipality,कोशी गाउँपालिका,Sunsari,rural_municipality
+80101350,Gadhi Rural Municipality,गढी गाउँपालिका,Sunsari,rural_municipality
+80101351,Dewanganj Rural Municipality,देवानगञ्ज गाउँपालिका,Sunsari,rural_municipality
+80101352,Barju Rural Municipality,बर्जु गाउँपालिका,Sunsari,rural_municipality
+80101353,Bhokaha Narsingh Rural Municipality,भोकाहा नरसिंह गाउँपालिका,Sunsari,rural_municipality
+80101354,Harinagar Rural Municipality,हरिनगर गाउँपालिका,Sunsari,rural_municipality
+80102101,Kanchanrup Municipality,कञ्चनरुप नगरपालिका,Saptari,municipality
+80102102,Khadak Municipality,खडक नगरपालिका,Saptari,municipality
+80102103,Dakneshwari Municipality,डाक्नेश्वरी नगरपालिका,Saptari,municipality
+80102104,Rajbiraj Municipality,राजविराज नगरपालिका,Saptari,municipality
+80102105,Bodebarsain Municipality,बोदेबरसाईन नगरपालिका,Saptari,municipality
+80102106,Shambhunath Municipality,शम्भुनाथ नगरपालिका,Saptari,municipality
+80102107,Surunga Municipality,सुरुगा नगरपालिका,Saptari,municipality
+80102108,Hanumannagar Kankalini Municipality,हनुमाननगर कंकालिनी नगरपालिका,Saptari,municipality
+80102109,Saptakoshi Municipality,सप्तकोशी नगरपालिका,Saptari,municipality
+80102301,Agnisair Krishna Savaran Rural Municipality,अग्नीसाइर कृष्णासवरन गाउँपालिका,Saptari,rural_municipality
+80102302,Chhinnamasta Rural Municipality,छिन्नमस्ता गाउँपालिका,Saptari,rural_municipality
+80102303,Tirhut Rural Municipality,तिरहुत गाउँपालिका,Saptari,rural_municipality
+80102304,Tilathi Koiladi Rural Municipality,तिलाठी कोईलाडी गाउँपालिका,Saptari,rural_municipality
+80102305,Bishnupur Rural Municipality,विष्णुपुर गाउँपालिका,Saptari,rural_municipality
+80102306,Rajgadh Rural Municipality,राजगढ़ गाउँपालिका,Saptari,rural_municipality
+80102307,Mahadeva Rural Municipality,महादेवा गाउँपालिका,Saptari,rural_municipality
+80102308,Rupani Rural Municipality,रुपनी गाउँपालिका,Saptari,rural_municipality
+80102351,Balan-Bihul Rural Municipality,बलान-विहुल गाउँपालिका,Saptari,rural_municipality
+80102110,Kalyanpur Municipality,कल्याणपुर नगरपालिका,Siraha,municipality
+80102111,Golbazar Municipality,गोलबजार नगरपालिका,Siraha,municipality
+80102112,Dhangadhimai Municipality,धनगडीमाई नगरपालिका,Siraha,municipality
+80102113,Mirchaiya Municipality,मिचैया नगरपालिका,Siraha,municipality
+80102114,Lahan Municipality,लहान नगरपालिका,Siraha,municipality
+80102115,Siraha Municipality,सिरहा नगरपालिका,Siraha,municipality
+80102116,Sukhipur Municipality,सुखीपुर नगरपालिका,Siraha,municipality
+80102117,Karjanha Municipality,कर्जन्हा नगरपालिका,Siraha,municipality
+80102309,Arnama Rural Municipality,अर्नमा गाउँपालिका,Siraha,rural_municipality
+80102310,Aurahi Rural Municipality,औरही गाउँपालिका,Siraha,rural_municipality
+80102311,Naraha Rural Municipality,नरहा गाउँपालिका,Siraha,rural_municipality
+80102312,Navarajpur Rural Municipality,नवराजपुर गाउँपालिका,Siraha,rural_municipality
+80102313,Bariarpatti Rural Municipality,बरियारपट्टी गाउँपालिका,Siraha,rural_municipality
+80102314,Bhagawanpur Rural Municipality,भगवानपुर गाउँपालिका,Siraha,rural_municipality
+80102315,Laxmipur Patari Rural Municipality,लक्ष्मीपुर पतारी गाउँपालिका,Siraha,rural_municipality
+80102316,Bishnupur Rural Municipality,विष्णुपुर गाउँपालिका,Siraha,rural_municipality
+80102317,Sakhuwanankarkatti Rural Municipality,सखुवानान्कारकट्टी गाउँपालिका,Siraha,rural_municipality
+80102031,Janakpurdham Sub-Metropolitan City,जनकपुरधाम उपमहानगरपालिका,Dhanusha,sub_metropolitan_city
+80102118,Kshireshwarnath Municipality,क्षिरेश्वरनाथ नगरपालिका,Dhanusha,municipality
+80102119,Ganeshman Charnath Municipality,गणेशमान चारनाथ नगरपालिका,Dhanusha,municipality
+80102120,Dhanushadham Municipality,धनुषाधाम नगरपालिका,Dhanusha,municipality
+80102121,Nagarain Municipality,नगराइन नगरपालिका,Dhanusha,municipality
+80102122,Mithila Municipality,मिथिला नगरपालिका,Dhanusha,municipality
+80102123,Bideha Municipality,बिदेह नगरपालिका,Dhanusha,municipality
+80102124,Sabaila Municipality,सबैला नगरपालिका,Dhanusha,municipality
+80102125,Shahidnagar Municipality,शहिदनगर नगरपालिका,Dhanusha,municipality
+80102126,Kamala Municipality,कमला नगरपालिका,Dhanusha,municipality
+80102127,Mithila Bihari Municipality,मिथिला विहारी नगरपालिका,Dhanusha,municipality
+80102128,Hanspur Municipality,हंसपुर नगरपालिका,Dhanusha,municipality
+80102318,Aurahi Rural Municipality,औरही गाउँपालिका,Dhanusha,rural_municipality
+80102319,Janaknandini Rural Municipality,जनकनन्दिनी गाउँपालिका,Dhanusha,rural_municipality
+80102320,Bateshwar Rural Municipality,बटेश्वर गाउँपालिका,Dhanusha,rural_municipality
+80102321,Mukhiyapatti Musharniya Rural Municipality,मुखियापट्टि मुसहरमिया गाउँपालिका,Dhanusha,rural_municipality
+80102322,Laxminiya Rural Municipality,लक्ष्मीनिया गाउँपालिका,Dhanusha,rural_municipality
+80102352,Dhanauji Rural Municipality,धनौजी गाउँपालिका,Dhanusha,rural_municipality
+80102129,Gaushala Municipality,गौशाला नगरपालिका,Mahottari,municipality
+80102130,Jaleshwar Municipality,जलेश्वर नगरपालिका,Mahottari,municipality
+80102131,Bardibas Municipality,वर्दिवास नगरपालिका,Mahottari,municipality
+80102132,Aurahi Municipality,औरही नगरपालिका,Mahottari,municipality
+80102133,Balawa Municipality,बलवा नगरपालिका,Mahottari,municipality
+80102134,Bhangaha Municipality,भंगाहा नगरपालिका,Mahottari,municipality
+80102135,Matihani Municipality,मटिहानी नगरपालिका,Mahottari,municipality
+80102136,Manara Siswa Municipality,मनरा सिसवा नगरपालिका,Mahottari,municipality
+80102137,Ramgopalpur Municipality,रामगोपालपुर नगरपालिका,Mahottari,municipality
+80102138,Loharpatti Municipality,लोहरपट्टी नगरपालिका,Mahottari,municipality
+80102323,Ekdara Rural Municipality,एकडारा गाउँपालिका,Mahottari,rural_municipality
+80102324,Pipra Rural Municipality,पिपरा गाउँपालिका,Mahottari,rural_municipality
+80102325,Mahottari Rural Municipality,महोत्तरी गाउँपालिका,Mahottari,rural_municipality
+80102326,Samsi Rural Municipality,सम्सी गाउँपालिका,Mahottari,rural_municipality
+80102327,Sonama Rural Municipality,सोनमा गाउँपालिका,Mahottari,rural_municipality
+80102139,Ishwarpur Municipality,ईश्वरपुर नगरपालिका,Sarlahi,municipality
+80102140,Godaita Municipality,गोडैटा नगरपालिका,Sarlahi,municipality
+80102141,Malangwa Municipality,मलंगवा नगरपालिका,Sarlahi,municipality
+80102142,Lalbandi Municipality,सालबन्दी नगरपालिका,Sarlahi,municipality
+80102143,Barahathwa Municipality,बरहथवा नगरपालिका,Sarlahi,municipality
+80102144,Balara Municipality,बलरा नगरपालिका,Sarlahi,municipality
+80102145,Bagmati Municipality,बागमती नगरपालिका,Sarlahi,municipality
+80102146,Haripur Municipality,हरिपुर नगरपालिका,Sarlahi,municipality
+80102147,Harivan Municipality,हरिवन नगरपालिका,Sarlahi,municipality
+80102148,Haripurwa Municipality,हरिपुर्वा नगरपालिका,Sarlahi,municipality
+80102149,Kabilasi Municipality,कबिलासी नगरपालिका,Sarlahi,municipality
+80102328,Chakraghatta Rural Municipality,चक्रघट्टा गाउँपालिका,Sarlahi,rural_municipality
+80102329,Chandranagar Rural Municipality,चन्द्रनगर गाउँपालिका,Sarlahi,rural_municipality
+80102330,Dhankaul Rural Municipality,धनकौल गाउँपालिका,Sarlahi,rural_municipality
+80102331,Brahmapuri Rural Municipality,ब्रह्मपुरी गाउँपालिका,Sarlahi,rural_municipality
+80102332,Ramnagar Rural Municipality,रामनगर गाउँपालिका,Sarlahi,rural_municipality
+80102333,Bishnu Rural Municipality,विष्णु गाउँपालिका,Sarlahi,rural_municipality
+80102353,Basbariya Rural Municipality,बसबरीया गाउँपालिका,Sarlahi,rural_municipality
+80102354,Kaudena Rural Municipality,कौडेना गाउँपालिका,Sarlahi,rural_municipality
+80102355,Parsa Rural Municipality,पर्सा गाउँपालिका,Sarlahi,rural_municipality
+80102150,Garuda Municipality,गरुडा नगरपालिका,Rautahat,municipality
+80102151,Gaur Municipality,गौर नगरपालिका,Rautahat,municipality
+80102152,Chandrapur Municipality,चन्द्रपुर नगरपालिका,Rautahat,municipality
+80102156,Gujara Municipality,गुजरा नगरपालिका,Rautahat,municipality
+80102153,Ishanath Municipality,ईशनाथ नगरपालिका,Rautahat,municipality
+80102154,Katahariya Municipality,कटहरीया नगरपालिका,Rautahat,municipality
+80102155,Gadhimai Municipality,गडीमाई नगरपालिका,Rautahat,municipality
+80102157,Dewahi Gonahi Municipality,देवाही गोनाही नगरपालिका,Rautahat,municipality
+80102158,Paroha Municipality,परोहा नगरपालिका,Rautahat,municipality
+80102159,Phatuwa Bijayapur Municipality,फतुवा बिजयपुर नगरपालिका,Rautahat,municipality
+80102160,Baudhimai Municipality,बौधीमाई नगरपालिका,Rautahat,municipality
+80102161,Madhav Narayan Municipality,माधवनारायण नगरपालिका,Rautahat,municipality
+80102162,Maulapur Municipality,मौलापुर नगरपालिका,Rautahat,municipality
+80102163,Rajpur Municipality,राजपुर नगरपालिका,Rautahat,municipality
+80102164,Brindaban Municipality,वृन्दावन नगरपालिका,Rautahat,municipality
+80102171,Rajdevi Municipality,राजदेवी नगरपालिका,Rautahat,municipality
+80102334,Durgabhagwati Rural Municipality,दुर्गाभगवती गाउँपालिका,Rautahat,rural_municipality
+80102356,Yamunamai Rural Municipality,यमुनामाई गाउँपालिका,Rautahat,rural_municipality
+80102032,Kalaiya Sub-Metropolitan City,कलैया उपमहानगरपालिका,Bara,sub_metropolitan_city
+80102033,Jitpur Simara Sub-Metropolitan City,जितपुर सिमरा उपमहानगरपालिका,Bara,sub_metropolitan_city
+80102165,Kolhabi Municipality,कोल्हवी नगरपालिका,Bara,municipality
+80102166,Nijgadh Municipality,निजगढ नगरपालिका,Bara,municipality
+80102167,Mahagadhimai Municipality,महागढीमाई नगरपालिका,Bara,municipality
+80102168,Simraungadh Municipality,सिस्रौनगढ नगरपालिका,Bara,municipality
+80102169,Pacharauta Municipality,पचरौता नगरपालिका,Bara,municipality
+80102335,Adarsha Kotwal Rural Municipality,आदर्श कोतावल गाउँपालिका,Bara,rural_municipality
+80102336,Karaiyamai Rural Municipality,करैयामाई गाउँपालिका,Bara,rural_municipality
+80102337,Devtal Rural Municipality,देवताल गाउँपालिका,Bara,rural_municipality
+80102338,Parwanipur Rural Municipality,परवानीपुर गाउँपालिका,Bara,rural_municipality
+80102339,Prasauni Rural Municipality,प्रसौनी गाउँपालिका,Bara,rural_municipality
+80102340,Pheta Rural Municipality,फेटा गाउँपालिका,Bara,rural_municipality
+80102341,Baragadhi Rural Municipality,बारागढी गाउँपालिका,Bara,rural_municipality
+80102342,Suwarna Rural Municipality,सुवर्ण गाँउपालिका,Bara,rural_municipality
+80102357,Bishrampur Rural Municipality,विश्रामपुर गाउँपालिका,Bara,rural_municipality
+80102011,Birgunj Metropolitan City,वीरगञ्ज महानगरपालिका,Parsa,metropolitan_city
+80102170,Pokhariya Municipality,पोखरिया नगरपालिका,Parsa,municipality
+80102172,Parsagadhi Municipality,पर्सागढी नगरपालिका,Parsa,municipality
+80102173,Bahudarmai Municipality,बहुदरमाई नगरपालिका,Parsa,municipality
+80102343,Chhipaharmai Rural Municipality,छिपहरमाई गाउँपालिका,Parsa,rural_municipality
+80102344,Jagarnathpur Rural Municipality,जगरनाथपुर गाउँपालिका,Parsa,rural_municipality
+80102345,Dhobini Rural Municipality,धोबीनी गाउँपालिका,Parsa,rural_municipality
+80102346,Pakaha Mainpur Rural Municipality,पकाहा मैनपुर गाउँपालिका,Parsa,rural_municipality
+80102347,Paterwa Sugauli Rural Municipality,पटेर्वा सुगौली गाउँपालिका,Parsa,rural_municipality
+80102348,Bindabasini Rural Municipality,बिन्दबासिनी गाउँपालिका,Parsa,rural_municipality
+80102349,Sakhuwa Prasauni Rural Municipality,सखुवा प्रसौनी गाउँपालिका,Parsa,rural_municipality
+80102350,Thori Rural Municipality,ठोरी गाउँपालिका,Parsa,rural_municipality
+80102358,Kalikamai Rural Municipality,कालिकामाई गाउँपालिका,Parsa,rural_municipality
+80102359,Jirabhawani Rural Municipality,जिराभवानी गाउँपालिका,Parsa,rural_municipality
+80103105,Jiri Municipality,जिरी नगरपालिका,Dolakha,municipality
+80103106,Bhimeshwar Municipality,भिमेश्वर नगरपालिका,Dolakha,municipality
+80103314,Kalinchok Rural Municipality,कालिन्चोक गाउँपालिका,Dolakha,rural_municipality
+80103315,Gaurishankar Rural Municipality,गौरीशङ्कर गाउँपालिका,Dolakha,rural_municipality
+80103316,Tamakoshi Rural Municipality,तामाकोशी गाउँपालिका,Dolakha,rural_municipality
+80103317,Baiteshwar Rural Municipality,वैतेश्वर गाउँपालिका,Dolakha,rural_municipality
+80103318,Melung Rural Municipality,मेलुङ गाउँपालिका,Dolakha,rural_municipality
+80103319,Bigu Rural Municipality,विगु गाउँपालिका,Dolakha,rural_municipality
+80103320,Sailung Rural Municipality,शैलुङ्ग गाउँपालिका,Dolakha,rural_municipality
+80103103,Manthali Municipality,मन्थली नगरपालिका,Ramechhap,municipality
+80103104,Ramechhap Municipality,रामेछाप नगरपालिका,Ramechhap,municipality
+80103308,Umakunda Rural Municipality,उमाकुण्ड गाउँपालिका,Ramechhap,rural_municipality
+80103309,Khandadevi Rural Municipality,खाँडादेवी गाउँपालिका,Ramechhap,rural_municipality
+80103310,Gokulganga Rural Municipality,गोकुलगङ्गा गाउँपालिका,Ramechhap,rural_municipality
+80103311,Doramba Rural Municipality,दोरम्बा गाउँपालिका,Ramechhap,rural_municipality
+80103312,Likhu Tamakoshi Rural Municipality,लिखु तामाकोशी गाउँपालिका,Ramechhap,rural_municipality
+80103313,Sunapati Rural Municipality,सुनापति गाउँपालिका,Ramechhap,rural_municipality
+80103101,Kamalamai Municipality,कमलामाई नगरपालिका,Sindhuli,municipality
+80103102,Dudhauli Municipality,दुधौली नगरपालिका,Sindhuli,municipality
+80103301,Golanjor Rural Municipality,गोलन्जोर गाउँपालिका,Sindhuli,rural_municipality
+80103302,Ghyanglekh Rural Municipality,घ्याङलेख गाउँपालिका,Sindhuli,rural_municipality
+80103303,Tinpatan Rural Municipality,तीनपाटन गाउँपालिका,Sindhuli,rural_municipality
+80103304,Phikkal Rural Municipality,फिक्कल गाउँपालिका,Sindhuli,rural_municipality
+80103305,Marin Rural Municipality,मरिण गाउँपालिका,Sindhuli,rural_municipality
+80103306,Sunkoshi Rural Municipality,सुनकोशी गाउँपालिका,Sindhuli,rural_municipality
+80103307,Hariharpurgadhi Rural Municipality,हरिहरपुरगढी गाउँपालिका,Sindhuli,rural_municipality
+80103130,Dhulikhel Municipality,धुलिखेल नगरपालिका,Kavrepalanchok,municipality
+80103131,Namobuddha Municipality,नमोबुद्ध नगरपालिका,Kavrepalanchok,municipality
+80103132,Panauti Municipality,पनौती नगरपालिका,Kavrepalanchok,municipality
+80103133,Panchkhal Municipality,पांचखाल नगरपालिका,Kavrepalanchok,municipality
+80103134,Banepa Municipality,बनेपा नगरपालिका,Kavrepalanchok,municipality
+80103135,Mandandeupur Municipality,मण्डनदेउपुर नगरपालिका,Kavrepalanchok,municipality
+80103359,Khanikhola Rural Municipality,खानीखोला गाउँपालिका,Kavrepalanchok,rural_municipality
+80103360,Chaurideurali Rural Municipality,चौरीदेउराली गाउँपालिका,Kavrepalanchok,rural_municipality
+80103361,Temal Rural Municipality,तेमाल गाउँपालिका,Kavrepalanchok,rural_municipality
+80103362,Bethanchok Rural Municipality,बेथानचोक गाउँपालिका,Kavrepalanchok,rural_municipality
+80103363,Bhumlu Rural Municipality,भम्लु गाउँपालिका,Kavrepalanchok,rural_municipality
+80103364,Mahabharat Rural Municipality,महाभारत गाउँपालिका,Kavrepalanchok,rural_municipality
+80103365,Roshi Rural Municipality,रोशी गाउँपालिका,Kavrepalanchok,rural_municipality
+80103107,Chautara Sangachokgadhi Municipality,चौतारा सागाचोकगढी नगरपालिका,Sindhupalchok,municipality
+80103108,Melamchi Municipality,मेलम्बी नगरपालिका,Sindhupalchok,municipality
+80103109,Barhabise Municipality,बाह्रबिसे नगरपालिका,Sindhupalchok,municipality
+80103321,Indrawati Rural Municipality,ईन्द्रावती गाउँपालिका,Sindhupalchok,rural_municipality
+80103322,Jugal Rural Municipality,जुगल गाउँपालिका,Sindhupalchok,rural_municipality
+80103323,Tripurasundari Rural Municipality,त्रिपुरासुन्दरी गाउँपालिका,Sindhupalchok,rural_municipality
+80103324,Panchpokhari Thangpal Rural Municipality,पाँचपोखरी थाङपाल गाउँपालिका,Sindhupalchok,rural_municipality
+80103325,Balephi Rural Municipality,बलेफी गाउँपालिका,Sindhupalchok,rural_municipality
+80103326,Bhotekoshi Rural Municipality,भोटेकोशी गाउँपालिका,Sindhupalchok,rural_municipality
+80103327,Lisankhu Pakhar Rural Municipality,लिसंखुपाखर गाउँपालिका,Sindhupalchok,rural_municipality
+80103328,Sunkoshi Rural Municipality,सुनकोशी गाउँपालिका,Sindhupalchok,rural_municipality
+80103329,Helambu Rural Municipality,हेलम्बु गाउँपालिका,Sindhupalchok,rural_municipality
+80103330,Uttargaya Rural Municipality,उत्तरगया गाउँपालिका,Rasuwa,rural_municipality
+80103331,Kalika Rural Municipality,कालिका गाउँपालिका,Rasuwa,rural_municipality
+80103332,Gosaikunda Rural Municipality,गोसाईकुण्ड गाउँपालिका,Rasuwa,rural_municipality
+80103333,Naukunda Rural Municipality,नौकुण्ड गाउँपालिका,Rasuwa,rural_municipality
+80103334,Amachodingmo Rural Municipality,आमाछोदिङमो गाउँपालिका,Rasuwa,rural_municipality
+80103112,Bidur Municipality,विदुर नगरपालिका,Nuwakot,municipality
+80103113,Belkotgadhi Municipality,बेलकोटगढी नगरपालिका,Nuwakot,municipality
+80103346,Kakani Rural Municipality,ककनी गाउँपालिका,Nuwakot,rural_municipality
+80103347,Kispang Rural Municipality,किस्पाङ गाउँपालिका,Nuwakot,rural_municipality
+80103348,Tadi Rural Municipality,तादी गाउँपालिका,Nuwakot,rural_municipality
+80103349,Tarakeshwor Rural Municipality,तारकेश्वर गाउँपालिका,Nuwakot,rural_municipality
+80103350,Dupcheshwar Rural Municipality,दुप्चेवर गाउँपालिका,Nuwakot,rural_municipality
+80103351,Panchakanya Rural Municipality,पञ्चकन्या गाउँपालिका,Nuwakot,rural_municipality
+80103352,Myagang Rural Municipality,म्यागङ गाउँपालिका,Nuwakot,rural_municipality
+80103353,Likhu Rural Municipality,लिखु गाउँपालिका,Nuwakot,rural_municipality
+80103354,Shivapuri Rural Municipality,शिवपुरी गाउँपालिका,Nuwakot,rural_municipality
+80103355,Suryagadhi Rural Municipality,सुर्यगढी गाउँपालिका,Nuwakot,rural_municipality
+80103110,Dhunibesi Municipality,धुनीबेसी नगरपालिका,Dhading,municipality
+80103111,Nilkantha Municipality,नीलकण्ठ नगरपालिका,Dhading,municipality
+80103335,Khaniyabas Rural Municipality,खनियाबास गाउँपालिका,Dhading,rural_municipality
+80103336,Gangajamuna Rural Municipality,गहाजमुना गाउँपालिका,Dhading,rural_municipality
+80103337,Gajuri Rural Municipality,गजुरी गाउँपालिका,Dhading,rural_municipality
+80103338,Galchhi Rural Municipality,गल्छी गाउँपालिका,Dhading,rural_municipality
+80103339,Jwalamukhi Rural Municipality,ज्वालामुखी गाउँपालिका,Dhading,rural_municipality
+80103340,Tripurasundari Rural Municipality,त्रिपुरासुन्दरी गाउँपालिका,Dhading,rural_municipality
+80103341,Thakre Rural Municipality,थाक्रे गाउँपालिका,Dhading,rural_municipality
+80103342,Netrawati Dabjong Rural Municipality,नेत्रावती डबजोङ गाउँपालिका,Dhading,rural_municipality
+80103343,Benighat Rorang Rural Municipality,बेनीघाट रोराङ्ग गाउँपालिका,Dhading,rural_municipality
+80103344,Ruby Valley Rural Municipality,रुवी भ्याली गाउँपालिका,Dhading,rural_municipality
+80103345,Siddhalek Rural Municipality,सिद्धलेक गाउँपालिका,Dhading,rural_municipality
+80103013,Bharatpur Metropolitan City,भरतपुर महानगरपालिका,Chitwan,metropolitan_city
+80103137,Kalika Municipality,कालिका नगरपालिका,Chitwan,municipality
+80103138,Khairahani Municipality,खैरहनी नगरपालिका,Chitwan,municipality
+80103139,Madi Municipality,माडी नगरपालिका,Chitwan,municipality
+80103140,Ratnanagar Municipality,रत्ननगर नगरपालिका,Chitwan,municipality
+80103141,Rapti Municipality,राप्ती नगरपालिका,Chitwan,municipality
+80103374,Ichchhakamana Rural Municipality,इच्छाकामना गाउँपालिका,Chitwan,rural_municipality
+80103031,Hetauda Sub-Metropolitan City,हेटौडा उप-महानगरपालिका,Makwanpur,sub_metropolitan_city
+80103136,Thaha Municipality,थाहा नगरपालिका,Makwanpur,municipality
+80103366,Indrasarowar Rural Municipality,ईन्द्रसरोबर गाउँपालिका,Makwanpur,rural_municipality
+80103367,Kailash Rural Municipality,कैलाश गाउँपालिका,Makwanpur,rural_municipality
+80103368,Bakaiya Rural Municipality,बकैया गाउँपालिका,Makwanpur,rural_municipality
+80103369,Bagmati Rural Municipality,बाग्मती गाउँपालिका,Makwanpur,rural_municipality
+80103370,Bhimfedi Rural Municipality,भिमफेदी गाउँपालिका,Makwanpur,rural_municipality
+80103371,Makwanpurgadhi Rural Municipality,मकवानपुरगढी गाउँपालिका,Makwanpur,rural_municipality
+80103372,Manahari Rural Municipality,मनहरी गाउँपालिका,Makwanpur,rural_municipality
+80103373,Raksirang Rural Municipality,राक्सिराङ्ग गाउँपालिका,Makwanpur,rural_municipality
+80103126,Changunarayan Municipality,चाँगुनारायण नगरपालिका,Bhaktapur,municipality
+80103127,Bhaktapur Municipality,भक्तपुर नगरपालिका,Bhaktapur,municipality
+80103128,Madhyapur Thimi Municipality,मध्यपुर थिमी नगरपालिका,Bhaktapur,municipality
+80103129,Suryabinayak Municipality,सूर्यविनायक नगरपालिका,Bhaktapur,municipality
+80103012,Lalitpur Metropolitan City,ललितपुर महानगरपालिका,Lalitpur,metropolitan_city
+80103124,Godawari Municipality,गोदावरी नगरपालिका,Lalitpur,municipality
+80103125,Mahalaxmi Municipality,महालक्ष्मी नगरपालिका,Lalitpur,municipality
+80103356,Konjyosom Rural Municipality,कोन्ज्योसोम गाउँपालिका,Lalitpur,rural_municipality
+80103357,Bagmati Rural Municipality,बाग्मती गाउँपालिका,Lalitpur,rural_municipality
+80103358,Mahankal Rural Municipality,महाङ्काल गाउँपालिका,Lalitpur,rural_municipality
+80103011,Kathmandu Metropolitan City,काठमाण्डौं महानगरपालिका,Kathmandu,metropolitan_city
+80103114,Kageshwari Manohara Municipality,कागेश्वरी मनोहरा नगरपालिका,Kathmandu,municipality
+80103115,Kirtipur Municipality,कीर्तिपुर नगरपालिका,Kathmandu,municipality
+80103116,Gokarneshwor Municipality,गोकर्णेश्वर नगरपालिका,Kathmandu,municipality
+80103117,Chandragiri Municipality,चन्द्रागिरी नगरपालिका,Kathmandu,municipality
+80103118,Tokha Municipality,टोखा नगरपालिका,Kathmandu,municipality
+80103119,Tarakeshwar Municipality,तारकेश्वर नगरपालिका,Kathmandu,municipality
+80103120,Dakshinkali Municipality,दक्षिणकाली नगरपालिका,Kathmandu,municipality
+80103121,Nagarjun Municipality,नागार्जुन नगरपालिका,Kathmandu,municipality
+80103122,Budhanilkantha Municipality,बुढानिलकण्ठ नगरपालिका,Kathmandu,municipality
+80103123,Shankharapur Municipality,शंखरापुर नगरपालिका,Kathmandu,municipality
+80104114,Gorkha Municipality,गोरखा नगरपालिका,Gorkha,municipality
+80104115,Palungtar Municipality,पालुङटार नगरपालिका,Gorkha,municipality
+80104317,Ajirkot Rural Municipality,अजिरकोट गाउँपालिका,Gorkha,rural_municipality
+80104318,Arughat Rural Municipality,आरूघाट गाउँपालिका,Gorkha,rural_municipality
+80104319,Gandaki Rural Municipality,गण्डकी गाउँपालिका,Gorkha,rural_municipality
+80104320,Chumanuwri Rural Municipality,चुमनुव्री गाउँपालिका,Gorkha,rural_municipality
+80104321,Dharche Rural Municipality,धाचे गाउँपालिका,Gorkha,rural_municipality
+80104322,Bhimsen Thapa Rural Municipality,भिमसेनथापा गाउँपालिका,Gorkha,rural_municipality
+80104323,Shahid Lakhan Rural Municipality,माहिद लखन गाउँपालिका,Gorkha,rural_municipality
+80104324,Siranchok Rural Municipality,सिरानचोक गाउँपालिका,Gorkha,rural_municipality
+80104325,Barpak Sulikot Rural Municipality,बारपाक सुलिकोट गाउँपालिका,Gorkha,rural_municipality
+80104116,Besisahar Municipality,वेसीशहर नगरपालिका,Lamjung,municipality
+80104117,Madhya Nepal Municipality,मध्यनेपाल नगरपालिका,Lamjung,municipality
+80104118,Rainas Municipality,राईनास नगरपालिका,Lamjung,municipality
+80104119,Sundarbazar Municipality,सुन्दरबजार नगरपालिका,Lamjung,municipality
+80104330,Kwholasothar Rural Municipality,कब्लासोथार गाउँपालिका,Lamjung,rural_municipality
+80104331,Dudhpokhari Rural Municipality,दुधपोखरी गाउँपालिका,Lamjung,rural_municipality
+80104332,Dordi Rural Municipality,दोर्दी गाउँपालिका,Lamjung,rural_municipality
+80104333,Marsyangdi Rural Municipality,मस्र्याङदी गाउँपालिका,Lamjung,rural_municipality
+80104110,Bhanu Municipality,भानु नगरपालिका,Tanahu,municipality
+80104111,Bhimad Municipality,भिमाद नगरपालिका,Tanahu,municipality
+80104112,Vyas Municipality,व्यास नगरपालिका,Tanahu,municipality
+80104113,Shuklagandaki Municipality,शुक्लागण्डकी नगरपालिका,Tanahu,municipality
+80104311,Anbu Khaireni Rural Municipality,आँबुखैरेनी गाउँपालिका,Tanahu,rural_municipality
+80104312,Rishing Rural Municipality,ऋषिङ्ग गाउँपालिका,Tanahu,rural_municipality
+80104313,Ghiring Rural Municipality,घिरिङ गाउँपालिका,Tanahu,rural_municipality
+80104314,Devghat Rural Municipality,देवघाट गाउँपालिका,Tanahu,rural_municipality
+80104315,Myagde Rural Municipality,म्याग्दे गाउँपालिका,Tanahu,rural_municipality
+80104316,Bandipur Rural Municipality,वन्दिपुर गाउँपालिका,Tanahu,rural_municipality
+80104011,Pokhara Metropolitan City,पोखरा महानगरपालिका,Kaski,metropolitan_city
+80104334,Annapurna Rural Municipality,अन्नपूर्ण गाउँपालिका,Kaski,rural_municipality
+80104335,Machhapuchhre Rural Municipality,माछापुच्छ्रे गाउँपालिका,Kaski,rural_municipality
+80104336,Madi Rural Municipality,मादी गाउँपालिका,Kaski,rural_municipality
+80104337,Rupa Rural Municipality,रूपा गाउँपालिका,Kaski,rural_municipality
+80104326,Chame Rural Municipality,चामे गाउँपालिका,Manang,rural_municipality
+80104327,Narpa Bhumi Rural Municipality,नार्पा भूमि गाउँपालिका,Manang,rural_municipality
+80104328,Nason Rural Municipality,नासों गाउँपालिका,Manang,rural_municipality
+80104329,Manang Disyang Rural Municipality,मनाङ डिस्याङ गाउँपालिका,Manang,rural_municipality
+80104354,Gharpajhong Rural Municipality,घरपझोङ गाउँपालिका,Mustang,rural_municipality
+80104355,Thasang Rural Municipality,चासाङ गाउँपालिका,Mustang,rural_municipality
+80104356,Lo-Ghekar Damodarkunda Rural Municipality,लो-घेकर दामोदरकुण्ड गाउँपालिका,Mustang,rural_municipality
+80104357,Lomanthang Rural Municipality,लोमन्थाङ गाउँपालिका,Mustang,rural_municipality
+80104358,Baragung Muktikshetra Rural Municipality,बाह्रगाउँ मुक्तिक्षेत्र गाउँपालिका,Mustang,rural_municipality
+80104120,Kushma Municipality,कुश्मा नगरपालिका,Parbat,municipality
+80104121,Phalebas Municipality,फलेवास नगरपालिका,Parbat,municipality
+80104338,Jaljala Rural Municipality,जलजला गाउँपालिका,Parbat,rural_municipality
+80104339,Paiyun Rural Municipality,पैयूं गाउँपालिका,Parbat,rural_municipality
+80104340,Mahashila Rural Municipality,महाशिला गाउँपालिका,Parbat,rural_municipality
+80104341,Modi Rural Municipality,मोदी गाउँपालिका,Parbat,rural_municipality
+80104342,Bihadi Rural Municipality,बिहादी गाउँपालिका,Parbat,rural_municipality
+80104105,Galyang Municipality,गल्याङ नगरपालिका,Syangja,municipality
+80104106,Chapakot Municipality,चापाकोट नगरपालिका,Syangja,municipality
+80104107,Putalibazar Municipality,पुतलीबजार नगरपालिका,Syangja,municipality
+80104108,Bhirkot Municipality,भीरकोट नगरपालिका,Syangja,municipality
+80104109,Waling Municipality,वालिङ नगरपालिका,Syangja,municipality
+80104305,Arjun Chaupari Rural Municipality,अर्जुनचौपारी गाउँपालिका,Syangja,rural_municipality
+80104306,Aandhikhola Rural Municipality,आँधिखोला गाउँपालिका,Syangja,rural_municipality
+80104307,Kaligandaki Rural Municipality,कालीगण्डकी गाउँपालिका,Syangja,rural_municipality
+80104308,Phedikhola Rural Municipality,फेदीखोला गाउँपालिका,Syangja,rural_municipality
+80104309,Biruwa Rural Municipality,बिरुवा गाउँपालिका,Syangja,rural_municipality
+80104310,Harinas Rural Municipality,हरिनाश गाउँपालिका,Syangja,rural_municipality
+80104126,Beni Municipality,बेनी नगरपालिका,Myagdi,municipality
+80104349,Annapurna Rural Municipality,अन्नपूर्ण गाउँपालिका,Myagdi,rural_municipality
+80104350,Dhaulagiri Rural Municipality,धवलागिरी गाउँपालिका,Myagdi,rural_municipality
+80104351,Mangala Rural Municipality,मंगला गाउँपालिका,Myagdi,rural_municipality
+80104352,Malika Rural Municipality,मालिका गाउँपालिका,Myagdi,rural_municipality
+80104353,Raghuganga Rural Municipality,रघुगंगा गाउँपालिका,Myagdi,rural_municipality
+80104122,Galkot Municipality,गल्कोट नगरपालिका,Baglung,municipality
+80104123,Jaimini Municipality,जैमिनी नगरपालिका,Baglung,municipality
+80104124,Dhorpatan Municipality,ढोरपाटन नगरपालिका,Baglung,municipality
+80104125,Baglung Municipality,बाग्लुङ नगरपालिका,Baglung,municipality
+80104343,Kathekhola Rural Municipality,काठेखोला गाउँपालिका,Baglung,rural_municipality
+80104344,Tamankhola Rural Municipality,तमानखोला गाउँपालिका,Baglung,rural_municipality
+80104345,Tarakhola Rural Municipality,ताराखोला गाउँपालिका,Baglung,rural_municipality
+80104346,Nisikhola Rural Municipality,निसीखोला गाउँपालिका,Baglung,rural_municipality
+80104347,Badigad Rural Municipality,वडिगाड गाउँपालिका,Baglung,rural_municipality
+80104348,Bareng Rural Municipality,बरेङ गाउँपालिका,Baglung,rural_municipality
+80104101,Kawasoti Municipality,कावासोती नगरपालिका,Nawalparasi (Bardaghat Susta East),municipality
+80104102,Gaidakot Municipality,गैडाकोट नगरपालिका,Nawalparasi (Bardaghat Susta East),municipality
+80104103,Devchuli Municipality,देवचुली नगरपालिका,Nawalparasi (Bardaghat Susta East),municipality
+80104104,Madhyabindu Municipality,मध्यबिन्दु नगरपालिका,Nawalparasi (Bardaghat Susta East),municipality
+80104301,Baudikali Rural Municipality,बौदीकाली गाउँपालिका,Nawalparasi (Bardaghat Susta East),rural_municipality
+80104302,Bulingtar Rural Municipality,बुलिङटार गाउँपालिका,Nawalparasi (Bardaghat Susta East),rural_municipality
+80104303,Binayi Triveni Rural Municipality,बिनयी त्रिवेणी गाउँपालिका,Nawalparasi (Bardaghat Susta East),rural_municipality
+80104304,Hupsekot Rural Municipality,हुप्सेकोट गाउँपालिका,Nawalparasi (Bardaghat Susta East),rural_municipality
+80105101,Bardaghat Municipality,बर्दघाट नगरपालिका,Nawalparasi (Bardaghat Susta West),municipality
+80105102,Ramgram Municipality,रामग्राम नगरपालिका,Nawalparasi (Bardaghat Susta West),municipality
+80105103,Sunwal Municipality,सुनवल नगरपालिका,Nawalparasi (Bardaghat Susta West),municipality
+80105301,Susta Rural Municipality,सुस्ता गाउँपालिका,Nawalparasi (Bardaghat Susta West),rural_municipality
+80105302,Palhinandan Rural Municipality,पाल्हीनन्दन गाउँपालिका,Nawalparasi (Bardaghat Susta West),rural_municipality
+80105303,Pratappur Rural Municipality,प्रतापपुर गाउँपालिका,Nawalparasi (Bardaghat Susta West),rural_municipality
+80105304,Sarawal Rural Municipality,सरावल गाउँपालिका,Nawalparasi (Bardaghat Susta West),rural_municipality
+80105031,Butwal Sub-Metropolitan City,बुटवल उपमहानगरपालिका,Rupandehi,sub_metropolitan_city
+80105104,Tilottama Municipality,तिलोत्तमा नगरपालिका,Rupandehi,municipality
+80105105,Devdaha Municipality,देवदह नगरपालिका,Rupandehi,municipality
+80105106,Lumbini Cultural Municipality,लुम्बिनी सांस्कृतिक नगरपालिका,Rupandehi,municipality
+80105107,Siddharthanagar Municipality,सिद्धार्थनगर नगरपालिका,Rupandehi,municipality
+80105108,Sainamaina Municipality,सैनामैना नगरपालिका,Rupandehi,municipality
+80105305,Omsatiya Rural Municipality,ओमसतिया गाउँपालिका,Rupandehi,rural_municipality
+80105306,Kanchan Rural Municipality,कन्चन गाउँपालिका,Rupandehi,rural_municipality
+80105307,Kotahimai Rural Municipality,कोटहीमाई गाउँपालिका,Rupandehi,rural_municipality
+80105308,Gaidahawa Rural Municipality,गैडहवा गाउँपालिका,Rupandehi,rural_municipality
+80105309,Marchawari Rural Municipality,मर्चवारी गाउँपालिका,Rupandehi,rural_municipality
+80105310,Mayadevi Rural Municipality (Rupandehi),मायादेवी गाउँपालिका,Rupandehi,rural_municipality
+80105311,Rohini Rural Municipality,रोहिणी गाउँपालिका,Rupandehi,rural_municipality
+80105312,Shuddhodhan Rural Municipality,शुद्धोधन गाउँपालिका,Rupandehi,rural_municipality
+80105313,Sammarimai Rural Municipality,सम्मरीमाई गाउँपालिका,Rupandehi,rural_municipality
+80105314,Siyari Rural Municipality,सियारी गाउँपालिका,Rupandehi,rural_municipality
+80105109,Kapilvastu Municipality,कपिलवस्तु नगरपालिका,Kapilvastu,municipality
+80105110,Krishnanagar Municipality,कृष्णनगर नगरपालिका,Kapilvastu,municipality
+80105111,Banganga Municipality,बाणगंगा नगरपालिका,Kapilvastu,municipality
+80105112,Buddhabhumi Municipality,बुद्धभुमी नगरपालिका,Kapilvastu,municipality
+80105113,Maharajgunj Municipality,महाराजगञ्ज नगरपालिका,Kapilvastu,municipality
+80105114,Shivaraj Municipality,शिवराज नगरपालिका,Kapilvastu,municipality
+80105315,Mayadevi Rural Municipality (Kapilvastu),मायादेवी गाउँपालिका,Kapilvastu,rural_municipality
+80105316,Yasodhara Rural Municipality,यसोधरा गाउँपालिका,Kapilvastu,rural_municipality
+80105317,Bijayanagar Rural Municipality,विजयनगर गाउँपालिका,Kapilvastu,rural_municipality
+80105318,Shuddhodhan Rural Municipality,शुद्धोधन गाउँपालिका,Kapilvastu,rural_municipality
+80105118,Tansen Municipality,तानसेन नगरपालिका,Palpa,municipality
+80105119,Rampur Municipality,रामपुर नगरपालिका,Palpa,municipality
+80105322,Tinau Rural Municipality,तिनाउ गाउँपालिका,Palpa,rural_municipality
+80105323,Nisdi Rural Municipality,निस्दी गाउँपालिका,Palpa,rural_municipality
+80105324,Purbakhola Rural Municipality,पूर्वखोला गाउँपालिका,Palpa,rural_municipality
+80105325,Bagnaskali Rural Municipality,बगनासकाली गाउँपालिका,Palpa,rural_municipality
+80105326,Mathagadhi Rural Municipality,माथागढी गाउँपालिका,Palpa,rural_municipality
+80105327,Rambha Rural Municipality,रम्भा गाउँपालिका,Palpa,rural_municipality
+80105328,Ribdikot Rural Municipality,रिब्दीकोट गाउँपालिका,Palpa,rural_municipality
+80105329,Rainadevi Chhahara Rural Municipality,रैनादेवी छहरा गाउँपालिका,Palpa,rural_municipality
+80105115,Bhumikasthan Municipality,भुमिकास्थान नगरपालिका,Arghakhanchi,municipality
+80105116,Sitganga Municipality,शितगंगा नगरपालिका,Arghakhanchi,municipality
+80105117,Sandhikharka Municipality,सन्धिखर्क नगरपालिका,Arghakhanchi,municipality
+80105319,Chhatradev Rural Municipality,छत्रदेव गाउँपालिका,Arghakhanchi,rural_municipality
+80105320,Panini Rural Municipality,पाणिनी गाउँपालिका,Arghakhanchi,rural_municipality
+80105321,Malarani Rural Municipality,मालारानी गाउँपालिका,Arghakhanchi,rural_municipality
+80105120,Musikot Municipality,मुसिकोट नगरपालिका,Gulmi,municipality
+80105121,Resunga Municipality,रेसुंगा नगरपालिका,Gulmi,municipality
+80105330,Isma Rural Municipality,इस्मा गाउँपालिका,Gulmi,rural_municipality
+80105331,Kaligandaki Rural Municipality,कालीगण्डकी गाउँपालिका,Gulmi,rural_municipality
+80105332,Gulmi Darbar Rural Municipality,गुल्मीदरवार गाउँपालिका,Gulmi,rural_municipality
+80105333,Chandrakot Rural Municipality,चन्द्रकोट गाउँपालिका,Gulmi,rural_municipality
+80105334,Chhatrakot Rural Municipality,छत्रकोट गाउँपालिका,Gulmi,rural_municipality
+80105335,Dhurkot Rural Municipality,धुर्कोट गाउँपालिका,Gulmi,rural_municipality
+80105336,Madane Rural Municipality,मदाने गाउँपालिका,Gulmi,rural_municipality
+80105337,Malika Rural Municipality,मालिका गाउँपालिका,Gulmi,rural_municipality
+80105338,Ruru Rural Municipality,रुरु गाउँपालिका,Gulmi,rural_municipality
+80105339,Satyawati Rural Municipality,सत्यवती गाउँपालिका,Gulmi,rural_municipality
+80105340,Putha Uttarganga Rural Municipality,पुथा उत्तरगंगा गाउँपालिका,Rukum (East),rural_municipality
+80105341,Bhume Rural Municipality,भूमे गाउँपालिका,Rukum (East),rural_municipality
+80105342,Sisne Rural Municipality,सिस्ने गाउँपालिका,Rukum (East),rural_municipality
+80105122,Rolpa Municipality,रोल्पा नगरपालिका,Rolpa,municipality
+80105343,Triveni Rural Municipality,त्रिवेणी गाउँपालिका,Rolpa,rural_municipality
+80105344,Thabang Rural Municipality,थवाङ गाउँपालिका,Rolpa,rural_municipality
+80105345,Paribartan Rural Municipality,परिवर्तन गाउँपालिका,Rolpa,rural_municipality
+80105346,Madi Rural Municipality,माडी गाउँपालिका,Rolpa,rural_municipality
+80105347,Runtigadhi Rural Municipality,रुन्टीगढी गाउँपालिका,Rolpa,rural_municipality
+80105348,Lungri Rural Municipality,लुङग्री गाउँपालिका,Rolpa,rural_municipality
+80105349,Gangadev Rural Municipality,गंगादेव गाउँपालिका,Rolpa,rural_municipality
+80105350,Sunchhahari Rural Municipality,सुनछहरी गाउँपालिका,Rolpa,rural_municipality
+80105351,Sunil Smriti Rural Municipality,सुनिल स्मृति गाउँपालिका,Rolpa,rural_municipality
+80105123,Pyuthan Municipality,प्यूठान नगरपालिका,Pyuthan,municipality
+80105124,Swargadwari Municipality,स्वर्गद्वारी नगरपालिका,Pyuthan,municipality
+80105352,Airawati Rural Municipality,ऐरावती गाउँपालिका,Pyuthan,rural_municipality
+80105353,Gaumukhi Rural Municipality,गौमुखी गाउँपालिका,Pyuthan,rural_municipality
+80105354,Jhimruk Rural Municipality,झिमरुक गाउँपालिका,Pyuthan,rural_municipality
+80105355,Naubahini Rural Municipality,नौबहिनी गाउँपालिका,Pyuthan,rural_municipality
+80105356,Mallarani Rural Municipality,मल्लरानी गाउँपालिका,Pyuthan,rural_municipality
+80105357,Mandavi Rural Municipality,माण्डवी गाउँपालिका,Pyuthan,rural_municipality
+80105358,Sarumarani Rural Municipality,सरुमारानी गाउँपालिका,Pyuthan,rural_municipality
+80105032,Ghorahi Sub-Metropolitan City,घोराही उपमहानगरपालिका,Dang,sub_metropolitan_city
+80105033,Tulsipur Sub-Metropolitan City,तुल्सीपुर उपमहानगरपालिका,Dang,sub_metropolitan_city
+80105125,Lamahi Municipality,लमही नगरपालिका,Dang,municipality
+80105359,Gadawa Rural Municipality,गडवा गाउँपालिका,Dang,rural_municipality
+80105360,Dangisharan Rural Municipality,दंगीशरण गाउँपालिका,Dang,rural_municipality
+80105361,Banglachuli Rural Municipality,बंगलाचुली गाउँपालिका,Dang,rural_municipality
+80105362,Babai Rural Municipality,बबई गाउँपालिका,Dang,rural_municipality
+80105363,Rajpur Rural Municipality,राजपुर गाउँपालिका,Dang,rural_municipality
+80105364,Rapti Rural Municipality,राप्ती गाउँपालिका,Dang,rural_municipality
+80105365,Shantinagar Rural Municipality,शान्तिनगर गाउँपालिका,Dang,rural_municipality
+80105034,Nepalgunj Sub-Metropolitan City,नेपालगन्ज उपमहानगरपालिका,Banke,sub_metropolitan_city
+80105126,Kohalpur Municipality,कोहलपुर नगरपालिका,Banke,municipality
+80105366,Khajura Rural Municipality,खजुरा गाउँपालिका,Banke,rural_municipality
+80105367,Janaki Rural Municipality,जानकी गाउँपालिका,Banke,rural_municipality
+80105368,Duduwa Rural Municipality,डुडुवा गाउँपालिका,Banke,rural_municipality
+80105369,Narainapur Rural Municipality,नरैनापुर गाउँपालिका,Banke,rural_municipality
+80105370,Baijanath Rural Municipality,वैजनाथ गाउँपालिका,Banke,rural_municipality
+80105371,Raptisonari Rural Municipality,राप्तीसोनारी गाउँपालिका,Banke,rural_municipality
+80105127,Gulariya Municipality,गुलरिया नगरपालिका,Bardiya,municipality
+80105128,Thakurbaba Municipality,ठाकुरबाबा नगरपालिका,Bardiya,municipality
+80105129,Bansgadhi Municipality,बाँसगढी नगरपालिका,Bardiya,municipality
+80105130,Madhuwan Municipality,मधुवन नगरपालिका,Bardiya,municipality
+80105131,Rajapur Municipality,राजापुर नगरपालिका,Bardiya,municipality
+80105132,Barbardiya Municipality,बारबर्दिया नगरपालिका,Bardiya,municipality
+80105372,Geruwa Rural Municipality,गेरुवा गाउँपालिका,Bardiya,rural_municipality
+80105373,Badhaiyatal Rural Municipality,बढैयाताल गाउँपालिका,Bardiya,rural_municipality
+80106108,Aathbiskot Municipality,आठविसकोट नगरपालिका,Rukum (West),municipality
+80106109,Chaurjahari Municipality,चौरजहारी नगरपालिका,Rukum (West),municipality
+80106110,Musikot Municipality,मुसिकोट नगरपालिका,Rukum (West),municipality
+80106330,Triveni Rural Municipality,त्रिवेणी गाउँपालिका,Rukum (West),rural_municipality
+80106331,Banfikot Rural Municipality,बाँफिकोट गाउँपालिका,Rukum (West),rural_municipality
+80106332,Sanibheri Rural Municipality,सानीभेरी गाउँपालिका,Rukum (West),rural_municipality
+80106111,Bagchaur Municipality,बागचौर नगरपालिका,Salyan,municipality
+80106112,Bangad Kupinde Municipality,वनगाँड कुपिण्डे नगरपालिका,Salyan,municipality
+80106113,Sharada Municipality,शारदा नगरपालिका,Salyan,municipality
+80106333,Kapurkot Rural Municipality,कपुरकोट गाउँपालिका,Salyan,rural_municipality
+80106334,Kalimati Rural Municipality,कालिमाटी गाउँपालिका,Salyan,rural_municipality
+80106335,Kumakh Rural Municipality,कुमाख गाउँपालिका,Salyan,rural_municipality
+80106336,Chhatreshwari Rural Municipality,छत्रेश्वरी गाउँपालिका,Salyan,rural_municipality
+80106337,Siddha Kumakh Rural Municipality,सिद्ध कुमाख गाउँपालिका,Salyan,rural_municipality
+80106338,Triveni Rural Municipality,त्रिवेणी गाउँपालिका,Salyan,rural_municipality
+80106339,Darma Rural Municipality,दार्मा गाउँपालिका,Salyan,rural_municipality
+80106102,Thuli Bheri Municipality,ठूलीभेरी नगरपालिका,Dolpa,municipality
+80106103,Tripurasundari Municipality,त्रिपुरासुन्दरी नगरपालिका,Dolpa,municipality
+80106304,Kaike Rural Municipality,काईके गाउँपालिका,Dolpa,rural_municipality
+80106305,Chharka Tangsong Rural Municipality,छार्का ताङसोङ गाउँपालिका,Dolpa,rural_municipality
+80106306,Jagadulla Rural Municipality,जगदुल्ला गाउँपालिका,Dolpa,rural_municipality
+80106307,Dolpo Buddha Rural Municipality,डोल्पो बुद्ध गाउँपालिका,Dolpa,rural_municipality
+80106308,Mudkechula Rural Municipality,मुड्केचुला गाउँपालिका,Dolpa,rural_municipality
+80106309,Shey Phoksundo Rural Municipality,शे फोक्सुन्डो गाउँपालिका,Dolpa,rural_municipality
+80106104,Chandannath Municipality,चन्दननाथ नगरपालिका,Jumla,municipality
+80106317,Kanakasundari Rural Municipality,कनकासुन्दरी गाउँपालिका,Jumla,rural_municipality
+80106318,Guthichaur Rural Municipality,गुठिचौर गाउँपालिका,Jumla,rural_municipality
+80106319,Tatopani Rural Municipality,तातोपानी गाउँपालिका,Jumla,rural_municipality
+80106320,Tila Rural Municipality,तिला गाउँपालिका,Jumla,rural_municipality
+80106321,Patarasi Rural Municipality,पातारासी गाउँपालिका,Jumla,rural_municipality
+80106322,Sinja Rural Municipality,सिंजा गाउँपालिका,Jumla,rural_municipality
+80106323,Hima Rural Municipality,हिमा गाउँपालिका,Jumla,rural_municipality
+80106101,Chhayanath Rara Municipality,छायाँनाथ रारा नगरपालिका,Mugu,municipality
+80106301,Khatyad Rural Municipality,खत्याड गाउँपालिका,Mugu,rural_municipality
+80106302,Mugum Karmarong Rural Municipality,मुगुमकार्मारोंग गाउँपालिका,Mugu,rural_municipality
+80106303,Soru Rural Municipality,सोरु गाउँपालिका,Mugu,rural_municipality
+80106310,Adanchuli Rural Municipality,अदानचुली गाउँपालिका,Humla,rural_municipality
+80106311,Kharpunath Rural Municipality,खार्पुनाथ गाउँपालिका,Humla,rural_municipality
+80106312,Chankheli Rural Municipality,चंखेली गाउँपालिका,Humla,rural_municipality
+80106313,Tanjakot Rural Municipality,ताँजाकोट गाउँपालिका,Humla,rural_municipality
+80106314,Namkha Rural Municipality,नाम्खा गाउँपालिका,Humla,rural_municipality
+80106315,Sarkegad Rural Municipality,सर्केगाड गाउँपालिका,Humla,rural_municipality
+80106316,Simkot Rural Municipality,सिमकोट गाउँपालिका,Humla,rural_municipality
+80106105,Khandachakra Municipality,खाँडाचक्र नगरपालिका,Kalikot,municipality
+80106106,Tilagufa Municipality,तिलागुफा नगरपालिका,Kalikot,municipality
+80106107,Raskot Municipality,रास्कोट नगरपालिका,Kalikot,municipality
+80106324,Shubha Kalika Rural Municipality,शुभ कालिका गाउँपालिका,Kalikot,rural_municipality
+80106325,Naraharinath Rural Municipality,नरहरिनाथ गाउँपालिका,Kalikot,rural_municipality
+80106326,Pachaljharana Rural Municipality,पचालझरना गाउँपलिका,Kalikot,rural_municipality
+80106327,Palata Rural Municipality,पलाता गाउँपालिका,Kalikot,rural_municipality
+80106328,Mahawai Rural Municipality,महावै गाउँपालिका,Kalikot,rural_municipality
+80106329,Sanni Triveni Rural Municipality,सान्नी त्रिवेणी गाउँपालिका,Kalikot,rural_municipality
+80106119,Chhedagad Municipality,छेडागाड नगरपालिका,Jajarkot,municipality
+80106120,Nalgad Municipality,नलगाड नगरपालिका,Jajarkot,municipality
+80106121,Bheri Municipality,भेरीमालिका नगरपालिका,Jajarkot,municipality
+80106344,Kuse Rural Municipality,कुसे गाउँपालिका,Jajarkot,rural_municipality
+80106345,Junichande Rural Municipality,जुनीचाँद गाउँपालिका,Jajarkot,rural_municipality
+80106346,Barekot Rural Municipality,बारेकोट गाउँपालिका,Jajarkot,rural_municipality
+80106347,Shivalaya Rural Municipality,शिवालय गाउँपालिका,Jajarkot,rural_municipality
+80106122,Aathabis Municipality,आठबीस नगरपालिका,Dailekh,municipality
+80106123,Chamunda Bindrasaini Municipality,चामुण्डा बिन्द्रासैनी नगरपालिका,Dailekh,municipality
+80106124,Dullu Municipality,दुल्लु नगरपालिका,Dailekh,municipality
+80106125,Narayan Municipality,नारायण नगरपालिका,Dailekh,municipality
+80106348,Gurans Rural Municipality,गुराँस गाउँपालिका,Dailekh,rural_municipality
+80106349,Thantikandh Rural Municipality,ठाँटीकाँध गाउँपालिका,Dailekh,rural_municipality
+80106350,Dungeshwar Rural Municipality,डुंगेश्वर गाउँपालिका,Dailekh,rural_municipality
+80106351,Naumule Rural Municipality,नौमुले गाउँपालिका,Dailekh,rural_municipality
+80106352,Bhagawatimai Rural Municipality,भगवतीमाई गाउँपालिका,Dailekh,rural_municipality
+80106353,Bhairavi Rural Municipality,भैरवी गाउँपालिका,Dailekh,rural_municipality
+80106354,Mahabu Rural Municipality,महाबु गाउँपालिका,Dailekh,rural_municipality
+80106114,Gurbhakot Municipality,गुर्भाकोट नगरपालिका,Surkhet,municipality
+80106115,Panchapuri Municipality,पञ्चपुरी नगरपालिका,Surkhet,municipality
+80106116,Bheriganga Municipality,भेरीगंगा नगरपालिका,Surkhet,municipality
+80106117,Lekbesi Municipality,लेकबेसी नगरपालिका,Surkhet,municipality
+80106118,Birendranagar Municipality,बरिन्द्रनगर नगरपालिका,Surkhet,municipality
+80106340,Chingad Rural Municipality,चिङ्गाड गाउँपालिका,Surkhet,rural_municipality
+80106341,Chaukune Rural Municipality,चौकुने गाउँपालिका,Surkhet,rural_municipality
+80106342,Barahtal Rural Municipality,बराहताल गाउँपालिका,Surkhet,rural_municipality
+80106343,Simta Rural Municipality,सिम्ता गाउँपालिका,Surkhet,rural_municipality
+80107113,Triveni Municipality,विवेणी नगरपालिका,Bajura,municipality
+80107114,Badimalika Municipality,वडिमालिका नगरपालिका,Bajura,municipality
+80107115,Budhiganga Municipality,बुढीगंगा नगरपालिका,Bajura,municipality
+80107116,Budhinanda Municipality,बुढीनन्दा नगरपालिका,Bajura,municipality
+80107320,Gaumul Rural Municipality,गौमुल गाउँपालिका,Bajura,rural_municipality
+80107321,Chhededaha Rural Municipality,छेडेदह गाउँपालिका,Bajura,rural_municipality
+80107322,Jagannath Rural Municipality,जगन्नाथ गाउँपालिका,Bajura,rural_municipality
+80107323,Swamikartik Khapar Rural Municipality,स्वामीकार्तिक खापर गाउँपालिका,Bajura,rural_municipality
+80107324,Himali Rural Municipality,हिमाली गाउँपालिका,Bajura,rural_municipality
+80107117,Jayaprithvi Municipality,जयपृथ्वी नगरपालिका,Bajhang,municipality
+80107118,Bungal Municipality,बुंगल नगरपालिका,Bajhang,municipality
+80107325,Saipal Rural Municipality,साईपाल गाउँपालिका,Bajhang,rural_municipality
+80107326,Kedarsyu Rural Municipality,केदारस्यूँ गाँउपालिका,Bajhang,rural_municipality
+80107327,Khaptad Chhanna Rural Municipality,खप्तडछान्ना गाँउपालिका,Bajhang,rural_municipality
+80107328,Chabispathivera Rural Municipality,छबिसपाथिभेरा गाँउपालिका,Bajhang,rural_municipality
+80107329,Talkot Rural Municipality,तालकोट गाँउपालिका,Bajhang,rural_municipality
+80107330,Thalara Rural Municipality,थलारा गाँउपालिका,Bajhang,rural_municipality
+80107331,Durgathali Rural Municipality,दुर्गाथली गाँउपालिका,Bajhang,rural_municipality
+80107332,Masta Rural Municipality,मष्टा गाउँपालिका,Bajhang,rural_municipality
+80107333,Bitthadchir Rural Municipality,वित्थडचिर गाँउपालिका,Bajhang,rural_municipality
+80107334,Surma Rural Municipality,सूर्मा गाउँपालिका,Bajhang,rural_municipality
+80107107,Dipayal Silgadhi Municipality,दिपायल सिलगढी नगरपालिका,Doti,municipality
+80107108,Shikhar Municipality,शिखर नगरपालिका,Doti,municipality
+80107307,Adarsha Rural Municipality,आदर्श गाउँपालिका,Doti,rural_municipality
+80107308,K.I. Singh Rural Municipality,के. आई.सिं गाउँपालिका,Doti,rural_municipality
+80107309,Jorayal Rural Municipality,जोरायल गाउँपालिका,Doti,rural_municipality
+80107310,Purbichauki Rural Municipality,पूर्वीचौकी गाउँपालिका,Doti,rural_municipality
+80107311,Badikedar Rural Municipality,बडीकेदार गाउँपालिका,Doti,rural_municipality
+80107312,Bogatan Phusil Rural Municipality,बोगटान फुसिल गाउँपालिका,Doti,rural_municipality
+80107313,Sayal Rural Municipality,सायल गाउँपालिका,Doti,rural_municipality
+80107109,Kamalbazar Municipality,कमलबजार नगरपालिका,Achham,municipality
+80107110,Panchadeval Binayak Municipality,पंचदेवल विनायक नगरपालिका,Achham,municipality
+80107111,Mangalsen Municipality,मंगलसेन नगरपालिका,Achham,municipality
+80107112,Sanphebagar Municipality,साँफेबगर नगरपालिका,Achham,municipality
+80107314,Chaurpati Rural Municipality,चौरपाटी गाउँपालिका,Achham,rural_municipality
+80107315,Dhakari Rural Municipality,ढकारी गाउँपालिका,Achham,rural_municipality
+80107316,Turmakhand Rural Municipality,तुर्माखाँद गाउँपालिका,Achham,rural_municipality
+80107317,Bannigadhi Jayagadh Rural Municipality,वान्नीगडी जयगढ गाउँपालिका,Achham,rural_municipality
+80107318,Mellekh Rural Municipality,मेल्लेख गाउँपालिका,Achham,rural_municipality
+80107319,Ramaroshan Rural Municipality,रामारोशन गाउँपालिका,Achham,rural_municipality
+80107119,Mahakali Municipality,महाकाली नगरपालिका,Darchula,municipality
+80107120,Shailyashikhar Municipality,शैलाशिखर नगरपालिका,Darchula,municipality
+80107335,Apihimal Rural Municipality,अपिहिमाल गाउँपालिका,Darchula,rural_municipality
+80107336,Duhu Rural Municipality,दुहुँ गाउँपालिका,Darchula,rural_municipality
+80107337,Naugad Rural Municipality,नौगाड गाउँपालिका,Darchula,rural_municipality
+80107338,Byas Rural Municipality,व्याँस गाउँपालिका,Darchula,rural_municipality
+80107339,Marma Rural Municipality,मार्मा गाउँपालिका,Darchula,rural_municipality
+80107340,Malikarjun Rural Municipality,मालिकार्जुन गाउँपालिका,Darchula,rural_municipality
+80107341,Lekam Rural Municipality,लेकम गाउँपालिका,Darchula,rural_municipality
+80107121,Dasharathchand Municipality,दशरथचन्द नगरपालिका,Baitadi,municipality
+80107122,Patan Municipality,पाटन नगरपालिका,Baitadi,municipality
+80107123,Purchaudi Municipality,पुचौडी नगरपालिका,Baitadi,municipality
+80107124,Melauli Municipality,मेलौली नगरपालिका,Baitadi,municipality
+80107342,Dilasaini Rural Municipality,डीलासैनी गाउँपालिका,Baitadi,rural_municipality
+80107343,Dogadakedar Rural Municipality,दोगडाकेदार गाउँपालिका,Baitadi,rural_municipality
+80107344,Pancheshwar Rural Municipality,पंचेश्वर गाउँपालिका,Baitadi,rural_municipality
+80107345,Shivanath Rural Municipality,शिवनाथ गाउँपालिका,Baitadi,rural_municipality
+80107346,Sigas Rural Municipality,सिगास गाउँपालिका,Baitadi,rural_municipality
+80107347,Surnaya Rural Municipality,सुर्नया गाउँपालिका,Baitadi,rural_municipality
+80107125,Amargadhi Municipality,अमरगढी नगरपालिका,Dadeldhura,municipality
+80107126,Parashuram Municipality,परशुराम नगरपालिका,Dadeldhura,municipality
+80107348,Ajayameru Rural Municipality,अजयमेरु गाउँपालिका,Dadeldhura,rural_municipality
+80107349,Aalital Rural Municipality,जालिताल गाउँपालिका,Dadeldhura,rural_municipality
+80107350,Ganyapdhura Rural Municipality,गन्यापधुरा गाउँपालिका,Dadeldhura,rural_municipality
+80107351,Navadurga Rural Municipality,नवदुर्गा गाउँपालिका,Dadeldhura,rural_municipality
+80107352,Bhageshwar Rural Municipality,भागेवर गाउँपालिका,Dadeldhura,rural_municipality
+80107127,Krishnapur Municipality,कृष्णपुर नगरपालिका,Kanchanpur,municipality
+80107128,Punarbas Municipality,पुनर्वास नगरपालिका,Kanchanpur,municipality
+80107129,Bedkot Municipality,बेदकोट नगरपालिका,Kanchanpur,municipality
+80107130,Belauri Municipality,बेलौरी नगरपालिका,Kanchanpur,municipality
+80107131,Bhimdatta Municipality,भिमदत्त नगरपालिका,Kanchanpur,municipality
+80107132,Mahakali (Dodhara Chandani) Municipality,चाँदनी दोधारा नगरपालिका,Kanchanpur,municipality
+80107133,Shuklaphanta Municipality,शुक्लाफाँट नगरपालिका,Kanchanpur,municipality
+80107353,Beldandi Rural Municipality,बेलडाँडी गाउँपालिका,Kanchanpur,rural_municipality
+80107354,Laljhadi Rural Municipality,लालझाडी गाउँपालिका,Kanchanpur,rural_municipality
+80107031,Dhangadhi Sub-Metropolitan City,धनगढी उपमहानगरपालिका,Kailali,sub_metropolitan_city
+80107101,Godawari Municipality,गोदावरी नगरपालिका,Kailali,municipality
+80107102,Gauriganga Municipality,गौरीगंगा नगरपालिका,Kailali,municipality
+80107103,Ghodaghodi Municipality,घोडाघोडी नगरपालिका,Kailali,municipality
+80107104,Tikapur Municipality,टिकापुर नगरपालिका,Kailali,municipality
+80107105,Bhajani Municipality,भजनी नगरपालिका,Kailali,municipality
+80107106,Lamkichuha Municipality,लम्किचुहा नगरपालिका,Kailali,municipality
+80107301,Kailari Rural Municipality,कैलारी गाउँपालिका,Kailali,rural_municipality
+80107302,Chure Rural Municipality,चुरे गाउँपालिका,Kailali,rural_municipality
+80107303,Janaki Rural Municipality,जानकी गाउँपालिका,Kailali,rural_municipality
+80107304,Joshipur Rural Municipality,जोशीपुर गाउँपालिका,Kailali,rural_municipality
+80107305,Bardagoriya Rural Municipality,बर्दगोरिया गाउँपालिका,Kailali,rural_municipality
+80107306,Mohanyal Rural Municipality,मोहन्याल गाउँपालिका,Kailali,rural_municipality

@@ -1017,6 +1017,74 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     tier: null,
     notes: 'International benchmark.',
   },
+  {
+    sourceId: 'nepal-admin-boundaries',
+    agency:
+      'Survey Department, Government of Nepal (repackaged by younginnovations/nepal-locallevel-map)',
+    agencyShort: 'Survey Dept',
+    datasetName: 'Nepal administrative boundaries — 753 local levels (palika choropleth geometry)',
+    sourceUrl: 'https://github.com/younginnovations/nepal-locallevel-map',
+    publicationFrequency: 'ad_hoc',
+    reportingPeriodType: 'annual',
+    fileFormat: 'json',
+    requiresTableExtraction: false,
+    historicalCoverage:
+      '2017 federal structure — 7 provinces / 77 districts / 753 local levels (6 metro, 11 sub-metro, 276 municipality, 460 rural municipality)',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scripts/geo/build_palika_geo.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Static reference geometry; changes only on federal administrative restructuring. Re-run the crosswalk + asset build (scripts/geo/) if local-level boundaries or names change.',
+    knownBreakageModes: [
+      'source-repo-removed',
+      'local-level-rename-drifts-crosswalk',
+      'federal-restructuring',
+    ],
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'reference_only',
+    tier: null,
+    notes:
+      'Choropleth base geometry (ADR-0025). MIT-licensed community repackaging of official Survey Department boundaries; every feature resolved to its MoFAGA 8-digit federal_code via scripts/geo/crosswalk.csv (753/753, deterministic 4-phase match, render-verified as Nepal). Built asset: src/lib/viz/geo/palikas-753.geo.json (~99 KB gzipped). Base map only — not a fact feed.',
+  },
+
+  // ─── Migration pillar — data-acquisition pipeline (Migration Atlas plan) ──
+  {
+    sourceId: 'fewims-migrant-deaths',
+    agency: 'Foreign Employment Board (Foreign Employment Welfare Information Management System)',
+    agencyShort: 'FEWIMS',
+    datasetName: 'Migrant-worker deaths by cause, sex, destination and fiscal year',
+    sourceUrl: 'https://fewb.gov.np/',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'pdf',
+    requiresTableExtraction: true,
+    licenseStatus: 'gov_open',
+    confidenceDefault: 'B',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 3,
+    notes:
+      'Migration consequences (Atlas Fig 17: 258 women migrant-worker deaths 2008/09–2021/22, by cause). Counts only — never PII. Parser + rich profile land with the ingest PR. Registered per ADR-0009 (register before scraping).',
+  },
+  {
+    sourceId: 'idmc-displacement',
+    agency: 'Internal Displacement Monitoring Centre',
+    agencyShort: 'IDMC',
+    datasetName: 'Disaster-induced internal displacement — Nepal (GIDD)',
+    sourceUrl: 'https://www.internal-displacement.org/countries/nepal/',
+    publicationFrequency: 'annual',
+    reportingPeriodType: 'annual',
+    fileFormat: 'xlsx',
+    requiresTableExtraction: false,
+    licenseStatus: 'cc_by_nc_sa',
+    confidenceDefault: 'B',
+    status: 'paused',
+    ingestionMode: 'manual_upload',
+    tier: 4,
+    notes:
+      'Climate-induced migration driver (Atlas Maps 24–25, Table 4): ~800k displaced 2012–2024, district-level. Pairs with ndrrma-damage-tally (BIPAD). Parser + rich profile land with the ingest PR. (KNOMAD bilateral remittance dropped from the plan — source dysfunctional as of 2026-06.)',
+  },
 
   // ─── Added from 2026-05 NRB/MoF catalog audits (Worker A + Worker B) ───
 

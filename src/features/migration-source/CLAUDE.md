@@ -1,16 +1,19 @@
 # Migration Source — feature context
 
-**Absent-population-by-destination ranking (View A).** Renders Nepal's absent population (household members living abroad on census night 2021) ranked by destination region as a horizontal bar chart.
+**View A — absent-population-by-destination ranking.** Renders Nepal's absent population (household members living abroad on census night 2021) ranked by destination region as a horizontal bar chart.
+
+**View B — migration-intensity choropleth (palika).** The same census table mapped to each of the 753 local levels as the **share of the local population living abroad** (absent ÷ total population) — a 6-class quantile choropleth (`PalikaChoropleth`) matching the NDRI Atlas's headline "% of absentee population" map. Server-rendered SVG, **zero client JS**, native `<title>` tooltips (show both % and headcount). Geometry: the shared `src/lib/viz/geo/palikas-753.geo.json` asset, joined on `federal_code` (ADR-0025). Still **people, not rupees** underneath.
 
 Lens / pillar: labour-migration view; serves Pillar 2 "Money Out" (people leaving to work abroad — the census complement to the remittance/migration story)
 Route(s): `/migration`
-Status: live · CBS National Population & Housing Census 2021 (`census_facts`, source_table_id `Hhld19_AbsentPopnByCountry`, Grade A)
+Status: live · CBS National Population & Housing Census 2021 (`census_facts`, source_table_id `Hhld19_AbsentPopnByCountry`, Grade A) · base geometry source `nepal-admin-boundaries` (Grade A, ADR-0025)
 
 ## CRITICAL semantic correction (read before touching this feature)
 `Hhld19_AbsentPopnByCountry` is **absent population (migrant workers) by DESTINATION region** — it is a **person COUNT, NOT remittance NPR**. The unit is people (count). Never label this page "remittance" or imply a rupee flow. (See `docs/research/DATA_BUILDOUT_PLAN.md` §6 — the plan flags that the named deliverable "remittance source map" does not exist as money; only the headcount does.)
 
 ## Data in
-- `census_facts` WHERE `source_table_id = 'Hhld19_AbsentPopnByCountry'`, via `getMigrationByCountrySeries()` (`src/features/migration-source/server/queries.ts`)
+- View A: `census_facts` WHERE `source_table_id = 'Hhld19_AbsentPopnByCountry'`, via `getMigrationByCountrySeries()` (`src/features/migration-source/server/queries.ts`)
+- View B: same table summed **per origin palika**, LEFT JOINed to the total-population denominator, via `getAbsenteeShareByPalika()` — joins `census_facts` → `entities` (kind=`local_level`, `slug` = 8-digit `federal_code`) and returns `byCode: Record<federal_code, {people, population, pct}>`. Denominator = `Indv01_PopulationBySex` `total` column (slug `indv01-populationbysex-total`, verified by the cbs_nphc parser test). Geometry comes from the static `src/lib/viz/geo/palikas-753.geo.json` asset (no DB).
 - Reads production only (`census_facts`); no staging equivalent. No repository edits.
 
 ## Aggregation (the non-double-counting slice — verified against live DB)
@@ -27,7 +30,10 @@ The census groups destinations by **region**, with India broken out alone. Indiv
 - `server/queries.ts` — `getMigrationByCountrySeries(topN = 15)` returns `Result<MigrationByCountry>` (`destinations` ranked desc, `totalPeople`, `palikaCount`, `censusYearAd`); single GROUP BY query, Zod-validated at the DB boundary; typed `NotFound`/`QueryFailed` states, never throws.
 - `format.ts` — `formatPeople` (compact "804.6K"), `formatPeopleFull` (grouped "8,04,614"), `formatSharePct`. **Not** `'use client'` — plain module imported by both the Server page and the client chart.
 - `components/DestinationBarChart.tsx` — `'use client'`; ≥640px inline SVG horizontal bar chart (ResizeObserver width, reduced-motion-aware grow-in), <640px stacked bar list, and an always-present visually-hidden `<table>`. Uses `buildLinearScale` from `src/lib/viz/adapters/d3-shape.ts` for the count→width scale only.
-- `page` at `src/app/migration/page.tsx` — async Server Component; reuses Pulse `KpiCard`; "what this shows" prose, source/confidence/unit footer (Grade A), and a disabled "Remittance by recipient district — coming soon" placeholder. Renders typed empty/error states; never throws.
+- `components/PalikaChoropleth.tsx` (View B) — **Server Component, no `'use client'`.** Renders 753 `<path>` from the geometry asset, filled by a 6-class quantile scale of `byCode[federal_code].pct` (share abroad); native `<title>` tooltips show both % and headcount; a legend (with national %) + a visually-hidden top-30 `<table>`. No D3 / no viz-adapter cast (projection precomputed, classification is plain numeric — ADR-0012 N/A here).
+- `choropleth-scale.ts` — pure, testable `quantileBreaks` + `classOf` (no JSX/React) used by the choropleth. Covered by `choropleth-scale.test.ts`.
+- `src/lib/viz/geo/palikas.ts` — Zod-validated loader for the geometry asset (`palikas-753.geo.json`); exports `palikaGeometry` + `PALIKA_COUNT`. Asset invariants covered by `palikas.test.ts` (753 features, unique 8-digit codes, 77 districts, 6/11/276/460 type split).
+- `page` at `src/app/migration/page.tsx` — async Server Component; reuses Pulse `KpiCard`; "what this shows" prose, source/confidence/unit footer (Grade A), View A chart + View B choropleth (each with its own typed fallback), and a disabled "Remittance by recipient district — coming soon" placeholder. Renders typed empty/error states; never throws.
 
 ## Invariants (don't break these)
 - **Unit is people (count), never currency.** Source label is exactly "CBS National Population & Housing Census 2021"; confidence is **A** (official census enumeration). Never phrase any figure as remittance / NPR.
@@ -35,7 +41,8 @@ The census groups destinations by **region**, with India broken out alone. Indiv
 - `format.ts` MUST remain a plain (non-`'use client'`) module — importing a client module from a Server Component 500s the page (the money-map/tourism-rupee gotcha).
 - D3 type-bridging `as` casts belong ONLY in `src/lib/viz/adapters/d3-shape.ts` (ADR-0012). `DestinationBarChart.tsx` has zero `as` casts.
 - Typed empty state (`destinations.length === 0`) and typed error state (`!result.ok`) must remain; never throw from the page.
-- The "Remittance by recipient district" section is a deliberate disabled placeholder — never fabricate or zero-fill a rupee figure to fill it (Data Continuity Protocol). View B (the district choropleth) is deferred: no Nepal district GeoJSON / `d3-geo` in repo, and district identity is not derivable from the federal code (see plan §6).
+- The "Remittance by recipient district" section is a deliberate disabled placeholder — never fabricate or zero-fill a rupee figure to fill it (Data Continuity Protocol). This is **money**; we have only the people-count, so it stays disabled until real flow data is ingested.
+- **View B (palika choropleth) is implemented** (ADR-0025) as **migration intensity** — share of population abroad (absent ÷ total), matching the Atlas's headline map. NOT a rupee map. Palikas with no absent value, or no population denominator, render in the neutral "no data" fill with `pct = null` — never zero-filled or fabricated. Geometry join is on `federal_code`; the build guarantees 753/753 or refuses to ship (see `scripts/geo/`).
 
 ## Gotchas
 - The census uses **regional** destination buckets, not individual countries (see "Destination granularity" above). The bar labels say "Middle East", "ASEAN", etc. — matching the underlying data — not "Saudi Arabia"/"Malaysia".

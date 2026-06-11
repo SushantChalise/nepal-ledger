@@ -8,6 +8,82 @@ Format and rules: [CHANGE_CONTROL.md](../CHANGE_CONTROL.md).
 
 ---
 
+## 2026-06-11 — Migration Atlas Phase 2 (partial): intensity map + pipeline registrations
+
+**What changed:** Upgraded the palika choropleth from absolute count to **migration intensity — share of each local level's population living abroad** (absent ÷ total population), matching the NDRI Atlas's *headline* map ("% of absentee population by municipality"). Registered the next two acquisition-pipeline sources. All gates green (typecheck / lint / 188 tests / build / source-registry).
+
+### Intensity layer (the % map)
+
+- `getAbsenteeShareByPalika()` LEFT JOINs the Hhld19 absent slice to the total-population denominator `Indv01_PopulationBySex` (`total` column → slug `indv01-populationbysex-total`, **verified against the cbs_nphc parser test**, not guessed). Returns `byCode: Record<federal_code, { people, population, pct }>` + national aggregates. A palika with absentees but no population row gets `pct = null` → renders "no data", never a fabricated share (Data Continuity Protocol).
+- `PalikaChoropleth` now fills by `pct` (6-class quantile), legend shows % bands + the national share, and the native `<title>` tooltip shows both the **% and the headcount**. Still people-underneath, never rupees.
+
+### Pipeline registrations (Migration Atlas plan §4, minus KNOMAD)
+
+- `fewims-migrant-deaths` (FEWIMS / Foreign Employment Board, Tier 3, paused) — migrant-worker deaths by cause (Atlas Fig 17). Counts only, no PII.
+- `idmc-displacement` (IDMC GIDD, Tier 4, paused) — disaster-induced displacement, district-level (Atlas Maps 24–25). Pairs with `ndrrma-damage-tally`.
+- Both registered `paused` per ADR-0009 ("register before scraping"); seed rows + `docs/sources/*.md` stub profiles; index regenerated (**73 rows**), `check:source-registry` green.
+- **KNOMAD bilateral remittance matrix dropped** from the plan (source dysfunctional as of 2026-06) — recorded in the IDMC notes + plan.
+
+### Independent review pass
+
+Three independent reviewer agents (correctness / geo-pipeline / cleanup) audited the diff. Fixes applied: (1) **degenerate-subpath bug** — the geometry build's `<3 points` guard ran on float points before integer rounding, emitting one zero-area subpath (Lo-Ghekar Damodarkunda's hole); now rounds + dedups before the guard, and a regression test asserts ≥3 distinct points per subpath; (2) the build now asserts **emitted == 753** (not just matched), so geometry loss is fatal; (3) div-by-zero guard on degenerate projected extent; (4) SVG `aria-label` now reports the rendered 753 local levels (+ data coverage); (5) empty/zero-width legend bands (colliding quantile breaks) are dropped. No severe logic bugs were found; the LEFT-JOIN denominator, falsy-zero handling, and Zod boundary were verified correct.
+
+**Next:** DoFE granular permits (`migration_permit_facts`, needs its own enum ADR) + the live Sankey; backfill remittance BoP.
+
+---
+
+## 2026-06-11 — Migration Atlas Phase 1: palika choropleth engine + base geometry (ADR-0025)
+
+**What changed:** Shipped the **choropleth unlock** — the single missing primitive that blocked reproducing the NDRI Migration Atlas (and the census/land-use/District-MRI maps). Added Nepal's 753-local-level base geometry as a committed asset and rendered the first live choropleth: **absent population by origin palika** (View B at `/migration`), from `census_facts`, Grade A. All verification gates green.
+
+### Base geometry (the reusable primitive)
+
+- **Asset:** `src/lib/viz/geo/palikas-753.geo.json` — 753 palikas, each keyed by its MoFAGA 8-digit `federal_code`, as Mercator-projected, RDP-simplified, viewBox-normalised SVG paths (~384 KB raw / **~99 KB gzipped**). Render-verified as Nepal with spatially-coherent districts.
+- **Pipeline:** `scripts/geo/` (pure-Python, no geo/npm deps) — `extract_crosswalk.py` (canonical 753 codes↔names from the MoF workbook) + `build_palika_geo.py`. The crux — joining the source geometry's own codes to `federal_code` — is a **deterministic 4-phase match (exact → confidence-fuzzy → pigeonhole → 3 web-verified renames) reaching 753/753**; the build refuses to write a partial asset.
+- **Source registered:** `nepal-admin-boundaries` (Grade A, reference, tier null) + `docs/sources/nepal-admin-boundaries.md` profile + `scripts/geo/README.md`. Index regenerated (71 rows); `check:source-registry` green.
+
+### Runtime (zero client JS)
+
+- `PalikaChoropleth` is a **Server Component** rendering SSR'd `<path>` elements with a 6-class **quantile** fill, native `<title>` tooltips, legend, and a visually-hidden top-30 table — no client geo library, no hydration cost. Pure scale helpers (`choropleth-scale.ts`) + the geometry loader (`src/lib/viz/geo/palikas.ts`, Zod-validated) are unit-tested (15 new tests: classification + asset invariants 753/77/6-11-276-460).
+- Wired into `/migration` as View B with its own typed fallback. Unit is **people (count)**, never rupees — the page invariant holds; the remittance placeholder stays disabled (no fabricated money). Absentee-**%** (needs a population denominator) is a tracked follow-up.
+
+### Doctrine
+
+- **[ADR-0025](../decisions/0025-choropleth-geo-adapter.md)** moved Accepted → **implemented**, with an Implementation Note: built as **precomputed SVG paths (Mercator)**, not the originally-specified runtime TopoJSON + `d3-geo` adapter — lighter mobile payload and no cross-worktree dependency install. The load-bearing decisions held (static registered asset, federal_code crosswalk baked at build, `src/lib/viz/geo/`). TopoJSON + `d3-geo` remain the documented upgrade path for future interactive reprojection/zoom.
+- `MIGRATION_ATLAS_PLAN.md` §8 Phases 0–1 marked done; `migration-source/CLAUDE.md` updated (View B documented; the old "View B deferred — no GeoJSON" note retired).
+
+### Verification
+
+- `tsc --noEmit` ✓ · `eslint` ✓ (0 errors) · `vitest run` ✓ (**188 tests**, +15) · `next build` ✓ (`/migration` prerenders) · `check:source-registry` ✓.
+- Geometry render-verified (colored-by-district + a full synthetic-data choropleth preview). Live per-palika **values** depend on a reachable `census_facts` DB (unavailable in this worktree, as the existing View A already is); the component degrades to typed "no data" without it.
+
+**Next:** Phase 2 — DoFE granular permits (district-of-origin) + register KNOMAD/FEWIMS/IDMC; and the absentee-% layer (join a per-palika population table).
+
+---
+
+## 2026-06-11 — Migration pillar plan + choropleth geometry ADR (plan-only)
+
+**What changed:** Studied the **Migration Atlas of Nepal** (NDRI + AWO International, Nov 2025) to scope a migration data-acquisition pipeline and a *better-than-print* product. **Plan artifacts only — no code, no seed rows, no parsers, no schema.** Two docs added behind a review gate.
+
+### Findings
+
+- **Most of the Atlas's data spine is already in our DB.** Its ~18 census-derived maps draw on NPHC-2021 microdata we already hold in `census_facts` (531,618 rows, 753 palikas); migrant-by-country is live in `dne_facts` (×234 countries ×51 months); `/migration` View A is already shipped. The **single blocker** to reproducing the atlas is the missing geometry primitive (no GeoJSON/`d3-geo` in repo), already flagged as `DATA_BUILDOUT_PLAN.md` #28/#29 and in `migration-source/CLAUDE.md`.
+- **We catch a 10× error in the source.** The Atlas states remittance was "NPR 144 billion in 2023/24" (twice), while its own chart shows ~1,500 NPR billion at >25% of GDP; actual ≈ **NPR 1,445 billion** — a dropped digit. This is exactly the failure our cross-source reconciliation gate (ADR-0021) + data-unit identity discipline (ADR-0011) exist to catch; candidate launch story.
+- **Decisions taken:** plan-docs-only this round; **palika (753) granularity first** for the choropleths.
+
+### Doctrine
+
+- **[ADR-0025](../decisions/0025-choropleth-geo-adapter.md)** (Proposed) — choropleth geometry layer: static versioned **TopoJSON** (not PostGIS, not raw GeoJSON), boundaries as a registered source (`nepal-admin-boundaries`) with recorded license, MoFAGA `federal_code` crosswalk baked in at build time, type-bridges in a new `src/lib/viz/adapters/d3-geo.ts` (extends ADR-0012), `geoConicConformal` projection, and a mobile strategy (district-77 default render, palika detail on zoom, ≤~250 KB gzipped target). Unblocks ~11 atlas maps + census choropleth (#29) + Land Use Atlas + District MRI locators with one primitive.
+- **[`docs/research/MIGRATION_ATLAS_PLAN.md`](../research/MIGRATION_ATLAS_PLAN.md)** — master plan: report decode, differentiators, the source-acquisition table (M1–M10) with fully-specified proposed registry rows (KNOMAD bilateral remittance, IDMC displacement, FEWIMS deaths, MoLESS BLAs) + stub activations, the atlas-map→our-data crosswalk, the 4-phase dispatch sequence, and open escalations (DoFE `migration_permit_facts` enums ADR; boundary provider/license; historical 2001/2011 census totals).
+
+### Gates
+
+- Plan-only: no schema/migration/seed/parser changes. Documentation Gate satisfied (structural decision → ADR; new sources → registry-row specs staged for the implementation PR). No CI-affecting edits.
+
+**Next:** review gate → Phase 1 vertical slice (ADR-0025 deps + palika TopoJSON asset + `d3-geo.ts` adapter + one flagship *absentee % by palika* choropleth from `census_facts`).
+
+---
+
 ## 2026-06-11 — Government audit fact domain (ADR-0024): OAG beruju + findings model
 
 **What changed:** Added a dedicated, entity-keyed fact domain for Nepal's government audit reports (Office of the Auditor General — federal/provincial/local/corporations) instead of forcing audit data into the time-series `indicator_values` pipeline. Implements the Money Wasted pillar + Budget Watch / Local Ledger data need ([STRATEGY.md](../STRATEGY.md) Pillar 4, Vertical #10). **Foundation only — no corpus parsed, no data ingested.** (Renumbered from ADR-0010 / migration idx 0003 after the loving-wing build-out claimed those numbers in parallel.)

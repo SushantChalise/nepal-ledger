@@ -207,3 +207,149 @@ export async function getMigrationByCountrySeries(topN = 15): Promise<Result<Mig
     censusYearAd,
   });
 }
+
+// ---------------------------------------------------------------------------
+// View B — absent population SHARE by ORIGIN palika (choropleth)
+// ---------------------------------------------------------------------------
+
+// The denominator: total population per palika from the census's
+// `Indv01_PopulationBySex` table (`total` column). Slug verified by the parser
+// test `test_indv01_emits_population_indicators` (scrapers/cbs_nphc).
+const POPULATION_SOURCE_TABLE_ID = 'Indv01_PopulationBySex';
+const POPULATION_TOTAL_SLUG = 'indv01-populationbysex-total';
+
+/** One palika's migration figures: count, denominator, and intensity. */
+export type PalikaDatum = {
+  /** Absent population — people living abroad (census night). */
+  people: number;
+  /** Total resident population (the denominator); null if not found. */
+  population: number | null;
+  /** Share of the palika's population living abroad, % (0–100); null if no denominator. */
+  pct: number | null;
+};
+
+/**
+ * Per-palika absent-population SHARE, keyed by the originating local level's
+ * MoFAGA 8-digit federal code — the join key for the palika choropleth
+ * (ADR-0025). The map fills by `pct` (migration intensity), matching the NDRI
+ * Atlas's headline "% of absentee population by municipality" map.
+ */
+export type AbsenteeShareByPalika = {
+  byCode: Record<string, PalikaDatum>;
+  /** National absent population (sum of palika people). */
+  nationalPeople: number;
+  /** National resident population (sum of palika populations). */
+  nationalPopulation: number;
+  /** National share abroad, % (0–100); null if no denominator. */
+  nationalPct: number | null;
+  /** Number of palikas with an absent-population value. */
+  palikaCount: number;
+  /** Census reference year (AD), e.g. '2021'. */
+  censusYearAd: string;
+};
+
+// Absent total per palika is the same non-double-counting slice as View A
+// (sex=total, all-ages, summed over destination regions, excluding the
+// across-country `rowtotal`), LEFT JOINed to the total-population denominator
+// so a palika with absentees but a missing population row still appears (its
+// `pct` is null → it renders "no data" rather than a fabricated share).
+const PalikaShareRowSchema = z.object({
+  code: z.string(),
+  people: z.string(),
+  population: z.string().nullable(),
+});
+
+/**
+ * Fetch each palika's absent-population share, keyed by federal code. Joins the
+ * Hhld19 absent slice and the Indv01 total-population denominator per local
+ * level. Returns NotFound when the census table has no matching rows; never
+ * throws — callers render typed states.
+ */
+export async function getAbsenteeShareByPalika(): Promise<Result<AbsenteeShareByPalika>> {
+  const rowtotalSlug = `${MARGINAL_SLICE_PREFIX}rowtotal`;
+  const likePattern = `${MARGINAL_SLICE_PREFIX}%`;
+
+  const rawResult = await safeQuery(() =>
+    db().execute(
+      sql`
+        WITH absent AS (
+          SELECT cf.entity_id AS eid, SUM(cf.value) AS people
+          FROM census_facts cf
+          WHERE cf.source_table_id = ${ABSENT_POPN_SOURCE_TABLE_ID}
+            AND cf.indicator_slug LIKE ${likePattern}
+            AND cf.indicator_slug <> ${rowtotalSlug}
+          GROUP BY cf.entity_id
+        ),
+        pop AS (
+          SELECT cf.entity_id AS eid, cf.value AS population
+          FROM census_facts cf
+          WHERE cf.source_table_id = ${POPULATION_SOURCE_TABLE_ID}
+            AND cf.indicator_slug = ${POPULATION_TOTAL_SLUG}
+        )
+        SELECT
+          e.slug              AS code,
+          a.people::text      AS people,
+          p.population::text   AS population
+        FROM absent a
+        JOIN entities e ON e.id = a.eid AND e.kind = 'local_level'
+        LEFT JOIN pop p ON p.eid = a.eid
+      `,
+    ),
+  );
+
+  if (!rawResult.ok) return rawResult;
+
+  const parsed = z.array(PalikaShareRowSchema).safeParse(rawResult.value);
+  if (!parsed.success) {
+    return err({
+      kind: 'QueryFailed',
+      detail: `absentee-share-by-palika query returned unexpected row shape: ${parsed.error.message}`,
+    });
+  }
+
+  if (parsed.data.length === 0) {
+    return err({
+      kind: 'NotFound',
+      resource: 'census_facts',
+      id: `source_table_id=${ABSENT_POPN_SOURCE_TABLE_ID} (share by palika)`,
+    });
+  }
+
+  const byCode: Record<string, PalikaDatum> = {};
+  let nationalPeople = 0;
+  let nationalPopulation = 0;
+
+  for (const row of parsed.data) {
+    const people = Number(row.people);
+    if (!Number.isFinite(people) || people < 0) continue;
+    const population =
+      row.population !== null &&
+      Number.isFinite(Number(row.population)) &&
+      Number(row.population) > 0
+        ? Number(row.population)
+        : null;
+    const pct = population !== null ? (people / population) * 100 : null;
+    byCode[row.code] = { people, population, pct };
+    nationalPeople += people;
+    if (population !== null) nationalPopulation += population;
+  }
+
+  const palikaCount = Object.keys(byCode).length;
+  if (palikaCount === 0 || nationalPeople <= 0) {
+    return err({
+      kind: 'QueryFailed',
+      detail: 'getAbsenteeShareByPalika: no finite per-palika counts found',
+    });
+  }
+
+  const nationalPct = nationalPopulation > 0 ? (nationalPeople / nationalPopulation) * 100 : null;
+
+  return ok({
+    byCode,
+    nationalPeople,
+    nationalPopulation,
+    nationalPct,
+    palikaCount,
+    censusYearAd: '2021',
+  });
+}
