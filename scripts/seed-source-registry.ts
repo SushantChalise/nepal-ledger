@@ -1017,6 +1017,74 @@ const ROWS: readonly NewSourceRegistryRow[] = [
       'Projections marked observation_type=projection. Cross-checks dne-gdp-real-growth + wdi-gdp-*.',
   },
   {
+    sourceId: 'wb-pip',
+    agency: 'World Bank',
+    agencyShort: 'WB',
+    datasetName: 'Poverty and Inequality Platform (PIP) — Nepal',
+    sourceUrl: 'https://api.worldbank.org/pip/v1/pip',
+    publicationFrequency: 'ad_hoc',
+    expectedReleaseWindow: 'Updated when a new survey enters PIP (NLSS-IV/LSS-IV added Oct 2024)',
+    reportingPeriodType: 'annual',
+    fileFormat: 'json',
+    requiresTableExtraction: false,
+    historicalCoverage:
+      '5 survey rounds 1984–2022 (MHBS, LSS I–IV) with full distribution; $3.65 headcount filled 1981–present',
+    licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/wb_pip/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'PIP revises when surveys are re-estimated or PPPs update; ingest is a full snapshot — prior approved rows bump via revision_number. Survey anchors (actual) and the filled trend (interpolated/projected) carry distinct observation_type.',
+    knownBreakageModes: [
+      'api-intermittently-returns-empty-or-000-retry',
+      'distributional-fields-null-except-survey-years',
+      'reporting-year-is-calendar-not-fiscal',
+      'welfare-type-differs-income-pre1995-consumption-after',
+    ],
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'Distributional poverty layer (ADR-0025 observation_type). 10 indicators: poverty headcount ' +
+      'at $2.15/$3.65/$6.85, poverty gap + severity, Gini, mean + median consumption, bottom/top decile share. ' +
+      'Survey anchors = actual/conf-A; the $3.65 filled trend = interpolated/projected/conf-B. ' +
+      'pip-gini cross-checks wdi-gini-index (same 0–100 scale).',
+  },
+  {
+    sourceId: 'hdr-composite',
+    agency: 'United Nations Development Programme',
+    agencyShort: 'UNDP',
+    datasetName: 'Human Development Report — Composite Indices Time Series (Nepal)',
+    sourceUrl:
+      'https://hdr.undp.org/sites/default/files/2025_HDR/HDR25_Composite_indices_complete_time_series.csv',
+    publicationFrequency: 'annual',
+    expectedReleaseWindow: 'Annual HDR release (HDR 2025 launched May 2025; data through 2023)',
+    reportingPeriodType: 'annual',
+    fileFormat: 'csv',
+    requiresTableExtraction: false,
+    historicalCoverage: '1990 onward (composites IHDI/inequality from 2010); HDR 2025 vintage through 2023',
+    licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/hdr_composite/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Each annual HDR re-estimates the full back-series; ingest the new vintage as a full snapshot — prior approved rows bump via revision_number. Parser structure is version-pinned to the HDR 2025 CSV (Latin-1, wide format).',
+    knownBreakageModes: [
+      'csv-is-latin1-not-utf8',
+      'wide-format-metric_year-columns',
+      'undp-changes-csv-url-path-each-vintage',
+      'composite-indices-start-1990-but-ihdi-inequality-from-2010',
+    ],
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'Human-development layer (Where Money Becomes Wealth). 18 indicators: HDI (+female/male), ' +
+      'IHDI, GII, GDI, PHDI, life expectancy, expected/mean years schooling, GNI per capita (PPP), ' +
+      'coefficient of human inequality, IHDI loss, inequality in edu/income/life-exp, M/F labour-force ' +
+      'participation. Nepal HDI 2023 = 0.622. hdr-gii complements pip/wdi inequality series.',
+  },
+  {
     sourceId: 'imf-article-iv',
     agency: 'International Monetary Fund',
     agencyShort: 'IMF',

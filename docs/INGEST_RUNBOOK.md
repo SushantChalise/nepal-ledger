@@ -289,6 +289,64 @@ Notes:
   (matches `wb-wdi` so the two benchmark in one unit).
 - No `Financial Data/` junction required.
 
+### WB PIP (Poverty and Inequality Platform)
+
+Source ID: `wb-pip` | Parser: `scrapers/wb_pip/parser.py` v0.1.0 | 10 indicators (survey anchors + filled trend)
+
+```powershell
+# Dry-run against saved fixture (no DB, no network):
+pnpm ingest:pip --dry-run
+
+# Download fresh from the PIP API (4 queries, merged), then ingest:
+pnpm ingest:pip --download
+
+# Download/save without ingesting:
+pnpm ingest:pip --download --output-dir "C:\PIP"
+
+# Live ingest from a pre-downloaded combined JSON:
+pnpm ingest:pip --input "C:\PIP\pip_npl_2026-06-11.json"
+```
+
+Notes:
+- The CLI runs **4 PIP queries** (survey anchors at $2.15/$3.65/$6.85 + the $3.65 fill_gaps trend) and merges
+  them into one combined JSON; the parser is deterministic file-in.
+- PIP API is **intermittently flaky** (transient empty / HTTP 000) — the CLI retries each query up to 4×.
+- `reporting_year` is a **calendar** year; the parser maps it onto Nepal's FY via the WDI convention
+  (Y → BS Y+57) so `pip-*` aligns with `wdi-*` for the same survey.
+- **observation_type (ADR-0025):** survey rounds → `actual`/conf-A; the filled $3.65 trend →
+  `interpolated`/`projection`/`estimate` per PIP's `estimation_type`, conf-B. Survey years come only from
+  the anchor block (the filled series is deduped against them).
+- `pip-gini` is stored ×100 (`index_points`) to match `wdi-gini-index`.
+- No `Financial Data/` junction required.
+
+### UNDP HDR Composite Indices
+
+Source ID: `hdr-composite` | Parser: `scrapers/hdr_composite/parser.py` v0.1.0 | 18 indicators
+
+```powershell
+# Dry-run against saved fixture (no DB, no network):
+pnpm ingest:hdr --dry-run
+
+# Download the HDR 2025 CSV, then ingest:
+pnpm ingest:hdr --download
+
+# Download/save without ingesting:
+pnpm ingest:hdr --download --output-dir "C:\HDR"
+
+# Live ingest from a pre-downloaded CSV:
+pnpm ingest:hdr --input "C:\HDR\HDR25_Composite_indices_complete_time_series.csv"
+```
+
+Notes:
+- The parser reads the UNDP "complete time series" **CSV directly** (one wide row per country); the CLI just
+  downloads it and passes the path — no JSON assembly.
+- **The CSV is Latin-1 (cp1252)**, not UTF-8 — the parser reads it as Latin-1; the CLI streams bytes verbatim.
+- Wide format: ~1,112 `<metric>_<year>` columns; exact-prefix matching means `hdi` ignores `hdi_rank`/`hdi_f`.
+- HDR year is calendar; mapped onto Nepal FY via the WDI convention (Y → BS Y+57). Nepal HDI 2023 = 0.622.
+- All rows `observation_type='actual'`, confidence A. Publication date is pinned to the HDR vintage in the parser.
+- **The UNDP CSV URL path changes each vintage** (`2025_HDR/HDR25_…`) — update the CLI constant + registry URL when bumping.
+- No `Financial Data/` junction required.
+
 ---
 
 ## Operational Gotchas
