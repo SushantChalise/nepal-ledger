@@ -5,6 +5,7 @@ import type { ApprovedIndicatorWithMeta } from '@/lib/db/repositories/approved-i
 import { formatAppError } from '@/lib/errors';
 import { KpiCard } from '@/features/pulse/components/KpiCard';
 import { KpiGroup } from '@/features/pulse/components/KpiGroup';
+import { formatIndicatorValue } from '@/lib/format/indicator-units';
 
 export const metadata: Metadata = {
   title: 'Pulse — Nepal Ledger',
@@ -17,16 +18,28 @@ export const metadata: Metadata = {
 // Slugs that do not match any bucket fall into "Other Indicators".
 // ---------------------------------------------------------------------------
 
-type PulseGroupKey = 'prices' | 'money-in' | 'money-out';
+type PulseGroupKey = 'prices' | 'money-in' | 'money-out' | 'government' | 'monetary';
 
 const SLUG_TO_GROUP: Record<string, PulseGroupKey> = {
+  // Prices
   'cmefs-ncpi-yoy-overall': 'prices',
+  // Money In
   'cmefs-remittance-inflow-ytd': 'money-in',
+  'cmefs-merchandise-exports-ytd': 'money-in',
   'cmefs-bop-surplus-ytd': 'money-in',
   'cmefs-gross-forex-reserves': 'money-in',
   'cmefs-forex-reserves-months-of-import-cover': 'money-in',
+  // Money Out / Trade
   'cmefs-merchandise-imports-ytd': 'money-out',
   'cmefs-trade-deficit-ytd': 'money-out',
+  // Government Finance
+  'cmefs-govt-revenue-total-ytd': 'government',
+  'cmefs-govt-expenditure-total-ytd': 'government',
+  'cmefs-govt-fiscal-balance-ytd': 'government',
+  // Monetary
+  'cmefs-m2-yoy': 'monetary',
+  'cmefs-private-sector-credit-yoy': 'monetary',
+  'cmefs-bfi-deposits-yoy': 'monetary',
 };
 
 const GROUP_META: Record<PulseGroupKey, { title: string; description: string }> = {
@@ -37,72 +50,25 @@ const GROUP_META: Record<PulseGroupKey, { title: string; description: string }> 
   'money-in': {
     title: 'Money In',
     description:
-      'Remittances, balance of payments surplus, and foreign-exchange reserves flowing into Nepal.',
+      'Remittances, exports, balance of payments surplus, and foreign-exchange reserves flowing into Nepal.',
   },
   'money-out': {
     title: 'Money Out / Trade',
     description: 'Merchandise imports and the trade deficit represent money leaving Nepal.',
   },
+  government: {
+    title: 'Government Finance',
+    description:
+      'Fiscal position: government revenue, expenditure, and the resulting surplus or deficit.',
+  },
+  monetary: {
+    title: 'Monetary',
+    description:
+      'Money supply growth (M2), private-sector credit, and BFI deposit trends on a year-on-year basis.',
+  },
 };
 
-const GROUP_ORDER: PulseGroupKey[] = ['prices', 'money-in', 'money-out'];
-
-// ---------------------------------------------------------------------------
-// Value formatting
-// ---------------------------------------------------------------------------
-
-/**
- * Convert the raw numeric string stored in approved_indicator_values to a
- * human-readable display pair [formattedValue, unitLabel].
- *
- * Unit strings are the canonical vocabulary from indicator_units.
- * We handle the seven units present in the first batch; unknown units fall
- * back to the raw string + the unit slug.
- */
-function formatValue(rawValue: string, unitSlug: string): { display: string; unit: string } {
-  const num = parseFloat(rawValue);
-  if (isNaN(num)) return { display: rawValue, unit: unitSlug };
-
-  switch (unitSlug) {
-    case 'NPR_billion':
-    case 'npr_billion': {
-      const formatted = num.toLocaleString('en-IN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-      return { display: `NPR ${formatted} B`, unit: '' };
-    }
-    case 'percent_yoy':
-    case 'percent': {
-      return {
-        display: num.toLocaleString('en-IN', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }),
-        unit: '%',
-      };
-    }
-    case 'months_of_imports':
-    case 'months': {
-      return {
-        display: num.toLocaleString('en-IN', {
-          minimumFractionDigits: 1,
-          maximumFractionDigits: 1,
-        }),
-        unit: 'months',
-      };
-    }
-    default: {
-      return {
-        display: num.toLocaleString('en-IN', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }),
-        unit: unitSlug,
-      };
-    }
-  }
-}
+const GROUP_ORDER: PulseGroupKey[] = ['prices', 'money-in', 'money-out', 'government', 'monetary'];
 
 // ---------------------------------------------------------------------------
 // Page
@@ -156,6 +122,8 @@ export default async function PulsePage() {
     prices: [],
     'money-in': [],
     'money-out': [],
+    government: [],
+    monetary: [],
   };
   const overflow: ApprovedIndicatorWithMeta[] = [];
 
@@ -185,7 +153,7 @@ export default async function PulsePage() {
           return (
             <KpiGroup key={groupKey} title={meta.title} description={meta.description}>
               {groupRows.map((row) => {
-                const { display, unit } = formatValue(row.value.value, row.indicator.unit);
+                const { display, unit } = formatIndicatorValue(row.value.value, row.indicator.unit);
                 return (
                   <KpiCard
                     key={row.value.id}
@@ -207,7 +175,7 @@ export default async function PulsePage() {
             description="Additional approved indicators not yet categorised into a Pulse group."
           >
             {overflow.map((row) => {
-              const { display, unit } = formatValue(row.value.value, row.indicator.unit);
+              const { display, unit } = formatIndicatorValue(row.value.value, row.indicator.unit);
               return (
                 <KpiCard
                   key={row.value.id}
