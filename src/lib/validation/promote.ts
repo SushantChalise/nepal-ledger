@@ -54,6 +54,7 @@ export async function promoteStagingRow(
           fiscalYearBs: stagingRow.fiscalYearBs,
           fiscalYearAdLabel: stagingRow.fiscalYearAdLabel,
           confidenceGrade: stagingRow.confidenceGradeProposed,
+          observationType: stagingRow.observationType,
           revisionNumber,
           promotedBy,
           notes: stagingRow.parserNotes,
