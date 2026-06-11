@@ -6,14 +6,14 @@ Generated from `scripts/seed-source-registry.ts` (the canonical seed).
 For schema + workflow, see [`../SOURCE_REGISTRY.md`](../SOURCE_REGISTRY.md).
 For the lifetime contract, see [ADR-0009](../decisions/0009-source-registry-single-source-of-truth.md).
 
-Total registered sources: 71
+Total registered sources: 73
 
 | Tier | Source ID | Agency | Dataset | Frequency | Mode | Status |
 |---|---|---|---|---|---|---|
 | Tier 0 | [nrb-cmefs-monthly](nrb-cmefs-monthly.md) | NRB | Current Macroeconomic and Financial Situation | monthly | manual_upload | active |
 | Tier 0 | [nrb-ncpi-table](nrb-ncpi-table.md) | NRB | NCPI Table 2(B) | monthly | manual_upload | active |
 | Tier 1 | [customs-monthly-trade](customs-monthly-trade.md) | Customs | Monthly trade statistics (imports + exports) | monthly | automated_cron | active |
-| Tier 1 | [fcgo-consolidated-financial-statements](fcgo-consolidated-financial-statements.md) | FCGO | Consolidated Financial Statements (CFS) — Nepali + English | annual | manual_upload | paused |
+| Tier 1 | [fcgo-consolidated-financial-statements](fcgo-consolidated-financial-statements.md) | FCGO | Consolidated Financial Statements (CFS) — Nepali + English | annual | manual_upload | active |
 | Tier 1 | [fcgo-daily](fcgo-daily.md) | FCGO | Daily revenue + expenditure (preliminary) | daily | automated_cron | paused |
 | Tier 1 | [kalimati-daily-prices](kalimati-daily-prices.md) | Kalimati | Daily wholesale fruit & vegetable prices | daily | automated_cron | paused |
 | Tier 1 | [local-fiscal-transfers-cleaned](local-fiscal-transfers-cleaned.md) | MoF | Federal fiscal transfers to 753 local levels, FY 2082/83 (pre-cleaned XLSX) | annual | manual_upload | active |
@@ -27,6 +27,7 @@ Total registered sources: 71
 | Tier 1 | [nrb-dne-xlsx](nrb-dne-xlsx.md) | NRB | Database on Nepalese Economy — structured time-series XLSX (all sectors) | monthly | manual_upload | active |
 | Tier 1 | [nrb-reserves-daily](nrb-reserves-daily.md) | NRB | Daily foreign exchange reserve disclosure | daily | automated_cron | paused |
 | Tier 2 | [dofe-labour-migration](dofe-labour-migration.md) | DoFE | Monthly labour permits + airport-records | monthly | manual_upload | paused |
+| Tier 2 | [imf-weo](imf-weo.md) | IMF | World Economic Outlook (WEO) — Nepal | annual | automated_cron | active |
 | Tier 2 | [mof-budget-speech](mof-budget-speech.md) | MoF | Budget Speech (बजेट वक्तव्य) | annual | manual_upload | paused |
 | Tier 2 | [nrb-banking-stats](nrb-banking-stats.md) | NRB | Banking and Financial Statistics (quarterly bulletin) | quarterly | manual_upload | paused |
 | Tier 2 | [nrb-central-bank-balance-sheet-daily](nrb-central-bank-balance-sheet-daily.md) | NRB | NRB Summarized Balance Sheet (Daily) | daily | automated_cron | paused |
@@ -40,6 +41,8 @@ Total registered sources: 71
 | Tier 2 | [ntb-tourism-monthly](ntb-tourism-monthly.md) | NTB | Monthly arrivals + receipts | monthly | automated_cron | paused |
 | Tier 2 | [pdmo-debt-bulletin](pdmo-debt-bulletin.md) | PDMO | Quarterly public debt bulletin | quarterly | manual_upload | paused |
 | Tier 2 | [pdmo-monthly-debt-statistics](pdmo-monthly-debt-statistics.md) | PDMO | Monthly Government Debt Statistics (मासिक सरकारी ऋण तथ्याङ्क) | monthly | manual_upload | paused |
+| Tier 2 | [wb-pip](wb-pip.md) | WB | Poverty and Inequality Platform (PIP) — Nepal | ad_hoc | automated_cron | active |
+| Tier 2 | [wb-wdi](wb-wdi.md) | WB | World Development Indicators (WDI) — Nepal | annual | automated_cron | active |
 | Tier 3 | [coops-regulatory-status](coops-regulatory-status.md) | DoC | Cooperative regulatory status + Sahakari Bibhag directory | ad_hoc | manual_upload | paused |
 | Tier 3 | [doed-project-pipeline](doed-project-pipeline.md) | DoED | Hydropower licence + project pipeline registry | ad_hoc | manual_upload | paused |
 | Tier 3 | [dpm-public-enterprises-annual](dpm-public-enterprises-annual.md) | DPM | Annual Performance Review of Public Enterprises (Yellow Book) | annual | manual_upload | active |
@@ -80,4 +83,3 @@ Total registered sources: 71
 | Reference | nlss-survey | NSO | Nepal Living Standards Survey (NLSS) | ad_hoc | reference_only | active |
 | Reference | npc-16th-plan | NPC | 16th Five-Year Plan (FY 2081/82–2085/86) | ad_hoc | reference_only | active |
 | Reference | pdmo-mtds | PDMO | Medium-Term Debt Management Strategy (MTDS) | annual | reference_only | paused |
-| Reference | wb-wdi | WB | World Development Indicators (WDI) — Nepal | annual | reference_only | active |

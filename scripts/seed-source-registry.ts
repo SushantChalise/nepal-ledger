@@ -959,15 +959,96 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     datasetName: 'World Development Indicators (WDI) — Nepal',
     sourceUrl: 'https://databank.worldbank.org/source/world-development-indicators',
     publicationFrequency: 'annual',
+    expectedReleaseWindow: 'Mid-year update (typically June–July); data lags 1–2 FYs',
     reportingPeriodType: 'annual',
     fileFormat: 'json',
     requiresTableExtraction: false,
+    historicalCoverage: '1960 onward (most series; poverty/Gini sparse)',
     licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/wb_wdi/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'WB revises historical data when national offices submit corrections; revisions reflected in API without explicit versioning. Each ingest downloads a full snapshot — prior approved rows are bumped via revision_number.',
+    knownBreakageModes: [
+      'api-may-return-null-for-recent-years',
+      'poverty-gini-only-measured-every-3-5-years',
+      'date-field-is-fy-start-year-for-nepal',
+    ],
     confidenceDefault: 'A',
     status: 'active',
-    ingestionMode: 'reference_only',
-    tier: null,
-    notes: 'International benchmark. Continuous availability via API.',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'International benchmark. 15 indicators: GDP (current/constant USD, growth, per-capita), ' +
+      'GNI, CPI inflation, poverty headcount, Gini, gross capital formation, govt debt, ' +
+      'current-account balance, remittances (USD + % GDP). Cross-checks dne-gdp-* and dne-inflation-rate.',
+  },
+  {
+    sourceId: 'imf-weo',
+    agency: 'International Monetary Fund',
+    agencyShort: 'IMF',
+    datasetName: 'World Economic Outlook (WEO) — Nepal',
+    sourceUrl: 'https://www.imf.org/external/datamapper/api/v1',
+    publicationFrequency: 'annual',
+    expectedReleaseWindow: 'Twice yearly (April + October WEO vintages)',
+    reportingPeriodType: 'annual',
+    fileFormat: 'json',
+    requiresTableExtraction: false,
+    historicalCoverage: '1980 onward (Nepal reliable ~1990); each vintage projects 5 years forward',
+    licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/imf_weo/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Each WEO vintage (Apr/Oct) revises both history and the forecast path; ingest the new vintage as a fresh snapshot — prior approved rows bump via revision_number. The projection boundary (projection_from_year) is vintage-specific and supplied at download time.',
+    knownBreakageModes: [
+      'datamapper-api-does-not-flag-projection-vs-actual',
+      'projection-boundary-must-be-supplied-per-vintage',
+      'date-field-is-fy-start-year-for-nepal',
+      'imf-may-omit-recent-years-for-sparse-series-eg-LUR',
+    ],
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'International benchmark + the only source of forward PROJECTIONS (ADR-0025). ' +
+      '13 indicators: GDP (current USD, real growth, per-capita, PPP), inflation, current-account, ' +
+      'govt revenue/fiscal-balance/gross-debt (% GDP), savings, investment, unemployment, population. ' +
+      'Projections marked observation_type=projection. Cross-checks dne-gdp-real-growth + wdi-gdp-*.',
+  },
+  {
+    sourceId: 'wb-pip',
+    agency: 'World Bank',
+    agencyShort: 'WB',
+    datasetName: 'Poverty and Inequality Platform (PIP) — Nepal',
+    sourceUrl: 'https://api.worldbank.org/pip/v1/pip',
+    publicationFrequency: 'ad_hoc',
+    expectedReleaseWindow: 'Updated when a new survey enters PIP (NLSS-IV/LSS-IV added Oct 2024)',
+    reportingPeriodType: 'annual',
+    fileFormat: 'json',
+    requiresTableExtraction: false,
+    historicalCoverage:
+      '5 survey rounds 1984–2022 (MHBS, LSS I–IV) with full distribution; $3.65 headcount filled 1981–present',
+    licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/wb_pip/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'PIP revises when surveys are re-estimated or PPPs update; ingest is a full snapshot — prior approved rows bump via revision_number. Survey anchors (actual) and the filled trend (interpolated/projected) carry distinct observation_type.',
+    knownBreakageModes: [
+      'api-intermittently-returns-empty-or-000-retry',
+      'distributional-fields-null-except-survey-years',
+      'reporting-year-is-calendar-not-fiscal',
+      'welfare-type-differs-income-pre1995-consumption-after',
+    ],
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'Distributional poverty layer (ADR-0025 observation_type). 10 indicators: poverty headcount ' +
+      'at $2.15/$3.65/$6.85, poverty gap + severity, Gini, mean + median consumption, bottom/top decile share. ' +
+      'Survey anchors = actual/conf-A; the $3.65 filled trend = interpolated/projected/conf-B. ' +
+      'pip-gini cross-checks wdi-gini-index (same 0–100 scale).',
   },
   {
     sourceId: 'imf-article-iv',
@@ -1420,8 +1501,8 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     requiresTableExtraction: true,
     historicalCoverage: 'English: FY 2018/19 (2075/76) onward; Nepali: FY 2074/75 onward',
     licenseStatus: 'gov_open',
-    parserOwner: 'scrapers/fcgo-consolidated-financial-statements/parser.py',
-    parserVersion: '0.0.0',
+    parserOwner: 'scrapers/fcgo_consolidated/parser.py',
+    parserVersion: '0.2.0',
     revisionPolicy:
       'Annual; published Chaitra of following FY; audited outturn — no subsequent revision expected',
     knownBreakageModes: [
@@ -1429,11 +1510,11 @@ const ROWS: readonly NewSourceRegistryRow[] = [
       'pdf-filenames-use-opaque-cdn-tokens-at-giwmscdnone-gov-np',
     ],
     confidenceDefault: 'A',
-    status: 'paused',
+    status: 'active',
     ingestionMode: 'manual_upload',
     tier: 1,
     notes:
-      'Audited all-of-government outturn — highest-confidence fiscal data (A). Covers federal + 7 provinces + 753 local govts in consolidated form. English CFS available from FY 2018/19; Nepali from FY 2074/75. PDFs served from giwmscdnone.gov.np CDN.',
+      'Audited all-of-government outturn — highest-confidence fiscal data (A). Covers federal + 7 provinces + 753 local govts in consolidated form. English CFS available from FY 2018/19 (2075/76) through FY 2023/24 (2080/81) — 6 editions as of 2026-06-11. PDFs served from giwmscdnone.gov.np CDN. Parser v0.2.0: auto-detects FY from prose, supports all available editions.',
   },
   {
     // MoF audit #4 — PDMO monthly government debt stats.

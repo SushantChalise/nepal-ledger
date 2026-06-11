@@ -36,6 +36,9 @@ const NCPI_SOURCE_ID = 'nrb-ncpi-table';
 const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
+const WDI_SOURCE_ID = 'wb-wdi';
+const WEO_SOURCE_ID = 'imf-weo';
+const PIP_SOURCE_ID = 'wb-pip';
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -219,6 +222,340 @@ const DNE_INDICATORS: readonly SeedIndicator[] = [
   },
 ];
 
+// ─── WDI indicators (parser wb_wdi v0.1.0) ──────────────────────────────────
+// 15 WB indicator codes for Nepal. All annual, confidence A.
+// Cross-checks: wdi-gdp-growth-annual-pct ↔ dne-gdp-real-growth;
+//               wdi-cpi-inflation-annual-pct ↔ dne-inflation-rate;
+//               wdi-gdp-per-capita-current-usd ↔ dne-gdp-per-capita-usd.
+// USD level indicators (GDP, GNI, remittances) stored in usd_million (÷1e6).
+// Per-capita indicators stored in usd (no scaling).
+const WDI_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'wdi-gdp-current-usd',
+    nameEn: 'GDP (current US$)',
+    category: 'real_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gdp-constant-2015-usd',
+    nameEn: 'GDP (constant 2015 US$)',
+    category: 'real_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gdp-growth-annual-pct',
+    nameEn: 'GDP growth (annual %)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gdp-per-capita-current-usd',
+    nameEn: 'GDP per capita (current US$)',
+    category: 'real_sector',
+    unit: 'usd',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gdp-per-capita-growth-pct',
+    nameEn: 'GDP per capita growth (annual %)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-cpi-inflation-annual-pct',
+    nameEn: 'Inflation, consumer prices (annual %)',
+    category: 'price',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-remittances-received-usd',
+    nameEn: 'Personal remittances received (current US$)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-remittances-pct-gdp',
+    nameEn: 'Personal remittances received (% of GDP)',
+    category: 'external_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gni-current-usd',
+    nameEn: 'GNI (current US$)',
+    category: 'real_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gni-per-capita-current-usd',
+    nameEn: 'GNI per capita (current US$)',
+    category: 'real_sector',
+    unit: 'usd',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-poverty-headcount-national-pct',
+    nameEn: 'Poverty headcount ratio at national poverty lines (% of population)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gini-index',
+    nameEn: 'Gini index',
+    category: 'demographic',
+    unit: 'index_points',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-gross-capital-formation-pct-gdp',
+    nameEn: 'Gross capital formation (% of GDP)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-central-govt-debt-pct-gdp',
+    nameEn: 'Central government debt, total (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'wdi-current-account-balance-pct-gdp',
+    nameEn: 'Current account balance (% of GDP)',
+    category: 'external_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+];
+
+// ─── IMF WEO indicators (parser imf_weo v0.1.0) ─────────────────────────────
+// 13 IMF World Economic Outlook codes for Nepal. All annual, confidence A.
+// The ONLY source of forward projections (ADR-0025: observation_type).
+// USD/PPP levels stored ÷ in *_million (WEO publishes billions → parser ×1000),
+// matching wb_wdi's usd_million so the two benchmark in one unit.
+// Cross-checks: weo-gdp-real-growth-pct ↔ dne-gdp-real-growth / wdi-gdp-growth-annual-pct;
+//               weo-inflation-avg-pct ↔ wdi-cpi-inflation-annual-pct.
+const WEO_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'weo-gdp-current-usd',
+    nameEn: 'GDP, current prices (US$)',
+    category: 'real_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-gdp-real-growth-pct',
+    nameEn: 'Real GDP growth (annual %)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-gdp-per-capita-current-usd',
+    nameEn: 'GDP per capita, current prices (US$)',
+    category: 'real_sector',
+    unit: 'usd',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-gdp-ppp-intl-dollar',
+    nameEn: 'GDP, PPP valuation (international $)',
+    category: 'real_sector',
+    unit: 'intl_dollar_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-inflation-avg-pct',
+    nameEn: 'Inflation, average consumer prices (annual %)',
+    category: 'price',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-current-account-pct-gdp',
+    nameEn: 'Current account balance (% of GDP)',
+    category: 'external_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-govt-revenue-pct-gdp',
+    nameEn: 'General government revenue (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-fiscal-balance-pct-gdp',
+    nameEn: 'General government net lending/borrowing (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-govt-gross-debt-pct-gdp',
+    nameEn: 'General government gross debt (% of GDP)',
+    category: 'fiscal',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-gross-national-savings-pct-gdp',
+    nameEn: 'Gross national savings (% of GDP)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-total-investment-pct-gdp',
+    nameEn: 'Total investment (% of GDP)',
+    category: 'real_sector',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-unemployment-rate-pct',
+    nameEn: 'Unemployment rate (% of total labour force)',
+    category: 'labour',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+  {
+    slug: 'weo-population',
+    nameEn: 'Population',
+    category: 'demographic',
+    unit: 'persons_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'International Monetary Fund',
+  },
+];
+
+// ─── WB PIP indicators (parser wb_pip v0.1.0) ───────────────────────────────
+// 10 World Bank Poverty & Inequality Platform series for Nepal. Survey anchors
+// (5 rounds 1984–2022) are confidence A / observation_type 'actual'; the $3.65
+// filled trend is conf B / interpolated|projected (ADR-0025).
+// Headcount/gap/severity/decile shares stored ×100 → percent; Gini ×100 →
+// index_points (matches wdi-gini-index for cross-check); mean/median in
+// intl_dollar_per_day (2017-PPP daily consumption).
+const PIP_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'pip-poverty-headcount-215',
+    nameEn: 'Poverty headcount ratio at $2.15/day (2017 PPP)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-poverty-headcount-365',
+    nameEn: 'Poverty headcount ratio at $3.65/day (2017 PPP)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-poverty-headcount-685',
+    nameEn: 'Poverty headcount ratio at $6.85/day (2017 PPP)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-poverty-gap-365',
+    nameEn: 'Poverty gap at $3.65/day (2017 PPP)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-poverty-severity-365',
+    nameEn: 'Poverty severity (squared gap) at $3.65/day (2017 PPP)',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-gini',
+    nameEn: 'Gini index (consumption/income)',
+    category: 'demographic',
+    unit: 'index_points',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-mean-consumption',
+    nameEn: 'Mean daily consumption per capita (2017 PPP)',
+    category: 'demographic',
+    unit: 'intl_dollar_per_day',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-median-consumption',
+    nameEn: 'Median daily consumption per capita (2017 PPP)',
+    category: 'demographic',
+    unit: 'intl_dollar_per_day',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-decile1-share',
+    nameEn: 'Consumption share of the bottom decile',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+  {
+    slug: 'pip-decile10-share',
+    nameEn: 'Consumption share of the top decile',
+    category: 'demographic',
+    unit: 'percent',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank',
+  },
+];
+
 // ─── Controlled unit vocabulary ────────────────────────────────────────────
 const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'npr_billion', displayEn: 'NPR billion', dimension: 'currency' },
@@ -228,6 +565,9 @@ const UNITS: readonly NewIndicatorUnitRow[] = [
   { unit: 'npr', displayEn: 'NPR', dimension: 'currency' },
   { unit: 'usd_million', displayEn: 'USD million', dimension: 'currency' },
   { unit: 'usd', displayEn: 'USD', dimension: 'currency' },
+  { unit: 'intl_dollar_million', displayEn: 'international $ million (PPP)', dimension: 'currency' },
+  { unit: 'intl_dollar_per_day', displayEn: 'international $ per day (PPP)', dimension: 'currency' },
+  { unit: 'persons_million', displayEn: 'persons (millions)', dimension: 'count' },
   { unit: 'percent', displayEn: 'percent', dimension: 'ratio' },
   { unit: 'percent_yoy', displayEn: 'percent (year-on-year)', dimension: 'ratio' },
   { unit: 'index_points', displayEn: 'index points', dimension: 'index' },
@@ -297,6 +637,69 @@ const INDICATORS: readonly SeedIndicator[] = [
     nameEn: 'Foreign Exchange Reserves — Months of Import Cover',
     category: 'external_sector',
     unit: 'months',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+];
+
+// ─── CMEFs v0.2.0 extended indicators (parser nrb_cmefs v0.2.0) ─────────────
+// Government finance, monetary, and external-sector extensions. Prose-based.
+// Cross-validate revenue/expenditure vs FCGO CFS and DNE in the TS validation
+// layer (see docs/sources/nrb-cmefs-monthly.md §"Cross-validation").
+const CMEFS_V02_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'cmefs-merchandise-exports-ytd',
+    nameEn: 'Merchandise Exports (year-to-date)',
+    category: 'external_sector',
+    unit: 'npr_billion',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-govt-revenue-total-ytd',
+    nameEn: 'Government Total Revenue (year-to-date)',
+    category: 'fiscal',
+    unit: 'npr_billion',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-govt-expenditure-total-ytd',
+    nameEn: 'Government Total Expenditure (year-to-date)',
+    category: 'fiscal',
+    unit: 'npr_billion',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-govt-fiscal-balance-ytd',
+    nameEn: 'Government Fiscal Balance (year-to-date)',
+    category: 'fiscal',
+    unit: 'npr_billion',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-m2-yoy',
+    nameEn: 'Broad Money (M2) — Year-on-Year Growth',
+    category: 'monetary',
+    unit: 'percent_yoy',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-private-sector-credit-yoy',
+    nameEn: 'Private Sector Credit — Year-on-Year Growth',
+    category: 'monetary',
+    unit: 'percent_yoy',
+    nativeFrequency: 'monthly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'cmefs-bfi-deposits-yoy',
+    nameEn: 'BFI Deposits — Year-on-Year Growth',
+    category: 'monetary',
+    unit: 'percent_yoy',
     nativeFrequency: 'monthly',
     sourceAgency: 'Nepal Rastra Bank',
   },
@@ -1005,7 +1408,38 @@ async function persist(): Promise<void> {
   }
   log(`indicator_source_map: ${linked} links ensured → ${CMEFS_SOURCE_ID}`);
 
-  // 4. NCPI indicators.
+  // 4. CMEFs v0.2.0 extended indicators.
+  const cmefs02InsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...CMEFS_V02_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!cmefs02InsertResult.ok)
+    throw new Error(
+      `CMEFs v0.2.0 indicators insert failed: ${JSON.stringify(cmefs02InsertResult.error)}`,
+    );
+  log(
+    `indicators (CMEFs v0.2.0): ${cmefs02InsertResult.value.length} inserted ` +
+      `(of ${CMEFS_V02_INDICATORS.length}; existing skipped)`,
+  );
+  let cmefs02Linked = 0;
+  for (const ind of CMEFS_V02_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok)
+      throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      CMEFS_SOURCE_ID,
+      'CMEFs extended set (v0.2.0)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    cmefs02Linked += 1;
+  }
+  log(`indicator_source_map: ${cmefs02Linked} links ensured → ${CMEFS_SOURCE_ID} (v0.2.0)`);
+
+  // 6. NCPI indicators.
   const ncpiInsertResult = await safeQuery(() =>
     db()
       .insert(indicators)
@@ -1019,7 +1453,7 @@ async function persist(): Promise<void> {
     `indicators (NCPI): ${ncpiInsertResult.value.length} inserted (of ${NCPI_INDICATORS.length}; existing skipped)`,
   );
 
-  // 5. NCPI source map links.
+  // 7. NCPI source map links.
   let ncpiLinked = 0;
   for (const ind of NCPI_INDICATORS) {
     const found = await findIndicatorBySlug(ind.slug);
@@ -1122,6 +1556,81 @@ async function persist(): Promise<void> {
     esLinked += 1;
   }
   log(`indicator_source_map: ${esLinked} links ensured → ${ECONOMIC_SURVEY_SOURCE_ID}`);
+
+  // 12. WDI (World Bank) indicators — 15 annual benchmark series.
+  const wdiInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...WDI_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!wdiInsertResult.ok)
+    throw new Error(`WDI indicators insert failed: ${JSON.stringify(wdiInsertResult.error)}`);
+  log(
+    `indicators (WDI): ${wdiInsertResult.value.length} inserted (of ${WDI_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 13. WDI source map links.
+  let wdiLinked = 0;
+  for (const ind of WDI_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(found.value.id, WDI_SOURCE_ID, 'WB WDI Nepal annual');
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    wdiLinked += 1;
+  }
+  log(`indicator_source_map: ${wdiLinked} links ensured → ${WDI_SOURCE_ID}`);
+
+  // 14. IMF WEO indicators — 13 annual benchmark + projection series.
+  const weoInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...WEO_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!weoInsertResult.ok)
+    throw new Error(`WEO indicators insert failed: ${JSON.stringify(weoInsertResult.error)}`);
+  log(
+    `indicators (WEO): ${weoInsertResult.value.length} inserted (of ${WEO_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 15. WEO source map links.
+  let weoLinked = 0;
+  for (const ind of WEO_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(found.value.id, WEO_SOURCE_ID, 'IMF WEO Nepal annual');
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    weoLinked += 1;
+  }
+  log(`indicator_source_map: ${weoLinked} links ensured → ${WEO_SOURCE_ID}`);
+
+  // 16. WB PIP indicators — 10 poverty/inequality series.
+  const pipInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...PIP_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!pipInsertResult.ok)
+    throw new Error(`PIP indicators insert failed: ${JSON.stringify(pipInsertResult.error)}`);
+  log(
+    `indicators (PIP): ${pipInsertResult.value.length} inserted (of ${PIP_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 17. PIP source map links.
+  let pipLinked = 0;
+  for (const ind of PIP_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(found.value.id, PIP_SOURCE_ID, 'WB PIP Nepal poverty');
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    pipLinked += 1;
+  }
+  log(`indicator_source_map: ${pipLinked} links ensured → ${PIP_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1132,6 +1641,9 @@ async function main(): Promise<void> {
       `indicators (CMEFs) = ${INDICATORS.length}, source = ${CMEFS_SOURCE_ID}`,
   );
   log(`indicators (NCPI)  = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
+  log(`indicators (WDI)   = ${WDI_INDICATORS.length}, source = ${WDI_SOURCE_ID}`);
+  log(`indicators (WEO)   = ${WEO_INDICATORS.length}, source = ${WEO_SOURCE_ID}`);
+  log(`indicators (PIP)   = ${PIP_INDICATORS.length}, source = ${PIP_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');

@@ -1,0 +1,46 @@
+{
+  "fetched_at": "2026-06-11T00:00:00Z",
+  "country_code": "NPL",
+  "reporting_level": "national",
+  "anchors": [
+    {
+      "reporting_year": 1984, "survey_year": 1984.5, "survey_acronym": "MHBS", "welfare_type": "income",
+      "headcount_215": 0.6301, "headcount_365": 0.898, "headcount_685": 0.9822,
+      "poverty_gap_365": 0.4492, "poverty_severity_365": 0.2575,
+      "gini": 0.3006, "mean": 2.1933, "median": 1.8242, "decile1": 0.0405, "decile10": 0.2498
+    },
+    {
+      "reporting_year": 1995, "survey_year": 1995.5, "survey_acronym": "LSS-I", "welfare_type": "consumption",
+      "headcount_215": 0.4852, "headcount_365": 0.8081, "headcount_685": 0.9585,
+      "poverty_gap_365": 0.3663, "poverty_severity_365": 0.1985,
+      "gini": 0.3521, "mean": 2.8102, "median": 2.1838, "decile1": 0.0325, "decile10": 0.29
+    },
+    {
+      "reporting_year": 2003, "survey_year": 2003.25, "survey_acronym": "LSS-II", "welfare_type": "consumption",
+      "headcount_215": 0.3578, "headcount_365": 0.6669, "headcount_685": 0.8883,
+      "poverty_gap_365": 0.2733, "poverty_severity_365": 0.1387,
+      "gini": 0.4377, "mean": 4.0812, "median": 2.7253, "decile1": 0.0271, "decile10": 0.3688
+    },
+    {
+      "reporting_year": 2010, "survey_year": 2010.17, "survey_acronym": "LSS-III", "welfare_type": "consumption",
+      "headcount_215": 0.0614, "headcount_365": 0.3529, "headcount_685": 0.7691,
+      "poverty_gap_365": 0.0882, "poverty_severity_365": 0.0316,
+      "gini": 0.3284, "mean": 5.6009, "median": 4.5298, "decile1": 0.035, "decile10": 0.2641
+    },
+    {
+      "reporting_year": 2022, "survey_year": 2022.5, "survey_acronym": "LSS-IV", "welfare_type": "consumption",
+      "headcount_215": 0.0021, "headcount_365": 0.0538, "headcount_685": 0.3755,
+      "poverty_gap_365": 0.0093, "poverty_severity_365": 0.0024,
+      "gini": 0.3002, "mean": 9.4669, "median": 8.0324, "decile1": 0.0367, "decile10": 0.2418
+    }
+  ],
+  "series_365": [
+    {"reporting_year": 1982, "headcount": 0.9159, "estimation_type": "extrapolation", "estimate_type": "projection"},
+    {"reporting_year": 2007, "headcount": 0.52, "estimation_type": "interpolation", "estimate_type": "projection"},
+    {"reporting_year": 2011, "headcount": null, "estimation_type": "interpolation", "estimate_type": "projection"},
+    {"reporting_year": 2015, "headcount": 0.20, "estimation_type": "interpolation", "estimate_type": "projection"},
+    {"reporting_year": 2022, "headcount": 0.054, "estimation_type": "extrapolation", "estimate_type": "projection"},
+    {"reporting_year": 2024, "headcount": 0.0472, "estimation_type": "extrapolation", "estimate_type": "projection"},
+    {"reporting_year": 2026, "headcount": 0.0368, "estimation_type": "extrapolation", "estimate_type": "nowcast"}
+  ]
+}

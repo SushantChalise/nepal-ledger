@@ -1,7 +1,7 @@
 # Source: Nepal Rastra Bank — Current Macroeconomic and Financial Situation
 
 **source_id:** `nrb-cmefs-monthly`
-**Status:** Active (parser v0.1.0 — headline indicators only, English edition; Path B1)
+**Status:** Active (parser v0.2.0 — headline + extended indicators, English edition; Path B1)
 **Last verified:** 2026-05-15
 
 ## What this is
@@ -22,32 +22,46 @@ tempo for Nepal Ledger's Pulse + Monthly Verdict cycle.
 
 ## What we extract
 
-The v0.1.0 parser extracts seven **headline** indicators from the English
-edition of the bulletin — the figures NRB itself foregrounds in the
-executive summary and the body's narrative paragraphs. These feed Pulse
-v0 (BoP, forex reserves, remittances, trade, NCPI). Additional indicators
-in the enumerative list below are slated for v0.2.0+ as Pulse expands.
+The v0.2.0 parser extracts fourteen indicators from the English edition's
+narrative prose — the seven v0.1.0 headlines (executive summary) plus seven
+extended series (government finance, monetary, external sector). All feed
+Pulse v1. Further coverage (NEPSE, banking table detail, USD counterparts)
+is in the v0.3.0+ backlog.
 
-**v0.1.0 (shipped):**
+**v0.1.0 + v0.2.0 (shipped):**
 
 | Slug | Unit | Period type | Narrative anchor |
 | --- | --- | --- | --- |
-| `cmefs-ncpi-yoy-overall` | percent_yoy | nine_months_cumulative (end-of-period) | "The y-o-y consumer price inflation in Nepal remained at X percent in mid-Month YYYY" |
-| `cmefs-remittance-inflow-ytd` | npr_billion | nine_months_cumulative | "Remittance inflows increased N percent to Rs.X billion" |
-| `cmefs-merchandise-imports-ytd` | npr_billion | nine_months_cumulative | "mercandise imports increased N percent to Rs.X billion" (NRB typo for "merchandise"; both spellings accepted) |
-| `cmefs-trade-deficit-ytd` | npr_billion | nine_months_cumulative | "Total trade deficit increased N percent to Rs.X billion" |
-| `cmefs-bop-surplus-ytd` | npr_billion | nine_months_cumulative | "Balance of Payments (BOP) remained at a surplus of Rs.X billion" (deficit qualifier noted in `parser_notes`) |
-| `cmefs-gross-forex-reserves` | npr_billion | end-of-period | "Gross foreign exchange reserves increased N percent to Rs.X billion" |
-| `cmefs-forex-reserves-months-of-import-cover` | months | end-of-period | "merchandise and services imports of X months" |
+| `cmefs-ncpi-yoy-overall` | percent_yoy | doc period (end-of-period) | "The y-o-y consumer price inflation in Nepal remained at X percent in mid-Month YYYY" |
+| `cmefs-remittance-inflow-ytd` | npr_billion | doc period (cumulative) | "Remittance inflows increased N percent to Rs.X billion" |
+| `cmefs-merchandise-imports-ytd` | npr_billion | doc period (cumulative) | "mercandise imports increased N percent to Rs.X billion" (NRB typo; both spellings accepted) |
+| `cmefs-trade-deficit-ytd` | npr_billion | doc period (cumulative) | "Total trade deficit increased N percent to Rs.X billion" |
+| `cmefs-bop-surplus-ytd` | npr_billion | doc period (cumulative) | "Balance of Payments (BOP) remained at a surplus of Rs.X billion" (sign in `parser_notes`) |
+| `cmefs-gross-forex-reserves` | npr_billion | doc period (end-of-period) | "Gross foreign exchange reserves increased N percent to Rs.X billion" |
+| `cmefs-forex-reserves-months-of-import-cover` | months | doc period (end-of-period) | "merchandise and services imports of X months" |
+| `cmefs-merchandise-exports-ytd` | npr_billion | doc period (cumulative) | "merchandise exports increased N percent to Rs.X billion" |
+| `cmefs-govt-revenue-total-ytd` | npr_billion | doc period (cumulative) | "Total government revenue increased N percent to Rs.X billion" |
+| `cmefs-govt-expenditure-total-ytd` | npr_billion | doc period (cumulative) | "Total government expenditure increased N percent to Rs.X billion" |
+| `cmefs-govt-fiscal-balance-ytd` | npr_billion | doc period (cumulative) | "Fiscal deficit/surplus ... Rs.X billion" (sign in `parser_notes`) |
+| `cmefs-m2-yoy` | percent_yoy | doc period (end-of-period) | "Broad money (M2) increased X percent" |
+| `cmefs-private-sector-credit-yoy` | percent_yoy | doc period (end-of-period) | "Private sector credit increased X percent" |
+| `cmefs-bfi-deposits-yoy` | percent_yoy | doc period (end-of-period) | "Deposits of BFIs increased X percent" |
 
-**v0.2.0+ (planned):**
+"doc period" means the parser derives `reporting_period_type` from the bulletin title
+("based on Nine Months of YYYY/YY" → `nine_months_cumulative`; "based on Magh YYYY" →
+`monthly`; other N → `year_to_date`). This replaces the v0.1.0 hardcoded FY 2082/83 constant.
 
-- `cmefs-ncpi-food-yoy`, `cmefs-ncpi-non-food-yoy` — sub-group YoY
-- `cmefs-merchandise-exports-ytd`
-- `cmefs-m2-yoy`
-- `cmefs-private-sector-credit-yoy`
-- `cmefs-bfi-deposits-yoy`
+**Cross-validation hooks (enforced by TS validation layer):**
+- `cmefs-ncpi-yoy-overall` ↔ `ncpi-overall-index-overall-yoy` (NCPI parser) within ±0.01pp
+- `cmefs-govt-revenue-total-ytd` ↔ `fcgo-total-revenue-outturn-annual` (FCGO CFS, unit-scaled)
+- `cmefs-govt-expenditure-total-ytd` ↔ `fcgo-total-expenditure-outturn-annual` (FCGO CFS)
+
+**v0.3.0+ (planned):**
+
+- `cmefs-ncpi-food-yoy`, `cmefs-ncpi-non-food-yoy` — NCPI sub-group YoY
+- NEPSE index snapshot (prose-based)
 - USD-denominated counterparts where NRB publishes paired figures
+- Table-based banking sector detail (requires stable Table N(B) column mapping)
 
 The cross-validation hook: `cmefs-ncpi-yoy-overall` should match the
 `ncpi-overall-index-overall-yoy` row produced by the NCPI parser within
@@ -86,6 +100,12 @@ The cross-validation hook: `cmefs-ncpi-yoy-overall` should match the
   "merchandise" as "mercandise" in the imports paragraph (verified in
   FY 2082/83 nine-month release). The parser accepts both spellings; if
   NRB corrects the typo the pattern still matches.
+- `title-format-variation` — NRB has used at least two title formats for
+  the "N months" cumulative releases: the simple form `"based on Nine Months
+  of 2025/26"` and the extended form `"Based on Nine Months' Data (Ending
+  Mid-April) of 2025/26"`. The v0.2.0 period-detection regex accepts both
+  by allowing an apostrophe and an optional parenthetical clause between
+  "Months" and "of YYYY/YY". Verified in FY 2082/83 nine-month fixture.
 - `provisional-marker` — when NRB tags a value with an inline ``P``
   (provisional) marker in the prose (rare in nine-month releases; common
   in monthly first-cut releases), the parser downgrades that row's
@@ -114,13 +134,13 @@ records superseded values in `indicator_revisions` (Worker C-sequel).
 ## Parser
 
 - Path: `scrapers/nrb_cmefs/parser.py`
-- Version: 0.1.0 (Path B1 — English headline indicators)
+- Version: 0.2.0 (Path B1 — English headline + extended indicators; period-aware)
 - Owner: Mother Opus
 - Tested against: `scrapers/nrb_cmefs/tests/fixtures/cmefs_nine_months_excerpt.pdf`
-  — first 6 pages of the in-repo
-  `Stastical Information/CMEFs_Eng_Nine-Months_2082.83.pdf` (sufficient
-  to exercise every headline pattern; full PDF lives outside the worktree
-  and is archived in Supabase Storage per the archive policy below)
+  — first 6 pages of the nine-month 2082/83 bulletin. Exercises every
+  headline pattern and the period-detection path. Extended v0.2.0 indicator
+  patterns are unit-tested against embedded prose strings in `test_parser.py`
+  (the relevant body paragraphs are beyond the 6-page excerpt).
 
 ## Archive policy
 

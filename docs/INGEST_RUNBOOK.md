@@ -183,6 +183,36 @@ Self-archives bytes to Supabase Storage and inserts `source_documents` row via
 `scripts/_lib/archive-source-document.ts` (mirrors BFI pattern). Parser is
 spawned as a module (`python -m scrapers.cbs_nphc.parser`) for relative imports.
 
+### FCGO Consolidated Financial Statements
+
+Source ID: `fcgo-consolidated-financial-statements` | Parser: `scrapers/fcgo_consolidated/parser.py` v0.2.0
+
+Audited all-of-government outturn (revenue + expenditure, 6 headline aggregates). Annual.
+English CFS available FY 2018/19 → 2023/24 (6 editions). Parser auto-detects the fiscal year
+from "FY YYYY/YY" in Executive Summary prose — no `--period` flag needed.
+
+Requires a `Financial Data/` junction (§"Directory junction" above). Download the PDF from
+https://fcgo.gov.np/category/consolidated-us and place it under
+`Financial Data/fcgo_consolidated/` before running.
+
+```powershell
+# Dry-run (validates parser output shape — no DB writes):
+$env:PYTHON = "C:\Users\ACER\Projects\Economy\scrapers\.venv\Scripts\python.exe"
+pnpm ingest:fcgo-cfs --dry-run --input "C:\Users\ACER\Projects\Economy\Financial Data\fcgo_consolidated\FCGO_CFS_2022-23.pdf"
+
+# Live ingest for FY 2022/23 (BS 2079/80):
+pnpm ingest:fcgo-cfs --input "C:\Users\ACER\Projects\Economy\Financial Data\fcgo_consolidated\FCGO_CFS_2022-23.pdf"
+
+# Live ingest for FY 2023/24 (BS 2080/81) — newest edition as of 2026-06-11:
+pnpm ingest:fcgo-cfs --input "C:\Users\ACER\Projects\Economy\Financial Data\fcgo_consolidated\FCGO_CFS_2023-24.pdf"
+```
+
+Expected output: 6 staging rows, status `success`, all 6 promote to `approved_indicator_values`
+(requires indicator slugs seeded via `pnpm seed:indicators`). Confidence grade A (audited outturn).
+
+Cross-validate: total revenue for FY 2022/23 ≈ NPR 1,506,321.46 million; total expenditure ≈ NPR 1,672,128.84 million.
+Compare against NRB CMEFs Table 9 "Government Finance" — should align within 1% (NRB sources from FCGO/MoF).
+
 ### DNE XLSX (NRB Database on Nepalese Economy)
 
 Source ID: `nrb-dne-xlsx` (umbrella; see source-registry reconciliation note in
@@ -201,6 +231,93 @@ pnpm ingest:dne --input "<path>" --source-id nrb-db-external-sector
 
 Source-id to registry reconciliation is pending. Dry-run only until Mother
 resolves the FK question.
+
+### World Bank WDI (World Development Indicators)
+
+Source ID: `wb-wdi` | Parser: `scrapers/wb_wdi/parser.py` v0.1.0 | 15 indicators
+
+```powershell
+# Dry-run against saved fixture (no DB, no network):
+pnpm ingest:wdi --dry-run
+
+# Live ingest from pre-downloaded combined JSON (recommended for reproducibility):
+pnpm ingest:wdi --input "C:\path\to\wdi_npl_2025-06-11.json"
+
+# Download fresh snapshot from WB API then ingest (requires network):
+pnpm ingest:wdi --download
+
+# Download and save to a specific directory without ingesting:
+pnpm ingest:wdi --download --output-dir "C:\Users\ACER\Projects\Economy\Financial Data\wb_wdi"
+```
+
+Notes:
+- Parser reads a single combined JSON blob assembled by the CLI (one `source_documents` row per run).
+- WB year Y = Nepal FY Jul Y – Jul Y+1 = BS FY (Y+57)/(Y+58%100).
+- Poverty headcount and Gini are sparse (1 non-null every 3–5 years); null values are silently skipped.
+- After live ingest, `checkWdiDneDivergence()` auto-runs and writes `ValueOutOfPlausibleRange` warning
+  flags if WDI–DNE divergence exceeds 3 pp (GDP growth, CPI) or 20% relative (GDP per capita).
+- Cross-source divergence flags are warnings only; they never block ingest.
+- No `Financial Data/` junction required — the WB API is network-only or via a local JSON file.
+
+### IMF WEO (World Economic Outlook)
+
+Source ID: `imf-weo` | Parser: `scrapers/imf_weo/parser.py` v0.1.0 | 13 indicators (actuals + projections)
+
+```powershell
+# Dry-run against saved fixture (no DB, no network):
+pnpm ingest:imf-weo --dry-run
+
+# Download fresh from the IMF DataMapper API, marking forecast years, then ingest:
+pnpm ingest:imf-weo --download --projection-from-year 2025
+
+# Download/save without ingesting (inspect first):
+pnpm ingest:imf-weo --download --projection-from-year 2025 --output-dir "C:\WEO"
+
+# Live ingest from a pre-downloaded combined JSON:
+pnpm ingest:imf-weo --input "C:\WEO\weo_npl_2026-06-11.json"
+```
+
+Notes:
+- Parser reads a single combined JSON blob assembled by the CLI (one `source_documents` row per run).
+- API: `https://www.imf.org/external/datamapper/api/v1/<code>/NPL` — no auth, one GET per code.
+- WEO year Y = Nepal FY Jul Y – Jul Y+1 = BS FY (Y+57)/(Y+58%100) — same convention as WDI.
+- **Projections (ADR-0025):** the DataMapper API does not flag forecast years. Supply
+  `--projection-from-year <YEAR>` (the vintage's first forecast year, e.g. 2025 for the Apr-2026 WEO).
+  Years ≥ that become `observation_type='projection'`; omit the flag and every row is `'actual'`.
+  Re-confirm the boundary each April/October vintage.
+- USD/PPP levels are published in billions; the parser scales ×1000 → `usd_million` / `intl_dollar_million`
+  (matches `wb-wdi` so the two benchmark in one unit).
+- No `Financial Data/` junction required.
+
+### WB PIP (Poverty and Inequality Platform)
+
+Source ID: `wb-pip` | Parser: `scrapers/wb_pip/parser.py` v0.1.0 | 10 indicators (survey anchors + filled trend)
+
+```powershell
+# Dry-run against saved fixture (no DB, no network):
+pnpm ingest:pip --dry-run
+
+# Download fresh from the PIP API (4 queries, merged), then ingest:
+pnpm ingest:pip --download
+
+# Download/save without ingesting:
+pnpm ingest:pip --download --output-dir "C:\PIP"
+
+# Live ingest from a pre-downloaded combined JSON:
+pnpm ingest:pip --input "C:\PIP\pip_npl_2026-06-11.json"
+```
+
+Notes:
+- The CLI runs **4 PIP queries** (survey anchors at $2.15/$3.65/$6.85 + the $3.65 fill_gaps trend) and merges
+  them into one combined JSON; the parser is deterministic file-in.
+- PIP API is **intermittently flaky** (transient empty / HTTP 000) — the CLI retries each query up to 4×.
+- `reporting_year` is a **calendar** year; the parser maps it onto Nepal's FY via the WDI convention
+  (Y → BS Y+57) so `pip-*` aligns with `wdi-*` for the same survey.
+- **observation_type (ADR-0025):** survey rounds → `actual`/conf-A; the filled $3.65 trend →
+  `interpolated`/`projection`/`estimate` per PIP's `estimation_type`, conf-B. Survey years come only from
+  the anchor block (the filled series is deduped against them).
+- `pip-gini` is stored ×100 (`index_points`) to match `wdi-gini-index`.
+- No `Financial Data/` junction required.
 
 ---
 

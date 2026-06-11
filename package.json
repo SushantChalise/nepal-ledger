@@ -40,8 +40,12 @@
     "ingest:bfi-monthly": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-bfi-monthly.ts",
     "ingest:fiscal-transfers": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-fiscal-transfers.ts",
     "ingest:intergovernmental": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-intergovernmental.ts",
+    "ingest:wdi": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-wdi.ts",
+    "ingest:imf-weo": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-imf-weo.ts",
+    "ingest:pip": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ingest-pip.ts",
     "seed:local-levels": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-local-level-entities.ts",
-    "seed:indicators": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-indicators.ts"
+    "seed:indicators": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-indicators.ts",
+    "seed:audit-entities": "node --env-file=.env.local --conditions=react-server --import tsx scripts/seed-audit-entities.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",

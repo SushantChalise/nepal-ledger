@@ -36,8 +36,9 @@ ADRs live in [docs/decisions/](docs/decisions/). Read the relevant ADR before to
 - [ADR-0010](docs/decisions/0010-ingest-cli-conventions.md) — ingest CLI conventions (env/PYTHON/source-doc self-create)
 - [ADR-0011](docs/decisions/0011-fiscal-data-units-and-identity.md) — data-unit verification protocol; read the federal code, don't fuzzy-match
 - [ADR-0012](docs/decisions/0012-viz-adapter-cast-location.md) — D3 type-bridges live in `src/lib/viz/adapters/`
+- [ADR-0024](docs/decisions/0024-government-audit-fact-domain.md) — government audit reports as a distinct fact domain (OAG beruju + findings)
 
-The full set (0001–0012) is in [docs/decisions/](docs/decisions/).
+The full set (0001–0024) is in [docs/decisions/](docs/decisions/).
 
 ---
 

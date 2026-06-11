@@ -45,6 +45,7 @@ const baseStagingRow: StagingIndicatorValueRow = {
   fiscalYearBs: '2082/83',
   fiscalYearAdLabel: '2025/26',
   confidenceGradeProposed: 'A',
+  observationType: 'actual',
   parserNotes: null,
   insertedAt: new Date('2026-05-01T00:00:00.000Z'),
 };
@@ -97,6 +98,7 @@ function approvedFixture(
     fiscalYearBs: '2082/83',
     fiscalYearAdLabel: '2025/26',
     confidenceGrade: 'A',
+    observationType: 'actual',
     revisionNumber: 0,
     promotedAt: new Date('2026-04-25T00:00:00.000Z'),
     promotedBy: 'validation-job/v1',

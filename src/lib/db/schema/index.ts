@@ -22,3 +22,5 @@ export * from './ocr-tracking';
 export * from './dne-facts';
 // Added in migration 0005 (ADR-0017)
 export * from './foreign-aid-facts';
+// Added in migration 0006 (ADR-0024)
+export * from './audit-facts';

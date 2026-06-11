@@ -1,0 +1,81 @@
+{
+  "fetched_at": "2024-12-27T00:00:00Z",
+  "country_code": "NPL",
+  "indicators": {
+    "NY.GDP.MKTP.CD": [
+      {"date": "2023", "value": 40835000000.0},
+      {"date": "2022", "value": 36291000000.0},
+      {"date": "2021", "value": 36288000000.0}
+    ],
+    "NY.GDP.MKTP.KD": [
+      {"date": "2023", "value": 26406000000.0},
+      {"date": "2022", "value": 25418000000.0},
+      {"date": "2021", "value": 24032000000.0}
+    ],
+    "NY.GDP.MKTP.KD.ZG": [
+      {"date": "2023", "value": 3.86},
+      {"date": "2022", "value": 5.77},
+      {"date": "2021", "value": -2.37}
+    ],
+    "NY.GDP.PCAP.CD": [
+      {"date": "2023", "value": 1337.0},
+      {"date": "2022", "value": 1194.0},
+      {"date": "2021", "value": 1202.0}
+    ],
+    "NY.GDP.PCAP.KD.ZG": [
+      {"date": "2023", "value": 2.6},
+      {"date": "2022", "value": 4.49},
+      {"date": "2021", "value": -3.58}
+    ],
+    "FP.CPI.TOTL.ZG": [
+      {"date": "2023", "value": 7.74},
+      {"date": "2022", "value": 8.56},
+      {"date": "2021", "value": 3.6}
+    ],
+    "BX.TRF.PWKR.CD.DT": [
+      {"date": "2023", "value": 9340000000.0},
+      {"date": "2022", "value": 8167000000.0},
+      {"date": "2021", "value": 8206000000.0}
+    ],
+    "BX.TRF.PWKR.DT.GD.ZS": [
+      {"date": "2023", "value": 22.87},
+      {"date": "2022", "value": 22.51},
+      {"date": "2021", "value": 22.62}
+    ],
+    "NY.GNP.MKTP.CD": [
+      {"date": "2023", "value": 47700000000.0},
+      {"date": "2022", "value": 42600000000.0},
+      {"date": "2021", "value": 43100000000.0}
+    ],
+    "NY.GNP.PCAP.CD": [
+      {"date": "2023", "value": 1565.0},
+      {"date": "2022", "value": 1403.0},
+      {"date": "2021", "value": 1428.0}
+    ],
+    "SI.POV.NAHC": [
+      {"date": "2023", "value": null},
+      {"date": "2022", "value": 20.27},
+      {"date": "2021", "value": null}
+    ],
+    "SI.POV.GINI": [
+      {"date": "2023", "value": null},
+      {"date": "2022", "value": 32.8},
+      {"date": "2021", "value": null}
+    ],
+    "NE.GDI.TOTL.ZS": [
+      {"date": "2023", "value": 30.1},
+      {"date": "2022", "value": 30.3},
+      {"date": "2021", "value": 28.7}
+    ],
+    "GC.DOD.TOTL.GD.ZS": [
+      {"date": "2023", "value": null},
+      {"date": "2022", "value": 42.1},
+      {"date": "2021", "value": 40.4}
+    ],
+    "BN.CAB.XOKA.GD.ZS": [
+      {"date": "2023", "value": -1.4},
+      {"date": "2022", "value": -11.0},
+      {"date": "2021", "value": 1.0}
+    ]
+  }
+}
