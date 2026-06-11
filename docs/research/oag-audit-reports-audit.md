@@ -4,7 +4,7 @@
 **Agency:** Office of the Auditor General (OAG / महालेखापरीक्षकको कार्यालय)
 **Auditor:** Mother Opus
 **Date:** 2026-06-10
-**Status:** RECONNAISSANCE (pre-acquisition) — corpus not yet downloaded/archived
+**Status:** RECON complete · **English-aggregates parser shipped** (PR D, see §12) · full corpus + Nepali per-entity rows still outstanding
 **Doctrine:** mirrors [docs/research/cbs-nphc-2021-audit.md](cbs-nphc-2021-audit.md); feeds [ADR-0024](../decisions/0024-government-audit-fact-domain.md) and the [oag-audit-reports](../sources/oag-audit-reports.md) profile.
 
 > Scope of this doc: the **national consolidated Annual Report** feed. The 753 individual local-body reports (`oag-lbl-local-audits`) need their own recon (§10) and are not covered in depth here.
@@ -152,3 +152,28 @@ Before the parser PR, acquire + archive (immutable `source_documents`, content-a
 - [ ] Confirm the reconciliation identity holds on the fixture before wiring the full parser.
 
 **Sequencing recommendation (Mother's call):** PR C-entity-seeds (provinces/ministries/corporations) can proceed in parallel now (no corpus needed). PR D should ship **English-aggregates first** (Tier 0, NULL-entity rows — fast, low-risk, immediately useful to Money Wasted), then add **Nepali per-entity** rows once entity seeds land.
+
+---
+
+## 12. Parser implemented — English aggregates (PR D, 2026-06-11)
+
+`scrapers/oag_audit_reports/parser.py` ships the **English-aggregates** half of PR D (deterministic Tier 0, per ADR-0003). It emits the [`AuditParserOutput`](../../src/lib/ingestion/audit-types.ts) contract — **verified valid** against `AuditParserOutputSchema` (zod) on the real 58th-edition output.
+
+**Three printed tables, located by content (not page number):**
+
+| Source (58th edition page) | Unit | → contract |
+|---|---|---|
+| Ch.1 "Details of Audited Entities" (p28) | NRs **billions** | per-class `audited_amount_npr` + entity count → `audit_entity_summaries` |
+| Ch.2 "Status of Irregularity" classification × tier (p33–34) | NRs **millions** | `audit_beruju_lines` (`amount_basis=current_year_raised`, per class × `beruju_category`) + the printed "Total irregularity" row → summary `beruju_raised` |
+| Ch.2 settlement/lifecycle table (p34) | NRs **millions** | per-class `settled_this_year` + `cumulative_outstanding` |
+
+**Resolved design points (refine §7/§8/§11):**
+
+- **Audited FY from the edition ordinal, not the foreword.** The probe showed the English cover spells the ordinal out — "**Fifty-Eighth**" — separate from the publish year ("2021 (2078)"). The parser maps the ordinal via `discover.audited_fy_for_edition` (58 → 2076/77), the same anchor acquisition uses. This is more robust than the foreword AD/BS regex §0 suggested (the foreword says "2019/20" AD, needing a +57 BS conversion). The orchestrator may also pass `fiscal_year_bs` explicitly.
+- **Category → lookup codes + stored parents (REVISED by ADR-0027, parser v0.2.0).** The v0.1.0 parser mapped to a flat enum with two WRONG values (`Balance not brought forward→responsibility_not_transferred`, `Reimbursements not received→revenue_arrears`) and skipped parent rows. The independent review (2 Claude + Codex) corrected this: `beruju_category` is now a `beruju_categories` lookup code; the OAG taxonomy maps `Balance not brought forward→tbr_balance_not_brought_forward`, `Reimbursement not received→tbr_reimbursement_not_received`, `Irregular→tbr_irregular`, `Evidences not submitted→tbr_evidence_not_submitted`, `Recoverable→recoverable`, `3.1/3.2/3.3→adv_staff/adv_mobilization/adv_other_institutional`. Parent rows ("2. To be regularized", "3. Advance") are STORED as `aggregation_role='subtotal'` (not skipped); leaves are `detail`.
+- **Whitespace normalization (real-PDF bug).** pdfplumber emits in-cell line breaks (`Mobilization\nAdvance`); labels are whitespace-collapsed before matching, else a leaf falls through to the generic `advance` subtotal and reconciliation breaks. Caught only on the real PDF, not the hand fixtures.
+- **Column alignment by fixed position.** Tier columns are read at `row[1..4]` (not "first 4 numerics") so rows with blank/dash tier cells (e.g. "Balance not brought forward") stay aligned.
+- **Reconciliation gate (3-way, passes to the rupee).** Per tier: (1) `detail` leaves sum to the printed "Total irregularity"; (2) leaves sum to each printed `subtotal`; (3) the settlement current-year column cross-checks the classification total (independent table, NRs 0.1M tolerance). Any failure → `ReconciliationFailed` + `status='partial'`. The 58th reconciles exactly: per-class federal 44,392.1 / provincial 6,499.7 / local 40,834.7 / committee 12,657.8 M; **Σ cumulative outstanding = NRs 418.85 bn**.
+- **Corporate bodies:** present in Ch.1 (audited 2,555.13 bn) but absent from the Ch.2 irregularity tables → their summary row carries `audited_amount` only, `beruju_raised`/settled/cumulative null. (Public corporations are audited on a different track — a known gap to fill from the Nepali edition / OAG corporate volume.)
+
+**Still outstanding for PR D-complete + PR E:** Nepali per-entity rows (needs entity seeds + the resolver), the `audit_findings` extraction (major observations), the validation-report artifact + DB promotion (ingest CLI), and the 753 local-body parser (PR E, Tier 2 Surya).
