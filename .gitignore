@@ -84,3 +84,6 @@ Thumbs.db
 .vscode/
 .idea/
 .gstack/
+
+# choropleth source-geometry download cache (re-fetched by build)
+scripts/geo/_source/

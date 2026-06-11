@@ -46,6 +46,7 @@ Total registered sources: 73
 | Tier 3 | [coops-regulatory-status](coops-regulatory-status.md) | DoC | Cooperative regulatory status + Sahakari Bibhag directory | ad_hoc | manual_upload | paused |
 | Tier 3 | [doed-project-pipeline](doed-project-pipeline.md) | DoED | Hydropower licence + project pipeline registry | ad_hoc | manual_upload | paused |
 | Tier 3 | [dpm-public-enterprises-annual](dpm-public-enterprises-annual.md) | DPM | Annual Performance Review of Public Enterprises (Yellow Book) | annual | manual_upload | active |
+| Tier 3 | [fewims-migrant-deaths](fewims-migrant-deaths.md) | FEWIMS | Migrant-worker deaths by cause, sex, destination and fiscal year | annual | manual_upload | paused |
 | Tier 3 | [ird-revenue-monthly](ird-revenue-monthly.md) | IRD | Monthly revenue dashboard | monthly | automated_cron | paused |
 | Tier 3 | [moald-crop-production](moald-crop-production.md) | MoALD | Seasonal crop production statistics | seasonal | manual_upload | paused |
 | Tier 3 | [mof-lmbis](mof-lmbis.md) | MoF | Line Ministry Budget Information System (federal budget execution) | monthly | automated_cron | paused |
@@ -67,6 +68,7 @@ Total registered sources: 73
 | Tier 4 | [dohs-hmis](dohs-hmis.md) | DoHS | Health Management Information System (HMIS) | annual | manual_upload | paused |
 | Tier 4 | [dolm-malpot-stats](dolm-malpot-stats.md) | DoLM | Malpot land-transaction statistics | monthly | manual_upload | paused |
 | Tier 4 | [fepb-manpower-companies](fepb-manpower-companies.md) | FEPB | Recruitment-cost ceilings + manpower licenses | ad_hoc | manual_upload | paused |
+| Tier 4 | [idmc-displacement](idmc-displacement.md) | IDMC | Disaster-induced internal displacement — Nepal (GIDD) | annual | manual_upload | paused |
 | Tier 4 | [ird-top-taxpayers](ird-top-taxpayers.md) | IRD | Top Taxpayers annual disclosure + LTO data | annual | manual_upload | paused |
 | Tier 4 | [moe-noc-student-outflow](moe-noc-student-outflow.md) | MoE | No Objection Letter (NOC) data — student outflow | monthly | manual_upload | paused |
 | Tier 4 | [mof-budget-redbook](mof-budget-redbook.md) | MoF | Federal Budget Red Book + Mid-Term Review | annual | manual_upload | active |
@@ -80,6 +82,7 @@ Total registered sources: 73
 | Reference | imf-article-iv | IMF | Article IV consultation reports — Nepal | annual | reference_only | active |
 | Reference | mof-economic-survey-annual | MoF | Economic Survey (annual) | annual | reference_only | active |
 | Reference | ndhs-survey | MoHP | Nepal Demographic & Health Survey (NDHS) | ad_hoc | reference_only | active |
+| Reference | nepal-admin-boundaries | Survey Dept | Nepal administrative boundaries — 753 local levels (palika choropleth geometry) | ad_hoc | reference_only | active |
 | Reference | nlss-survey | NSO | Nepal Living Standards Survey (NLSS) | ad_hoc | reference_only | active |
 | Reference | npc-16th-plan | NPC | 16th Five-Year Plan (FY 2081/82–2085/86) | ad_hoc | reference_only | active |
 | Reference | pdmo-mtds | PDMO | Medium-Term Debt Management Strategy (MTDS) | annual | reference_only | paused |

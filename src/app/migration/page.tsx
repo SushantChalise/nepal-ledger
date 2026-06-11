@@ -3,8 +3,12 @@ import Link from 'next/link';
 
 import { formatAppError } from '@/lib/errors';
 import { KpiCard } from '@/features/pulse/components/KpiCard';
-import { getMigrationByCountrySeries } from '@/features/migration-source/server/queries';
+import {
+  getMigrationByCountrySeries,
+  getAbsenteeShareByPalika,
+} from '@/features/migration-source/server/queries';
 import { DestinationBarChart } from '@/features/migration-source/components/DestinationBarChart';
+import { PalikaChoropleth } from '@/features/migration-source/components/PalikaChoropleth';
 import { formatPeopleFull, formatSharePct } from '@/features/migration-source/format';
 
 export const metadata: Metadata = {
@@ -45,6 +49,9 @@ export default async function MigrationPage() {
   }
 
   const data = result.value;
+  // Independent of the destination ranking — the origin choropleth has its own
+  // typed fallback and must never break the page if the census slice is absent.
+  const palikaResult = await getAbsenteeShareByPalika();
 
   if (data.destinations.length === 0 || data.totalPeople <= 0) {
     return (
@@ -128,6 +135,44 @@ export default async function MigrationPage() {
           Absent population by destination region — {data.censusYearAd} census
         </h2>
         <DestinationBarChart destinations={data.destinations} />
+      </section>
+
+      {/* View B — where the absent population comes FROM, by palika (choropleth). */}
+      <section aria-labelledby="origin-map-heading" className="mt-10">
+        <h2
+          id="origin-map-heading"
+          className="mb-1 text-base font-semibold text-zinc-700 dark:text-zinc-300"
+        >
+          Migration intensity — share of each local level&apos;s population abroad
+        </h2>
+        <p className="mb-4 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">
+          The same {data.censusYearAd} census, mapped to each of Nepal&apos;s 753 local levels: the{' '}
+          <span className="font-medium">share of the local population living abroad</span> on census
+          night (absent population ÷ total population). Darker means a larger share of the community
+          is away. Still a count of <span className="font-medium">people</span> underneath — not
+          remittance.
+        </p>
+        {palikaResult.ok ? (
+          <PalikaChoropleth
+            byCode={palikaResult.value.byCode}
+            nationalPct={palikaResult.value.nationalPct}
+            censusYearAd={palikaResult.value.censusYearAd}
+            palikaCount={palikaResult.value.palikaCount}
+          />
+        ) : (
+          <div
+            role="status"
+            aria-live="polite"
+            className="rounded-lg border border-zinc-200 bg-zinc-50 p-8 text-center dark:border-zinc-700 dark:bg-zinc-900"
+          >
+            <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+              Per-palika map not available yet
+            </p>
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
+              The 753-local-level choropleth appears here once the census origin slice is loaded.
+            </p>
+          </div>
+        )}
       </section>
 
       {/* Where the money lands — coming soon (disabled placeholder; no fabricated data). */}
