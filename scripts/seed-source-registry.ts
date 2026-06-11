@@ -1120,6 +1120,42 @@ const ROWS: readonly NewSourceRegistryRow[] = [
       'Ingest source for scrapers/nrb_dne (ingest:dne). Long-formats wide period-column XLSX into staging. No real files downloaded yet (2026-06). Subsumes nrb-db-external/fiscal/real/financial-sector catalog rows.',
   },
   {
+    // Historical BoP back-series (BPM5 methodology) from nrb_dne_historical corpus.
+    // Parser: scrapers/nrb_bop/parser.py → remittance-inflow-bpm5 (annual).
+    // CRITICAL: BPM5 ≠ BPM6. Do NOT splice onto dne-remittance-inflow (BPM6).
+    // Any joined chart must show a methodology break at FY2069/70 (AD2012/13).
+    sourceId: 'nrb-bop',
+    agency: 'Nepal Rastra Bank',
+    agencyShort: 'NRB',
+    datasetName: "Balance of Payments — Historical Back-Series (BPM5)",
+    sourceUrl: 'https://www.nrb.org.np/database-on-nepalese-economy/',
+    publicationFrequency: 'annual',
+    expectedReleaseWindow: 'Static historical corpus; update when NRB publishes a new edition',
+    reportingPeriodType: 'annual',
+    fileFormat: 'xlsx',
+    requiresTableExtraction: false,
+    historicalCoverage: 'FY 2000/01 (BS 2057/58) → FY 2023/24P (BS 2080/81)',
+    licenseStatus: 'gov_open',
+    parserOwner: 'scrapers/nrb_bop/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'Static historical corpus; trailing years carry R (revised) or P (provisional) suffix. NRB updates the file when revisions are finalised.',
+    knownBreakageModes: [
+      'two-panel-layout',
+      'formula-precision-in-xlsx',
+      'revision-suffix-in-year-labels',
+    ],
+    confidenceDefault: 'B',
+    status: 'active',
+    ingestionMode: 'manual_upload',
+    tier: 1,
+    notes:
+      'Money In back-series. Extends remittance inflow to FY2000/01 (23 years vs current 3-FY BPM6 series). ' +
+      'BPM5 methodology — NOT spliced onto dne-remittance-inflow (BPM6). Indicator: remittance-inflow-bpm5. ' +
+      'File: Financial Data/nrb_dne_historical/Trade-and-Balance-of-Payments.xlsx, sheet BOP 2000-. ' +
+      'NRB adopted BPM6 ~FY2069/70 (AD2012/13); charts must show the break.',
+  },
+  {
     // NRB audit #1 — highest-priority NRB gap: BoP, forex, remittance, trade
     // all in structured XLSX — no PDF extraction needed. Feeds Pulse v1 directly.
     sourceId: 'nrb-db-external-sector',

@@ -209,6 +209,17 @@ const DNE_INDICATORS: readonly SeedIndicator[] = [
     nativeFrequency: 'annual',
     sourceAgency: 'Nepal Rastra Bank',
   },
+  // Historical BPM5 remittance back-series (parser nrb_bop v0.1.0).
+  // Covers FY2000/01–FY2023/24P. NOT directly comparable to dne-remittance-inflow
+  // (BPM6). Charts that join both series MUST show a break at FY2069/70 (AD2012/13).
+  {
+    slug: 'remittance-inflow-bpm5',
+    nameEn: "Workers' Remittances Inflow (BPM5 historical)",
+    category: 'external_sector',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
 ];
 
 // ─── WDI indicators (parser wb_wdi v0.1.0) ──────────────────────────────────
