@@ -1017,6 +1017,40 @@ const ROWS: readonly NewSourceRegistryRow[] = [
       'Projections marked observation_type=projection. Cross-checks dne-gdp-real-growth + wdi-gdp-*.',
   },
   {
+    sourceId: 'wb-pip',
+    agency: 'World Bank',
+    agencyShort: 'WB',
+    datasetName: 'Poverty and Inequality Platform (PIP) — Nepal',
+    sourceUrl: 'https://api.worldbank.org/pip/v1/pip',
+    publicationFrequency: 'ad_hoc',
+    expectedReleaseWindow: 'Updated when a new survey enters PIP (NLSS-IV/LSS-IV added Oct 2024)',
+    reportingPeriodType: 'annual',
+    fileFormat: 'json',
+    requiresTableExtraction: false,
+    historicalCoverage:
+      '5 survey rounds 1984–2022 (MHBS, LSS I–IV) with full distribution; $3.65 headcount filled 1981–present',
+    licenseStatus: 'cc_by',
+    parserOwner: 'scrapers/wb_pip/parser.py',
+    parserVersion: '0.1.0',
+    revisionPolicy:
+      'PIP revises when surveys are re-estimated or PPPs update; ingest is a full snapshot — prior approved rows bump via revision_number. Survey anchors (actual) and the filled trend (interpolated/projected) carry distinct observation_type.',
+    knownBreakageModes: [
+      'api-intermittently-returns-empty-or-000-retry',
+      'distributional-fields-null-except-survey-years',
+      'reporting-year-is-calendar-not-fiscal',
+      'welfare-type-differs-income-pre1995-consumption-after',
+    ],
+    confidenceDefault: 'A',
+    status: 'active',
+    ingestionMode: 'automated_cron',
+    tier: 2,
+    notes:
+      'Distributional poverty layer (ADR-0025 observation_type). 10 indicators: poverty headcount ' +
+      'at $2.15/$3.65/$6.85, poverty gap + severity, Gini, mean + median consumption, bottom/top decile share. ' +
+      'Survey anchors = actual/conf-A; the $3.65 filled trend = interpolated/projected/conf-B. ' +
+      'pip-gini cross-checks wdi-gini-index (same 0–100 scale).',
+  },
+  {
     sourceId: 'imf-article-iv',
     agency: 'International Monetary Fund',
     agencyShort: 'IMF',

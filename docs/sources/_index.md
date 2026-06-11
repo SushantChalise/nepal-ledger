@@ -6,7 +6,7 @@ Generated from `scripts/seed-source-registry.ts` (the canonical seed).
 For schema + workflow, see [`../SOURCE_REGISTRY.md`](../SOURCE_REGISTRY.md).
 For the lifetime contract, see [ADR-0009](../decisions/0009-source-registry-single-source-of-truth.md).
 
-Total registered sources: 71
+Total registered sources: 72
 
 | Tier | Source ID | Agency | Dataset | Frequency | Mode | Status |
 |---|---|---|---|---|---|---|
@@ -40,6 +40,7 @@ Total registered sources: 71
 | Tier 2 | [ntb-tourism-monthly](ntb-tourism-monthly.md) | NTB | Monthly arrivals + receipts | monthly | automated_cron | paused |
 | Tier 2 | [pdmo-debt-bulletin](pdmo-debt-bulletin.md) | PDMO | Quarterly public debt bulletin | quarterly | manual_upload | paused |
 | Tier 2 | [pdmo-monthly-debt-statistics](pdmo-monthly-debt-statistics.md) | PDMO | Monthly Government Debt Statistics (मासिक सरकारी ऋण तथ्याङ्क) | monthly | manual_upload | paused |
+| Tier 2 | [wb-pip](wb-pip.md) | WB | Poverty and Inequality Platform (PIP) — Nepal | ad_hoc | automated_cron | active |
 | Tier 2 | [wb-wdi](wb-wdi.md) | WB | World Development Indicators (WDI) — Nepal | annual | automated_cron | active |
 | Tier 3 | [coops-regulatory-status](coops-regulatory-status.md) | DoC | Cooperative regulatory status + Sahakari Bibhag directory | ad_hoc | manual_upload | paused |
 | Tier 3 | [doed-project-pipeline](doed-project-pipeline.md) | DoED | Hydropower licence + project pipeline registry | ad_hoc | manual_upload | paused |
