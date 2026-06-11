@@ -4,14 +4,15 @@
  * SOURCE_ID: "fcgo-consolidated-financial-statements" (declared in
  * scrapers/fcgo_consolidated/parser.py as
  * SOURCE_ID = "fcgo-consolidated-financial-statements"). The parser is a
- * deterministic pdfplumber narrative-prose parser: it scans all pages of the
+ * deterministic pymupdf narrative-prose parser: it scans all pages of the
  * CFS, anchors on the clean forward-text Executive Summary / Treasury-Position
- * prose, and lifts 6 headline aggregates (total revenue/expenditure, recurrent
- * & capital expenditure, provincial & local expenditure). All values are
+ * prose, and lifts 9 indicators (7 extracted + 2 derived: total
+ * revenue/expenditure, recurrent/capital/financing expenditure, provincial &
+ * local expenditure, federal expenditure, fiscal balance). All values are
  * npr_million; reporting_period_type is annual; fiscal year is BS 2079/80
  * (AD 2022/23) for the bundled FY 2022/23 publication.
  *
- * The parser (v0.2.0) auto-detects the fiscal year from "FY YYYY/YY" in the
+ * The parser (v1.0.0) auto-detects the fiscal year from "FY YYYY/YY" in the
  * Executive Summary prose, so no --period flag is needed — the correct BS
  * period is stamped on every staging row regardless of which edition PDF is
  * provided (FY 2018/19 through FY 2023/24 all work).
@@ -24,7 +25,7 @@
  *   5. Persist parser_runs + staging_indicator_values
  *   6. Run validation job (staging → approved promotion)
  *
- * NOTE: the 6 FCGO indicator slugs must be seeded in the indicators table
+ * NOTE: the 9 FCGO indicator slugs must be seeded in the indicators table
  * (seed-indicators.ts) for rows to promote to approved_indicator_values;
  * Mother adds them at integration (this worker does not edit seed-indicators.ts).
  *
@@ -55,7 +56,7 @@ const REPO_ROOT = path.resolve(SCRIPT_DIR, '..');
 // SOURCE_ID from scrapers/fcgo_consolidated/parser.py.
 const DEFAULT_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 
-// The FCGO CFS PDF — the narrative prose parser (pdfplumber) reads this.
+// The FCGO CFS PDF — the narrative prose parser (pymupdf) reads this.
 // Data files live under the worktree root in `Financial Data/`.
 const DEFAULT_INPUT_RELATIVE = path.join(
   'Financial Data',

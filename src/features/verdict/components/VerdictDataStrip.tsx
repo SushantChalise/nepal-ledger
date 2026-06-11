@@ -11,6 +11,7 @@ const UNIT_LABEL: Record<string, string> = {
   percent: '%',
   months_of_imports: 'months',
   months: 'months',
+  npr_million: 'NPR M',
   usd_million: 'USD M',
   usd: 'USD',
   index_points: 'Gini',
@@ -34,6 +35,30 @@ function formatStrip(
   if (unit === 'percent_yoy' || unit === 'percent') {
     return {
       display: n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      suffix,
+    };
+  }
+  if (unit === 'npr_million') {
+    if (Math.abs(n) >= 1_000_000) {
+      return {
+        display: (n / 1_000_000).toLocaleString('en-IN', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+        suffix: 'NPR T',
+      };
+    }
+    if (Math.abs(n) >= 1_000) {
+      return {
+        display: (n / 1_000).toLocaleString('en-IN', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+        suffix: 'NPR B',
+      };
+    }
+    return {
+      display: n.toLocaleString('en-IN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
       suffix,
     };
   }

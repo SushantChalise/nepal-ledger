@@ -128,6 +128,30 @@ function formatValue(rawValue: string, unitSlug: string): { display: string; uni
         unit: 'months',
       };
     }
+    case 'npr_million': {
+      if (Math.abs(num) >= 1_000_000) {
+        return {
+          display: (num / 1_000_000).toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
+          unit: 'NPR T',
+        };
+      }
+      if (Math.abs(num) >= 1_000) {
+        return {
+          display: (num / 1_000).toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
+          unit: 'NPR B',
+        };
+      }
+      return {
+        display: num.toLocaleString('en-IN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+        unit: 'NPR M',
+      };
+    }
     case 'usd_million': {
       if (Math.abs(num) >= 1000) {
         return {

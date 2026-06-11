@@ -7,67 +7,49 @@ form (NPSAS cash-basis). English edition, FY 2018/19 onward. The bundled
 test exercises the FY 2022/23 publication (BS 2079/80).
 
 Strategy:
-    FCGO's CFS is a 300+ page document whose detailed financial-statement
-    tables render with *reversed glyph order* under ``pdfplumber`` text
-    extraction (a right-to-left layout artifact: "Receipts" comes out as
-    "stpieceR"). Those tables are therefore unusable for deterministic
-    regex extraction. The Executive Summary and the narrative paragraphs
-    around the Treasury-Position table, however, are CLEAN forward Latin
-    text and re-use stable phrasings ("total revenue utilization ...
-    amounts to NPR X million", "Total expenditure stands at NPR Y
-    million"). We anchor on that prose, exactly as the NRB CMEFs parser
-    does, and scan ALL pages (the Executive Summary page number drifts
-    across editions — never hard-code it).
+    v0.1.0 used pdfplumber, which reads vertical-direction text as reversed
+    ("Receipts" → "stpieceR"). 165 of 325 pages are landscape tables
+    rotated into portrait with writing direction (0, −1). pdfplumber cannot
+    handle this; pymupdf reads it correctly.
 
-    When the prose phrasing shifts, the parser emits a typed
-    ``PageLayoutChanged`` error for that indicator instead of inventing a
-    value. It never crashes on bad input.
+    v1.0.0 switches to pymupdf for ALL text extraction. The regex-anchor
+    strategy is unchanged: scan the Executive Summary / Treasury-Position
+    prose for stable phrasings. This also unlocks Phase 2 table extraction
+    (pymupdf ``find_tables()`` reads the detail pages correctly).
 
-Target headline aggregates (v0.1.0):
-    - ``fcgo-total-revenue-outturn-annual`` (npr_million) — total revenue
-      utilization of the three tiers after revenue-sharing settlements.
-    - ``fcgo-total-expenditure-outturn-annual`` (npr_million) — total
-      expenditure after eliminating intergovernmental fiscal transfers
-      (excluding EBUs); the Executive Summary headline figure.
-    - ``fcgo-recurrent-expenditure-outturn-annual`` (npr_million) —
-      consolidated recurrent expenditure, summed across the three tiers
-      (GROSS, before inter-government elimination).
-    - ``fcgo-capital-expenditure-outturn-annual`` (npr_million) —
-      consolidated capital expenditure, summed across the three tiers
-      (GROSS, before inter-government elimination).
-    - ``fcgo-provincial-expenditure-consolidated-annual`` (npr_million) —
-      total expenditure of all seven provinces.
-    - ``fcgo-local-level-expenditure-consolidated-annual`` (npr_million) —
-      total expenditure of all 753 local governments.
+    Derived indicators are computed from extracted values — no additional
+    regex needed. Federal expenditure = total − provincial − local; fiscal
+    balance = total revenue − total expenditure.
 
-    IMPORTANT basis mismatch (stamped in ``parser_notes``): total-revenue
-    and total-expenditure are *after-elimination* figures, whereas
-    recurrent and capital are the *gross* consolidated sums (Σ over the
-    three tiers, before elimination of intergovernmental transfers). Hence
-    recurrent + capital + financing (= NPR 2,079,823.31 million for
-    FY 2022/23) does NOT equal total-expenditure (NPR 1,672,128.84
-    million). Downstream consumers must not naively reconcile the two.
+Target headline aggregates (v1.0.0):
+    6 extracted from prose (unchanged from v0.2.0):
+    - ``fcgo-total-revenue-outturn-annual`` (npr_million)
+    - ``fcgo-total-expenditure-outturn-annual`` (npr_million)
+    - ``fcgo-recurrent-expenditure-outturn-annual`` (npr_million)
+    - ``fcgo-capital-expenditure-outturn-annual`` (npr_million)
+    - ``fcgo-provincial-expenditure-consolidated-annual`` (npr_million)
+    - ``fcgo-local-level-expenditure-consolidated-annual`` (npr_million)
+
+    1 newly extracted (was captured but not emitted in v0.2.0):
+    - ``fcgo-financing-disbursements-outturn-annual`` (npr_million)
+
+    2 derived from the extracted values:
+    - ``fcgo-federal-expenditure-outturn-annual`` (npr_million)
+      = total − provincial − local
+    - ``fcgo-fiscal-balance-outturn-annual`` (npr_million)
+      = total revenue − total expenditure (negative = deficit)
 
 Unit:
     All values are ``npr_million``. The FY 2022/23 total revenue
     utilization is NPR 1,506,321.46 million (≈ NPR 1.5 trillion), the
     correct order of magnitude for Nepal's 3-tier consolidated revenue.
-    (The source profile originally said "billion" — that was wrong; see
-    ``docs/sources/fcgo-consolidated-financial-statements.md``.)
 
 Period dating (ADR-0013):
-    The CFS labels its fiscal year by AD ("Fiscal Year 2022/23"). Nepal's
-    fiscal year is mid-July → mid-July, so the AD fiscal year maps 1:1 to
-    a BS fiscal year via the +57 offset on the lead year:
-    AD 2022/23 → BS 2079/80. ``reporting_period_type`` is ``annual`` and
-    the AD start/end bound the BS-fiscal-year span (mid-Shrawan ..
-    mid-Ashadh). Conversion uses a LOCAL helper (``_ad_fy_to_bs_start``)
-    so ``_common/periods`` is untouched.
+    AD fiscal year → BS via +57 on the lead year. AD 2022/23 → BS 2079/80.
+    ``reporting_period_type`` is ``annual``.
 
 Confidence:
-    ``A`` by default — this is the audited outturn (Office of the Auditor
-    General opinion is bound into the document), the highest-confidence
-    fiscal data the project ingests.
+    ``A`` by default — audited outturn (OAG opinion bound into the document).
 
 Versioning:
     Bump PARSER_VERSION on any behavior change.
@@ -81,7 +63,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Final
 
-import pdfplumber
+import pymupdf
 
 from _common.periods import (
     fiscal_year_ad_label,
@@ -96,24 +78,13 @@ from _common.types import (
     StagingRowDraft,
 )
 
-PARSER_VERSION: Final[str] = "0.2.0"
+PARSER_VERSION: Final[str] = "1.0.0"
 SOURCE_ID: Final[str] = "fcgo-consolidated-financial-statements"
 
-# Fallback AD fiscal-year lead year used only when auto-detection fails.
-# v0.2.0: the parser detects the FY from "FY YYYY/YY" in the Executive
-# Summary prose instead of relying on this constant.  It remains here as a
-# safety net for edge-cases (e.g. stripped / image-only PDFs).
 _AD_FY_START: Final[int] = 2022
 
-# AD → BS fiscal-year offset on the lead year (mid-July → mid-July fiscal
-# year; AD 2022/23 == BS 2079/80). ADR-0013 §"AD → BS via the fiscal-year
-# offset" pins this to the period helpers' +57 rather than a bare literal.
 _AD_TO_BS_FY_OFFSET: Final[int] = 57
 
-# Pattern to detect the AD fiscal-year label from the CFS Executive Summary.
-# The revenue sentence always names the FY: "...for FY 2022/23 amounts to..."
-# We extract the lead year (≥ 2018 for any real CFS edition) and validate
-# that the trailing two digits equal (lead+1) mod 100.
 _FY_LABEL_RE: Final[re.Pattern[str]] = re.compile(r"\bFY\s+(\d{4})/(\d{2})\b")
 
 
@@ -124,9 +95,6 @@ def _ad_fy_to_bs_start(ad_fy_start: int) -> int:
     so the BS lead year is the AD lead year + 57 (ADR-0013). Local helper
     by design — ``_common/periods`` is the canonical period vocabulary and
     is not edited for source-specific calendar logic.
-
-    The result is symmetric with ``_common.periods.fiscal_year_ad_label``
-    (which subtracts 57 to go BS → AD); a unit test asserts the round-trip.
     """
     return ad_fy_start + _AD_TO_BS_FY_OFFSET
 
@@ -137,10 +105,6 @@ def _detect_ad_fy_start(text: str) -> int | None:
     Scans for the first ``FY YYYY/YY`` occurrence (e.g. ``FY 2022/23``).
     Validates that the two-digit suffix equals ``(lead+1) mod 100``.
     Returns ``None`` on mismatch, no match, or implausible year (< 2018).
-
-    Called by ``extract_indicators`` before constructing staging rows so
-    every edition (FY 2018/19 → present) stamps correct period metadata
-    without operator intervention.
     """
     match = _FY_LABEL_RE.search(text)
     if match is None:
@@ -155,18 +119,10 @@ def _detect_ad_fy_start(text: str) -> int | None:
 
 
 def _approx_publication_date(ad_fy_start: int) -> tuple[datetime, str]:
-    """Approximate FCGO CFS publication date: Jestha 15 of BS year (bs_start+2).
-
-    FCGO publishes the audited CFS approximately in Jestha of the year
-    following the FY close.  E.g. FY 2022/23 (BS 2079/80) audit opinion:
-    May 26, 2024 (BS 2081 Jestha 13) — our approximation Jestha 15 of 2081
-    lands May 15, 2024, within 11 days.
-
-    Returns: ``(publication_date_ad, publication_date_bs)``
-    """
+    """Approximate FCGO CFS publication date: Jestha 15 of BS year (bs_start+2)."""
     bs_fy_start = _ad_fy_to_bs_start(ad_fy_start)
     pub_bs_year = bs_fy_start + 2
-    pub_ad_year = ad_fy_start + 2  # same arithmetic: ad_fy_start + 57 + 2 - 57
+    pub_ad_year = ad_fy_start + 2
     pub_ad = datetime(pub_ad_year, 5, 15, tzinfo=UTC)
     pub_bs = f"{pub_bs_year} Jestha 15"
     return pub_ad, pub_bs
@@ -174,33 +130,17 @@ def _approx_publication_date(ad_fy_start: int) -> tuple[datetime, str]:
 
 @dataclass(frozen=True)
 class _IndicatorSpec:
-    """How to find one headline aggregate in the CFS prose.
-
-    ``pattern`` is applied against the full document text. ``group_index``
-    selects which capture group holds this indicator's value (one prose
-    sentence states recurrent + capital + financing together, so two
-    indicators share a single pattern but read different groups).
-    """
+    """How to find one headline aggregate in the CFS prose."""
 
     slug: str
     unit: str
     pattern: re.Pattern[str]
     group_index: int
-    # Free-text note appended to every emitted row for this indicator
-    # (e.g. the after-elimination vs gross basis caveat). ``None`` = no note.
     basis_note: str | None
 
 
-# Numeric capture: NPR figures in the CFS prose are written with thousands
-# separators and two decimals (e.g. "1,506,321.46"). Allow optional commas
-# so the same group also tolerates a comma-free reprint.
 _NUM: Final[str] = r"([\d,]+\.\d+)"
 
-# Anchored narrative patterns. Each uses alternation where FCGO's phrasing
-# is known to drift across editions ("amounts to | stands at | totaling").
-# The anchors are highly specific noun phrases that appear exactly once in
-# the clean (forward-text) Executive Summary / Treasury-Position prose, so
-# ``.search()`` lands on the intended figure and not a table fragment.
 _GROSS_BASIS_NOTE: Final[str] = (
     "gross consolidated sum across all three tiers (before elimination of "
     "intergovernmental transfers); not directly comparable to "
@@ -210,13 +150,18 @@ _AFTER_ELIM_NOTE: Final[str] = (
     "after eliminating intergovernmental fiscal transfers (excluding EBUs)"
 )
 
+_REC_CAP_FIN_RE: Final[re.Pattern[str]] = re.compile(
+    r"recurrent\s+expenditures?,\s+capital\s+expenditures?,\s+and\s+"
+    r"financing\s+disbursements\s+(?:totaling|totalling|amounting\s+to)"
+    r"\s+NPR\s+" + _NUM + r"\s+million,\s+NPR\s+" + _NUM
+    + r"\s+million,\s+and\s+NPR\s+" + _NUM + r"\s+million",
+    re.IGNORECASE,
+)
+
 _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
     _IndicatorSpec(
         slug="fcgo-total-revenue-outturn-annual",
         unit="npr_million",
-        # "The total revenue utilization (excluding fiscal transfer) of the
-        #  three tiers of government for FY 2022/23 amounts to NPR
-        #  1,506,321.46 million after revenue sharing settlements."
         pattern=re.compile(
             r"total\s+revenue\s+utilization\b.{0,120}?"
             r"(?:amounts\s+to|stands\s+at|is)\s+NPR\s+" + _NUM + r"\s+million",
@@ -228,9 +173,6 @@ _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
     _IndicatorSpec(
         slug="fcgo-total-expenditure-outturn-annual",
         unit="npr_million",
-        # "Total expenditure stands at NPR 1,672,128.84 million after
-        #  eliminating all types of intergovernmental fiscal transfers
-        #  (excluding EBUs)."
         pattern=re.compile(
             r"Total\s+expenditure\s+(?:stands\s+at|amounts\s+to|is)\s+NPR\s+"
             + _NUM
@@ -243,41 +185,27 @@ _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
     _IndicatorSpec(
         slug="fcgo-recurrent-expenditure-outturn-annual",
         unit="npr_million",
-        # "These disbursements included recurrent expenditures, capital
-        #  expenditures, and financing disbursements totaling NPR
-        #  1,356,150.86 million, NPR 527,447.04 million, and NPR
-        #  196,225.41 million, respectively."
-        # Group 1 = recurrent, group 2 = capital, group 3 = financing.
-        pattern=re.compile(
-            r"recurrent\s+expenditures?,\s+capital\s+expenditures?,\s+and\s+"
-            r"financing\s+disbursements\s+(?:totaling|totalling|amounting\s+to)"
-            r"\s+NPR\s+" + _NUM + r"\s+million,\s+NPR\s+" + _NUM
-            + r"\s+million,\s+and\s+NPR\s+" + _NUM + r"\s+million",
-            re.IGNORECASE,
-        ),
+        pattern=_REC_CAP_FIN_RE,
         group_index=1,
         basis_note=_GROSS_BASIS_NOTE,
     ),
     _IndicatorSpec(
         slug="fcgo-capital-expenditure-outturn-annual",
         unit="npr_million",
-        # Same sentence as recurrent; group 2 = capital expenditures.
-        pattern=re.compile(
-            r"recurrent\s+expenditures?,\s+capital\s+expenditures?,\s+and\s+"
-            r"financing\s+disbursements\s+(?:totaling|totalling|amounting\s+to)"
-            r"\s+NPR\s+" + _NUM + r"\s+million,\s+NPR\s+" + _NUM
-            + r"\s+million,\s+and\s+NPR\s+" + _NUM + r"\s+million",
-            re.IGNORECASE,
-        ),
+        pattern=_REC_CAP_FIN_RE,
         group_index=2,
+        basis_note=_GROSS_BASIS_NOTE,
+    ),
+    _IndicatorSpec(
+        slug="fcgo-financing-disbursements-outturn-annual",
+        unit="npr_million",
+        pattern=_REC_CAP_FIN_RE,
+        group_index=3,
         basis_note=_GROSS_BASIS_NOTE,
     ),
     _IndicatorSpec(
         slug="fcgo-provincial-expenditure-consolidated-annual",
         unit="npr_million",
-        # "Total expenditure of all seven provinces amounts to NPR
-        #  204,678.62 million, including fiscal transfers of NPR ... to
-        #  local governments."
         pattern=re.compile(
             r"Total\s+expenditure\s+of\s+all\s+seven\s+provinces\s+"
             r"(?:amounts\s+to|stands\s+at|is)\s+NPR\s+" + _NUM + r"\s+million",
@@ -289,8 +217,6 @@ _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
     _IndicatorSpec(
         slug="fcgo-local-level-expenditure-consolidated-annual",
         unit="npr_million",
-        # "Total expenditure of all local governments amounts to NPR
-        #  453,817.73 million."
         pattern=re.compile(
             r"Total\s+expenditure\s+of\s+all\s+local\s+governments\s+"
             r"(?:amounts\s+to|stands\s+at|is)\s+NPR\s+" + _NUM + r"\s+million",
@@ -303,14 +229,17 @@ _INDICATORS: Final[tuple[_IndicatorSpec, ...]] = (
 
 
 def _extract_pdf_text(path: Path) -> str:
-    """Concatenate page text from a PDF; ``\\n`` between pages so regex
-    line-locality is retained. Soft hyphenation across line breaks is
-    collapsed so anchors don't trip on it.
+    """Concatenate page text from a PDF using pymupdf.
+
+    pymupdf correctly handles the vertical writing direction (0, −1) on the
+    165 landscape-rotated table pages that pdfplumber reads reversed. Soft
+    hyphenation across line breaks is collapsed.
     """
+    doc = pymupdf.open(str(path))
     parts: list[str] = []
-    with pdfplumber.open(str(path)) as pdf:
-        for page in pdf.pages:
-            parts.append(page.extract_text() or "")
+    for page in doc:
+        parts.append(page.get_text())
+    doc.close()
     raw = "\n".join(parts)
     return re.sub(r"-\s*\n\s*", "", raw)
 
@@ -320,19 +249,55 @@ def _parse_npr(raw: str) -> float:
     return float(raw.replace(",", ""))
 
 
+def _derive_indicators(
+    extracted: dict[str, float],
+    base: StagingRowDraft,
+) -> list[StagingRowDraft]:
+    """Compute derived indicators from extracted headline values."""
+    derived: list[StagingRowDraft] = []
+
+    total_exp = extracted.get("fcgo-total-expenditure-outturn-annual")
+    prov_exp = extracted.get("fcgo-provincial-expenditure-consolidated-annual")
+    local_exp = extracted.get("fcgo-local-level-expenditure-consolidated-annual")
+    if total_exp is not None and prov_exp is not None and local_exp is not None:
+        federal_exp = total_exp - prov_exp - local_exp
+        derived.append(
+            replace(
+                base,
+                indicator_slug_raw="fcgo-federal-expenditure-outturn-annual",
+                value=round(federal_exp, 2),
+                unit="npr_million",
+                parser_notes=(
+                    "derived: total-expenditure minus provincial minus local "
+                    "(all after-elimination figures)"
+                ),
+            )
+        )
+
+    total_rev = extracted.get("fcgo-total-revenue-outturn-annual")
+    if total_rev is not None and total_exp is not None:
+        balance = total_rev - total_exp
+        derived.append(
+            replace(
+                base,
+                indicator_slug_raw="fcgo-fiscal-balance-outturn-annual",
+                value=round(balance, 2),
+                unit="npr_million",
+                parser_notes=(
+                    "derived: total-revenue minus total-expenditure "
+                    "(negative = deficit)"
+                ),
+            )
+        )
+
+    return derived
+
+
 def extract_indicators(text: str) -> ParserResult:
     """Apply the headline-aggregate anchors to already-extracted CFS text.
 
     This is the deterministic core, split out from PDF reading so it can be
-    exercised against synthesized text fixtures (no PDF-writing dependency
-    is available in the venv, and we will not commit the 3.9 MB binary —
-    see ADR-0003 / the source profile). ``parse`` wraps this with
-    ``pdfplumber`` text extraction.
-
-    Never raises on bad data: a missing anchor becomes a typed
-    ``PageLayoutChanged`` error; an unparseable number becomes
-    ``ValueUnparseable``. Empty/whitespace text fails with a single
-    ``PageLayoutChanged``.
+    exercised against synthesized text fixtures.
     """
     if not text.strip():
         return ParserResult(
@@ -346,14 +311,9 @@ def extract_indicators(text: str) -> ParserResult:
             ],
         )
 
-    # Auto-detect the AD fiscal-year lead from the Executive Summary prose.
-    # Falls back to _AD_FY_START (2022) when the FY label is absent — this
-    # covers the miss/partial-text test fixtures and any genuinely stripped
-    # PDFs, but the caller should treat a fallback as a quality signal.
     ad_fy_start = _detect_ad_fy_start(text) or _AD_FY_START
     bs_fy_start = _ad_fy_to_bs_start(ad_fy_start)
 
-    # Annual span: mid-Shrawan (FY open) .. mid-Ashadh (FY close).
     period_start = mid_month_ad("Shrawan", bs_fy_start)
     period_end = mid_month_ad("Ashadh", bs_fy_start)
     period_type: ReportingPeriodType = "annual"
@@ -378,6 +338,7 @@ def extract_indicators(text: str) -> ParserResult:
 
     staging_rows: list[StagingRowDraft] = []
     errors: list[ParserError] = []
+    extracted_values: dict[str, float] = {}
 
     for spec in _INDICATORS:
         match = spec.pattern.search(text)
@@ -408,6 +369,7 @@ def extract_indicators(text: str) -> ParserResult:
             )
             continue
 
+        extracted_values[spec.slug] = value
         staging_rows.append(
             replace(
                 base,
@@ -431,6 +393,8 @@ def extract_indicators(text: str) -> ParserResult:
             ],
         )
 
+    staging_rows.extend(_derive_indicators(extracted_values, base))
+
     status: ParserStatus = "partial" if errors else "success"
     return ParserResult(
         status=status,
@@ -443,19 +407,10 @@ def extract_indicators(text: str) -> ParserResult:
 def parse(source_document_path: str, source_document_id: str) -> ParserResult:
     """Parse one FCGO CFS English-edition PDF; emit headline aggregates.
 
-    Thin wrapper: reads the PDF text with ``pdfplumber`` and delegates the
-    deterministic matching to ``extract_indicators``.
-
-    Arguments:
-        source_document_path: filesystem path to the downloaded PDF.
-        source_document_id: opaque ID from ``source_documents``; threaded
-            through for symmetry with the orchestrator contract.
-
-    Returns:
-        ``ParserResult`` with ``status``, ``staging_rows``, ``errors``.
-        Never raises on bad data (ADR-0003 / parser contract).
+    v1.0.0: uses pymupdf instead of pdfplumber — correctly reads the
+    165 landscape-rotated table pages that pdfplumber reverses.
     """
-    _ = source_document_id  # touch for static analysers
+    _ = source_document_id
 
     path = Path(source_document_path)
     if not path.exists():
@@ -472,7 +427,7 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
 
     try:
         text = _extract_pdf_text(path)
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, RuntimeError) as exc:
         return ParserResult(
             status="failure",
             parser_version=PARSER_VERSION,
@@ -488,22 +443,12 @@ def parse(source_document_path: str, source_document_id: str) -> ParserResult:
 
 
 def _main() -> None:
-    """CLI entrypoint used by the Node ingestion orchestrator.
-
-    Argv: ``parser.py <source_document_path> <source_document_id>``.
-    Writes JSON to stdout via ``dataclasses.asdict`` (mirrors nrb_cmefs;
-    do NOT use ``ParserResult.to_json_dict()`` directly — the orchestrator
-    expects the asdict shape with ISO-formatted datetimes).
-    Exit codes follow ``src/lib/ingestion/run-parser.ts``:
-      - 0: parser ran (status may still be 'failure'; consumer reads stdout)
-      - 2: usage error
-      - 1: catastrophic crash (let Python propagate)
-    """
+    """CLI entrypoint used by the Node ingestion orchestrator."""
     import json
     import sys
     from dataclasses import asdict
 
-    expected_argv_count = 3  # progname + source_path + source_doc_id
+    expected_argv_count = 3
     if len(sys.argv) != expected_argv_count:
         sys.stderr.write(
             "usage: parser.py <source_document_path> <source_document_id>\n"

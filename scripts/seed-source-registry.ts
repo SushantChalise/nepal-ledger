@@ -1399,7 +1399,7 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     historicalCoverage: 'English: FY 2018/19 (2075/76) onward; Nepali: FY 2074/75 onward',
     licenseStatus: 'gov_open',
     parserOwner: 'scrapers/fcgo_consolidated/parser.py',
-    parserVersion: '0.2.0',
+    parserVersion: '1.0.0',
     revisionPolicy:
       'Annual; published Chaitra of following FY; audited outturn — no subsequent revision expected',
     knownBreakageModes: [

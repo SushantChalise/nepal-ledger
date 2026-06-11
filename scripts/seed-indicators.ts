@@ -90,6 +90,30 @@ const FCGO_INDICATORS: readonly SeedIndicator[] = [
     nativeFrequency: 'annual',
     sourceAgency: 'Financial Comptroller General Office',
   },
+  {
+    slug: 'fcgo-financing-disbursements-outturn-annual',
+    nameEn: 'Financing Disbursements Outturn (consolidated)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-federal-expenditure-outturn-annual',
+    nameEn: 'Federal Expenditure Outturn (derived)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
+  {
+    slug: 'fcgo-fiscal-balance-outturn-annual',
+    nameEn: 'Fiscal Balance Outturn (derived)',
+    category: 'fiscal',
+    unit: 'npr_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'Financial Comptroller General Office',
+  },
 ];
 
 // MoF Economic Survey — Annex 6.1 (Number of Workers having Foreign Employment

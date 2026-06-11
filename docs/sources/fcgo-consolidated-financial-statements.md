@@ -1,7 +1,7 @@
 # Source: Financial Comptroller General Office — Consolidated Financial Statements
 
 **source_id:** `fcgo-consolidated-financial-statements`
-**Status:** Active (parser v0.2.0 — FY auto-detection; 6 headline aggregates; FY 2018/19 → 2023/24 available)
+**Status:** Active (parser v1.0.0 — pymupdf backend; 9 indicators: 7 extracted + 2 derived; FY 2018/19 → 2023/24 available)
 **Tier:** Tier 1
 **Registered at:** 2026-06-07
 **Last verified:** 2026-06-11 (fcgo.gov.np; FY 2023/24 now available; no monthly CFS found at fcgo.gov.np)
@@ -41,6 +41,9 @@ shown are the verified FY 2022/23 (BS 2079/80) outturn.
 - `fcgo-recurrent-expenditure-outturn-annual` — Consolidated recurrent expenditure, Σ across 3 tiers, **gross** (npr_million; FY22/23 = 1,356,150.86)
 - `fcgo-provincial-expenditure-consolidated-annual` — Sum of 7 province expenditures (npr_million; FY22/23 = 204,678.62)
 - `fcgo-local-level-expenditure-consolidated-annual` — Sum of 753 local government expenditures (npr_million; FY22/23 = 453,817.73)
+- `fcgo-financing-disbursements-outturn-annual` — Consolidated financing disbursements, Σ across 3 tiers, **gross** (npr_million; FY22/23 = 196,225.41)
+- `fcgo-federal-expenditure-outturn-annual` — **Derived:** total-expenditure minus provincial minus local (npr_million; FY22/23 = 1,013,632.49)
+- `fcgo-fiscal-balance-outturn-annual` — **Derived:** total-revenue minus total-expenditure; negative = deficit (npr_million; FY22/23 = −165,807.38)
 
 > **Basis caveat:** `total-revenue` / `total-expenditure` are *after-elimination*
 > figures; `recurrent` / `capital` are *gross* consolidated sums (before
@@ -48,10 +51,12 @@ shown are the verified FY 2022/23 (BS 2079/80) outturn.
 > (NPR 2,079,823.31 million) ≠ total-expenditure (NPR 1,672,128.84 million). The
 > parser records this in each row's `parser_notes`.
 
-> **Extraction strategy:** the detailed statement tables render with reversed
-> glyph order under pdfplumber and are NOT machine-read. The parser anchors on the
-> clean forward-text Executive Summary (pp. 12–13) + Treasury-Position prose
-> (p. 31) and scans all pages (page numbers drift across editions).
+> **Extraction strategy (v1.0.0):** pymupdf replaced pdfplumber — pdfplumber
+> reversed text on 165/325 landscape-rotated pages (writing direction 0, −1).
+> pymupdf reads them correctly, unlocking Phase 2 full table extraction. The
+> v1.0.0 parser still anchors on Executive Summary prose (page numbers drift
+> across editions) for the 7 extracted indicators. Two derived indicators
+> (federal expenditure, fiscal balance) are computed from the extracted values.
 
 ## Provenance
 
@@ -77,8 +82,8 @@ a corrected edition, it appears as a new file at the same category URL.
 ## Parser
 
 - Path: `scrapers/fcgo_consolidated/parser.py` (underscore dir — Python-importable; the on-disk folder is NOT the hyphenated profile name)
-- Version: 0.2.0 (2026-06-11 — FY auto-detection via `FY YYYY/YY` regex; publication date derived from `ad_fy_start + 2`; no hardcoded FY constant)
-- Owner: Mother Opus (built by Sonnet worker W2, 2026-06-07; upgraded v0.2.0 2026-06-11)
+- Version: 1.0.0 (2026-06-11 — pymupdf backend; 9 indicators: 7 extracted + 2 derived; FY auto-detection)
+- Owner: Mother Opus (built by Sonnet worker W2, 2026-06-07; v0.2.0 2026-06-11; v1.0.0 2026-06-11)
 - Unit: `npr_million`; reporting period: `annual`; confidence: `A`
 - Tested against: `Financial Data/fcgo_consolidated/FCGO_CFS_2022-23.pdf` (FY 2022/23, 325 pp) + synthesized text fixtures in `scrapers/fcgo_consolidated/tests/`; FY 2023/24 variant tested via fixture
 - Period mapping: AD fiscal year → BS via +57 on the lead year (ADR-0013); FY 2022/23 → BS 2079/80; FY 2023/24 → BS 2080/81
