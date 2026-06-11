@@ -25,7 +25,7 @@ extraction (no OCR — higher fidelity than re-OCR per ADR-0011).
 - Format: PDF (clean text layer, no OCR required)
 - Archive path: `Financial Data/moald_agri_stats/`
 
-## What we extract (v0.3.0) → `dne_facts` (ADR-0015) — 3759 facts
+## What we extract (v0.3.0) → `dne_facts` (ADR-0015) — 4383 facts
 
 ### National time-series (full historical depth)
 
@@ -55,6 +55,7 @@ extraction (no OCR — higher fidelity than re-OCR per ADR-0011).
 |---|---|---|---|
 | Table 1.3 | `agri-cereal-{area,production,yield}` | `district` | all 77 districts (aggregate cereal) |
 | Table 1.5 | `agri-cereal-{area,production,yield}` | `district-crop` | maize + wheat × 77 districts |
+| Table 2.3 | `agri-cashcrop-{area,production,yield}` | `district-crop` | oilseed/sugarcane/potato × 77 districts |
 | Table 4.3 | `agri-livestock-population` | `district-livestock-category` | 7 categories × 77 districts |
 | Table 4.5 | `agri-livestock-production` | `district-livestock-product` | 6 meat types × district |
 | Table 4.6 | `agri-livestock-production` | `district-livestock-product` | laying birds + egg production × district |
@@ -98,24 +99,29 @@ reconciliation gate):
   collapses to a single `0.00` mid-row, breaking positional alignment.
 - **Table 3.2** (pulses by district): crops omitted in some rows, dash-filled in
   others — positionally ambiguous.
-- **Table 2.13** (spices by district): rotated/garbled headers.
-- **Tables 2.3 / 2.4** (cash / oilseed by district): collapsing sugarcane column.
-- **Tables 6.2–6.4** (fruit by district), **7.3** (vegetables — 40-pp. transpose).
+- **Table 2.13** (spices) / **2.4** (oilseed by commodity): rotated headers
+  and/or the same omitted-vs-dashed sparse-column ambiguity as 3.2.
+- **Tables 6.2–6.4** (fruit by district): rotated headers + 4-col-per-fruit
+  sparse layout. **7.3** (vegetables — 40-pp. transpose).
 - **Table 8.2** (population by district) — overlaps `cbs-nphc-2021`.
 
-Overlap another registered source — need a canonical-source ADR before ingest:
+(Table 2.3 cash crops had a collapsing column too but ships — its sparse column
+is a single middle crop bracketed by two near-universal ones, so it reconciles.)
 
-- **Macro GDP/GVA** (10.x) — overlaps `mof-economic-survey-gva`.
-- **Trade by HS code** (11.x) — overlaps `customs-monthly-trade`.
-- **Agri loans by sector** (14.x) — overlaps NRB banking statistics.
+Republish another agency's data — **cross-reference only, NOT ingested**, per
+[ADR-0025](../decisions/0025-agri-stats-overlapping-tables-cross-reference-only.md):
+
+- **Macro GDP/GVA** (10.x) — NSO national accounts (held via Economic Survey).
+- **Trade by HS code** (11.x) — Customs (held via `customs-monthly-trade`).
+- **Agri loans by sector** (14.x) — NRB (held via NRB banking statistics).
 - Low priority: seed balance (12.x), insurance (13), commodity→Agri-GVA (15).
 
 ## Parser
 
 - Path: `scrapers/moald_agri_stats/parser.py`
 - Version: 0.3.0 (anchor-driven; identical output on full PDF + fixture)
-- Fixture: `scrapers/moald_agri_stats/tests/fixtures/agri_stats_2080_81_excerpt.pdf` (25 pages)
-- Tests: 62 passing
+- Fixture: `scrapers/moald_agri_stats/tests/fixtures/agri_stats_2080_81_excerpt.pdf` (28 pages)
+- Tests: 66 passing
 
 ## Archive policy
 

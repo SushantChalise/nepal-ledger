@@ -47,13 +47,14 @@ Distinct from `moald-crop-production` (seasonal crop bulletins, variable format)
 |---|---|---|---|
 | Table 1.3 | `agri-cereal-{area,production,yield}` | `district` | all 77 districts (aggregate cereal) |
 | Table 1.5 | `agri-cereal-{area,production,yield}` | `district-crop` | maize + wheat × 77 districts (`district__crop`) |
+| Table 2.3 | `agri-cashcrop-{area,production,yield}` | `district-crop` | oilseed/sugarcane/potato × 77 districts |
 | Table 4.3 | `agri-livestock-population` | `district-livestock-category` | 7 categories × 77 districts (`district__category`) |
 | Table 4.5 | `agri-livestock-production` | `district-livestock-product` | 6 meat types × district |
 | Table 4.6 | `agri-livestock-production` | `district-livestock-product` | laying hen/duck + hen/duck/total egg × district |
 | Table 4.7 | `agri-livestock-production` | `district-livestock-product` | wool (+ wool-flock sheep) × district |
 | Table 9.2 | `agri-fertilizer-sales` | `district-fertilizer-type` | grand-total urea/dap/potash × district |
 
-Total: **3759 facts** (1546 national/provincial + 2213 district).
+Total: **4383 facts** (1546 national/provincial + 2837 district).
 
 ## Reconciliation (verified — every district extractor sums to the national series)
 
@@ -62,6 +63,8 @@ Total: **3759 facts** (1546 national/provincial + 2213 district).
 - **District → national (exact to the unit)**:
   - Cereal aggregate (1.3): 77 districts → 11,293,843 vs national 11,293,841 (Δ 2).
   - Maize/wheat (1.5): maize 3,193,873 vs 3,193,869; wheat 2,035,564 vs 2,035,559.
+  - Cash crops (2.3): oilseed/potato/sugarcane area + production all reconcile
+    (sugarcane 55,442 vs 55,440 — validates the collapsing-column heuristic).
   - Livestock population (4.3): cattle 5,198,388 / goat 15,289,954 / fowl 56,916,567
     — all exact.
   - Meat/egg/wool (4.5–4.7): meat-buffalo 138,271, eggs-total 1,645,407, wool
@@ -114,17 +117,22 @@ numbers, which the doctrine forbids:
   positional alignment breaks (district buckwheat sum ≈ 76 % of national).
 - **Table 3.2** (pulses by district): crops are *omitted* in some rows and
   *dash-filled* in others — positionally ambiguous, no reliable mapping.
-- **Table 2.13** (spices by district): rotated/garbled column headers.
-- **Tables 2.3 / 2.4** (cash / oilseed by district): collapsing sugarcane column.
-- **Tables 6.2–6.4** (fruit by district), **7.3** (vegetables — 40-pp. transpose).
+- **Table 2.13** (spices) / **2.4** (oilseed by commodity): rotated headers
+  and/or the same omitted-vs-dashed sparse-column ambiguity as 3.2.
+- **Tables 6.2–6.4** (fruit by district): rotated headers + 4-column-per-fruit
+  sparse layout. **7.3** (vegetables — 40-pp. commodity×district transpose).
 - **Table 8.2** (population by district) — overlaps `cbs-nphc-2021` (census).
 
-Tables that overlap another registered source and need a canonical-source ADR
-before ingest (Fact-Ledger double-counting risk):
+Note: 2.3 (cash crops) had a collapsing column too but, unlike the above, the
+sparse column is a single middle crop (sugarcane) bracketed by two near-universal
+crops, so the heuristic reconciles — that's why it ships and these don't.
 
-- **Macro GDP/GVA** (Table 10.x) — overlaps `mof-economic-survey-gva`.
-- **Trade by HS code** (Table 11.x) — overlaps `customs-monthly-trade`.
-- **Agri loans by sector** (Table 14.x) — overlaps NRB banking statistics.
+Tables that **republish another agency's data** — cross-reference only, NOT
+ingested, per [ADR-0025](../../docs/decisions/0025-agri-stats-overlapping-tables-cross-reference-only.md):
+
+- **Macro GDP/GVA** (Table 10.x) — NSO national accounts; held via Economic Survey.
+- **Trade by HS code** (Table 11.x) — Customs; held via `customs-monthly-trade`.
+- **Agri loans by sector** (Table 14.x) — NRB; held via NRB banking statistics.
 
 Low-priority small national tables: seed balance (12.x), crop/livestock
 insurance (13), commodity → Agri-GVA contribution (15).

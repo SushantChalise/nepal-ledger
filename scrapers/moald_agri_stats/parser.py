@@ -28,6 +28,7 @@ DISTRICT CROSS-SECTION (FY 2080/81) — every extractor reconciles to the nation
 series (district sums == national totals to the unit, source rounding aside):
   Table 1.3  aggregate cereal area/production/yield × district (all 77 districts)
   Table 1.5  maize + wheat area/production/yield × district  (district-crop)
+  Table 2.3  oilseed/sugarcane/potato area/prod/yield × district (district-crop)
   Table 4.3  livestock population × district × category      (district-livestock-category)
   Table 4.5  meat production × district × type               (district-livestock-product)
   Table 4.6  laying birds + egg production × district        (district-livestock-product)
@@ -44,13 +45,13 @@ gate, or that overlap another registered source:
     collapse to a single "0.00" MID-row, breaking positional alignment.
   - Table 3.2 (pulses by district): crops are omitted in some rows and dash-
     filled in others — positionally ambiguous.
-  - Table 2.13 (spices by district): rotated/garbled column headers.
-  - Table 2.3/2.4 (cash/oilseed by district): collapsing sugarcane column.
-  - Tables 6.2–6.4 (fruit by district), 7.3 (vegetables — 40-pp. transpose),
-    8.2 (population — overlaps cbs-nphc-2021).
-  - Macro GDP (10.x — overlaps mof-economic-survey-gva), trade by HS (11.x —
-    overlaps customs-monthly-trade), agri loans (14.x — overlaps nrb banking):
-    need a canonical-source ADR before ingest (Fact-Ledger double-counting).
+  - Table 2.13 (spices), 2.4 (oilseed by commodity): rotated headers and/or the
+    omitted-vs-dashed sparse-column ambiguity (same class as 3.2).
+  - Tables 6.2–6.4 (fruit by district): rotated headers + 4-col-per-fruit sparse
+    layout; 7.3 (vegetables — 40-pp. transpose); 8.2 (population — overlaps
+    cbs-nphc-2021).
+  - Macro GDP (10.x), trade by HS (11.x), agri loans (14.x): republished from
+    NSO/Customs/NRB — cross-reference only, NOT ingested, per ADR-0025.
 
 ADR-0003: deterministic only; no LLM. ADR-0015: dimensional facts.
 ADR-0018: composite dimension_value (``province__crop``) for 2-D slices.
@@ -61,9 +62,11 @@ Version log:
           provincial cross-sections (cereal/cash/veg), cereal-by-district, spices.
           Supersedes the 3-yr summary extractors with authoritative full series.
   0.3.0 — district matrices that reconcile to national: cereal aggregate (1.3),
-          maize+wheat (1.5), livestock population (4.3), meat (4.5), egg (4.6),
-          wool (4.7), fertilizer (9.2). Heading-aware slicer + footer guard +
-          aggregate-row guard; trailing-dot number tolerance.
+          maize+wheat (1.5), cash crops (2.3, collapsing-sugarcane heuristic),
+          livestock population (4.3), meat (4.5), egg (4.6), wool (4.7),
+          fertilizer (9.2). Heading-aware slicer + footer guard + aggregate-row
+          guard; trailing-dot number tolerance. ADR-0025: overlapping macro/
+          trade/loan tables (10.x/11.x/14.x) are cross-reference only.
 """
 
 from __future__ import annotations
@@ -1082,6 +1085,53 @@ def _extract_maize_wheat_by_district(
     return rows, []
 
 
+# Cash crops 2.3: Oilseed | Sugarcane | Potato, each (area, prod, yield). Sugarcane
+# is the sparse middle column: a district with no cane prints "- - -" (3 dashes →
+# 9 tokens with a None triple), a single "-" (7 tokens), or omits it entirely
+# (6 tokens). Oilseed and potato are near-universal, so we anchor on those: the
+# FIRST triple is always oilseed, the LAST is always potato, and sugarcane is the
+# (possibly absent) middle. Verified by reconciliation (district sums == national).
+_CASHCROP_DIST: Final[tuple[tuple[str, str], ...]] = (
+    ("oilseed", "Oilseed"), ("sugarcane", "Sugarcane"), ("potato", "Potato"),
+)
+
+
+def _extract_cashcrop_by_district(
+    text: str,
+) -> tuple[list[DimensionalRowDraft], list[ParserError]]:
+    """Table 2.3 — oilseed/sugarcane/potato area/prod/yield per district.
+
+    Handles the collapsing sugarcane column by mapping the first triple to
+    oilseed and the last to potato; the middle (if a full triple) is sugarcane.
+    Rows with 7 tokens (single '-') or 6 tokens have no sugarcane."""
+    section = _slice_to_heading(
+        text, "Province District Oilseed Sugarcane Potato", max_chars=20000
+    )
+    if section is None:
+        return [], [ParserError("RegexMismatch", "Table 2.3: anchor not found", None)]
+    rows: list[DimensionalRowDraft] = []
+    for district, label, nums in _iter_district_rows(section, prov_prefix=True):
+        if len(nums) == 3 * _APY:          # oilseed + sugarcane + potato
+            triples = {"oilseed": nums[0:3], "sugarcane": nums[3:6], "potato": nums[6:9]}
+        elif len(nums) in (2 * _APY, 2 * _APY + 1):  # oilseed + (single '-') + potato
+            triples = {"oilseed": nums[0:3], "potato": nums[-_APY:]}
+        else:
+            continue
+        for crop_slug, triple in triples.items():
+            crop_label = dict(_CASHCROP_DIST)[crop_slug]
+            for val, (suffix, unit) in zip(triple, _AREA_PROD_YIELD, strict=True):
+                if val is None:
+                    continue
+                rows.append(_annual_row(
+                    f"agri-cashcrop-{suffix}", f"Cash crop {suffix}",
+                    "district-crop", f"{district}__{crop_slug}",
+                    f"{label} - {crop_label}", val, unit, _FY_LATEST_BS,
+                ))
+    if not rows:
+        return [], [ParserError("RegexMismatch", "Table 2.3: no district rows matched", None)]
+    return rows, []
+
+
 # Meat 4.5: BUFF MUTTON CHEVON PORK CHICKEN DUCK (TOTAL skipped).
 _MEAT_COLUMNS: Final[tuple[tuple[str, str, str], ...]] = (
     ("meat-buffalo", "Buffalo", _MT), ("meat-sheep", "Mutton (sheep)", _MT),
@@ -1204,6 +1254,7 @@ _SINGLETON_EXTRACTORS: Final[tuple[_Extractor, ...]] = (
     _extract_livestock_pop_by_district,
     _extract_fertilizer_by_district,
     _extract_maize_wheat_by_district,
+    _extract_cashcrop_by_district,
     _extract_meat_by_district,
     _extract_egg_by_district,
     _extract_wool_by_district,

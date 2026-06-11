@@ -464,13 +464,14 @@ const ROWS: readonly NewSourceRegistryRow[] = [
     tier: 3,
     notes:
       'Annual agricultural statistics compendium; born-digital clean text layer (no OCR — pdfplumber). ' +
-      'Parser v0.3.0 → dne_facts (ADR-0015): 3759 facts across national time-series (cereal/cashcrop/pulse/' +
+      'Parser v0.3.0 → dne_facts (ADR-0015): 4383 facts across national time-series (cereal/cashcrop/pulse/' +
       'livestock/fruit/vegetable/fertilizer/spice), provincial (cereal/cashcrop/vegetable, composite ' +
       'province__crop per ADR-0018) + FY2080/81 district matrices (cereal aggregate 1.3, maize+wheat 1.5, ' +
-      'livestock population 4.3, meat 4.5, egg 4.6, wool 4.7, fertilizer 9.2 — each reconciles to national). ' +
-      'Latest FY 2080/81. Deferred: district matrices whose source layout breaks positional alignment ' +
-      '(1.6/3.2/2.13/2.3/6.x/7.3/8.2); macro GDP (10.x), trade (11.x), agri loans (14.x) overlap other ' +
-      'sources, need canonical-source ADR. Distinct from moald-crop-production (seasonal).',
+      'cash crops 2.3, livestock population 4.3, meat 4.5, egg 4.6, wool 4.7, fertilizer 9.2 — each ' +
+      'reconciles to national). Latest FY 2080/81. Deferred: district matrices whose source layout breaks ' +
+      'positional alignment (1.6/3.2/2.13/2.4/6.x/7.3) + population 8.2 (overlaps census); macro GDP (10.x), ' +
+      'trade (11.x), agri loans (14.x) republish NSO/Customs/NRB — cross-reference only per ADR-0025. ' +
+      'Distinct from moald-crop-production (seasonal).',
   },
   {
     sourceId: 'mof-lmbis',

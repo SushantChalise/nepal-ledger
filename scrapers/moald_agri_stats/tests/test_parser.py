@@ -73,7 +73,7 @@ def test_parser_version(result: AgriResult) -> None:
 
 def test_total_row_count(rows: list) -> None:
     # Locked to the reconciled full-PDF == fixture count.
-    assert len(rows) == 3759
+    assert len(rows) == 4383
 
 
 def test_all_periods_annual(rows: list) -> None:
@@ -484,6 +484,48 @@ def test_maize_wheat_district_reconciles(rows: list) -> None:
     for crop, national in [("maize", 3_193_869), ("wheat", 2_035_559)]:
         total = sum(r.value for r in dc if r.dimension_value.endswith(f"__{crop}"))
         assert total == pytest.approx(national, rel=0.001), crop
+
+
+# ---------------------------------------------------------------------------
+# Table 2.3 — cash crops by district (collapsing sugarcane column)
+# ---------------------------------------------------------------------------
+
+
+def test_cashcrop_district_count(rows: list) -> None:
+    dists = {
+        r.dimension_value.split("__")[0]
+        for r in rows
+        if r.dimension_kind == "district-crop" and r.base_indicator_slug.startswith("agri-cashcrop")
+    }
+    assert len(dists) == 77
+
+
+def test_cashcrop_district_values(rows: list) -> None:
+    k = "district-crop"
+    assert _val(rows, "agri-cashcrop-production", k, "jhapa__oilseed") == pytest.approx(8_797)
+    assert _val(rows, "agri-cashcrop-production", k, "morang__sugarcane") == pytest.approx(108_789)
+
+
+def test_cashcrop_district_no_sugarcane_where_absent(rows: list) -> None:
+    # Taplejung has oilseed + potato but no sugarcane (printed '- - -').
+    k = "district-crop"
+    assert _val(rows, "agri-cashcrop-production", k, "taplejung__sugarcane") is None
+    assert _val(rows, "agri-cashcrop-production", k, "taplejung__potato") == pytest.approx(76_878)
+
+
+def test_cashcrop_district_reconciles(rows: list) -> None:
+    # The collapsing-sugarcane heuristic is verified by exact reconciliation to
+    # the national 2.2/§1.4 FY2080/81 totals for all three crops.
+    for metric, targets in {
+        "agri-cashcrop-area": [("oilseed", 239_033), ("potato", 211_505), ("sugarcane", 55_440)],
+        "agri-cashcrop-production": [
+            ("oilseed", 262_561), ("potato", 3_521_794), ("sugarcane", 2_760_495),
+        ],
+    }.items():
+        dc = _for(rows, metric, "district-crop")
+        for crop, national in targets:
+            total = sum(r.value for r in dc if r.dimension_value.endswith(f"__{crop}"))
+            assert total == pytest.approx(national, rel=0.002), f"{metric}/{crop}"
 
 
 # ---------------------------------------------------------------------------
