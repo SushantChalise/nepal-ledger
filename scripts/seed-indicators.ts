@@ -37,6 +37,38 @@ const DNE_SOURCE_ID = 'nrb-dne-xlsx';
 const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const WDI_SOURCE_ID = 'wb-wdi';
+const FCS_SOURCE_ID = 'nrb-financial-corporations-survey';
+
+// NRB Financial Corporations Survey (FCS) -- IMF MFSM 2016 methodology.
+// Consolidated balance sheet: Central Bank + BFIs + OFCs. Quarterly XLSX.
+// Annual slugs (-annual) cover all columns; Ashadh (mid-July) rows = FY end.
+// Unit: npr_million. Confidence: A (direct NRB XLSX).
+const FCS_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'nrb-fcs-m2-annual',
+    nameEn: 'Liquid Liabilities (M2 equivalent, FCS)',
+    category: 'monetary',
+    unit: 'npr_million',
+    nativeFrequency: 'quarterly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-fcs-credit-private-annual',
+    nameEn: 'Credit to Private Sector (FCS)',
+    category: 'monetary',
+    unit: 'npr_million',
+    nativeFrequency: 'quarterly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+  {
+    slug: 'nrb-fcs-net-foreign-assets-annual',
+    nameEn: 'Foreign Assets, Net (FCS)',
+    category: 'external_sector',
+    unit: 'npr_million',
+    nativeFrequency: 'quarterly',
+    sourceAgency: 'Nepal Rastra Bank',
+  },
+];
 
 // FCGO Consolidated Financial Statements — audited all-of-government fiscal
 // outturn (scrapers/fcgo_consolidated). Headline annual aggregates, NPR
@@ -1361,6 +1393,37 @@ async function persist(): Promise<void> {
     wdiLinked += 1;
   }
   log(`indicator_source_map: ${wdiLinked} links ensured → ${WDI_SOURCE_ID}`);
+
+
+  // 14. NRB Financial Corporations Survey (FCS) indicators (parser v0.1.0).
+  // IMF MFSM 2016 methodology. Quarterly XLSX; annual = mid-July (Ashadh) rows.
+  const fcsInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...FCS_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!fcsInsertResult.ok)
+    throw new Error(`FCS indicators insert failed: ${JSON.stringify(fcsInsertResult.error)}`);
+  log(
+    `indicators (FCS): ${fcsInsertResult.value.length} inserted (of ${FCS_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 15. FCS source map links.
+  let fcsLinked = 0;
+  for (const ind of FCS_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok) throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      FCS_SOURCE_ID,
+      'NRB FCS quarterly XLSX (v0.1.0)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    fcsLinked += 1;
+  }
+  log(`indicator_source_map: ${fcsLinked} links ensured → ${FCS_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
