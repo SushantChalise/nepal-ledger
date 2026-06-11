@@ -38,6 +38,7 @@ const FCGO_SOURCE_ID = 'fcgo-consolidated-financial-statements';
 const ECONOMIC_SURVEY_SOURCE_ID = 'mof-economic-survey-annual';
 const WDI_SOURCE_ID = 'wb-wdi';
 const FCS_SOURCE_ID = 'nrb-financial-corporations-survey';
+const WB_KNOMAD_SOURCE_ID = 'wb-knomad-bilateral-remittance';
 
 // NRB Financial Corporations Survey (FCS) -- IMF MFSM 2016 methodology.
 // Consolidated balance sheet: Central Bank + BFIs + OFCs. Quarterly XLSX.
@@ -368,6 +369,118 @@ const WDI_INDICATORS: readonly SeedIndicator[] = [
     unit: 'percent',
     nativeFrequency: 'annual',
     sourceAgency: 'World Bank',
+  },
+];
+
+// ─── WB KNOMAD bilateral remittance corridor indicators (parser wb_knomad_bilateral v0.1.0) ─
+// Annual bilateral matrix (USD million). Fills Gap 1: NRB BOP has no corridor breakdown.
+// Confidence A (World Bank / KNOMAD methodology). Calendar-year basis (Jan–Dec);
+// mapped to Nepal BS FY via approximation (parser_notes records caveat).
+// Source: https://www.knomad.org/data/remittances (manual upload — site requires login).
+const WB_KNOMAD_INDICATORS: readonly SeedIndicator[] = [
+  {
+    slug: 'knomad-remittance-to-nepal-from-india-annual',
+    nameEn: 'Remittance to Nepal from India (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-from-qatar-annual',
+    nameEn: 'Remittance to Nepal from Qatar (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-from-uae-annual',
+    nameEn: 'Remittance to Nepal from United Arab Emirates (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-from-saudi-arabia-annual',
+    nameEn: 'Remittance to Nepal from Saudi Arabia (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-from-kuwait-annual',
+    nameEn: 'Remittance to Nepal from Kuwait (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-from-bahrain-annual',
+    nameEn: 'Remittance to Nepal from Bahrain (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-from-oman-annual',
+    nameEn: 'Remittance to Nepal from Oman (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-from-malaysia-annual',
+    nameEn: 'Remittance to Nepal from Malaysia (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-from-usa-annual',
+    nameEn: 'Remittance to Nepal from United States (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-from-australia-annual',
+    nameEn: 'Remittance to Nepal from Australia (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-from-japan-annual',
+    nameEn: 'Remittance to Nepal from Japan (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-from-korea-annual',
+    nameEn: 'Remittance to Nepal from South Korea (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
+  },
+  {
+    slug: 'knomad-remittance-to-nepal-total-annual',
+    nameEn: 'Total Remittance to Nepal — All Countries (KNOMAD bilateral)',
+    category: 'external_sector',
+    unit: 'usd_million',
+    nativeFrequency: 'annual',
+    sourceAgency: 'World Bank / KNOMAD',
   },
 ];
 
@@ -1424,6 +1537,41 @@ async function persist(): Promise<void> {
     fcsLinked += 1;
   }
   log(`indicator_source_map: ${fcsLinked} links ensured → ${FCS_SOURCE_ID}`);
+
+  // 16. WB KNOMAD bilateral remittance corridor indicators (parser v0.1.0).
+  // Fills Gap 1: NRB BOP has no corridor breakdown (India/Gulf/Malaysia).
+  // Annual calendar-year matrix in USD million. Confidence A.
+  const knomadInsertResult = await safeQuery(() =>
+    db()
+      .insert(indicators)
+      .values([...WB_KNOMAD_INDICATORS])
+      .onConflictDoNothing({ target: indicators.slug })
+      .returning({ id: indicators.id, slug: indicators.slug }),
+  );
+  if (!knomadInsertResult.ok)
+    throw new Error(
+      `KNOMAD indicators insert failed: ${JSON.stringify(knomadInsertResult.error)}`,
+    );
+  log(
+    `indicators (KNOMAD): ${knomadInsertResult.value.length} inserted ` +
+      `(of ${WB_KNOMAD_INDICATORS.length}; existing skipped)`,
+  );
+
+  // 17. KNOMAD source map links.
+  let knomadLinked = 0;
+  for (const ind of WB_KNOMAD_INDICATORS) {
+    const found = await findIndicatorBySlug(ind.slug);
+    if (!found.ok)
+      throw new Error(`resolve ${ind.slug} failed: ${JSON.stringify(found.error)}`);
+    const link = await linkIndicatorToSource(
+      found.value.id,
+      WB_KNOMAD_SOURCE_ID,
+      'WB KNOMAD bilateral remittance matrix (v0.1.0)',
+    );
+    if (!link.ok) throw new Error(`link ${ind.slug} failed: ${JSON.stringify(link.error)}`);
+    knomadLinked += 1;
+  }
+  log(`indicator_source_map: ${knomadLinked} links ensured → ${WB_KNOMAD_SOURCE_ID}`);
 }
 
 async function main(): Promise<void> {
@@ -1433,14 +1581,17 @@ async function main(): Promise<void> {
     `units = ${UNITS.length}, ` +
       `indicators (CMEFs) = ${INDICATORS.length}, source = ${CMEFS_SOURCE_ID}`,
   );
-  log(`indicators (NCPI)  = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
-  log(`indicators (WDI)   = ${WDI_INDICATORS.length}, source = ${WDI_SOURCE_ID}`);
+  log(`indicators (NCPI)    = ${NCPI_INDICATORS.length}, source = ${NCPI_SOURCE_ID}`);
+  log(`indicators (WDI)     = ${WDI_INDICATORS.length}, source = ${WDI_SOURCE_ID}`);
+  log(`indicators (KNOMAD)  = ${WB_KNOMAD_INDICATORS.length}, source = ${WB_KNOMAD_SOURCE_ID}`);
 
   if (dryRun) {
     log('dry-run: would upsert the following indicator slugs (CMEFs):');
     for (const i of INDICATORS) log(`  - ${i.slug} (${i.category}, ${i.unit})`);
     log('dry-run: would upsert the following indicator slugs (NCPI):');
     for (const i of NCPI_INDICATORS) log(`  - ${i.slug} (${i.category}, ${i.unit})`);
+    log('dry-run: would upsert the following indicator slugs (KNOMAD):');
+    for (const i of WB_KNOMAD_INDICATORS) log(`  - ${i.slug} (${i.category}, ${i.unit})`);
     log('dry-run complete — no DB writes performed');
     return;
   }
